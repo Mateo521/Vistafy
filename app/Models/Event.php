@@ -2,35 +2,34 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Event extends Model
 {
+    use HasFactory, SoftDeletes;
+
     protected $fillable = [
+        'photographer_id',   
         'name',
         'slug',
         'description',
         'event_date',
         'location',
         'is_private',
-        'private_token',
-        'is_active',
+        'access_code',
     ];
 
     protected $casts = [
         'event_date' => 'date',
         'is_private' => 'boolean',
-        'is_active' => 'boolean',
     ];
 
-    // Relaciones
-    public function photos()
-    {
-        return $this->belongsToMany(Photo::class)->withPivot('order')->withTimestamps()->orderBy('order');
-    }
-
-    // Generar slug y token automáticamente
+    /**
+     * Generar slug automáticamente
+     */
     protected static function boot()
     {
         parent::boot();
@@ -39,22 +38,23 @@ class Event extends Model
             if (empty($event->slug)) {
                 $event->slug = Str::slug($event->name);
             }
-            
-            if ($event->is_private && empty($event->private_token)) {
-                $event->private_token = Str::random(32);
-            }
         });
     }
 
-    // Accessor para URL pública
-    public function getPublicUrlAttribute()
+    /**
+     * Relación: Un evento pertenece a un fotógrafo
+     */
+    public function photographer()
     {
-        return route('events.show', $this->slug);
+        return $this->belongsTo(Photographer::class);
     }
 
-    // Accessor para URL privada
-    public function getPrivateUrlAttribute()
+    /**
+     * Relación: Un evento tiene muchas fotos
+     */
+    public function photos()
     {
-        return $this->is_private ? route('events.private', $this->private_token) : null;
+        return $this->belongsToMany(Photo::class, 'event_photo')
+            ->withTimestamps();
     }
 }

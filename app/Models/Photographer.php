@@ -2,16 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Photographer extends Model
 {
+    use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'user_id',
         'business_name',
+        'phone',
         'region',
         'bio',
-        'phone',
         'profile_photo',
         'cover_photo',
         'is_active',
@@ -21,52 +26,52 @@ class Photographer extends Model
         'is_active' => 'boolean',
     ];
 
-    // Relaciones
+    /**
+     * Relación: Un fotógrafo pertenece a un usuario
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Relación: Un fotógrafo tiene muchas fotos
+     */
     public function photos()
     {
         return $this->hasMany(Photo::class);
     }
 
-    // Accessors
+    /**
+     * Relación: Un fotógrafo tiene muchos eventos
+     */
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    /**
+     * Accessor para URL de foto de perfil
+     */
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->profile_photo 
-            ? asset('storage/' . $this->profile_photo) 
-            : null;
+        if ($this->profile_photo) {
+            return Storage::disk('public')->url($this->profile_photo);
+        }
+        
+        // Imagen por defecto
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->business_name) . '&color=7F9CF5&background=EBF4FF';
     }
 
+    /**
+     * Accessor para URL de foto de portada
+     */
     public function getCoverPhotoUrlAttribute()
     {
-        return $this->cover_photo 
-            ? asset('storage/' . $this->cover_photo) 
-            : null;
-    }
-
-    // Stats
-    public function getTotalPhotosAttribute()
-    {
-        return $this->photos()->count();
-    }
-
-    public function getActivePhotosAttribute()
-    {
-        return $this->photos()->where('is_active', true)->count();
-    }
-
-    public function getTotalDownloadsAttribute()
-    {
-        return $this->photos()->sum('downloads');
-    }
-
-    public function getTotalEventsAttribute()
-    {
-        return Event::whereHas('photos', function($q) {
-            $q->where('photographer_id', $this->id);
-        })->count();
+        if ($this->cover_photo) {
+            return Storage::disk('public')->url($this->cover_photo);
+        }
+        
+        return null;
     }
 }

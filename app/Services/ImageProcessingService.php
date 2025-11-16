@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Support\Facades\Storage;
 
 class ImageProcessingService
 {
@@ -12,142 +13,136 @@ class ImageProcessingService
 
     public function __construct()
     {
+        // Inicializar ImageManager con driver GD
         $this->manager = new ImageManager(new Driver());
     }
 
     /**
-     * Procesa una foto: crea versión con marca de agua y thumbnail
+     * Procesar y guardar foto con 3 versiones
      */
-    public function processPhoto($uploadedFile, $photoId, $photographerName)
+    public function processPhoto($file,$photographerId)
     {
+        \Log::info('🖼️ Iniciando procesamiento de imagen');
+
         // Generar nombres únicos
-        $filename = time() . '_' .$photoId . '_' . uniqid();
+        $uniqueId =$this->generateUniqueId();
+        $timestamp = now()->format('Y/m/d');
         
-        // Paths
-        $originalPath = 'photos/originals/' .$filename . '.jpg';
-        $watermarkedPath = 'photos/watermarked/' .$filename . '.jpg';
-        $thumbnailPath = 'photos/thumbnails/' .$filename . '.jpg';
+        // Rutas de almacenamiento
+        $basePath = "photos/{$photographerId}/{$timestamp}";
+        $originalPath = "{$basePath}/originals";
+        $watermarkedPath = "{$basePath}/watermarked";
+        $thumbnailPath = "{$basePath}/thumbnails";
 
-        // 1. Guardar original
-        Storage::disk('public')->put($originalPath, file_get_contents($uploadedFile));
+        try {
+            // Leer la imagen original
+            $image =$this->manager->read($file);
+            $width =$image->width();
+            $height =$image->height();
 
-        // 2. Crear versión con marca de agua
-        $watermarkedImage =$this->manager->read($uploadedFile);
-        
-        // Redimensionar si es muy grande (max 1920px de ancho)
-        if ($watermarkedImage->width() > 1920) {
-            $watermarkedImage->scale(width: 1920);
-        }
+            \Log::info('📐 Dimensiones originales', ['width' => $width, 'height' => $height]);
 
-        // Agregar marca de agua de texto
-        $this->addTextWatermark($watermarkedImage,$photoId, $photographerName);
+            // 1. Guardar ORIGINAL (sin marca de agua - solo para después de pagar)
+            $originalFilename = "{$uniqueId}_original.jpg";
+            $originalFullPath = "{$originalPath}/{$originalFilename}";
+            
+            $encoded =$image->toJpeg(95);
+            Storage::disk('public')->put($originalFullPath, (string)$encoded);
+            \Log::info('✅ Original guardado', ['path' => $originalFullPath]);
 
-        // Guardar versión con marca de agua
-        $encoded =$watermarkedImage->encodeByExtension('jpg', quality: 85);
-        Storage::disk('public')->put($watermarkedPath,$encoded);
-
-        // 3. Crear thumbnail
-        $thumbnail =$this->manager->read($uploadedFile);
-        $thumbnail->cover(400, 400);
-        
-        $encodedThumb =$thumbnail->encodeByExtension('jpg', quality: 80);
-        Storage::disk('public')->put($thumbnailPath,$encodedThumb);
-
-        return [
-            'original_path' => $originalPath,
-            'watermarked_path' => $watermarkedPath,
-            'thumbnail_path' => $thumbnailPath,
-        ];
-    }
-
-    /**
-     * Agrega marca de agua de texto a la imagen
-     */
-    protected function addTextWatermark($image,$photoId, $photographerName)
-    {
-        $watermarkText = "© Photo Marketplace - ID: {$photoId}";
-        $photographerText =$photographerName;
-
-        $width =$image->width();
-        $height =$image->height();
-
-        // Calcular tamaño de fuente basado en dimensiones de imagen
-        $fontSize = max(20, min(60,$width / 30));
-
-        // Marca de agua central grande (semi-transparente)
-        $image->text($watermarkText,$width / 2, $height / 2, function ($font) use ($fontSize) {
-            $font->file(public_path('fonts/Arial.ttf')); // Necesitarás una fuente
-            $font->size($fontSize * 1.5);
-            $font->color('#ffffff');
-            $font->align('center');
-            $font->valign('middle');
-            $font->opacity(0.15); // Muy transparente
-        });
-
-        // Marca de agua inferior derecha (más visible)
-        $image->text($watermarkText,$width - 20, $height - 60, function ($font) use ($fontSize) {
-            $font->file(public_path('fonts/Arial.ttf'));
-            $font->size($fontSize * 0.6);
-            $font->color('#ffffff');
-            $font->align('right');
-            $font->valign('bottom');
-            $font->opacity(0.8);
-        });
-
-        // Nombre del fotógrafo
-        $image->text($photographerText,$width - 20, $height - 30, function ($font) use ($fontSize) {
-            $font->file(public_path('fonts/Arial.ttf'));
-            $font->size($fontSize * 0.5);
-            $font->color('#ffffff');
-            $font->align('right');
-            $font->valign('bottom');
-            $font->opacity(0.7);
-        });
-
-        // Marca de agua repetida en diagonal (opcional, más protección)
-        $this->addRepeatingWatermark($image,$photoId);
-
-        return $image;
-    }
-
-    /**
-     * Agrega marca de agua repetida en diagonal
-     */
-    protected function addRepeatingWatermark($image,$photoId)
-    {
-        $width =$image->width();
-        $height =$image->height();
-        $text = "ID: {$photoId}";
-        
-        $fontSize = max(15,$width / 50);
-        $spacing = 300; // Espaciado entre marcas
-
-        for ($y = 0; $y < $height +$spacing; $y +=$spacing) {
-            for ($x = -$spacing; $x < $width +$spacing; $x +=$spacing) {
-                $image->text($text,$x, $y, function ($font) use ($fontSize) {
-                    $font->file(public_path('fonts/Arial.ttf'));
-                    $font->size($fontSize);
-                    $font->color('#ffffff');
-                    $font->align('center');
-                    $font->valign('middle');
-                    $font->opacity(0.05); // Muy sutil
-                    $font->angle(45); // Diagonal
-                });
+            // 2. Crear PREVIEW CON MARCA DE AGUA (para navegación gratuita)
+            $watermarkedFilename = "{$uniqueId}_watermarked.jpg";
+            $watermarkedFullPath = "{$watermarkedPath}/{$watermarkedFilename}";
+            
+            $watermarkedImage =$this->manager->read($file);
+            
+            // Redimensionar si es muy grande
+            if ($watermarkedImage->width() > 1920 || $watermarkedImage->height() > 1920) {
+                $watermarkedImage->scale(width: 1920, height: 1920);
             }
-        }
+            
+            // TODO: Aplicar marca de agua (después lo implementamos)
+            // $this->addWatermark($watermarkedImage,$photographerId);
+            
+            $encodedWatermarked =$watermarkedImage->toJpeg(85);
+            Storage::disk('public')->put($watermarkedFullPath, (string)$encodedWatermarked);
+            \Log::info('✅ Watermarked guardado', ['path' => $watermarkedFullPath]);
 
+            // 3. Crear THUMBNAIL (400x400 cuadrado con marca pequeña)
+            $thumbnailFilename = "{$uniqueId}_thumb.jpg";
+            $thumbnailFullPath = "{$thumbnailPath}/{$thumbnailFilename}";
+            
+            $thumbnailImage =$this->manager->read($file);
+            $thumbnailImage->cover(400, 400);
+            
+            // TODO: Marca de agua pequeña
+            
+            $encodedThumb =$thumbnailImage->toJpeg(80);
+            Storage::disk('public')->put($thumbnailFullPath, (string)$encodedThumb);
+            \Log::info('✅ Thumbnail guardado', ['path' => $thumbnailFullPath]);
+
+            return [
+                'unique_id' => $uniqueId,
+                'original_path' => $originalFullPath,
+                'watermarked_path' => $watermarkedFullPath,
+                'thumbnail_path' => $thumbnailFullPath,
+                'original_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+                'dimensions' => [
+                    'width' => $width,
+                    'height' => $height,
+                ],
+            ];
+
+        } catch (\Exception $e) {
+            \Log::error('💥 Error en processPhoto', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Aplicar marca de agua (implementar después)
+     */
+    protected function addWatermark($image,$photographerId)
+    {
+        // TODO: Implementar marca de agua con texto o logo
+        // Por ahora retorna la imagen sin cambios
         return $image;
     }
 
     /**
-     * Elimina archivos de una foto
+     * Generar ID único de 6 caracteres
      */
-    public function deletePhotoFiles($photo)
+    protected function generateUniqueId()
+    {
+        do {
+            $uniqueId = strtoupper(Str::random(6));
+        } while (\App\Models\Photo::where('unique_id', $uniqueId)->exists());
+
+        return $uniqueId;
+    }
+
+    /**
+     * Eliminar archivos de una foto
+     */
+    public function deletePhoto($photo)
     {
         Storage::disk('public')->delete([
             $photo->original_path,
             $photo->watermarked_path,
             $photo->thumbnail_path,
         ]);
+    }
+
+    /**
+     * Actualizar foto (eliminar la anterior y procesar la nueva)
+     */
+    public function updatePhoto($file,$photo)
+    {
+        $this->deletePhoto($photo);
+        return $this->processPhoto($file,$photo->photographer_id);
     }
 }

@@ -1,113 +1,129 @@
 <script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+// Determinar la ruta del dashboard según el rol
+const dashboardRoute = computed(() => {
+    if (user.value.role === 'photographer') {
+        return route('photographer.dashboard');
+    } else if (user.value.role === 'admin') {
+        return route('admin.dashboard');
+    } else {
+        return route('home'); // O la ruta que uses para clientes
+    }
+});
 </script>
 
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
+            <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                            <div class="shrink-0 flex items-center">
+                                <Link :href="dashboardRoute">
+                                    <h1 class="text-2xl font-bold text-indigo-600">Vistafy</h1>
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <Link
+                                    v-if="user.role === 'photographer'"
+                                    :href="route('photographer.dashboard')"
+                                    :class="$page.url.startsWith('/fotografo') && !$page.url.includes('/fotos') && !$page.url.includes('/eventos') ? 'border-indigo-400 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                    class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                                 >
                                     Dashboard
-                                </NavLink>
+                                </Link>
+
+                                <Link
+                                    v-if="user.role === 'photographer'"
+                                    :href="route('photographer.photos.index')"
+                                    :class="$page.url.includes('/fotos') ? 'border-indigo-400 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                    class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                                >
+                                    Fotos
+                                </Link>
+
+                                <Link
+                                    v-if="user.role === 'photographer'"
+                                    :href="route('photographer.events.index')"
+                                    :class="$page.url.includes('/eventos') ? 'border-indigo-400 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                    class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                                >
+                                    Eventos
+                                </Link>
                             </div>
                         </div>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
+                        <!-- Settings Dropdown -->
+                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <div class="ms-3 relative">
+                                <button
+                                    @click="showingNavigationDropdown = !showingNavigationDropdown"
+                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                >
+                                    {{ user.name }}
 
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
+                                    <svg
+                                        class="ms-2 -me-0.5 h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
 
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
+                                <!-- Dropdown Menu -->
+                                <div
+                                    v-show="showingNavigationDropdown"
+                                    @click="showingNavigationDropdown = false"
+                                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                                >
+                                    <Link
+                                        :href="route('profile.edit')"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        Perfil
+                                    </Link>
+                                    
+                                    <Link
+                                        :href="route('logout')"
+                                        method="post"
+                                        as="button"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        Cerrar Sesión
+                                    </Link>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Hamburger -->
                         <div class="-me-2 flex items-center sm:hidden">
                             <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                @click="showingNavigationDropdown = !showingNavigationDropdown"
+                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
                             >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
+                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
                                         :class="{
                                             hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
+                                            'inline-flex': !showingNavigationDropdown,
                                         }"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
@@ -117,8 +133,7 @@ const showingNavigationDropdown = ref(false);
                                     <path
                                         :class="{
                                             hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
+                                            'inline-flex': showingNavigationDropdown,
                                         }"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
@@ -133,58 +148,71 @@ const showingNavigationDropdown = ref(false);
 
                 <!-- Responsive Navigation Menu -->
                 <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
+                    :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden"
                 >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                    <div class="pt-2 pb-3 space-y-1">
+                        <Link
+                            v-if="user.role === 'photographer'"
+                            :href="route('photographer.dashboard')"
+                            :class="$page.url.startsWith('/fotografo') ? 'border-indigo-400 text-indigo-700 bg-indigo-50' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'"
+                            class="block w-full ps-3 pe-4 py-2 border-l-4 text-base font-medium"
                         >
                             Dashboard
-                        </ResponsiveNavLink>
+                        </Link>
+
+                        <Link
+                            v-if="user.role === 'photographer'"
+                            :href="route('photographer.photos.index')"
+                            :class="$page.url.includes('/fotos') ? 'border-indigo-400 text-indigo-700 bg-indigo-50' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'"
+                            class="block w-full ps-3 pe-4 py-2 border-l-4 text-base font-medium"
+                        >
+                            Fotos
+                        </Link>
+
+                        <Link
+                            v-if="user.role === 'photographer'"
+                            :href="route('photographer.events.index')"
+                            :class="$page.url.includes('/eventos') ? 'border-indigo-400 text-indigo-700 bg-indigo-50' : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'"
+                            class="block w-full ps-3 pe-4 py-2 border-l-4 text-base font-medium"
+                        >
+                            Eventos
+                        </Link>
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
-                    >
+                    <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
+                            <div class="font-medium text-base text-gray-800">
+                                {{ user.name }}
                             </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
+                            <div class="font-medium text-sm text-gray-500">{{ user.email }}</div>
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
+                            <Link
+                                :href="route('profile.edit')"
+                                class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300"
+                            >
+                                Perfil
+                            </Link>
+                            
+                            <Link
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
+                                class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300"
                             >
-                                Log Out
-                            </ResponsiveNavLink>
+                                Cerrar Sesión
+                            </Link>
                         </div>
                     </div>
                 </div>
             </nav>
 
             <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <header v-if="$slots.header" class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>
