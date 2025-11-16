@@ -14,7 +14,20 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
+Route::get('/', function () {
+    $recentEvents = \App\Models\Event::where('is_private', false)
+        ->where('event_date', '>=', now()->subMonths(3))
+        ->withCount('photos')
+        ->latest('event_date')
+        ->take(6)
+        ->get();
+
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'recentEvents' => $recentEvents,
+    ]);
+})->name('home');
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
@@ -57,50 +70,48 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photographer.')->group(function () {
     
-    // Dashboard
+     // Dashboard
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;
-
+        
         $stats = [
-            'total_photos' => $photographer->photos()->count(),
-            'active_photos' => $photographer->photos()->where('is_active', true)->count(),
-            'total_downloads' => $photographer->photos()->sum('downloads'),
             'total_events' => \App\Models\Event::where('photographer_id', $photographer->id)->count(),
+            'total_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->count(),
+            'active_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->where('is_active', true)->count(),
+            'total_downloads' => \App\Models\Photo::where('photographer_id', $photographer->id)->sum('downloads'),
         ];
 
-        $recentPhotos =$photographer->photos()->latest()->take(12)->get();
-        
-        $recentEvents = \App\Models\Event::where('photographer_id', $photographer->id)
-            ->withCount('photos')
-            ->latest()
-            ->take(6)
-            ->get();
-
         return Inertia::render('Photographer/Dashboard', [
-            'photographer' => $photographer,
             'stats' => $stats,
-            'recentPhotos' => $recentPhotos,
-            'recentEvents' => $recentEvents,
+            'photographer' => $photographer,  // ← AGREGAR ESTA LÍNEA
         ]);
     })->name('dashboard');
 
+
     // Perfil
-    Route::get('/mi-perfil', [PhotographerProfileController::class, 'show'])->name('profile');
-    Route::get('/mi-perfil/editar', [PhotographerProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/mi-perfil/actualizar', [PhotographerProfileController::class, 'update'])->name('profile.update');
+    Route::get('/mi-perfil', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'show'])->name('profile');
+    Route::get('/mi-perfil/editar', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/mi-perfil/actualizar', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'update'])->name('profile.update');
 
     // Fotos
-    Route::resource('fotos', PhotoController::class)->names('photos');
+    Route::get('/fotos', [App\Http\Controllers\Photographer\PhotoController::class, 'index'])->name('photos.index');
+    Route::get('/fotos/crear', [App\Http\Controllers\Photographer\PhotoController::class, 'create'])->name('photos.create');
+    Route::post('/fotos', [App\Http\Controllers\Photographer\PhotoController::class, 'store'])->name('photos.store');
+    Route::get('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'show'])->name('photos.show');
+    Route::get('/fotos/{photo}/editar', [App\Http\Controllers\Photographer\PhotoController::class, 'edit'])->name('photos.edit');  // ← AGREGAR ESTA LÍNEA
+    Route::put('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'update'])->name('photos.update');
+    Route::delete('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'destroy'])->name('photos.destroy');
 
-    // Eventos - RUTAS EXPLÍCITAS
-    Route::get('/eventos', [EventController::class, 'index'])->name('events.index');
-    Route::get('/eventos/crear', [EventController::class, 'create'])->name('events.create');
-    Route::post('/eventos', [EventController::class, 'store'])->name('events.store');
-    Route::get('/eventos/{event}', [EventController::class, 'show'])->name('events.show');
-    Route::get('/eventos/{event}/editar', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('/eventos/{event}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/eventos/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-    Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
+    // Eventos
+    Route::get('/eventos', [App\Http\Controllers\Photographer\EventController::class, 'index'])->name('events.index');
+    Route::get('/eventos/crear', [App\Http\Controllers\Photographer\EventController::class, 'create'])->name('events.create');
+    Route::post('/eventos', [App\Http\Controllers\Photographer\EventController::class, 'store'])->name('events.store');
+    Route::get('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'show'])->name('events.show');
+    Route::get('/eventos/{event}/editar', [App\Http\Controllers\Photographer\EventController::class, 'edit'])->name('events.edit');
+    Route::put('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'update'])->name('events.update');
+    Route::delete('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'destroy'])->name('events.destroy');
+    Route::post('/eventos/{event}/cover-image', [App\Http\Controllers\Photographer\EventController::class, 'updateCoverImage'])->name('events.cover-image');
 });
+
 
 require __DIR__ . '/auth.php';

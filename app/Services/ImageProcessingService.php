@@ -20,93 +20,90 @@ class ImageProcessingService
     /**
      * Procesar y guardar foto con 3 versiones
      */
-    public function processPhoto($file,$photographerId)
-    {
-        \Log::info('🖼️ Iniciando procesamiento de imagen');
+   public function processPhoto($file,$photographerId)
+{
+    \Log::info('🖼️ Iniciando procesamiento de imagen');
 
-        // Generar nombres únicos
-        $uniqueId =$this->generateUniqueId();
-        $timestamp = now()->format('Y/m/d');
-        
-        // Rutas de almacenamiento
-        $basePath = "photos/{$photographerId}/{$timestamp}";
-        $originalPath = "{$basePath}/originals";
-        $watermarkedPath = "{$basePath}/watermarked";
-        $thumbnailPath = "{$basePath}/thumbnails";
+    // Generar nombres únicos
+    $uniqueId =$this->generateUniqueId();
+    $timestamp = now()->format('Y/m/d');
 
-        try {
-            // Leer la imagen original
-            $image =$this->manager->read($file);
-            $width =$image->width();
-            $height =$image->height();
+    // Rutas de almacenamiento
+    $basePath = "photos/{$photographerId}/{$timestamp}";
+    $originalPath = "{$basePath}/originals";
+    $watermarkedPath = "{$basePath}/watermarked";
+    $thumbnailPath = "{$basePath}/thumbnails";
 
-            \Log::info('📐 Dimensiones originales', ['width' => $width, 'height' => $height]);
+    try {
+        // Leer la imagen original
+        $image =$this->manager->read($file);
+        $width =$image->width();
+        $height =$image->height();
 
-            // 1. Guardar ORIGINAL (sin marca de agua - solo para después de pagar)
-            $originalFilename = "{$uniqueId}_original.jpg";
-            $originalFullPath = "{$originalPath}/{$originalFilename}";
-            
-            $encoded =$image->toJpeg(95);
-            Storage::disk('public')->put($originalFullPath, (string)$encoded);
-            \Log::info('✅ Original guardado', ['path' => $originalFullPath]);
+        \Log::info('📐 Dimensiones originales', ['width' => $width, 'height' => $height]);
 
-            // 2. Crear PREVIEW CON MARCA DE AGUA (para navegación gratuita)
-            $watermarkedFilename = "{$uniqueId}_watermarked.jpg";
-            $watermarkedFullPath = "{$watermarkedPath}/{$watermarkedFilename}";
-            
-            $watermarkedImage =$this->manager->read($file);
-            
-            // Redimensionar si es muy grande
-            if ($watermarkedImage->width() > 1920 || $watermarkedImage->height() > 1920) {
-                $watermarkedImage->scale(width: 1920, height: 1920);
-            }
-            
-            // TODO: Aplicar marca de agua (después lo implementamos)
-            // $this->addWatermark($watermarkedImage,$photographerId);
-            
-            $encodedWatermarked =$watermarkedImage->toJpeg(85);
-            Storage::disk('public')->put($watermarkedFullPath, (string)$encodedWatermarked);
-            \Log::info('✅ Watermarked guardado', ['path' => $watermarkedFullPath]);
+        // 1. Guardar ORIGINAL (sin marca de agua)
+        $originalFilename = "{$uniqueId}_original.jpg";
+        $originalFullPath = "{$originalPath}/{$originalFilename}";
 
-            // 3. Crear THUMBNAIL (400x400 cuadrado con marca pequeña)
-            $thumbnailFilename = "{$uniqueId}_thumb.jpg";
-            $thumbnailFullPath = "{$thumbnailPath}/{$thumbnailFilename}";
-            
-            $thumbnailImage =$this->manager->read($file);
-            $thumbnailImage->cover(400, 400);
-            
-            // TODO: Marca de agua pequeña
-            
-            $encodedThumb =$thumbnailImage->toJpeg(80);
-            Storage::disk('public')->put($thumbnailFullPath, (string)$encodedThumb);
-            \Log::info('✅ Thumbnail guardado', ['path' => $thumbnailFullPath]);
+        $encoded =$image->toJpeg(95);
+        Storage::disk('public')->put($originalFullPath, (string)$encoded);
+        \Log::info('✅ Original guardado', ['path' => $originalFullPath]);
 
-            return [
-                'unique_id' => $uniqueId,
-                'original_path' => $originalFullPath,
-                'watermarked_path' => $watermarkedFullPath,
-                'thumbnail_path' => $thumbnailFullPath,
-                'original_name' => $file->getClientOriginalName(),
-                'file_size' => $file->getSize(),
-                'dimensions' => [
-                    'width' => $width,
-                    'height' => $height,
-                ],
-            ];
+        // 2. Crear PREVIEW CON MARCA DE AGUA
+        $watermarkedFilename = "{$uniqueId}_watermarked.jpg";
+        $watermarkedFullPath = "{$watermarkedPath}/{$watermarkedFilename}";
 
-        } catch (\Exception $e) {
-            \Log::error('💥 Error en processPhoto', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw $e;
+        $watermarkedImage =$this->manager->read($file);
+
+        // Redimensionar si es muy grande
+        if ($watermarkedImage->width() > 1920 || $watermarkedImage->height() > 1920) {
+            $watermarkedImage->scale(width: 1920, height: 1920);
         }
+
+        $encodedWatermarked =$watermarkedImage->toJpeg(85);
+        Storage::disk('public')->put($watermarkedFullPath, (string)$encodedWatermarked);
+        \Log::info('✅ Watermarked guardado', ['path' => $watermarkedFullPath]);
+
+        // 3. Crear THUMBNAIL
+        $thumbnailFilename = "{$uniqueId}_thumb.jpg";
+        $thumbnailFullPath = "{$thumbnailPath}/{$thumbnailFilename}";
+
+        $thumbnailImage =$this->manager->read($file);
+        $thumbnailImage->cover(400, 400);
+
+        $encodedThumb =$thumbnailImage->toJpeg(80);
+        Storage::disk('public')->put($thumbnailFullPath, (string)$encodedThumb);
+        \Log::info('✅ Thumbnail guardado', ['path' => $thumbnailFullPath]);
+
+        // ✅ RETORNAR LAS RUTAS COMPLETAS (NO SOLO LAS CARPETAS)
+        return [
+            'unique_id' => $uniqueId,
+            'original_path' => $originalFullPath,         // ← Ruta completa con nombre de archivo
+            'watermarked_path' => $watermarkedFullPath,   // ← Ruta completa con nombre de archivo
+            'thumbnail_path' => $thumbnailFullPath,       // ← Ruta completa con nombre de archivo
+            'original_name' => $file->getClientOriginalName(),
+            'file_size' => $file->getSize(),
+            'dimensions' => [
+                'width' => $width,
+                'height' => $height,
+            ],
+        ];
+
+    } catch (\Exception $e) {
+        \Log::error('💥 Error en processPhoto', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        throw $e;
     }
+}
+
 
     /**
      * Aplicar marca de agua (implementar después)
      */
-    protected function addWatermark($image,$photographerId)
+    protected function addWatermark($image, $photographerId)
     {
         // TODO: Implementar marca de agua con texto o logo
         // Por ahora retorna la imagen sin cambios
@@ -140,9 +137,9 @@ class ImageProcessingService
     /**
      * Actualizar foto (eliminar la anterior y procesar la nueva)
      */
-    public function updatePhoto($file,$photo)
+    public function updatePhoto($file, $photo)
     {
         $this->deletePhoto($photo);
-        return $this->processPhoto($file,$photo->photographer_id);
+        return $this->processPhoto($file, $photo->photographer_id);
     }
 }

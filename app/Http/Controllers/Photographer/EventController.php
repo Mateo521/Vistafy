@@ -4,27 +4,60 @@ namespace App\Http\Controllers\Photographer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Photo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-
 class EventController extends Controller
 {
     /**
      * Mostrar lista de eventos del fotógrafo
      */
-    public function index()
+    public function index(Request $request)
     {
-        $photographer = auth()->user()->photographer;
+        $query = Event::where('is_active', true)
+            ->with([
+                'photographer:id,business_name,slug',
+                'coverPhoto:id,thumbnail_path',  // ← Cargar foto de portada
+            ])
+            ->withCount('photos'); // ← Contar fotos del evento
 
-        $events = Event::where('photographer_id', $photographer->id)
-            ->withCount('photos')
-            ->latest()
-            ->paginate(10);
+        // Filtros
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%')
+                    ->orWhere('location', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('photographer')) {
+            $query->whereHas('photographer', function ($q) use ($request) {
+                $q->where('slug', $request->photographer);
+            });
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('event_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('event_date', '<=', $request->date_to);
+        }
+
+        // Ordenar
+        $sortBy = $request->get('sort', 'event_date');
+        $sortOrder = $request->get('order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Paginar
+        $events = $query->paginate(12)->withQueryString();
 
         return Inertia::render('Photographer/Events/Index', [
             'events' => $events,
+            'filters' => $request->only(['search', 'photographer', 'date_from', 'date_to', 'sort', 'order']),
         ]);
     }
 
@@ -43,7 +76,7 @@ class EventController extends Controller
     {
         $photographer = auth()->user()->photographer;
 
-        $validated =$request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'long_description' => 'nullable|string|max:2000',
@@ -59,7 +92,7 @@ class EventController extends Controller
         // Subir imagen de portada si existe
         $coverImagePath = null;
         if ($request->hasFile('cover_image')) {
-            $coverImagePath =$request->file('cover_image')->store('events/covers', 'public');
+            $coverImagePath = $request->file('cover_image')->store('events/covers', 'public');
         }
 
         $event = Event::create([
@@ -88,10 +121,14 @@ class EventController extends Controller
             abort(403, 'No tienes permiso para ver este evento');
         }
 
-        $event->load(['photos' => function($query) {
-            $query->latest()->take(12);
-        }]);
+        // Cargar las fotos del evento con paginación
+        $photos = $event->photos()
+            ->with('event:id,name')
+            ->latest()
+            ->paginate(24)
+            ->withQueryString();
 
+        // Estadísticas del evento
         $stats = [
             'total_photos' => $event->photos()->count(),
             'active_photos' => $event->photos()->where('is_active', true)->count(),
@@ -100,9 +137,11 @@ class EventController extends Controller
 
         return Inertia::render('Photographer/Events/Show', [
             'event' => $event,
+            'photos' => $photos,
             'stats' => $stats,
         ]);
     }
+
 
     /**
      * Mostrar formulario de edición
@@ -122,14 +161,14 @@ class EventController extends Controller
     /**
      * Actualizar evento
      */
-    public function update(Request $request, Event$event)
+    public function update(Request $request, Event $event)
     {
         // Verificar que el evento pertenece al fotógrafo
         if ($event->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tienes permiso para actualizar este evento');
         }
 
-        $validated =$request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'long_description' => 'nullable|string|max:2000',
@@ -164,29 +203,57 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Verificar que el evento pertenece al fotógrafo
+        // Verificar que el evento pertenece al fotógrafo autenticado
         if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para eliminar este evento');
+            abort(403, 'No tienes permiso para eliminar este evento.');
         }
 
-        // Eliminar imagen de portada
-        if ($event->cover_image) {
-            Storage::disk('public')->delete($event->cover_image);
+        DB::beginTransaction();
+
+        try {
+            // 1. Eliminar la imagen de portada del evento
+            if ($event->cover_image) {
+                Storage::disk('public')->delete($event->cover_image);
+            }
+
+            // 2. Eliminar todas las fotos asociadas al evento
+            foreach ($event->photos as $photo) {
+                // Eliminar archivos físicos
+                if ($photo->original_path) {
+                    Storage::disk('public')->delete($photo->original_path);
+                }
+                if ($photo->watermarked_path) {
+                    Storage::disk('public')->delete($photo->watermarked_path);
+                }
+                if ($photo->thumbnail_path) {
+                    Storage::disk('public')->delete($photo->thumbnail_path);
+                }
+
+                // Eliminar registro de la base de datos
+                $photo->delete();
+            }
+
+            // 3. Eliminar el evento
+            $event->delete();
+
+            DB::commit();
+
+            return redirect()->route('photographer.events.index')
+                ->with('success', 'Evento y todas sus fotos eliminadas exitosamente');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error al eliminar evento: ' . $e->getMessage());
+
+            return back()->with('error', 'Error al eliminar el evento: ' . $e->getMessage());
         }
-
-        // Eliminar relaciones con fotos (no elimina las fotos, solo la relación)
-        $event->photos()->detach();
-
-        $event->delete();
-
-        return redirect()->route('photographer.events.index')
-            ->with('success', 'Evento eliminado exitosamente');
     }
+
 
     /**
      * Actualizar solo la imagen de portada
      */
-    public function updateCoverImage(Request $request, Event$event)
+    public function updateCoverImage(Request $request, Event $event)
     {
         // Verificar que el evento pertenece al fotógrafo
         if ($event->photographer_id !== auth()->user()->photographer->id) {
@@ -204,8 +271,8 @@ class EventController extends Controller
             }
 
             // Guardar nueva imagen
-            $path =$request->file('cover_image')->store('events/covers', 'public');
-            
+            $path = $request->file('cover_image')->store('events/covers', 'public');
+
             $event->update([
                 'cover_image' => $path,
             ]);

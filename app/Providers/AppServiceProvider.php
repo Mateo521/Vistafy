@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Photo;
 use App\Policies\PhotoPolicy;
+use App\Services\ImageProcessingService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(ImageProcessingService::class, function ($app) {
+            return new ImageProcessingService();
+        });
     }
 
     /**

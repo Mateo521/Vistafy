@@ -5,123 +5,87 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 class Photo extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'photographer_id',
+        'event_id',
         'unique_id',
         'title',
         'description',
-        'original_path',      // ✅ Sin marca (solo después de pagar)
-        'watermarked_path',   // ✅ Con marca (preview gratis)
-        'thumbnail_path',     // ✅ Miniatura
+        'original_path',
+        'watermarked_path',
+        'thumbnail_path',
         'original_name',
         'file_size',
         'width',
         'height',
+        'mime_type',
         'price',
-        'downloads',
         'is_active',
+        'downloads',
+        'views',
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
-        'downloads' => 'integer',
         'is_active' => 'boolean',
+        'price' => 'decimal:2',
         'file_size' => 'integer',
         'width' => 'integer',
         'height' => 'integer',
+        'downloads' => 'integer',
+        'views' => 'integer',
     ];
 
-    // ✅ AGREGAR ESTOS ACCESSORS
+    // ✅ AGREGAR ESTOS ACCESSORS A LOS APPENDS
     protected $appends = [
         'thumbnail_url',
-        'preview_url',      // Esta mostrará la versión CON marca
-        'download_url',     // Esta mostrará la versión SIN marca (solo si pagó)
+        'watermarked_url',
+        'original_url',
     ];
 
+ 
     /**
-     * URL de la miniatura (con marca de agua)
+     * Resolver el binding por unique_id
      */
-    public function getThumbnailUrlAttribute()
-    {
-        if ($this->thumbnail_path) {
-            return Storage::disk('public')->url($this->thumbnail_path);
-        }
-        return null;
-    }
 
-    /**
-     * URL del preview (con marca de agua)
-     */
-    public function getPreviewUrlAttribute()
-    {
-        if ($this->preview_path) {
-            return Storage::disk('public')->url($this->preview_path);
-        }
-        return null;
-    }
 
-    /**
-     * URL del original (sin marca de agua - solo después de pagar)
-     */
-    public function getOriginalUrlAttribute()
-    {
-        if ($this->file_path) {
-            return Storage::disk('public')->url($this->file_path);
-        }
-        return null;
-    }
 
-    /**
-     * Relación: Una foto pertenece a un fotógrafo
-     */
+    // Relaciones
     public function photographer()
     {
         return $this->belongsTo(Photographer::class);
     }
 
-    /**
-     * Relación: Una foto puede estar en múltiples eventos
-     */
-    public function events()
+    public function event()
     {
-        return $this->belongsToMany(Event::class, 'event_photo')
-            ->withTimestamps();
+        return $this->belongsTo(Event::class);
     }
 
-    /**
-     * Relación: Una foto puede tener múltiples ventas
-     */
-    public function sales()
+    // ✅ ACCESSORS PARA URLs PÚBLICAS
+    public function getThumbnailUrlAttribute()
     {
-        return $this->hasMany(Sale::class);
+        return $this->thumbnail_path
+            ? asset('storage/' . $this->thumbnail_path)
+            : 'https://via.placeholder.com/400x400?text=Sin+Imagen';
     }
 
-    public function getDownloadUrlAttribute()
+    public function getWatermarkedUrlAttribute()
     {
-        if ($this->original_path) {
-            return Storage::disk('public')->url($this->original_path);
-        }
-        return null;
+        return $this->watermarked_path
+            ? asset('storage/' . $this->watermarked_path)
+            : null;
     }
 
-    /**
-     * Verificar si el usuario compró esta foto
-     */
-    public function isPurchasedBy($user)
+    public function getOriginalUrlAttribute()
     {
-        if (!$user)
-            return false;
-
-        return $this->sales()
-            ->where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->exists();
+        return $this->original_path
+            ? asset('storage/' . $this->original_path)
+            : null;
     }
 
+    
 }

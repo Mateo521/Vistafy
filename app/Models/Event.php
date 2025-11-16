@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class Event extends Model
 {
@@ -13,96 +11,78 @@ class Event extends Model
 
     protected $fillable = [
         'photographer_id',
+        'cover_photo_id',  // ← Relación con la foto de portada
         'name',
         'slug',
         'description',
-        'long_description',
         'event_date',
         'location',
-        'is_private',
-        'cover_image',
+        'is_active',
+        // ... más campos
     ];
 
     protected $casts = [
-        'event_date' => 'date',
-        'is_private' => 'boolean',
+        'event_date' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
-    protected $appends = ['cover_image_url'];
+    // ✅ Agregar estos appends para que siempre estén disponibles
+    protected $appends = [
+        'cover_image_url',
+    ];
 
-    /**
-     * Generar slug automáticamente
-     */
+    // Relaciones
+    public function photographer()
+    {
+        return $this->belongsTo(Photographer::class);
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(Photo::class);
+    }
+
+    // ✅ Relación con la foto de portada
+    public function coverPhoto()
+    {
+        return $this->belongsTo(Photo::class, 'cover_photo_id');
+    }
+
+    // ✅ Accessor para obtener la URL de la imagen de portada
+    public function getCoverImageUrlAttribute()
+    {
+        if ($this->coverPhoto && $this->coverPhoto->thumbnail_path) {
+            return asset('storage/' . $this->coverPhoto->thumbnail_path);
+        }
+        
+        // Si no hay foto de portada, usar la primera foto del evento
+        $firstPhoto =$this->photos()->first();
+        if ($firstPhoto && $firstPhoto->thumbnail_path) {
+            return asset('storage/' . $firstPhoto->thumbnail_path);
+        }
+        
+        // Si no hay fotos, usar placeholder
+        return asset('images/event-placeholder.png');
+    }
+
+
+   
+
+    // Generar slug automáticamente
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($event) {
             if (empty($event->slug)) {
-                $event->slug = Str::slug($event->name) . '-' . Str::random(6);
+                $event->slug = Str::slug($event->name);
             }
         });
 
-        static::deleting(function ($event) {
-            // Eliminar imagen de portada al eliminar evento
-            if ($event->cover_image) {
-                Storage::disk('public')->delete($event->cover_image);
+        static::updating(function ($event) {
+            if ($event->isDirty('name')) {
+                $event->slug = Str::slug($event->name);
             }
         });
-    }
-
-    /**
-     * Relación con fotógrafo
-     */
-    public function photographer()
-    {
-        return $this->belongsTo(Photographer::class);
-    }
-
-    /**
-     * Relación muchos a muchos con fotos
-     */
-    public function photos()
-    {
-        return $this->belongsToMany(Photo::class, 'event_photo');
-    }
-
-    /**
-     * Obtener todos los fotógrafos únicos del evento
-     */
-    public function photographers()
-    {
-        return Photographer::whereIn('id', function($query) {
-            $query->select('photographer_id')
-                ->from('photos')
-                ->join('event_photo', 'photos.id', '=', 'event_photo.photo_id')
-                ->where('event_photo.event_id', $this->id);
-        })->with('user:id,name')->get();
-    }
-
-    /**
-     * URL de la imagen de portada
-     */
-    public function getCoverImageUrlAttribute()
-    {
-        if ($this->cover_image) {
-            return Storage::disk('public')->url($this->cover_image);
-        }
-
-        // Imagen por defecto o la primera foto del evento
-        $firstPhoto =$this->photos()->first();
-        return $firstPhoto ? $firstPhoto->thumbnail_url : 'https://via.placeholder.com/800x400?text=Sin+Portada';
-    }
-
-    /**
-     * Obtener estadísticas del evento
-     */
-    public function getStatsAttribute()
-    {
-        return [
-            'total_photos' => $this->photos()->count(),
-            'total_photographers' => $this->photographers()->count(),
-            'total_downloads' => $this->photos()->sum('downloads'),
-        ];
     }
 }
