@@ -1,7 +1,6 @@
 <script setup>
-import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-
+import AppLayout from '@/Layouts/AppLayout.vue';
 const props = defineProps({
     events: Object,
 });
@@ -23,7 +22,7 @@ const formatDate = (dateString) => {
     <Head title="Eventos - Galería de Fotos" />
 
     
-    <PublicLayout>
+    <AppLayout>
         <!-- Hero Section -->
         <div class="bg-gradient-to-r from-purple-600 to-indigo-600 py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -188,5 +187,5 @@ const formatDate = (dateString) => {
                 </Link>
             </div>
         </div>
-    </PublicLayout>
+    </AppLayout>
 </template>
