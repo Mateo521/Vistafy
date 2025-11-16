@@ -199,41 +199,7 @@ const changeSort = (sortValue) => {
                 </div>
             </div>
 
-            <!-- Footer -->
-            <footer class="bg-gray-900 text-white mt-20">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div>
-                            <h3 class="text-xl font-bold mb-4">Vistafy</h3>
-                            <p class="text-gray-400">La mejor plataforma para comprar fotos de eventos profesionales.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold mb-3">Enlaces</h4>
-                            <div class="space-y-2">
-                                <Link href="/" class="block text-gray-400 hover:text-white transition">Inicio</Link>
-                                <Link href="/galeria" class="block text-gray-400 hover:text-white transition">Galería
-                                </Link>
-                                <Link href="/eventos" class="block text-gray-400 hover:text-white transition">Eventos
-                                </Link>
-                                <Link href="/fotografos" class="block text-gray-400 hover:text-white transition">
-                                Fotógrafos</Link>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold mb-3">Contacto</h4>
-                            <p class="text-gray-400">¿Eres fotógrafo? Únete a nuestra plataforma</p>
-                            <Link :href="route('register')"
-                                class="inline-block mt-3 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition">
-                            Registrarse
-                            </Link>
-                        </div>
-                    </div>
-                    <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-500">
-                        © 2025 Vistafy. Todos los derechos reservados.
-                    </div>
-                </div>
-            </footer>
+         
         </div>
 
     </AppLayout>
