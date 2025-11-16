@@ -1,5 +1,5 @@
 *.log
-*.mp4
+/public/videos/*.mp4
 .DS_Store
 .env
 .env.backup

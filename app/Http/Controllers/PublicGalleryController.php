@@ -8,6 +8,9 @@ use App\Models\Photographer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;    // ← Para Route::has()
+
+use Illuminate\Support\Facades\Storage; 
 
 class PublicGalleryController extends Controller
 {
@@ -15,61 +18,72 @@ class PublicGalleryController extends Controller
      * Página principal con video promocional
      */
     public function index()
-{
-    // Fotos recientes activas (últimas 12)
-    $recentPhotos = Photo::where('is_active', true)
-        ->with('photographer:id,business_name,region')
-        ->latest()
-        ->take(12)
-        ->get()
-        ->map(function ($photo) {
-            return [
-                'id' => $photo->id,
-                'unique_id' => $photo->unique_id,
-                'thumbnail_url' => $photo->thumbnail_url,
-                'price' => $photo->price,
-                'photographer' => $photo->photographer->business_name ?? 'Fotógrafo',
-            ];
-        });
+    {
+        // Obtener eventos recientes
+        $recentEvents = Event::with(['photographer.user'])
+            ->where('is_active', true)
+            ->orderBy('event_date', 'desc')
+            ->take(6)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'slug' => $event->slug,
+                    'description' => $event->description,
+                    'location' => $event->location,
+                    'event_date' => $event->event_date->format('Y-m-d'),
+                    'cover_image_url' => $event->cover_image_url,
+                    'photos_count' => $event->photos()->count(),
+                    'is_private' => $event->is_private,
+                    'photographer' => optional($event->photographer)->business_name ?? optional($event->photographer->user)->name ?? 'Anónimo',
+                ];
+            });
 
-    // Eventos recientes públicos (últimos 6) - CON cover_image_url
-    $recentEvents = Event::where('is_private', false)
-        ->withCount('photos')
-        ->with('photographer:id,business_name')
-        ->latest('event_date')
-        ->take(6)
-        ->get()
-        ->map(function ($event) {
-            return [
-                'id' => $event->id,
-                'name' => $event->name,
-                'slug' => $event->slug,
-                'description' => $event->description,
-                'event_date' => $event->event_date,
-                'location' => $event->location,
-                'cover_image' => $event->cover_image,
-                'cover_image_url' => $event->cover_image_url, // ← IMPORTANTE
-                'is_private' => $event->is_private,
-                'photos_count' => $event->photos_count,
-                'photographer' => $event->photographer->business_name ?? null,
-            ];
-        });
+        // 🔧 OBTENER ÚLTIMAS FOTOS (ARREGLADO)
+        $recentPhotos = Photo::with(['event', 'photographer.user'])
+            ->where('is_active', true)
+            ->latest('created_at')
+            ->take(12)
+            ->get()
+            ->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'unique_id' => $photo->unique_id,
 
-    // Estadísticas para mostrar en el home
-    $stats = [
-        'total_photos' => Photo::where('is_active', true)->count(),
-        'total_events' => Event::where('is_private', false)->count(),
-        'total_photographers' => Photographer::where('is_active', true)->count(),
-    ];
+                    // URLs completas de las imágenes
+                    'file_url' => $photo->file_path ? Storage::url($photo->file_path) : null,
+                    'thumbnail_url' => $photo->thumbnail_path ? Storage::url($photo->thumbnail_path) : null,
+                    'watermark_url' => $photo->watermark_path ? Storage::url($photo->watermark_path) : null,
 
-    return Inertia::render('Home', [
-        'recentPhotos' => $recentPhotos,
-        'recentEvents' => $recentEvents,
-        'stats' => $stats,
-        'canLogin' => \Illuminate\Support\Facades\Route::has('login'),
-        'canRegister' => \Illuminate\Support\Facades\Route::has('register'),
-    ]);
-}
+                    'downloads' => $photo->downloads ?? 0,
+                    'created_at' => $photo->created_at->toISOString(),
+
+                    // Información del evento (simplificada)
+                    'event_name' => optional($photo->event)->name,
+                    'event_slug' => optional($photo->event)->slug,
+
+                    // Información del fotógrafo (simplificada)
+                    'photographer_name' => optional($photo->photographer)->business_name ?? optional($photo->photographer->user)->name ?? null,
+                ];
+            });
+
+        // Estadísticas
+        $stats = [
+            'total_photos' => Photo::count(),
+            'total_events' => Event::count(),
+            'total_photographers' => Photographer::count(),
+        ];
+
+        return Inertia::render('Home', [
+            'recentEvents' => $recentEvents,
+            'recentPhotos' => $recentPhotos,
+            'stats' => $stats,
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+        ]);
+    }
+
 
 
     /**

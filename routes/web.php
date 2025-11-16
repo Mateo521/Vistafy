@@ -14,20 +14,7 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    $recentEvents = \App\Models\Event::where('is_private', false)
-        ->where('event_date', '>=', now()->subMonths(3))
-        ->withCount('photos')
-        ->latest('event_date')
-        ->take(6)
-        ->get();
-
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'recentEvents' => $recentEvents,
-    ]);
-})->name('home');
+Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');

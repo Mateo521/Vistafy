@@ -315,7 +315,7 @@ const addFiles = (files) => {
     const filesToAdd = validFiles.slice(0, remainingSlots);
 
     if (validFiles.length > remainingSlots) {
-        alert(`Solo puedes subir hasta 50 fotos a la vez. Se agregaron $${remainingSlots} de$$ {validFiles.length} fotos.`);
+        alert(`Solo puedes subir hasta 50 fotos a la vez. Se agregaron ${remainingSlots} de ${validFiles.length} fotos.`);
     }
 
     // Crear previews
