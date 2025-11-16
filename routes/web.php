@@ -2,97 +2,110 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicGalleryController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\Photographer\PhotoManagementController;
-use App\Http\Controllers\Photographer\EventManagementController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// ====================================
-// RUTAS PÚBLICAS (SIN AUTENTICACIÓN)
-// ====================================
+/*
+|--------------------------------------------------------------------------
+| Rutas Públicas
+|--------------------------------------------------------------------------
+*/
 
-// Página principal
+// Página principal con video
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
 // Galería pública
 Route::prefix('galeria')->name('gallery.')->group(function () {
-    Route::get('/', [PublicGalleryController::class, 'index'])->name('index');
-    Route::get('/buscar', [PublicGalleryController::class, 'search'])->name('search');
+    Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
     Route::get('/{uniqueId}', [PublicGalleryController::class, 'show'])->name('show');
+    Route::post('/buscar', [PublicGalleryController::class, 'search'])->name('search');
+    Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
 });
 
 // Eventos públicos
 Route::prefix('eventos')->name('events.')->group(function () {
-    Route::get('/', [EventController::class, 'index'])->name('index');
-    Route::get('/{slug}', [EventController::class, 'show'])->name('show');
+    Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
+    Route::get('/{slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
 });
 
-// Evento privado (con token)
-Route::get('/evento-privado/{token}', [EventController::class, 'showPrivate'])->name('events.private');
+// Fotógrafos públicos
+Route::prefix('fotografos')->name('photographers.')->group(function () {
+    Route::get('/', [PublicGalleryController::class, 'photographers'])->name('index');
+    Route::get('/{id}', [PublicGalleryController::class, 'showPhotographer'])->name('show');
+});
 
-// ====================================
-// RUTAS DE AUTENTICACIÓN
-// ====================================
+// Descargas (protegido por middleware de pago en el futuro)
+Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
+    ->name('photo.download')
+    ->middleware('auth'); // Por ahora requiere autenticación
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de Autenticación
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('auth')->group(function () {
-    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/perfil', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/perfil', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ====================================
-// RUTAS DE FOTÓGRAFO
-// ====================================
+/*
+|--------------------------------------------------------------------------
+| Rutas del Panel de Fotógrafo
+|--------------------------------------------------------------------------
+*/
 
-Route::middleware(['auth', 'photographer'])
-    ->prefix('fotografo')
-    ->name('photographer.')
-    ->group(function () {
+Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photographer.')->group(function () {
+    
+    // Dashboard
+    Route::get('/panel', function () {
+        $photographer = auth()->user()->photographer;
         
-        // Dashboard principal
-        Route::get('/panel', function () {
-            $photographer = auth()->user()->photographer;
-            $stats = [
-                'total_photos' => $photographer->photos()->count(),
-                'active_photos' => $photographer->photos()->where('is_active', true)->count(),
-                'total_downloads' => $photographer->photos()->sum('downloads'),
-                'total_events' => \App\Models\Event::whereHas('photos', function($q) use ($photographer) {
-                    $q->where('photographer_id', $photographer->id);
-                })->count(),
-            ];
-            
-            return Inertia::render('Photographer/Dashboard', [
-                'photographer' => $photographer,
-                'stats' => $stats,
-            ]);
-        })->name('dashboard');
+        $stats = [
+            'total_photos' => $photographer->photos()->count(),
+            'active_photos' => $photographer->photos()->where('is_active', true)->count(),
+            'total_downloads' => $photographer->photos()->sum('downloads'),
+            'total_events' => \App\Models\Event::whereHas('photos', function($q) use ($photographer) {
+                $q->where('photographer_id', $photographer->id);
+            })->count(),
+        ];
+        
+        // Fotos recientes (últimas 12)
+        $recentPhotos =$photographer->photos()
+            ->latest()
+            ->take(12)
+            ->get();
+        
+        // Eventos recientes (últimos 6)
+        $recentEvents = \App\Models\Event::whereHas('photos', function($q) use ($photographer) {
+            $q->where('photographer_id', $photographer->id);
+        })
+        ->withCount('photos')
+        ->latest()
+        ->take(6)
+        ->get();
+        
+        return Inertia::render('Photographer/Dashboard', [
+            'photographer' => $photographer,
+            'stats' => $stats,
+            'recentPhotos' => $recentPhotos,
+            'recentEvents' => $recentEvents,
+        ]);
+    })->name('dashboard');
 
-        // Gestión de fotos
-        Route::prefix('fotos')->name('photos.')->group(function () {
-            Route::get('/', [PhotoManagementController::class, 'index'])->name('index');
-            Route::get('/subir', [PhotoManagementController::class, 'create'])->name('create');
-            Route::post('/', [PhotoManagementController::class, 'store'])->name('store');
-            Route::get('/{id}/editar', [PhotoManagementController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [PhotoManagementController::class, 'update'])->name('update');
-            Route::delete('/{id}', [PhotoManagementController::class, 'destroy'])->name('destroy');
-        });
+    // Perfil del fotógrafo
+    Route::get('/mi-perfil', [App\Http\Controllers\Photographer\ProfileController::class, 'show'])->name('profile');
+    Route::get('/mi-perfil/editar', [App\Http\Controllers\Photographer\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/mi-perfil/actualizar', [App\Http\Controllers\Photographer\ProfileController::class, 'update'])->name('profile.update');
 
-        // Gestión de eventos
-        Route::prefix('eventos')->name('events.')->group(function () {
-            Route::get('/', [EventManagementController::class, 'index'])->name('index');
-            Route::get('/crear', [EventManagementController::class, 'create'])->name('create');
-            Route::post('/', [EventManagementController::class, 'store'])->name('store');
-            Route::get('/{id}', [EventManagementController::class, 'show'])->name('show');
-            Route::get('/{id}/editar', [EventManagementController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [EventManagementController::class, 'update'])->name('update');
-            Route::delete('/{id}', [EventManagementController::class, 'destroy'])->name('destroy');
-            
-            // Gestión de fotos en eventos
-            Route::post('/{id}/agregar-foto', [EventManagementController::class, 'addPhoto'])->name('addPhoto');
-            Route::delete('/{id}/remover-foto', [EventManagementController::class, 'removePhoto'])->name('removePhoto');
-            Route::post('/{id}/reordenar-fotos', [EventManagementController::class, 'reorderPhotos'])->name('reorderPhotos');
-        });
-    });
+    // Gestión de fotos (se crearán a continuación)
+    Route::resource('fotos', App\Http\Controllers\Photographer\PhotoController::class)->names('photos');
+    
+    // Gestión de eventos (se crearán a continuación)
+    Route::resource('eventos', App\Http\Controllers\Photographer\EventController::class)->names('events');
+});
 
 require __DIR__.'/auth.php';
