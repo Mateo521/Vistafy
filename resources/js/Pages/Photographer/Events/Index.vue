@@ -13,6 +13,14 @@ const deleteEvent = (event) => {
         });
     }
 };
+
+const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
 </script>
 
 <template>
@@ -34,49 +42,65 @@ const deleteEvent = (event) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <!-- Success Message -->
-                <div v-if="$page.props.flash.success" class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+                <div v-if="$page.props.flash?.success" class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                     {{ $page.props.flash.success }}
                 </div>
 
+                <!-- Empty State -->
+                <div v-if="!events?.data || events.data.length === 0" class="bg-white rounded-lg shadow p-16 text-center">
+                    <div class="text-6xl mb-4">📅</div>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">No tienes eventos aún</h3>
+                    <p class="text-gray-600 mb-6">Crea tu primer evento para organizar tus fotos</p>
+                    <Link
+                        :href="route('photographer.events.create')"
+                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+                    >
+                        Crear Primer Evento
+                    </Link>
+                </div>
+
                 <!-- Events Grid -->
-                <div v-if="events.data && events.data.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div
                         v-for="event in events.data"
                         :key="event.id"
                         class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition"
                     >
                         <!-- Cover Image -->
-                        <div class="relative h-48 bg-gray-200">
+                        <div class="relative h-48 bg-gradient-to-br from-indigo-500 to-purple-600">
                             <img
-                                :src="event.cover_image_url"
+                                v-if="event.cover_image"
+                                :src="`/storage/${event.cover_image}`"
                                 :alt="event.name"
                                 class="w-full h-full object-cover"
-                                @error="(e) => e.target.src = 'https://via.placeholder.com/800x400?text=Sin+Imagen'"
+                                @error="(e) => e.target.style.display = 'none'"
                             />
                             <div class="absolute top-3 right-3">
                                 <span
                                     :class="event.is_private ? 'bg-red-500' : 'bg-green-500'"
                                     class="px-3 py-1 rounded-full text-white text-xs font-bold shadow"
                                 >
-                                    {{ event.is_private ? 'Privado' : 'Público' }}
+                                    {{ event.is_private ? '🔒 Privado' : '🌐 Público' }}
                                 </span>
                             </div>
                             <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-indigo-600">
-                                {{ event.photos_count }} fotos
+                                {{ event.photos_count || 0 }} fotos
                             </div>
                         </div>
 
                         <!-- Info -->
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ event.name }}</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{{ event.name }}</h3>
                             <p v-if="event.description" class="text-gray-600 text-sm mb-4 line-clamp-2">
                                 {{ event.description }}
                             </p>
                             <div class="flex items-center text-sm text-gray-500 mb-4">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                {{ new Date(event.event_date).toLocaleDateString('es-ES') }}
+                                <span class="mr-2">📅</span>
+                                {{ formatDate(event.event_date) }}
+                            </div>
+                            <div v-if="event.location" class="flex items-center text-sm text-gray-500 mb-4">
+                                <span class="mr-2">📍</span>
+                                {{ event.location }}
                             </div>
 
                             <!-- Actions -->
@@ -96,33 +120,17 @@ const deleteEvent = (event) => {
                                 <button
                                     @click="deleteEvent(event)"
                                     class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg font-medium transition text-sm"
+                                    title="Eliminar"
                                 >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
+                                    🗑️
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Empty State -->
-                <div v-else class="bg-white rounded-lg shadow p-16 text-center">
-                    <svg class="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">No tienes eventos aún</h3>
-                    <p class="text-gray-600 mb-6">Crea tu primer evento para organizar tus fotos</p>
-                    <Link
-                        :href="route('photographer.events.create')"
-                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
-                    >
-                        Crear Primer Evento
-                    </Link>
-                </div>
-
                 <!-- Pagination -->
-                <div v-if="events.data && events.data.length > 0 && events.last_page > 1" class="mt-8">
+                <div v-if="events?.data && events.data.length > 0 && events.links" class="mt-8">
                     <div class="flex items-center justify-center gap-2">
                         <template v-for="(link, index) in events.links" :key="index">
                             <Link
@@ -135,11 +143,6 @@ const deleteEvent = (event) => {
                                         ? 'bg-indigo-600 text-white shadow-lg'
                                         : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                                 ]"
-                            />
-                            <span
-                                v-else
-                                v-html="link.label"
-                                class="px-4 py-2 rounded-lg font-medium bg-gray-100 text-gray-400 cursor-not-allowed"
                             />
                         </template>
                     </div>

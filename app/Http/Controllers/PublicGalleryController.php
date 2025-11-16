@@ -74,32 +74,32 @@ class PublicGalleryController extends Controller
 
         // Filtro por búsqueda (ID o palabra clave)
         if ($request->has('search') && $request->search) {
-            $search =$request->search;
-            $query->where(function($q) use ($search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
                 $q->where('unique_id', 'like', "%{$search}%")
-                  ->orWhere('title', 'like', "%{$search}%")
-                  ->orWhereHas('photographer', function($q) use ($search) {
-                      $q->where('business_name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('title', 'like', "%{$search}%")
+                    ->orWhereHas('photographer', function ($q) use ($search) {
+                        $q->where('business_name', 'like', "%{$search}%");
+                    });
             });
         }
 
         // Filtro por región
         if ($request->has('region') && $request->region !== 'all') {
-            $query->whereHas('photographer', function($q) use ($request) {
+            $query->whereHas('photographer', function ($q) use ($request) {
                 $q->where('region', $request->region);
             });
         }
 
         // Filtro por evento
         if ($request->has('event') && $request->event) {
-            $query->whereHas('events', function($q) use ($request) {
+            $query->whereHas('events', function ($q) use ($request) {
                 $q->where('events.id', $request->event);
             });
         }
 
         // Ordenamiento
-        $sortBy =$request->get('sort', 'recent');
+        $sortBy = $request->get('sort', 'recent');
         switch ($sortBy) {
             case 'recent':
                 $query->latest();
@@ -117,7 +117,7 @@ class PublicGalleryController extends Controller
                 $query->latest();
         }
 
-        $photos =$query->paginate(24)->withQueryString();
+        $photos = $query->paginate(24)->withQueryString();
 
         // Eventos para el filtro
         $events = Event::where('is_private', false)
@@ -154,11 +154,11 @@ class PublicGalleryController extends Controller
         $photo = Photo::where('unique_id', strtoupper($uniqueId))
             ->where('is_active', true)
             ->with([
-                'photographer' => function($query) {
+                'photographer' => function ($query) {
                     $query->select('id', 'user_id', 'business_name', 'region', 'bio', 'phone', 'profile_photo');
                 },
                 'photographer.user:id,email',
-                'events' => function($query) {
+                'events' => function ($query) {
                     $query->select('events.id', 'name', 'slug', 'event_date');
                 }
             ])
@@ -167,11 +167,11 @@ class PublicGalleryController extends Controller
         // Fotos relacionadas (del mismo fotógrafo o evento)
         $relatedPhotos = Photo::where('is_active', true)
             ->where('id', '!=', $photo->id)
-            ->where(function($q) use ($photo) {
+            ->where(function ($q) use ($photo) {
                 $q->where('photographer_id', $photo->photographer_id)
-                  ->orWhereHas('events', function($q) use ($photo) {
-                      $q->whereIn('events.id', $photo->events->pluck('id'));
-                  });
+                    ->orWhereHas('events', function ($q) use ($photo) {
+                        $q->whereIn('events.id', $photo->events->pluck('id'));
+                    });
             })
             ->with('photographer:id,business_name')
             ->take(8)
@@ -240,51 +240,20 @@ class PublicGalleryController extends Controller
     /**
      * Lista de todos los eventos públicos
      */
+    /**
+     * Lista de todos los eventos públicos
+     */
     public function events()
     {
         $events = Event::where('is_private', false)
             ->withCount('photos')
             ->with('photographer:id,business_name')
-            ->latest()
+            ->latest('event_date')
             ->paginate(12);
 
-        // Eventos destacados (con más fotos)
-        $featuredEvents = Event::where('is_private', false)
-            ->withCount('photos')
-            ->orderBy('photos_count', 'desc')
-            ->take(3)
-            ->get();
-
-        return Inertia::render('Events/Index', [
-            'events' => $events,
-            'featuredEvents' => $featuredEvents,
-        ]);
-    }
-
-    /**
-     * Mostrar evento específico con sus fotos
-     */
-    public function showEvent($slug)
-    {
-        $event = Event::where('slug', $slug)
-            ->where('is_private', false)
-            ->with([
-                'photographer' => function($query) {
-                    $query->select('id', 'business_name', 'region', 'phone', 'profile_photo');
-                },
-                'photographer.user:id,email'
-            ])
-            ->withCount('photos')
-            ->firstOrFail();
-
-        // Fotos del evento con paginación
-        $photos =$event->photos()
-            ->where('is_active', true)
-            ->latest()
-            ->paginate(24);
-
-        return Inertia::render('Events/Show', [
-            'event' => [
+        // Agregar URLs de portada
+        $events->getCollection()->transform(function ($event) {
+            return [
                 'id' => $event->id,
                 'name' => $event->name,
                 'slug' => $event->slug,
@@ -292,6 +261,119 @@ class PublicGalleryController extends Controller
                 'event_date' => $event->event_date,
                 'location' => $event->location,
                 'photos_count' => $event->photos_count,
+                'cover_image_url' => $event->cover_image_url,
+                'photographer' => $event->photographer ? [
+                    'id' => $event->photographer->id,
+                    'business_name' => $event->photographer->business_name,
+                ] : null,
+            ];
+        });
+
+        // Eventos destacados (con más fotos)
+        $featuredEvents = Event::where('is_private', false)
+            ->withCount('photos')
+            ->with('photographer:id,business_name')
+            ->orderBy('photos_count', 'desc')
+            ->take(3)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'slug' => $event->slug,
+                    'description' => $event->description,
+                    'event_date' => $event->event_date,
+                    'location' => $event->location,
+                    'photos_count' => $event->photos_count,
+                    'cover_image_url' => $event->cover_image_url,
+                    'photographer' => $event->photographer ? [
+                        'id' => $event->photographer->id,
+                        'business_name' => $event->photographer->business_name,
+                    ] : null,
+                ];
+            });
+
+        return Inertia::render('Events/Index', [
+            'events' => $events,
+            'featuredEvents' => $featuredEvents,
+        ]);
+    }
+
+
+    /**
+     * Mostrar evento específico con sus fotos
+     */
+    /**
+     * Mostrar evento específico con sus fotos
+     */
+    public function showEvent(Request $request, $slug)
+    {
+        $event = Event::where('slug', $slug)
+            ->where('is_private', false)
+            ->with([
+                'photographer' => function ($query) {
+                    $query->select('id', 'business_name', 'region', 'phone', 'profile_photo');
+                },
+                'photographer.user:id,email'
+            ])
+            ->withCount('photos')
+            ->firstOrFail();
+
+        // Query de fotos del evento
+        $photosQuery = $event->photos()
+            ->where('is_active', true)
+            ->with([
+                'photographer' => function ($query) {
+                    $query->select('id', 'business_name', 'region');
+                }
+            ]);
+
+        // Filtro por fotógrafo específico
+        if ($request->filled('photographer_id')) {
+            $photosQuery->where('photographer_id', $request->photographer_id);
+        }
+
+        // Fotos del evento con paginación
+        $photos = $photosQuery->latest()->paginate(30)->withQueryString();
+
+        // Obtener todos los fotógrafos únicos del evento con conteo de fotos
+        $photographers = Photographer::select('photographers.id', 'photographers.business_name')
+            ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
+            ->join('event_photo', 'photos.id', '=', 'event_photo.photo_id')
+            ->where('event_photo.event_id', $event->id)
+            ->where('photos.is_active', true)
+            ->with('user:id,name')
+            ->selectRaw('COUNT(photos.id) as photos_count')
+            ->groupBy('photographers.id', 'photographers.business_name')
+            ->get();
+
+        // Formatear datos de fotos
+        $photos->getCollection()->transform(function ($photo) {
+            return [
+                'id' => $photo->id,
+                'unique_id' => $photo->unique_id,
+                'title' => $photo->title,
+                'price' => $photo->price,
+                'thumbnail_url' => $photo->thumbnail_url,
+                'photographer' => [
+                    'id' => $photo->photographer->id,
+                    'business_name' => $photo->photographer->business_name,
+                ],
+            ];
+        });
+
+        return Inertia::render('Events/Show', [
+            'event' => [
+                'id' => $event->id,
+                'name' => $event->name,
+                'slug' => $event->slug,
+                'description' => $event->description,
+                'long_description' => $event->long_description,
+                'event_date' => $event->event_date->format('Y-m-d'),
+                'location' => $event->location,
+                'photos_count' => $event->photos_count,
+                'cover_image_url' => $event->cover_image_url,
+                'downloads' => $event->photos()->sum('downloads'),
                 'photographer' => [
                     'business_name' => $event->photographer->business_name,
                     'region' => $event->photographer->region,
@@ -301,8 +383,13 @@ class PublicGalleryController extends Controller
                 ],
             ],
             'photos' => $photos,
+            'photographers' => $photographers,
+            'filters' => [
+                'photographer_id' => $request->photographer_id,
+            ],
         ]);
     }
+
 
     /**
      * Lista de fotógrafos activos
@@ -320,16 +407,16 @@ class PublicGalleryController extends Controller
 
         // Búsqueda por nombre
         if ($request->has('search') && $request->search) {
-            $search =$request->search;
-            $query->where(function($q) use ($search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
                 $q->where('business_name', 'like', "%{$search}%")
-                  ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
-        $photographers =$query->paginate(12)->withQueryString();
+        $photographers = $query->paginate(12)->withQueryString();
 
         return Inertia::render('Photographers/Index', [
             'photographers' => $photographers,
@@ -358,13 +445,13 @@ class PublicGalleryController extends Controller
             ->paginate(24);
 
         // Eventos del fotógrafo
-        $events = Event::whereHas('photos', function($q) use ($photographer) {
+        $events = Event::whereHas('photos', function ($q) use ($photographer) {
             $q->where('photographer_id', $photographer->id);
         })
-        ->where('is_private', false)
-        ->withCount('photos')
-        ->take(6)
-        ->get();
+            ->where('is_private', false)
+            ->withCount('photos')
+            ->take(6)
+            ->get();
 
         // Estadísticas
         $stats = [
@@ -408,7 +495,7 @@ class PublicGalleryController extends Controller
         $photo->increment('downloads');
 
         // Generar URL de descarga temporal
-        $filePath = storage_path('app/' .$photo->file_path);
+        $filePath = storage_path('app/' . $photo->file_path);
 
         if (!file_exists($filePath)) {
             abort(404, 'Archivo no encontrado');
