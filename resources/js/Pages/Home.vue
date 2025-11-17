@@ -240,7 +240,7 @@ console.log('Eventos recibidos:', props.recentEvents);
                                     <div class="flex items-center justify-between">
                                         <span
                                             class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-gray-900">
-                                            📸 {{ event.photos_count || 0 }} fotos
+                                             {{ event.photos_count || 0 }} fotos
                                         </span>
                                         <span v-if="!event.is_private"
                                             class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
@@ -308,7 +308,7 @@ console.log('Eventos recibidos:', props.recentEvents);
 
                     <!-- Empty state -->
                     <div v-else class="text-center py-20">
-                        <div class="text-8xl mb-6">📸</div>
+                        <div class="text-8xl mb-6"></div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">No hay eventos disponibles</h3>
                         <p class="text-gray-600">Los eventos aparecerán aquí próximamente</p>
                     </div>

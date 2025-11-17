@@ -132,7 +132,7 @@ const formatDate = (dateString) => {
                                 :href="route('photographer.photos.edit', photo.id)"
                                 class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-center px-4 py-3 rounded-lg font-semibold transition"
                             >
-                                ✏️ Editar
+                                 Editar
                             </Link>
                             <button
                                 @click="deletePhoto"

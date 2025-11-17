@@ -97,7 +97,7 @@ const formatDate = (dateString) => {
                 <!-- Eventos Destacados - CON THUMBNAILS -->
                 <div class="mb-8">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900">📅 Eventos Destacados</h3>
+                        <h3 class="text-2xl font-bold text-gray-900"> Eventos Destacados</h3>
                         <Link 
                             :href="route('photographer.events.index')"
                             class="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-2"
@@ -196,7 +196,7 @@ const formatDate = (dateString) => {
 
                     <!-- Empty State -->
                     <div v-else class="bg-white rounded-xl shadow-lg p-12 text-center">
-                        <div class="text-6xl mb-4">📅</div>
+                        <div class="text-6xl mb-4"></div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-2">No hay eventos aún</h4>
                         <p class="text-gray-600 mb-6">Crea tu primer evento para organizar tus fotos</p>
                         <Link
@@ -211,7 +211,7 @@ const formatDate = (dateString) => {
                 <!-- Fotos Recientes -->
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900">📸 Fotos Recientes</h3>
+                        <h3 class="text-2xl font-bold text-gray-900"> Fotos Recientes</h3>
                         <Link 
                             :href="route('photographer.photos.index')"
                             class="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-2"
@@ -248,7 +248,7 @@ const formatDate = (dateString) => {
 
                     <!-- Empty State -->
                     <div v-else class="bg-white rounded-xl shadow-lg p-12 text-center">
-                        <div class="text-6xl mb-4">📸</div>
+                        <div class="text-6xl mb-4"></div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-2">No hay fotos aún</h4>
                         <p class="text-gray-600 mb-6">Sube tus primeras fotos para comenzar</p>
                         <Link

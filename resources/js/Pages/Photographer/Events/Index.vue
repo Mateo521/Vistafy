@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import PhotographerLayout from '@/Layouts/PhotographerLayout.vue';
 
 const props = defineProps({
     events: Object,
@@ -74,7 +75,7 @@ const formatDate = (dateString) => {
 
                     <!-- Empty State -->
                     <div v-if="!events.data || events.data.length === 0" class="text-center py-16">
-                        <div class="text-6xl mb-4">📅</div>
+                        <div class="text-6xl mb-4"></div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-2">No tienes eventos creados</h4>
                         <p class="text-gray-600 mb-6">Crea tu primer evento para comenzar a subir fotos</p>
                         <Link
@@ -217,4 +218,8 @@ const formatDate = (dateString) => {
             </div>
         </div>
     </AuthenticatedLayout>
+
+
+
+    
 </template>

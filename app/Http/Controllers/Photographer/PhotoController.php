@@ -121,7 +121,7 @@ class PhotoController extends Controller
     public function store(Request $request)
     {
         // ✅ LOG PARA VER QUÉ LLEGA
-        \Log::info('📸 Inicio de subida de fotos', [
+        \Log::info(' Inicio de subida de fotos', [
             'has_photos' => $request->hasFile('photos'),
             'photos_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
             'event_id' => $request->event_id,
@@ -162,7 +162,7 @@ class PhotoController extends Controller
         try {
             foreach ($request->file('photos') as $index => $file) {
                 try {
-                    \Log::info("📤 Procesando foto {$index}", [
+                    \Log::info(" Procesando foto {$index}", [
                         'filename' => $file->getClientOriginalName(),
                         'size' => $file->getSize(),
                     ]);

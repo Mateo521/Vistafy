@@ -38,7 +38,7 @@ const handleFileSelect = (e) => {
 
 const uploadPhotos = () => {
     // DEBUG: Ver qué se está enviando
-    console.log('📤 Enviando formulario:', {
+    console.log(' Enviando formulario:', {
         event_id: uploadForm.event_id,
         photos_count: uploadForm.photos.length,
     });
@@ -103,13 +103,13 @@ const updateCoverImage = (photoId) => {
                         @click="showUploadModal = true"
                         class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition"
                     >
-                        📤 Subir Fotos
+                         Subir Fotos
                     </button>
                     <Link
                         :href="route('photographer.events.edit', event.id)"
                         class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold transition"
                     >
-                        ✏️ Editar Evento
+                         Editar Evento
                     </Link>
                 </div>
             </div>
@@ -182,14 +182,14 @@ const updateCoverImage = (photoId) => {
 
                     <!-- Empty State -->
                     <div v-if="!photos.data || photos.data.length === 0" class="text-center py-16">
-                        <div class="text-6xl mb-4">📸</div>
+                        <div class="text-6xl mb-4"></div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-2">No hay fotos en este evento</h4>
                         <p class="text-gray-600 mb-6">Comienza subiendo tus primeras fotos</p>
                         <button
                             @click="showUploadModal = true"
                             class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
                         >
-                            📤 Subir Fotos
+                             Subir Fotos
                         </button>
                     </div>
 

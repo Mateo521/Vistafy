@@ -35,7 +35,7 @@ const formatDate = (dateString) => {
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    ✏️ Editar Foto: {{ photo.unique_id }}
+                     Editar Foto: {{ photo.unique_id }}
                 </h2>
                 <Link
                     :href="route('photographer.photos.show', photo.id)"

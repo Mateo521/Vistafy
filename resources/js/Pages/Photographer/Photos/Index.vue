@@ -43,7 +43,7 @@ const formatFileSize = (bytes) => {
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    📸 Mis Fotos
+                     Mis Fotos
                 </h2>
                 <Link
                     :href="route('photographer.events.index')"
