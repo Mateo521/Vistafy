@@ -82,7 +82,7 @@ console.log('Eventos recibidos:', props.recentEvents);
 
 <template>
 
-    <Head title="Inicio - PixelSpot" />
+    <Head title="Inicio - Empresa" />
 
 
 
@@ -106,7 +106,7 @@ console.log('Eventos recibidos:', props.recentEvents);
                         </svg>
                     </div>
                     <span class="text-2xl font-bold text-white drop-shadow-lg">
-                        PixelSpot
+                        Empresa
                     </span>
                     </Link>
  
@@ -160,9 +160,9 @@ console.log('Eventos recibidos:', props.recentEvents);
                             Busca tu código único y descarga tus fotos profesionales de eventos especiales
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link :href="route('events.index')"
+                            <Link :href="route('gallery.index')"
                                 class="bg-white text-purple-900 px-10 py-4 rounded-xl hover:bg-gray-100 transition font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transform duration-300">
-                            🔍 Buscar mis Fotos
+                             Buscar mis Fotos
                             </Link>
                             <a href="#eventos"
                                 class="bg-white/10 backdrop-blur-md text-white px-10 py-4 rounded-xl hover:bg-white/20 transition font-bold text-lg shadow-2xl border border-white/30">
@@ -340,13 +340,13 @@ console.log('Eventos recibidos:', props.recentEvents);
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <span class="text-2xl font-bold">PixelSpot</span>
+                            <span class="text-2xl font-bold">Empresa</span>
                         </div>
                         <p class="text-gray-400 mb-8">
                             Capturando tus mejores momentos
                         </p>
                         <p class="text-gray-500 text-sm">
-                            © {{ new Date().getFullYear() }} PixelSpot. Todos los derechos reservados.
+                            © {{ new Date().getFullYear() }} Empresa. Todos los derechos reservados.
                         </p>
                     </div>
                 </div>

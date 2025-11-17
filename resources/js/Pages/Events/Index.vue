@@ -24,10 +24,10 @@ const formatDate = (dateString) => {
     
     <AppLayout>
         <!-- Hero Section -->
-        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 py-16">
+        <div class="bg-gradient-to-r  from-purple-600 to-indigo-600 pb-16 pt-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    📅 Eventos Fotográficos
+                    Eventos
                 </h1>
                 <p class="text-xl text-purple-100">
                     Explora los momentos capturados en cada evento

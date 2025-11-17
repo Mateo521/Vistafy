@@ -94,23 +94,23 @@ const getImageUrl = (photo) => {
                             <!-- Código único -->
                             <div class="flex items-center justify-between mb-2">
                                 <span class="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-gray-900">
-                                    🔑 {{ photo.unique_id }}
+                                     {{ photo.unique_id }}
                                 </span>
                                 <span v-if="photo.downloads > 0" class="bg-green-500/90 text-white px-3 py-1.5 rounded-full text-xs font-bold">
-                                    {{ photo.downloads }} ⬇️
+                                    {{ photo.downloads }} ⬇
                                 </span>
                             </div>
 
                             <!-- Evento (si tiene evento asociado) -->
                             <div v-if="photo.event_name" class="mb-1">
                                 <p class="text-white text-sm font-semibold truncate">
-                                    📸 {{ photo.event_name }}
+                                     {{ photo.event_name }}
                                 </p>
                             </div>
 
                             <!-- Fotógrafo -->
                             <p v-if="photo.photographer_name" class="text-white/80 text-xs truncate">
-                                👤 {{ photo.photographer_name }}
+                                 {{ photo.photographer_name }}
                             </p>
                         </div>
                     </div>
@@ -120,7 +120,7 @@ const getImageUrl = (photo) => {
                         v-if="isRecent(photo.created_at)"
                         class="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse"
                     >
-                        ✨ Nueva
+                         Nueva
                     </div>
                 </Link>
             </div>

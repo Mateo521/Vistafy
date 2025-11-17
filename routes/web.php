@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicGalleryController;
 use App\Http\Controllers\Photographer\EventController;
+
+use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +15,8 @@ use Inertia\Inertia;
 | Rutas Públicas
 |--------------------------------------------------------------------------
 */
+
+
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
@@ -27,15 +31,18 @@ Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
 });
-
+/*
 Route::prefix('fotografos')->name('photographers.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'photographers'])->name('index');
     Route::get('/{id}', [PublicGalleryController::class, 'showPhotographer'])->name('show');
 });
-
+*/
 Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
     ->name('photo.download')
     ->middleware('auth');
+
+Route::get('/fotografos', [PhotographerController::class, 'index'])->name('photographers.index');
+Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name('photographers.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,11 +63,11 @@ Route::middleware('auth')->group(function () {
 */
 
 Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photographer.')->group(function () {
-    
-     // Dashboard
+
+    // Dashboard
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;
-        
+
         $stats = [
             'total_events' => \App\Models\Event::where('photographer_id', $photographer->id)->count(),
             'total_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->count(),

@@ -131,7 +131,7 @@ const filterByPhotographer = () => {
                 </div>
 
                 <!-- Contact Organizer -->
-                <div v-if="event.photographer" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                <!--div v-if="event.photographer" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Organizador del Evento</h3>
                     <div class="flex items-start gap-4">
                         <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -166,7 +166,7 @@ const filterByPhotographer = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div-->
 
                 <!-- Photos Grid -->
                 <div>

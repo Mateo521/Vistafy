@@ -12,11 +12,19 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('business_name');
-            $table->string('region'); // norte, sur, centro, etc.
-            $table->text('bio')->nullable();
             $table->string('phone')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->string('region')->nullable();
+            $table->string('email')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('watermark_path')->nullable();
+            $table->json('bank_account_info')->nullable();
+            $table->boolean('is_verified')->default(true);
             $table->timestamps();
+
+            // Índices
+            $table->index('user_id');
+            $table->index('region');
+            $table->index('is_verified');
         });
     }
 
