@@ -3,10 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicGalleryController;
 use App\Http\Controllers\Photographer\EventController;
-
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
+use App\Http\Controllers\PaymentController; // 🆕 AGREGAR
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,8 +15,6 @@ use Inertia\Inertia;
 | Rutas Públicas
 |--------------------------------------------------------------------------
 */
-
-
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
@@ -31,18 +29,46 @@ Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
 });
-/*
-Route::prefix('fotografos')->name('photographers.')->group(function () {
-    Route::get('/', [PublicGalleryController::class, 'photographers'])->name('index');
-    Route::get('/{id}', [PublicGalleryController::class, 'showPhotographer'])->name('show');
-});
-*/
-Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
-    ->name('photo.download')
-    ->middleware('auth');
 
 Route::get('/fotografos', [PhotographerController::class, 'index'])->name('photographers.index');
 Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name('photographers.show');
+
+/*
+|--------------------------------------------------------------------------
+| 💳 Rutas de Pago - Mercado Pago
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('pago')->name('payment.')->group(function () {
+    // Iniciar compra
+    Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
+        ->name('initiate');
+    
+    // Callbacks de Mercado Pago (español)
+    Route::get('/exito', [PaymentController::class, 'success'])->name('success');
+    Route::get('/fallo', [PaymentController::class, 'failure'])->name('failure');
+    Route::get('/pendiente', [PaymentController::class, 'pending'])->name('pending');
+    
+    // Descarga con token
+    Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
+});
+
+// 🆕 AGREGAR RUTAS ALTERNATIVAS EN INGLÉS (para compatibilidad con MP)
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
+Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
+Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de Descarga (Autenticadas)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
+    ->name('photo.download')
+    ->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -77,10 +103,9 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
 
         return Inertia::render('Photographer/Dashboard', [
             'stats' => $stats,
-            'photographer' => $photographer,  // ← AGREGAR ESTA LÍNEA
+            'photographer' => $photographer,
         ]);
     })->name('dashboard');
-
 
     // Perfil
     Route::get('/mi-perfil', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'show'])->name('profile');
@@ -92,7 +117,7 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
     Route::get('/fotos/crear', [App\Http\Controllers\Photographer\PhotoController::class, 'create'])->name('photos.create');
     Route::post('/fotos', [App\Http\Controllers\Photographer\PhotoController::class, 'store'])->name('photos.store');
     Route::get('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'show'])->name('photos.show');
-    Route::get('/fotos/{photo}/editar', [App\Http\Controllers\Photographer\PhotoController::class, 'edit'])->name('photos.edit');  // ← AGREGAR ESTA LÍNEA
+    Route::get('/fotos/{photo}/editar', [App\Http\Controllers\Photographer\PhotoController::class, 'edit'])->name('photos.edit');
     Route::put('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'destroy'])->name('photos.destroy');
 
@@ -106,6 +131,5 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
     Route::delete('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'destroy'])->name('events.destroy');
     Route::post('/eventos/{event}/cover-image', [App\Http\Controllers\Photographer\EventController::class, 'updateCoverImage'])->name('events.cover-image');
 });
-
 
 require __DIR__ . '/auth.php';

@@ -1,7 +1,8 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { ref, computed } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     photo: Object,
@@ -9,6 +10,79 @@ const props = defineProps({
 });
 
 const showFullImage = ref(false);
+
+const loading = ref(false);
+
+
+
+const page = usePage();
+const showEmailModal = ref(false);
+const guestEmail = ref('');
+const createAccount = ref(false);
+const emailError = ref('');
+
+// Verificar si el usuario está autenticado
+const isAuthenticated = computed(() => page.props.auth?.user !== null);
+
+/**
+ * Manejar click en botón de compra
+ */
+const handlePurchaseClick = () => {
+    if (isAuthenticated.value) {
+        // Usuario autenticado: comprar directamente
+        submitPurchase();
+    } else {
+        // Usuario invitado: pedir email
+        showEmailModal.value = true;
+    }
+};
+
+/**
+ * Enviar solicitud de compra
+ */
+const submitPurchase = async () => {
+    if (loading.value) return;
+
+    // Validar email si es invitado
+    if (!isAuthenticated.value && !guestEmail.value) {
+        emailError.value = 'El email es requerido';
+        return;
+    }
+
+    loading.value = true;
+    emailError.value = '';
+
+    try {
+        const payload = {
+            email: guestEmail.value || undefined,
+            create_account: createAccount.value || false,
+        };
+
+        const response = await axios.post(
+            `/pago/fotos/${props.photo.id}/comprar`,
+            payload
+        );
+
+        if (response.data.success) {
+            // Redirigir a Mercado Pago
+            const initPoint = response.data.sandbox_init_point || response.data.init_point;
+            window.location.href = initPoint;
+        } else {
+            alert('Error al iniciar el pago. Por favor intenta nuevamente.');
+        }
+    } catch (error) {
+        console.error('Error al iniciar compra:', error);
+
+        if (error.response?.data?.message) {
+            emailError.value = error.response.data.message;
+        } else {
+            alert('Error al procesar la compra. Por favor intenta nuevamente.');
+        }
+    } finally {
+        loading.value = false;
+    }
+};
+
 </script>
 
 <template>
@@ -115,7 +189,7 @@ const showFullImage = ref(false);
                             </div>
 
                             <!-- Purchase Button -->
-                            <div v-if="!photo.has_purchased" class="mt-6">
+                            <!--div v-if="!photo.has_purchased" class="mt-6">
                                 <button
                                     class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +203,7 @@ const showFullImage = ref(false);
                                 </p>
                             </div>
 
-                            <!-- Already Purchased -->
+                           
                             <div v-else class="mt-6">
                                 <a :href="photo.download_url" download
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition flex items-center justify-center gap-2">
@@ -142,7 +216,110 @@ const showFullImage = ref(false);
                                 <p class="text-center text-sm text-green-600 mt-3 font-medium">
                                     ✓ Ya compraste esta foto
                                 </p>
+                            </div-->
+
+                            <div class="mt-6">
+                                <button @click="handlePurchaseClick" :disabled="loading"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span v-if="!loading">
+                                        💳 Comprar Ahora - ${{ photo.price || '1000' }}
+                                    </span>
+                                    <span v-else>
+                                        ⏳ Procesando...
+                                    </span>
+                                </button>
+
+                                <!-- Mensaje informativo -->
+                                <p class="text-sm text-gray-600 mt-2 text-center">
+                                    <template v-if="$page.props.auth.user">
+                                        ✅ Compra asociada a tu cuenta
+                                    </template>
+                                    <template v-else>
+                                        💡 Ingresa tu email para recibir la foto
+                                    </template>
+                                </p>
                             </div>
+
+                            <!-- 🆕 MODAL PARA EMAIL (si no está autenticado) -->
+                            <teleport to="body">
+                                <div v-if="showEmailModal"
+                                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                                    @click.self="showEmailModal = false">
+                                    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                                        <!-- Header -->
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="text-xl font-bold text-gray-900">
+                                                📧 Ingresa tu Email
+                                            </h3>
+                                            <button @click="showEmailModal = false"
+                                                class="text-gray-400 hover:text-gray-600">
+                                                ✕
+                                            </button>
+                                        </div>
+
+                                        <!-- Body -->
+                                        <p class="text-gray-600 mb-4">
+                                            Te enviaremos la foto a este email después del pago
+                                        </p>
+
+                                        <!-- Form -->
+                                        <form @submit.prevent="submitPurchase">
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                    Email *
+                                                </label>
+                                                <input v-model="guestEmail" type="email" required
+                                                    placeholder="tu@email.com"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                <p v-if="emailError" class="text-red-500 text-sm mt-1">
+                                                    {{ emailError }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Checkbox opcional para crear cuenta -->
+                                            <div class="mb-4">
+                                                <label class="flex items-start">
+                                                    <input v-model="createAccount" type="checkbox" class="mt-1 mr-2">
+                                                    <span class="text-sm text-gray-600">
+                                                        Crear una cuenta para guardar mi historial de compras
+                                                    </span>
+                                                </label>
+                                            </div>
+
+                                            <!-- Botones -->
+                                            <div class="flex gap-3">
+                                                <button type="button" @click="showEmailModal = false"
+                                                    class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                                                    Cancelar
+                                                </button>
+                                                <button type="submit" :disabled="loading"
+                                                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                                                    <span v-if="!loading">Continuar</span>
+                                                    <span v-else>⏳</span>
+                                                </button>
+                                            </div>
+                                        </form>
+
+                                        <!-- Link para login -->
+                                        <div class="mt-4 text-center">
+                                            <p class="text-sm text-gray-600">
+                                                ¿Ya tienes cuenta?
+                                                <a :href="route('login')" class="text-blue-600 hover:underline">
+                                                    Inicia sesión
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </teleport>
+
+
+
+
+
+
+
+
                         </div>
 
                         <!-- Photographer Info -->
