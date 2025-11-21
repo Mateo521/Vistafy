@@ -7,6 +7,7 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\PaymentController; // 🆕 AGREGAR
+use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -57,6 +58,13 @@ Route::prefix('pago')->name('payment.')->group(function () {
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
 Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
+
+Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago'])
+    ->withoutMiddleware('web')      // 👈 Saca TODO web
+    ->middleware('api')             // 👈 Solo carga API
+    ->name('webhooks.mercadopago');
+
+
 
 
 

@@ -2,38 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Purchase;
 use App\Services\MercadoPagoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
-    protected MercadoPagoService $mercadoPago;
+    protected MercadoPagoService $mercadoPagoService;
 
-    public function __construct(MercadoPagoService $mercadoPago)
+    public function __construct(MercadoPagoService $mercadoPagoService)
     {
-        $this->mercadoPago = $mercadoPago;
+        $this->mercadoPagoService = $mercadoPagoService;
     }
 
-    /**
-     * Webhook de Mercado Pago
-     */
     public function mercadoPago(Request $request)
     {
-        Log::info('Webhook recibido de Mercado Pago', $request->all());
+        Log::info('🔔 Webhook recibido raw', ['raw' => file_get_contents('php://input')]);
 
-        try {
-            $this->mercadoPago->processWebhookNotification($request->all());
+        $this->mercadoPagoService->processWebhookNotification($request->all());
 
-            return response()->json(['status' => 'success'], 200);
+        return response()->json(['status' => 'ok'], 200);
+    }
 
-        } catch (\Exception $e) {
-            Log::error('Error procesando webhook de Mercado Pago', [
-                'error' => $e->getMessage(),
-                'data' => $request->all(),
-            ]);
 
-            return response()->json(['status' => 'error'], 500);
-        }
+    /**
+     * Mapear estados de Mercado Pago a estados internos
+     */
+    protected function mapMercadoPagoStatus(string $mpStatus): string
+    {
+        return match ($mpStatus) {
+            'approved' => 'approved',
+            'pending' => 'pending',
+            'in_process' => 'pending',
+            'rejected' => 'rejected',
+            'cancelled' => 'cancelled',
+            'refunded' => 'refunded',
+            'charged_back' => 'refunded',
+            default => 'pending',
+        };
     }
 }

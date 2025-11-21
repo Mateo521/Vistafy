@@ -20,11 +20,11 @@ class PhotographerController extends Controller
 
         // Búsqueda por nombre
         if ($request->has('search') && $request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('business_name', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('user', function($uq) use ($request) {
-                      $uq->where('name', 'like', '%' . $request->search . '%');
-                  });
+                    ->orWhereHas('user', function ($uq) use ($request) {
+                        $uq->where('name', 'like', '%' . $request->search . '%');
+                    });
             });
         }
 
@@ -34,7 +34,7 @@ class PhotographerController extends Controller
         }
 
         // Ordenamiento
-        $sortBy =$request->get('sort', 'recent');
+        $sortBy = $request->get('sort', 'recent');
         switch ($sortBy) {
             case 'name':
                 $query->orderBy('business_name', 'asc');
@@ -49,7 +49,7 @@ class PhotographerController extends Controller
                 $query->latest();
         }
 
-        $photographers =$query->paginate(12)->withQueryString();
+        $photographers = $query->paginate(12)->withQueryString();
 
         // Agregar URLs completas para las fotos
         $photographers->getCollection()->transform(function ($photographer) {
@@ -95,7 +95,7 @@ class PhotographerController extends Controller
         $photographer->cover_photo_url = $photographer->cover_photo_url;
 
         // Eventos del fotógrafo
-        $events =$photographer->events()
+        $events = $photographer->events()
             ->where('is_active', true)
             ->latest('event_date')
             ->withCount('photos')
@@ -103,7 +103,7 @@ class PhotographerController extends Controller
             ->get();
 
         // Fotos destacadas
-        $featuredPhotos =$photographer->photos()
+        $featuredPhotos = $photographer->photos()
             ->where('is_active', true)
             ->inRandomOrder()
             ->take(12)

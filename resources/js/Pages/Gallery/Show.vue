@@ -65,7 +65,7 @@ const submitPurchase = async () => {
 
         if (response.data.success) {
             // Redirigir a Mercado Pago
-            const initPoint = response.data.sandbox_init_point || response.data.init_point;
+            const initPoint = response.data.sandbox_init_point;
             window.location.href = initPoint;
         } else {
             alert('Error al iniciar el pago. Por favor intenta nuevamente.');
@@ -150,7 +150,7 @@ const submitPurchase = async () => {
                                 <div>
                                     <span class="text-gray-500">Dimensiones:</span>
                                     <span class="font-semibold text-gray-900 ml-2">{{ photo.width }} x {{ photo.height
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div>
                                     <span class="text-gray-500">Descargas:</span>
