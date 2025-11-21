@@ -6,8 +6,10 @@ use App\Http\Controllers\Photographer\EventController;
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
-use App\Http\Controllers\PaymentController; // 🆕 AGREGAR
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -44,12 +46,12 @@ Route::prefix('pago')->name('payment.')->group(function () {
     // Iniciar compra
     Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
         ->name('initiate');
-    
+
     // Callbacks de Mercado Pago (español)
     Route::get('/exito', [PaymentController::class, 'success'])->name('success');
     Route::get('/fallo', [PaymentController::class, 'failure'])->name('failure');
     Route::get('/pendiente', [PaymentController::class, 'pending'])->name('pending');
-    
+
     // Descarga con token
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });
@@ -63,6 +65,22 @@ Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago'])
     ->withoutMiddleware('web')      // 👈 Saca TODO web
     ->middleware('api')             // 👈 Solo carga API
     ->name('webhooks.mercadopago');
+
+
+
+Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'checkStatus'])
+    ->name('purchases.check-status');
+
+    
+
+// Descarga directa
+Route::get('/pago/descargar/{token}', [DownloadController::class, 'download'])
+    ->name('download.file');
+
+// Página de descarga (opcional, con botón)
+Route::get('/downloads/{token}', [DownloadController::class, 'show'])
+    ->name('download.show');
+
 
 
 

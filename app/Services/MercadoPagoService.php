@@ -19,12 +19,20 @@ class MercadoPagoService
 
     public function __construct()
     {
-        // Configurar SDK
-        MercadoPagoConfig::setAccessToken(config('mercadopago.access_token'));
+        // 🔧 Corregido
+        $accessToken = config('services.mercadopago.access_token');
+
+        // 🔍 LOG para debug
+        Log::info('🔑 [MercadoPagoService] Configurando SDK', [
+            'token_preview' => substr($accessToken, 0, 30) . '...',
+        ]);
+
+        MercadoPagoConfig::setAccessToken($accessToken);
 
         $this->preferenceClient = new PreferenceClient();
         $this->paymentClient = new PaymentClient();
     }
+
 
     /**
      * Crear preferencia de pago para una foto
@@ -249,7 +257,7 @@ class MercadoPagoService
     protected function mapPaymentStatus(string $mpStatus): string
     {
         return match ($mpStatus) {
-            'approved' => 'approved',
+            'approved' => 'approved', // ✅ Correcto
             'pending', 'in_process', 'in_mediation' => 'in_process',
             'rejected' => 'rejected',
             'cancelled' => 'cancelled',
@@ -257,6 +265,7 @@ class MercadoPagoService
             default => 'pending',
         };
     }
+
 
 
 
@@ -332,7 +341,8 @@ class MercadoPagoService
         ]);
 
         try {
-            MercadoPagoConfig::setAccessToken($this->accessToken);
+            $accessToken = config('services.mercadopago.access_token');
+            MercadoPagoConfig::setAccessToken($accessToken);
             $client = new PaymentClient();
 
             // Preparar datos del pago
@@ -367,9 +377,9 @@ class MercadoPagoService
 
             // Actualizar compra
             $purchase->update([
-                'mp_payment_id' => $payment->id,
-                'status' => $this->mapMercadoPagoStatus($payment->status),
-            ]);
+            'mp_payment_id' => $payment->id,
+            'status' => $this->mapPaymentStatus($payment->status), // ✅
+        ]);
 
             return [
                 'status' => $payment->status,
@@ -399,14 +409,6 @@ class MercadoPagoService
         };
     }
 
-    private function mapMercadoPagoStatus(string $mpStatus): string
-    {
-        return match ($mpStatus) {
-            'approved' => 'completed',
-            'pending', 'in_process' => 'pending',
-            'rejected', 'cancelled' => 'failed',
-            default => 'pending',
-        };
-    }
+    
 
 }
