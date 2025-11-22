@@ -14,7 +14,7 @@ class DownloadController extends Controller
      */
     public function download(string $token)
     {
-        Log::info('📥 Descarga directa solicitada', [
+        Log::info(' Descarga directa solicitada', [
             'token' => substr($token, 0, 20) . '...',
         ]);
 
@@ -23,12 +23,12 @@ class DownloadController extends Controller
             ->first();
 
         if (!$purchase) {
-            Log::warning('⚠️ Token inválido');
+            Log::warning(' Token inválido');
             abort(404, 'Token de descarga inválido');
         }
 
         if ($purchase->status !== 'completed') {
-            Log::warning('⚠️ Pago no completado', [
+            Log::warning(' Pago no completado', [
                 'purchase_id' => $purchase->id,
                 'status' => $purchase->status,
             ]);
@@ -39,14 +39,14 @@ class DownloadController extends Controller
         $photo = $purchase->photo;
 
         if (!$photo || !Storage::disk('public')->exists($photo->path)) {
-            Log::error('❌ Archivo no encontrado');
+            Log::error(' Archivo no encontrado');
             abort(404, 'Archivo no encontrado');
         }
 
         // Incrementar contador
         $purchase->increment('download_count');
 
-        Log::info('✅ Descarga iniciada', [
+        Log::info(' Descarga iniciada', [
             'purchase_id' => $purchase->id,
             'photo_id' => $photo->id,
             'download_count' => $purchase->download_count,
@@ -72,11 +72,11 @@ class DownloadController extends Controller
             ->first();
 
         if (!$purchase) {
-            Log::warning('⚠️ Token inválido');
+            Log::warning(' Token inválido');
             abort(404, 'Token de descarga inválido');
         }
 
-        Log::info('✅ Compra encontrada', [
+        Log::info(' Compra encontrada', [
             'purchase_id' => $purchase->id,
             'status' => $purchase->status,
             'has_photo' => $purchase->photo ? 'SÍ' : 'NO',

@@ -9,7 +9,7 @@ const mobileMenuOpen = ref(false);
 // Detectar si estamos en la página de inicio
 const isHomePage = computed(() => page.url === '/');
 
-// 🆕 NUEVO: Detectar scroll
+//  NUEVO: Detectar scroll
 const scrolled = ref(false);
 
 const handleScroll = () => {
@@ -32,7 +32,7 @@ onUnmounted(() => {
 
         <nav :class="[
             'fixed top-0 w-full z-50 transition-all duration-300',
-            // 🆕 CAMBIADO: Agregar fondo cuando se hace scroll en home
+            //  CAMBIADO: Agregar fondo cuando se hace scroll en home
             isHomePage
                 ? (scrolled ? 'bg-white shadow-lg' : 'bg-transparent')
                 : 'bg-white shadow-sm'
@@ -44,7 +44,7 @@ onUnmounted(() => {
                     <Link href="/" class="flex items-center space-x-3 group">
                     <div :class="[
                         'w-12 h-12 rounded-xl flex items-center justify-center transition-all',
-                        // 🆕 CAMBIADO: Ajustar según scroll
+                        //  CAMBIADO: Ajustar según scroll
                         isHomePage
                             ? (scrolled
                                 ? 'bg-gradient-to-br from-purple-600 to-indigo-600 group-hover:from-purple-700 group-hover:to-indigo-700'
@@ -60,7 +60,7 @@ onUnmounted(() => {
                     </div>
                     <span :class="[
                         'text-2xl font-bold transition-colors',
-                        // 🆕 CAMBIADO: Ajustar color según scroll
+                        //  CAMBIADO: Ajustar color según scroll
                         isHomePage
                             ? (scrolled ? 'text-gray-900' : 'text-white drop-shadow-lg')
                             : 'text-gray-900'

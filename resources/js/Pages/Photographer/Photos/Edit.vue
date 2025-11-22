@@ -161,7 +161,7 @@ const formatDate = (dateString) => {
                                     v-if="form.recentlySuccessful"
                                     class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm"
                                 >
-                                    ✅ Cambios guardados exitosamente
+                                     Cambios guardados exitosamente
                                 </div>
 
                             </form>

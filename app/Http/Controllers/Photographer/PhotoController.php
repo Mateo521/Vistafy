@@ -9,7 +9,7 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;        // ← AGREGAR ESTA LÍNEA
+use Illuminate\Support\Facades\DB;        //  ESTA LÍNEA
 
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
@@ -120,7 +120,7 @@ class PhotoController extends Controller
      */
     public function store(Request $request)
     {
-        // ✅ LOG PARA VER QUÉ LLEGA
+        //  LOG PARA VER QUÉ LLEGA
         \Log::info(' Inicio de subida de fotos', [
             'has_photos' => $request->hasFile('photos'),
             'photos_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
@@ -131,7 +131,7 @@ class PhotoController extends Controller
 
         // Verificar que el usuario tiene un perfil de fotógrafo
         if (!auth()->user()->photographer) {
-            \Log::error('❌ Usuario no tiene perfil de fotógrafo');
+            \Log::error(' Usuario no tiene perfil de fotógrafo');
             return redirect()->back()->with('error', 'No tienes un perfil de fotógrafo activo');
         }
 
@@ -149,7 +149,7 @@ class PhotoController extends Controller
         if ($request->event_id) {
             $event = Event::find($request->event_id);
             if (!$event || $event->photographer_id !== $photographer->id) {
-                \Log::error('❌ Evento no pertenece al fotógrafo');
+                \Log::error(' Evento no pertenece al fotógrafo');
                 return redirect()->back()->with('error', 'No tienes permiso para subir fotos a este evento');
             }
         }
@@ -170,18 +170,18 @@ class PhotoController extends Controller
                     // Procesar imagen usando el servicio
                     $processed = $this->imageService->processPhoto($file, $photographer->id);
 
-                    \Log::info("✅ Foto procesada exitosamente", [
+                    \Log::info(" Foto procesada exitosamente", [
                         'unique_id' => $processed['unique_id'],
                         'event_id' => $request->event_id,
                         'original_path' => $processed['original_path'], // ← VERIFICAR QUE EXISTE
                     ]);
 
-                    // ✅ CREAR REGISTRO EN BASE DE DATOS (INCLUIR ORIGINAL_PATH)
+                    //  CREAR REGISTRO EN BASE DE DATOS (INCLUIR ORIGINAL_PATH)
                     $photo = Photo::create([
                         'photographer_id' => $photographer->id,
                         'event_id' => $request->event_id,
                         'unique_id' => $processed['unique_id'],
-                        'original_path' => $processed['original_path'],         // ← AGREGAR ESTA LÍNEA
+                        'original_path' => $processed['original_path'],         //  ESTA LÍNEA
                         'watermarked_path' => $processed['watermarked_path'],
                         'thumbnail_path' => $processed['thumbnail_path'],
                         'original_name' => $processed['original_name'],
@@ -201,7 +201,7 @@ class PhotoController extends Controller
                     $uploadedPhotos[] = $photo;
 
                 } catch (\Exception $e) {
-                    \Log::error("❌ Error procesando foto {$index}", [
+                    \Log::error(" Error procesando foto {$index}", [
                         'error' => $e->getMessage(),
                         'line' => $e->getLine(),
                         'file' => $e->getFile(),

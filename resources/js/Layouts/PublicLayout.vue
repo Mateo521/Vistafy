@@ -189,7 +189,7 @@
                     <div>
                         <h4 class="font-bold mb-4">Contacto</h4>
                         <ul class="space-y-2 text-gray-400">
-                            <li>📧 info@fotogaleria.com</li>
+                            <li> info@fotogaleria.com</li>
                             <li>📱 +1 234 567 8900</li>
                         </ul>
                     </div>

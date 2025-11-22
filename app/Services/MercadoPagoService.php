@@ -19,10 +19,10 @@ class MercadoPagoService
 
     public function __construct()
     {
-        // 🔧 Corregido
+        //  Corregido
         $accessToken = config('services.mercadopago.access_token');
 
-        // 🔍 LOG para debug
+        //  LOG para debug
         Log::info('🔑 [MercadoPagoService] Configurando SDK', [
             'token_preview' => substr($accessToken, 0, 30) . '...',
         ]);
@@ -49,11 +49,11 @@ class MercadoPagoService
         $buyerEmail = $email;
 
         // Forzar buyer de prueba cuando estás en dev/local y MP_TEST_MODE activado
-        if (config('mercadopago.test_mode') && app()->environment(['local', 'development'])) {
-            $buyerEmail = config('mercadopago.test_buyer_email') ?: $buyerEmail;
+        if (config('services.mercadopago.test_mode') && app()->environment(['local', 'development'])) {
+            $buyerEmail = config('services.mercadopago.test_buyer_email') ?: $buyerEmail;
         }
 
-        // 🔧 CORREGIDO: Verificar si el usuario está autenticado antes de acceder a sus propiedades
+        //  CORREGIDO: Verificar si el usuario está autenticado antes de acceder a sus propiedades
         $buyerName = auth()->check() ? auth()->user()->name : 'Invitado';
 
         // Crear registro de compra
@@ -62,20 +62,20 @@ class MercadoPagoService
             'photo_id' => $photo->id,
             'event_id' => $photo->event_id, // Puede ser NULL
             'buyer_email' => $email,
-            'buyer_name' => $buyerName, // 🔧 Corregido
+            'buyer_name' => $buyerName, //  Corregido
             'amount' => $photo->price,
             'currency' => 'ARS',
             'status' => 'pending',
             'download_token' => Str::random(64),
         ]);
 
-        Log::info('✅ Compra creada', [
+        Log::info(' Compra creada', [
             'purchase_id' => $purchase->id,
             'buyer_name' => $buyerName,
             'is_guest' => !auth()->check(),
         ]);
-        if (config('mercadopago.test_mode') && app()->environment(['local', 'development'])) {
-            $testEmail = config('mercadopago.test_buyer_email');
+        if (config('services.mercadopago.test_mode') && app()->environment(['local', 'development'])) {
+            $testEmail = config('services.mercadopago.test_buyer_email');
             if ($testEmail) {
                 $buyerEmail = $testEmail;
                 Log::info('🧪 Forzando email de prueba', ['test_email' => $buyerEmail]);
@@ -96,23 +96,12 @@ class MercadoPagoService
                     'unit_price' => (float) $photo->price,
                 ]
             ],
-            "payer" => [
-                "name" => "Test",
-                "surname" => "User",
-                "email" => $buyerEmail,
-                "phone" => [
-                    "area_code" => "11",
-                    "number" => "12345678"
+            'payer' => [
+                'email' => $buyerEmail,
+                'identification' => [
+                    'type' => 'DNI',
+                    'number' => config('services.mercadopago.test_buyer_dni') ?: $buyerEmail, // o null si no aplica
                 ],
-                "identification" => [
-                    "type" => "DNI",
-                    "number" => "12345678", // Usar string fijo
-                ],
-                "address" => [
-                    "zip_code" => "1430",
-                    "street_name" => "Calle",
-                    "street_number" => 123,
-                ]
             ],
             'back_urls' => [
                 'success' => route('payment.success', ['purchase_id' => $purchase->id]),
@@ -120,6 +109,7 @@ class MercadoPagoService
                 'pending' => route('payment.pending', ['purchase_id' => $purchase->id]),
             ],
             'auto_return' => 'approved',
+            'binary_mode' => false,
             'notification_url' => route('webhooks.mercadopago'),
             'external_reference' => (string) $purchase->id,
             'statement_descriptor' => 'VISTAFY',
@@ -129,18 +119,22 @@ class MercadoPagoService
             ],
         ];
 
-        Log::info('📤 Enviando preferencia a Mercado Pago', $preferenceData);
+        Log::info(' Enviando preferencia a Mercado Pago', $preferenceData);
 
         try {
             // Crear preferencia
             $preference = $this->preferenceClient->create($preferenceData);
+
+            $useSandbox = config('services.mercadopago.test_mode') && app()->environment(['local', 'development']);
+            $initPoint = $useSandbox ? ($preference->sandbox_init_point ?? $preference->init_point) : $preference->init_point;
+
 
             // Actualizar purchase con el preference_id
             $purchase->update([
                 'mp_preference_id' => $preference->id,
             ]);
 
-            Log::info('✅ Preferencia creada exitosamente', [
+            Log::info(' Preferencia creada exitosamente', [
                 'purchase_id' => $purchase->id,
                 'preference_id' => $preference->id,
                 'init_point' => $preference->init_point,
@@ -150,7 +144,7 @@ class MercadoPagoService
                 'success' => true,
                 'purchase_id' => $purchase->id,
                 'preference_id' => $preference->id,
-                'init_point' => $preference->init_point,
+                'init_point' => $initPoint,
                 'sandbox_init_point' => $preference->sandbox_init_point,
             ];
 
@@ -158,7 +152,7 @@ class MercadoPagoService
             // Si falla la creación de preferencia, marcar compra como fallida
             $purchase->update(['status' => 'failed']);
 
-            Log::error('❌ Error al crear preferencia en MP', [
+            Log::error(' Error al crear preferencia en MP', [
                 'error' => $e->getMessage(),
                 'purchase_id' => $purchase->id,
             ]);
@@ -176,14 +170,14 @@ class MercadoPagoService
         try {
             $payment = $this->paymentClient->get($paymentId);
 
-            Log::info('💳 Información de pago obtenida', [
+            Log::info(' Información de pago obtenida', [
                 'payment_id' => $paymentId,
                 'status' => $payment->status,
             ]);
 
             return $payment;
         } catch (MPApiException $e) {
-            Log::error('❌ Error al obtener información de pago', [
+            Log::error(' Error al obtener información de pago', [
                 'payment_id' => $paymentId,
                 'message' => $e->getMessage(),
             ]);
@@ -200,7 +194,7 @@ class MercadoPagoService
      */
     public function processWebhookNotification(array $data): void
     {
-        Log::info('🔔 Webhook recibido de Mercado Pago', $data);
+        Log::info(' Webhook recibido de Mercado Pago', $data);
 
         // Si viene como "topic" o "type"
         $topic = $data['topic'] ?? $data['type'] ?? null;
@@ -208,7 +202,7 @@ class MercadoPagoService
         if ($topic === 'payment') {
             $paymentId = $data['data']['id'] ?? null;
             if (!$paymentId) {
-                Log::warning('⚠️ Webhook payment sin id');
+                Log::warning(' Webhook payment sin id');
                 return;
             }
 
@@ -223,7 +217,7 @@ class MercadoPagoService
             // Puede venir en data.id o id directo
             $merchantOrderId = $data['data']['id'] ?? $data['id'] ?? null;
             if (!$merchantOrderId) {
-                Log::warning('⚠️ Webhook merchant_order sin id');
+                Log::warning(' Webhook merchant_order sin id');
                 return;
             }
 
@@ -248,7 +242,7 @@ class MercadoPagoService
             return;
         }
 
-        Log::info('ℹ️ Tipo de notificación ignorada', ['topic' => $topic]);
+        Log::info(' Tipo de notificación ignorada', ['topic' => $topic]);
     }
 
     /**
@@ -257,7 +251,7 @@ class MercadoPagoService
     protected function mapPaymentStatus(string $mpStatus): string
     {
         return match ($mpStatus) {
-            'approved' => 'approved', // ✅ Correcto
+            'approved' => 'approved', //  Correcto
             'pending', 'in_process', 'in_mediation' => 'in_process',
             'rejected' => 'rejected',
             'cancelled' => 'cancelled',
@@ -271,16 +265,16 @@ class MercadoPagoService
 
     public function getMerchantOrder(string $merchantOrderId): ?array
     {
-        $token = config('mercadopago.access_token');
+        $token = config('services.mercadopago.access_token');
         $res = Http::withToken($token)
             ->get("https://api.mercadopago.com/merchant_orders/{$merchantOrderId}");
 
         if ($res->ok()) {
-            Log::info('📦 Merchant order obtenida', ['id' => $merchantOrderId]);
+            Log::info(' Merchant order obtenida', ['id' => $merchantOrderId]);
             return $res->json();
         }
 
-        Log::error('❌ Error al obtener merchant_order', [
+        Log::error(' Error al obtener merchant_order', [
             'id' => $merchantOrderId,
             'status' => $res->status(),
             'body' => $res->body(),
@@ -294,12 +288,12 @@ class MercadoPagoService
      */
     protected function handlePaymentObject(object $payment): void
     {
-        Log::info('💳 Procesando payment object', ['id' => $payment->id, 'status' => $payment->status]);
+        Log::info(' Procesando payment object', ['id' => $payment->id, 'status' => $payment->status]);
 
         $purchase = Purchase::find($payment->external_reference);
 
         if (!$purchase) {
-            Log::error('❌ Compra no encontrada por external_reference', ['external_reference' => $payment->external_reference]);
+            Log::error(' Compra no encontrada por external_reference', ['external_reference' => $payment->external_reference]);
             return;
         }
 
@@ -317,13 +311,13 @@ class MercadoPagoService
             ],
         ]);
 
-        Log::info('✅ Compra actualizada desde payment', ['purchase_id' => $purchase->id, 'status' => $purchase->status]);
+        Log::info(' Compra actualizada desde payment', ['purchase_id' => $purchase->id, 'status' => $purchase->status]);
     }
 
 
     public function processPayment(Photo $photo, array $paymentData, string $email): array
     {
-        Log::info('💳 Procesando pago directo', [
+        Log::info(' Procesando pago directo', [
             'photo_id' => $photo->id,
             'amount' => $photo->price,
             'email' => $email,
@@ -365,11 +359,11 @@ class MercadoPagoService
                 'statement_descriptor' => 'VISTAFY',
             ];
 
-            Log::info('📤 Enviando pago a MP', $paymentRequest);
+            Log::info(' Enviando pago a MP', $paymentRequest);
 
             $payment = $client->create($paymentRequest);
 
-            Log::info('✅ Pago procesado', [
+            Log::info(' Pago procesado', [
                 'payment_id' => $payment->id,
                 'status' => $payment->status,
                 'status_detail' => $payment->status_detail,
@@ -377,9 +371,9 @@ class MercadoPagoService
 
             // Actualizar compra
             $purchase->update([
-            'mp_payment_id' => $payment->id,
-            'status' => $this->mapPaymentStatus($payment->status), // ✅
-        ]);
+                'mp_payment_id' => $payment->id,
+                'status' => $this->mapPaymentStatus($payment->status), // 
+            ]);
 
             return [
                 'status' => $payment->status,
@@ -389,7 +383,7 @@ class MercadoPagoService
             ];
 
         } catch (\Exception $e) {
-            Log::error('❌ Error procesando pago', [
+            Log::error(' Error procesando pago', [
                 'error' => $e->getMessage(),
                 'purchase_id' => $purchase->id,
             ]);
@@ -409,6 +403,6 @@ class MercadoPagoService
         };
     }
 
-    
+
 
 }

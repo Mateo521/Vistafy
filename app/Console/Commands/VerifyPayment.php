@@ -16,7 +16,7 @@ class VerifyPayment extends Command
         $paymentId = $this->argument('payment_id');
         $token = env('MERCADOPAGO_ACCESS_TOKEN');
 
-        $this->info("🔍 Verificando payment: {$paymentId}");
+        $this->info(" Verificando payment: {$paymentId}");
 
         try {
             $response = Http::withHeaders([
@@ -28,7 +28,7 @@ class VerifyPayment extends Command
             if ($response->successful()) {
                 $payment = $response->json();
 
-                $this->info("\n✅ PAYMENT ENCONTRADO");
+                $this->info("\n PAYMENT ENCONTRADO");
                 $this->line("Status: " . $payment['status']);
                 $this->line("Status Detail: " . ($payment['status_detail'] ?? 'N/A'));
                 $this->line("Amount: $" . $payment['transaction_amount']);
@@ -45,20 +45,20 @@ class VerifyPayment extends Command
                         $purchase->mp_payment_id = $paymentId;
                         $purchase->save();
 
-                        $this->info("\n✅ Purchase #{$purchaseId} actualizada exitosamente");
+                        $this->info("\n Purchase #{$purchaseId} actualizada exitosamente");
                         $this->line("Download Token: {$purchase->download_token}");
                         $this->line("URL: " . env('APP_URL') . "/downloads/{$purchase->download_token}");
                     } else {
-                        $this->error("❌ Purchase #{$purchaseId} no encontrada");
+                        $this->error(" Purchase #{$purchaseId} no encontrada");
                     }
                 }
 
             } else {
-                $this->error("\n❌ ERROR");
+                $this->error("\n ERROR");
                 $this->line("Response: " . $response->body());
 
                 if ($response->status() === 404) {
-                    $this->warn("\n⚠️ El payment NO EXISTE en Mercado Pago");
+                    $this->warn("\n El payment NO EXISTE en Mercado Pago");
                     $this->line("Posibles causas:");
                     $this->line("1. El payment ID es incorrecto");
                     $this->line("2. Estás usando credenciales de una cuenta diferente");
@@ -67,7 +67,7 @@ class VerifyPayment extends Command
             }
 
         } catch (\Exception $e) {
-            $this->error("❌ Excepción: " . $e->getMessage());
+            $this->error(" Excepción: " . $e->getMessage());
         }
 
         return 0;

@@ -229,12 +229,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div>
-                        <h4 class="font-semibold text-blue-800 mb-2">ℹ️ Sobre las marcas de agua</h4>
+                        <h4 class="font-semibold text-blue-800 mb-2"> Sobre las marcas de agua</h4>
                         <ul class="text-blue-700 text-sm space-y-1">
-                            <li>✅ <strong>Vista previa:</strong> Se mostrará con marca de agua "PREVIEW - NO USAR"</li>
-                            <li>✅ <strong>Original:</strong> Se guardará sin marca de agua para la descarga después del pago</li>
-                            <li>✅ <strong>Miniaturas:</strong> Tendrán marca de agua para proteger tu trabajo</li>
-                            <li>✅ <strong>Protección:</strong> Solo los clientes que paguen recibirán la foto sin marca de agua</li>
+                            <li> <strong>Vista previa:</strong> Se mostrará con marca de agua "PREVIEW - NO USAR"</li>
+                            <li> <strong>Original:</strong> Se guardará sin marca de agua para la descarga después del pago</li>
+                            <li> <strong>Miniaturas:</strong> Tendrán marca de agua para proteger tu trabajo</li>
+                            <li> <strong>Protección:</strong> Solo los clientes que paguen recibirán la foto sin marca de agua</li>
                         </ul>
                     </div>
                 </div>

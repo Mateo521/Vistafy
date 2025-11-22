@@ -37,12 +37,12 @@
             <!-- Botones -->
             <button @click="retryPayment"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors mb-3">
-                🔄 Intentar Nuevamente
+                 Intentar Nuevamente
             </button>
 
             <Link href="/"
                 class="inline-block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors">
-            🏠 Volver al Inicio
+             Volver al Inicio
             </Link>
         </div>
     </div>

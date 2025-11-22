@@ -48,7 +48,7 @@
             <!-- Alerta si tarda mucho -->
             <div v-if="!checking && timedOut" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                 <p class="text-sm text-yellow-800">
-                    ⚠️ El pago está tardando más de lo esperado en confirmarse.
+                     El pago está tardando más de lo esperado en confirmarse.
                     Por favor, revisa tu email o contacta con soporte.
                 </p>
             </div>
@@ -77,7 +77,7 @@
                 :href="`/downloads/${purchase.download_token}`"
                 class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors mb-3"
             >
-                📥 Descargar Foto
+                 Descargar Foto
             </a>
 
             <!-- Botón volver -->
@@ -85,7 +85,7 @@
                 href="/"
                 class="inline-block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors"
             >
-                🏠 Volver al Inicio
+                 Volver al Inicio
             </Link>
         </div>
     </div>
@@ -130,12 +130,12 @@ const checkPaymentStatus = async () => {
     if (!props.purchase?.id) return;
 
     try {
-        console.log(`🔍 Verificando pago... (intento ${attempts.value + 1})`);
+        console.log(` Verificando pago... (intento ${attempts.value + 1})`);
         
         const response = await fetch(`/purchases/${props.purchase.id}/check-status`);
         const data = await response.json();
 
-        console.log('✅ Estado del pago:', data);
+        console.log(' Estado del pago:', data);
 
         currentStatus.value = data.status;
 
@@ -148,7 +148,7 @@ const checkPaymentStatus = async () => {
 
             // Redirigir automáticamente a la página de descarga
             if (data.download_url) {
-                console.log('🎉 Pago aprobado! Redirigiendo a descarga...');
+                console.log(' Pago aprobado! Redirigiendo a descarga...');
                 setTimeout(() => {
                     window.location.href = data.download_url;
                 }, 1000);
@@ -161,12 +161,12 @@ const checkPaymentStatus = async () => {
                 clearInterval(intervalId);
             }
             
-            console.warn('⚠️ Tiempo de espera agotado');
+            console.warn(' Tiempo de espera agotado');
         } else {
             attempts.value++;
         }
     } catch (error) {
-        console.error('❌ Error verificando pago:', error);
+        console.error(' Error verificando pago:', error);
         attempts.value++;
         
         if (attempts.value >= maxAttempts.value) {

@@ -10,7 +10,7 @@ class PurchaseController extends Controller
 {
     public function checkStatus(Purchase $purchase)
     {
-        Log::info('🔍 Verificando status de compra', [
+        Log::info(' Verificando status de compra', [
             'purchase_id' => $purchase->id,
             'current_status' => $purchase->status,
             'mp_preference_id' => $purchase->mp_preference_id,
@@ -19,7 +19,7 @@ class PurchaseController extends Controller
 
         // Si ya está aprobado, retornar
         if ($purchase->status === 'approved') {
-            Log::info('✅ Ya está aprobado', ['purchase_id' => $purchase->id]);
+            Log::info(' Ya está aprobado', ['purchase_id' => $purchase->id]);
             return response()->json([
                 'status' => 'approved',
                 'download_url' => route('download.show', $purchase->download_token),
@@ -28,7 +28,7 @@ class PurchaseController extends Controller
 
         // Si está pending, consultar MP
         if (in_array($purchase->status, ['pending', 'in_process'])) {
-            Log::info('⏳ Status es pending/in_process, consultando MP...', [
+            Log::info(' Status es pending/in_process, consultando MP...', [
                 'purchase_id' => $purchase->id,
             ]);
 
@@ -47,7 +47,7 @@ class PurchaseController extends Controller
                     'criteria' => 'desc',
                 ];
 
-                Log::info('📤 Haciendo búsqueda en MP', [
+                Log::info(' Haciendo búsqueda en MP', [
                     'url' => $url,
                     'params' => $params,
                 ]);
@@ -56,7 +56,7 @@ class PurchaseController extends Controller
                     'Authorization' => 'Bearer ' . $token,
                 ])->timeout(10)->get($url, $params);
 
-                Log::info('📥 Respuesta de MP', [
+                Log::info(' Respuesta de MP', [
                     'status_code' => $response->status(),
                     'successful' => $response->successful(),
                 ]);
@@ -65,7 +65,7 @@ class PurchaseController extends Controller
                     $responseData = $response->json();
                     $results = $responseData['results'] ?? [];
 
-                    Log::info('🔍 Resultados de búsqueda', [
+                    Log::info(' Resultados de búsqueda', [
                         'purchase_id' => $purchase->id,
                         'results_count' => count($results),
                         'paging' => $responseData['paging'] ?? null,
@@ -74,7 +74,7 @@ class PurchaseController extends Controller
                     if (!empty($results)) {
                         $payment = $results[0];
 
-                        Log::info('✅ Payment encontrado por búsqueda', [
+                        Log::info(' Payment encontrado por búsqueda', [
                             'payment_id' => $payment['id'],
                             'status' => $payment['status'],
                             'status_detail' => $payment['status_detail'] ?? null,
@@ -111,19 +111,19 @@ class PurchaseController extends Controller
                             ]);
                         }
                     } else {
-                        Log::warning('⚠️ No se encontraron payments', [
+                        Log::warning(' No se encontraron payments', [
                             'purchase_id' => $purchase->id,
                             'external_reference' => $purchase->id,
                         ]);
                     }
                 } else {
-                    Log::error('❌ Error en respuesta de MP', [
+                    Log::error(' Error en respuesta de MP', [
                         'status_code' => $response->status(),
                         'body' => $response->body(),
                     ]);
                 }
             } catch (\Exception $e) {
-                Log::error('❌ Exception al verificar payment', [
+                Log::error(' Exception al verificar payment', [
                     'purchase_id' => $purchase->id,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
@@ -131,7 +131,7 @@ class PurchaseController extends Controller
             }
         }
 
-        Log::info('🔄 Retornando status actual', [
+        Log::info(' Retornando status actual', [
             'purchase_id' => $purchase->id,
             'status' => $purchase->status,
         ]);

@@ -26,7 +26,7 @@ class Event extends Model
         'is_active' => 'boolean',
     ];
 
-    // ✅ Agregar estos appends para que siempre estén disponibles
+    //  Agregar estos appends para que siempre estén disponibles
     protected $appends = [
         'cover_image_url',
     ];
@@ -42,13 +42,13 @@ class Event extends Model
         return $this->hasMany(Photo::class);
     }
 
-    // ✅ Relación con la foto de portada
+    //  Relación con la foto de portada
     public function coverPhoto()
     {
         return $this->belongsTo(Photo::class, 'cover_photo_id');
     }
 
-    // ✅ Accessor para obtener la URL de la imagen de portada
+    //  Accessor para obtener la URL de la imagen de portada
     public function getCoverImageUrlAttribute()
     {
         if ($this->coverPhoto && $this->coverPhoto->thumbnail_path) {

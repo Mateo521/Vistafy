@@ -40,7 +40,7 @@ class PublicGalleryController extends Controller
                 ];
             });
 
-        // 🔧 OBTENER ÚLTIMAS FOTOS (ARREGLADO)
+        //  OBTENER ÚLTIMAS FOTOS (ARREGLADO)
         $recentPhotos = Photo::with(['event', 'photographer.user'])
             ->where('is_active', true)
             ->latest('created_at')
@@ -269,8 +269,8 @@ class PublicGalleryController extends Controller
             ->withCount('photos')
             ->with([
                 'photographer:id,business_name',
-                'coverPhoto',           // ← AGREGAR
-                'photos' => function ($query) {  // ← AGREGAR para el fallback
+                'coverPhoto',           // 
+                'photos' => function ($query) {  //  para el fallback
                     $query->take(1);
                 }
             ])
@@ -285,8 +285,8 @@ class PublicGalleryController extends Controller
             ->withCount('photos')
             ->with([
                 'photographer:id,business_name',
-                'coverPhoto',           // ← AGREGAR
-                'photos' => function ($query) {  // ← AGREGAR para el fallback
+                'coverPhoto',           // 
+                'photos' => function ($query) {  //  para el fallback
                     $query->take(1);
                 }
             ])

@@ -222,25 +222,25 @@ const submitPurchase = async () => {
                                 <button @click="handlePurchaseClick" :disabled="loading"
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                     <span v-if="!loading">
-                                        💳 Comprar Ahora - ${{ photo.price || '1000' }}
+                                         Comprar Ahora - ${{ photo.price || '1000' }}
                                     </span>
                                     <span v-else>
-                                        ⏳ Procesando...
+                                         Procesando...
                                     </span>
                                 </button>
 
                                 <!-- Mensaje informativo -->
                                 <p class="text-sm text-gray-600 mt-2 text-center">
                                     <template v-if="$page.props.auth.user">
-                                        ✅ Compra asociada a tu cuenta
+                                         Compra asociada a tu cuenta
                                     </template>
                                     <template v-else>
-                                        💡 Ingresa tu email para recibir la foto
+                                         Ingresa tu email para recibir la foto
                                     </template>
                                 </p>
                             </div>
 
-                            <!-- 🆕 MODAL PARA EMAIL (si no está autenticado) -->
+                            <!--  MODAL PARA EMAIL (si no está autenticado) -->
                             <teleport to="body">
                                 <div v-if="showEmailModal"
                                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -249,7 +249,7 @@ const submitPurchase = async () => {
                                         <!-- Header -->
                                         <div class="flex justify-between items-center mb-4">
                                             <h3 class="text-xl font-bold text-gray-900">
-                                                📧 Ingresa tu Email
+                                                 Ingresa tu Email
                                             </h3>
                                             <button @click="showEmailModal = false"
                                                 class="text-gray-400 hover:text-gray-600">
@@ -295,7 +295,7 @@ const submitPurchase = async () => {
                                                 <button type="submit" :disabled="loading"
                                                     class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
                                                     <span v-if="!loading">Continuar</span>
-                                                    <span v-else>⏳</span>
+                                                    <span v-else></span>
                                                 </button>
                                             </div>
                                         </form>

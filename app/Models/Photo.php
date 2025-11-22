@@ -40,7 +40,7 @@ class Photo extends Model
         'views' => 'integer',
     ];
 
-    // ✅ AGREGAR ESTOS ACCESSORS A LOS APPENDS
+     
     protected $appends = [
         'thumbnail_url',
         'watermarked_url',
@@ -65,7 +65,7 @@ class Photo extends Model
         return $this->belongsTo(Event::class);
     }
 
-    // ✅ ACCESSORS PARA URLs PÚBLICAS
+    //  ACCESSORS PARA URLs PÚBLICAS
     public function getThumbnailUrlAttribute()
     {
         return $this->thumbnail_path

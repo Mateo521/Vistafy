@@ -5,7 +5,7 @@ const props = defineProps({
     purchase: Object,
 });
 
-// 🔧 CORREGIDO - Usar unique_id de la foto
+//  CORREGIDO - Usar unique_id de la foto
 const backToPhoto = () => {
     if (props.purchase?.photo?.unique_id) {
         router.visit(`/galeria/${props.purchase.photo.unique_id}`);
@@ -54,13 +54,13 @@ const backToPhoto = () => {
                 </div>
             </div>
 
-            <!-- 🔧 Botón para volver a la foto -->
+            <!--  Botón para volver a la foto -->
             <button
                 v-if="purchase?.photo?.unique_id"
                 @click="backToPhoto"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors mb-3"
             >
-                🔄 Ver la Foto Nuevamente
+                 Ver la Foto Nuevamente
             </button>
 
             <!-- Botón volver al inicio -->
@@ -68,7 +68,7 @@ const backToPhoto = () => {
                 href="/"
                 class="inline-block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors"
             >
-                🏠 Volver al Inicio
+                 Volver al Inicio
             </Link>
         </div>
     </div>

@@ -48,7 +48,7 @@ class ImageProcessingService
 
         $encoded =$image->toJpeg(95);
         Storage::disk('public')->put($originalFullPath, (string)$encoded);
-        \Log::info('✅ Original guardado', ['path' => $originalFullPath]);
+        \Log::info(' Original guardado', ['path' => $originalFullPath]);
 
         // 2. Crear PREVIEW CON MARCA DE AGUA
         $watermarkedFilename = "{$uniqueId}_watermarked.jpg";
@@ -63,7 +63,7 @@ class ImageProcessingService
 
         $encodedWatermarked =$watermarkedImage->toJpeg(85);
         Storage::disk('public')->put($watermarkedFullPath, (string)$encodedWatermarked);
-        \Log::info('✅ Watermarked guardado', ['path' => $watermarkedFullPath]);
+        \Log::info(' Watermarked guardado', ['path' => $watermarkedFullPath]);
 
         // 3. Crear THUMBNAIL
         $thumbnailFilename = "{$uniqueId}_thumb.jpg";
@@ -74,9 +74,9 @@ class ImageProcessingService
 
         $encodedThumb =$thumbnailImage->toJpeg(80);
         Storage::disk('public')->put($thumbnailFullPath, (string)$encodedThumb);
-        \Log::info('✅ Thumbnail guardado', ['path' => $thumbnailFullPath]);
+        \Log::info(' Thumbnail guardado', ['path' => $thumbnailFullPath]);
 
-        // ✅ RETORNAR LAS RUTAS COMPLETAS (NO SOLO LAS CARPETAS)
+        //  RETORNAR LAS RUTAS COMPLETAS (NO SOLO LAS CARPETAS)
         return [
             'unique_id' => $uniqueId,
             'original_path' => $originalFullPath,         // ← Ruta completa con nombre de archivo

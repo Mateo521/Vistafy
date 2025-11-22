@@ -71,7 +71,7 @@ class PaymentController extends Controller
             return response()->json($preference);
 
         } catch (\Exception $e) {
-            Log::error('❌ Error al iniciar compra', [
+            Log::error(' Error al iniciar compra', [
                 'error' => $e->getMessage(),
                 'photo_id' => $photo->id,
             ]);
@@ -92,7 +92,7 @@ class PaymentController extends Controller
             ?? $request->query('external_reference');
 
         if (!$purchaseId) {
-            Log::error('❌ Purchase ID no encontrado en URL', [
+            Log::error(' Purchase ID no encontrado en URL', [
                 'all_params' => $request->all(),
             ]);
             return redirect()->route('home')->with('error', 'ID de compra no encontrado');
@@ -101,7 +101,7 @@ class PaymentController extends Controller
         $purchase = Purchase::with('photo')->find($purchaseId);
 
         if (!$purchase) {
-            Log::error('❌ Purchase no encontrado en DB', [
+            Log::error(' Purchase no encontrado en DB', [
                 'purchase_id' => $purchaseId,
             ]);
             return redirect()->route('home')->with('error', 'Compra no encontrada');
@@ -113,7 +113,7 @@ class PaymentController extends Controller
         $paymentStatus = $request->query('status')
             ?? $request->query('collection_status');
 
-        Log::info('✅ Usuario accedió a página de éxito', [
+        Log::info(' Usuario accedió a página de éxito', [
             'purchase_id' => $purchase->id,
             'status' => $purchase->status,
             'payment_id_from_url' => $paymentId,
@@ -123,7 +123,7 @@ class PaymentController extends Controller
 
         // Si ya está aprobado, retornar directamente
         if ($purchase->status === 'approved') {
-            Log::info('✅ Purchase ya está approved', ['purchase_id' => $purchase->id]);
+            Log::info(' Purchase ya está approved', ['purchase_id' => $purchase->id]);
             return Inertia::render('Payment/Success', [
                 'purchase' => $purchase,
             ]);
@@ -131,7 +131,7 @@ class PaymentController extends Controller
 
         // Si viene payment_id en URL y status approved, consultar MP
         if ($paymentId && $paymentStatus === 'approved') {
-            Log::info('💳 Consultando payment desde URL', [
+            Log::info(' Consultando payment desde URL', [
                 'payment_id' => $paymentId,
                 'status_from_url' => $paymentStatus,
             ]);
@@ -140,7 +140,7 @@ class PaymentController extends Controller
                 $token = config('services.mercadopago.access_token');
 
                 if (!$token) {
-                    Log::error('❌ Access token no configurado');
+                    Log::error(' Access token no configurado');
                     return Inertia::render('Payment/Success', [
                         'purchase' => $purchase,
                     ]);
@@ -152,13 +152,13 @@ class PaymentController extends Controller
 
                 $url = "https://api.mercadopago.com/v1/payments/{$paymentId}";
 
-                Log::info('📤 Haciendo request a MP', ['url' => $url]);
+                Log::info(' Haciendo request a MP', ['url' => $url]);
 
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $token,
                 ])->timeout(10)->get($url);
 
-                Log::info('📥 Respuesta de consulta directa', [
+                Log::info(' Respuesta de consulta directa', [
                     'status_code' => $response->status(),
                     'successful' => $response->successful(),
                 ]);
@@ -166,7 +166,7 @@ class PaymentController extends Controller
                 if ($response->successful()) {
                     $payment = $response->json();
 
-                    Log::info('✅ Payment obtenido de URL', [
+                    Log::info(' Payment obtenido de URL', [
                         'payment_id' => $payment['id'],
                         'status' => $payment['status'],
                         'external_reference' => $payment['external_reference'] ?? null,
@@ -193,20 +193,20 @@ class PaymentController extends Controller
                         $purchase = $purchase->fresh();
                     }
                 } else {
-                    Log::error('❌ Error en respuesta de MP', [
+                    Log::error(' Error en respuesta de MP', [
                         'status_code' => $response->status(),
                         'body' => $response->body(),
                     ]);
                 }
             } catch (\Exception $e) {
-                Log::error('❌ Exception obteniendo payment desde URL', [
+                Log::error(' Exception obteniendo payment desde URL', [
                     'payment_id' => $paymentId,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
                 ]);
             }
         } else {
-            Log::warning('⚠️ No se puede consultar payment', [
+            Log::warning(' No se puede consultar payment', [
                 'payment_id' => $paymentId,
                 'payment_status' => $paymentStatus,
                 'reason' => !$paymentId ? 'payment_id missing' : 'status not approved',
@@ -226,12 +226,12 @@ class PaymentController extends Controller
     {
         $purchaseId = $request->query('purchase_id');
 
-        // 🔧 Cargar la foto con la relación
+        //  Cargar la foto con la relación
         $purchase = $purchaseId
             ? Purchase::with(['photo'])->find($purchaseId)
             : null;
 
-        Log::info('❌ Usuario en página de fallo', [
+        Log::info(' Usuario en página de fallo', [
             'purchase_id' => $purchaseId,
             'status' => $purchase?->status,
         ]);
@@ -248,12 +248,12 @@ class PaymentController extends Controller
     {
         $purchaseId = $request->query('purchase_id');
 
-        // 🔧 Cargar la foto con la relación
+        //  Cargar la foto con la relación
         $purchase = $purchaseId
             ? Purchase::with(['photo'])->find($purchaseId)
             : null;
 
-        Log::info('⏳ Usuario en página de pendiente', [
+        Log::info(' Usuario en página de pendiente', [
             'purchase_id' => $purchaseId,
             'status' => $purchase?->status,
         ]);
@@ -286,7 +286,7 @@ class PaymentController extends Controller
         // Incrementar contador de descargas
         $photo->increment('downloads');
 
-        Log::info('📥 Descarga de foto', [
+        Log::info(' Descarga de foto', [
             'purchase_id' => $purchase->id,
             'photo_id' => $photo->id,
             'token' => $token,

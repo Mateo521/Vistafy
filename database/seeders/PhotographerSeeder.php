@@ -110,6 +110,6 @@ class PhotographerSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        echo "✅ Seeder completado: 10 fotógrafos y 1 cliente creados.\n";
+        echo " Seeder completado: 10 fotógrafos y 1 cliente creados.\n";
     }
 }

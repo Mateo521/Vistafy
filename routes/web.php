@@ -38,7 +38,7 @@ Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name(
 
 /*
 |--------------------------------------------------------------------------
-| 💳 Rutas de Pago - Mercado Pago
+|  Rutas de Pago - Mercado Pago
 |--------------------------------------------------------------------------
 */
 
@@ -56,14 +56,14 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });
 
-// 🆕 AGREGAR RUTAS ALTERNATIVAS EN INGLÉS (para compatibilidad con MP)
+ 
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
 Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
 
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago'])
-    ->withoutMiddleware('web')      // 👈 Saca TODO web
-    ->middleware('api')             // 👈 Solo carga API
+    ->withoutMiddleware('web')      //  Saca TODO web
+    ->middleware('api')             //  Solo carga API
     ->name('webhooks.mercadopago');
 
 

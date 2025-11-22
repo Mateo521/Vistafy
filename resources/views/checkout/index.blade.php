@@ -17,7 +17,7 @@
 
     <script>
         // Inicializar Mercado Pago
-        const mp = new MercadoPago('{{ config('mercadopago.public_key') }}', {
+        const mp = new MercadoPago('{{ config('services.mercadopago.public_key') }}', {
             locale: 'es-AR'
         });
 

@@ -47,7 +47,7 @@ const uploadPhotos = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            console.log('✅ Fotos subidas exitosamente');
+            console.log(' Fotos subidas exitosamente');
             showUploadModal.value = false;
             selectedFiles.value = [];
             previewUrls.value = [];
@@ -55,7 +55,7 @@ const uploadPhotos = () => {
             uploadForm.event_id = props.event.id; // Restaurar event_id
         },
         onError: (errors) => {
-            console.error('❌ Error al subir fotos:', errors);
+            console.error(' Error al subir fotos:', errors);
             alert('Error al subir las fotos. Revisa la consola para más detalles.');
         }
     });
