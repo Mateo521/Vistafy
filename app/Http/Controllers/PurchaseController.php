@@ -17,16 +17,16 @@ class PurchaseController extends Controller
             'mp_preference_id' => $purchase->mp_preference_id,
         ]);
 
-        // ✅ Si ya está aprobado, retornar inmediatamente
+        //  Si ya está aprobado, retornar inmediatamente
         if ($purchase->status === 'approved') {
-            Log::info('✅ Ya está aprobado', ['purchase_id' => $purchase->id]);
+            Log::info(' Ya está aprobado', ['purchase_id' => $purchase->id]);
             return response()->json([
                 'status' => 'approved',
                 'download_url' => route('download.show', $purchase->download_token),
             ]);
         }
 
-        // ✅ Si está pending/in_process, consultar MP
+        //  Si está pending/in_process, consultar MP
         if (in_array($purchase->status, ['pending', 'in_process'])) {
             Log::info('🔄 Status es pending, consultando MP...', [
                 'purchase_id' => $purchase->id,
@@ -35,7 +35,7 @@ class PurchaseController extends Controller
             try {
                 $token = config('services.mercadopago.access_token');
 
-                // ✅ OPCIÓN 1: Buscar por preference_id si existe
+                //  OPCIÓN 1: Buscar por preference_id si existe
                 if ($purchase->mp_preference_id) {
                     Log::info('🔎 Buscando por preference_id', [
                         'preference_id' => $purchase->mp_preference_id,
@@ -95,7 +95,7 @@ class PurchaseController extends Controller
                                         ],
                                     ]);
 
-                                    Log::info('✅ Purchase actualizado', [
+                                    Log::info(' Purchase actualizado', [
                                         'purchase_id' => $purchase->id,
                                         'new_status' => $newStatus,
                                     ]);
@@ -112,7 +112,7 @@ class PurchaseController extends Controller
                     }
                 }
 
-                // ✅ OPCIÓN 2: Buscar por external_reference (fallback)
+                //  OPCIÓN 2: Buscar por external_reference (fallback)
                 $url = 'https://api.mercadopago.com/v1/payments/search';
                 $params = [
                     'external_reference' => (string) $purchase->id,
@@ -132,7 +132,7 @@ class PurchaseController extends Controller
                     $responseData = $response->json();
                     $results = $responseData['results'] ?? [];
 
-                    Log::info('📊 Resultados de búsqueda', [
+                    Log::info(' Resultados de búsqueda', [
                         'count' => count($results),
                     ]);
 
@@ -161,7 +161,7 @@ class PurchaseController extends Controller
                 }
 
             } catch (\Exception $e) {
-                Log::error('❌ Exception al verificar payment', [
+                Log::error(' Exception al verificar payment', [
                     'purchase_id' => $purchase->id,
                     'error' => $e->getMessage(),
                 ]);

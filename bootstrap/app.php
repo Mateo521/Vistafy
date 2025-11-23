@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'photographer' => \App\Http\Middleware\EnsureUserIsPhotographer::class,
         ]);
 
-        // ✅ Excluir webhooks de la verificación CSRF
+        //  Excluir webhooks de la verificación CSRF
         $middleware->validateCsrfTokens(except: [
             'webhooks/*',
         ]);

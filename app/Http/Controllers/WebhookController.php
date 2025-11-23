@@ -32,7 +32,7 @@ class WebhookController extends Controller
         $topic = $data['topic'] ?? $data['type'] ?? null;
 
         if (!$topic) {
-            Log::warning('⚠️ Webhook sin topic/type');
+            Log::warning(' Webhook sin topic/type');
             return response()->json(['status' => 'ignored'], 200);
         }
 
@@ -41,11 +41,11 @@ class WebhookController extends Controller
             $paymentId = $data['data']['id'] ?? $data['id'] ?? null;
 
             if (!$paymentId) {
-                Log::warning('⚠️ Webhook de payment sin ID');
+                Log::warning(' Webhook de payment sin ID');
                 return response()->json(['status' => 'ignored'], 200);
             }
 
-            // ✅ Esperar 2 segundos antes de procesar (dar tiempo a MP)
+            //  Esperar 2 segundos antes de procesar (dar tiempo a MP)
             sleep(2);
 
             return $this->processPayment($paymentId);
@@ -57,7 +57,7 @@ class WebhookController extends Controller
             $merchantOrderId = $data['data']['id'] ?? $data['id'] ?? null;
 
             if (!$merchantOrderId) {
-                Log::warning('⚠️ Webhook de merchant_order sin ID');
+                Log::warning(' Webhook de merchant_order sin ID');
                 return response()->json(['status' => 'ignored'], 200);
             }
 
@@ -88,22 +88,22 @@ class WebhookController extends Controller
                         }
                     }
 
-                    // ✅ IMPORTANTE: Retornar success si no hay payments aún
+                    //  IMPORTANTE: Retornar success si no hay payments aún
                     return response()->json(['status' => 'processed'], 200);
                 }
 
-                Log::error('❌ Error al obtener merchant_order', [
+                Log::error(' Error al obtener merchant_order', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
 
             } catch (\Exception $e) {
-                Log::error('❌ Exception procesando merchant_order', [
+                Log::error(' Exception procesando merchant_order', [
                     'error' => $e->getMessage(),
                 ]);
             }
 
-            // ✅ Retornar 200 incluso si falla para que MP no reintente infinitamente
+            //  Retornar 200 incluso si falla para que MP no reintente infinitamente
             return response()->json(['status' => 'error'], 200);
         }
 
@@ -118,11 +118,11 @@ class WebhookController extends Controller
         $accessToken = config('services.mercadopago.access_token');
 
         if (!$accessToken) {
-            Log::error('❌ Access Token no configurado');
+            Log::error(' Access Token no configurado');
             return response()->json(['error' => 'Access token not configured'], 500);
         }
 
-        // ✅ AUMENTAR REINTENTOS: 5 intentos con 3 segundos de espera
+        //  AUMENTAR REINTENTOS: 5 intentos con 3 segundos de espera
         $maxAttempts = 5;
         $delaySeconds = 3;
         $payment = null;
@@ -137,7 +137,7 @@ class WebhookController extends Controller
 
                 if ($response->successful()) {
                     $payment = $response->json();
-                    Log::info('✅ Payment obtenido', [
+                    Log::info(' Payment obtenido', [
                         'payment_id' => $paymentId,
                         'status' => $payment['status'],
                         'status_detail' => $payment['status_detail'] ?? 'N/A',
@@ -151,16 +151,16 @@ class WebhookController extends Controller
                     continue;
                 }
 
-                Log::error('❌ Error al obtener payment', [
+                Log::error(' Error al obtener payment', [
                     'status_code' => $response->status(),
                     'body' => $response->body(),
                 ]);
 
-                // ✅ NO RETORNAR ERROR 500, retornar 200 para que MP no reintente inmediatamente
+                //  NO RETORNAR ERROR 500, retornar 200 para que MP no reintente inmediatamente
                 return response()->json(['status' => 'payment_fetch_failed', 'will_retry' => true], 200);
 
             } catch (\Exception $e) {
-                Log::error('❌ Exception al obtener payment', [
+                Log::error(' Exception al obtener payment', [
                     'error' => $e->getMessage(),
                     'attempt' => $attempt,
                 ]);
@@ -174,10 +174,10 @@ class WebhookController extends Controller
         }
 
         if (!$payment) {
-            Log::error('❌ No se pudo obtener el payment después de todos los intentos', [
+            Log::error(' No se pudo obtener el payment después de todos los intentos', [
                 'payment_id' => $paymentId,
             ]);
-            // ✅ Retornar 200 para que MP reintente más tarde
+            //  Retornar 200 para que MP reintente más tarde
             return response()->json(['status' => 'payment_not_found_yet', 'will_retry' => true], 200);
         }
 
@@ -185,14 +185,14 @@ class WebhookController extends Controller
         $purchaseId = $payment['external_reference'] ?? null;
 
         if (!$purchaseId) {
-            Log::warning('⚠️ Payment sin external_reference', ['payment_id' => $paymentId]);
+            Log::warning(' Payment sin external_reference', ['payment_id' => $paymentId]);
             return response()->json(['status' => 'no_reference'], 200);
         }
 
         $purchase = Purchase::find($purchaseId);
 
         if (!$purchase) {
-            Log::error('❌ Purchase no encontrada', ['purchase_id' => $purchaseId]);
+            Log::error(' Purchase no encontrada', ['purchase_id' => $purchaseId]);
             return response()->json(['error' => 'Purchase not found'], 404);
         }
 
@@ -219,7 +219,7 @@ class WebhookController extends Controller
             ],
         ]);
 
-        Log::info('✅ Compra actualizada', [
+        Log::info(' Compra actualizada', [
             'purchase_id' => $purchase->id,
             'status' => $newStatus,
             'payment_id' => $paymentId,

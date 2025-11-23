@@ -14,7 +14,7 @@ const countdown = ref(10);
 let pollingInterval = null;
 let countdownInterval = null;
 
-// ✅ Verificar si ya está aprobado
+//  Verificar si ya está aprobado
 const isApproved = computed(() => {
     return props.purchase.status === 'approved';
 });
@@ -30,7 +30,7 @@ const checkStatus = async () => {
             onSuccess: (page) => {
                 console.log('Estado verificado:', page.props.purchase?.status);
 
-                // ✅ Si cambió a approved, redirigir a success
+                //  Si cambió a approved, redirigir a success
                 if (page.props.purchase?.status === 'approved') {
                     router.visit(`/pago/exito?purchase_id=${props.purchase.id}`, {
                         replace: true,
@@ -76,9 +76,9 @@ const stopPolling = () => {
 onMounted(() => {
     console.log('Purchase status:', props.purchase.status);
 
-    // ✅ Si ya está aprobado, redirigir inmediatamente
+    //  Si ya está aprobado, redirigir inmediatamente
     if (isApproved.value) {
-        console.log('✅ Ya está aprobado, redirigiendo...');
+        console.log(' Ya está aprobado, redirigiendo...');
         router.visit(`/pago/exito?purchase_id=${props.purchase.id}`, {
             replace: true,
         });

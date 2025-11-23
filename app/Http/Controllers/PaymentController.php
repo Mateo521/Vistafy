@@ -92,7 +92,7 @@ class PaymentController extends Controller
             ?? $request->query('external_reference');
 
         if (!$purchaseId) {
-            Log::error('❌ Purchase ID no encontrado en URL', [
+            Log::error(' Purchase ID no encontrado en URL', [
                 'all_params' => $request->all(),
             ]);
             return redirect()->route('home')->with('error', 'ID de compra no encontrado');
@@ -101,13 +101,13 @@ class PaymentController extends Controller
         $purchase = Purchase::with('photo')->find($purchaseId);
 
         if (!$purchase) {
-            Log::error('❌ Purchase no encontrado en DB', [
+            Log::error(' Purchase no encontrado en DB', [
                 'purchase_id' => $purchaseId,
             ]);
             return redirect()->route('home')->with('error', 'Compra no encontrada');
         }
 
-        // ✅ Obtener todos los parámetros de la URL
+        //  Obtener todos los parámetros de la URL
         $merchantOrderId = $request->query('merchant_order_id');
         $paymentId = $request->query('payment_id') ?? $request->query('collection_id');
         $paymentStatus = $request->query('status') ?? $request->query('collection_status');
@@ -123,15 +123,15 @@ class PaymentController extends Controller
             'all_params' => $request->all(),
         ]);
 
-        // ✅ Si ya está aprobado, retornar directamente
+        //  Si ya está aprobado, retornar directamente
         if ($purchase->status === 'approved') {
-            Log::info('✅ Purchase ya está approved', ['purchase_id' => $purchase->id]);
+            Log::info(' Purchase ya está approved', ['purchase_id' => $purchase->id]);
             return Inertia::render('Payment/Success', [
                 'purchase' => $purchase->load('photo'),
             ]);
         }
 
-        // ✅ MEJORADO: Procesar desde merchant_order con REINTENTOS
+        //  MEJORADO: Procesar desde merchant_order con REINTENTOS
         if ($merchantOrderId && $paymentStatus === 'approved') {
             Log::info('📦 Procesando desde merchant_order', [
                 'merchant_order_id' => $merchantOrderId,
@@ -142,13 +142,13 @@ class PaymentController extends Controller
                 $token = config('services.mercadopago.access_token');
 
                 if (!$token) {
-                    Log::error('❌ Access token no configurado');
+                    Log::error(' Access token no configurado');
                     return Inertia::render('Payment/Success', [
                         'purchase' => $purchase->load('photo'),
                     ]);
                 }
 
-                // ✅ REINTENTAR hasta 5 veces con delay de 2 segundos
+                //  REINTENTAR hasta 5 veces con delay de 2 segundos
                 $maxAttempts = 5;
                 $delaySeconds = 2;
                 $paymentFound = false;
@@ -164,14 +164,14 @@ class PaymentController extends Controller
                         $merchantOrder = $response->json();
                         $payments = $merchantOrder['payments'] ?? [];
 
-                        Log::info('📊 Merchant order obtenido', [
+                        Log::info(' Merchant order obtenido', [
                             'id' => $merchantOrder['id'],
                             'status' => $merchantOrder['status'] ?? 'N/A',
                             'payments_count' => count($payments),
                             'attempt' => $attempt,
                         ]);
 
-                        // ✅ Si encontramos payments, procesar
+                        //  Si encontramos payments, procesar
                         if (!empty($payments)) {
                             $payment = $payments[0];
 
@@ -181,7 +181,7 @@ class PaymentController extends Controller
                                 'transaction_amount' => $payment['transaction_amount'] ?? 0,
                             ]);
 
-                            // ✅ Actualizar purchase
+                            //  Actualizar purchase
                             if (isset($payment['status']) && $payment['status'] === 'approved') {
                                 $purchase->update([
                                     'mp_payment_id' => $payment['id'],
@@ -195,7 +195,7 @@ class PaymentController extends Controller
                                     ],
                                 ]);
 
-                                Log::info('✅ Purchase actualizado desde merchant_order', [
+                                Log::info(' Purchase actualizado desde merchant_order', [
                                     'purchase_id' => $purchase->id,
                                     'new_status' => 'approved',
                                     'mp_payment_id' => $payment['id'],
@@ -203,24 +203,24 @@ class PaymentController extends Controller
 
                                 $paymentFound = true;
 
-                                // ✅ Recargar purchase
+                                //  Recargar purchase
                                 $purchase = $purchase->fresh(['photo']);
-                                break; // ✅ Salir del loop
+                                break; //  Salir del loop
                             }
                         } else {
-                            // ❌ Payments vacío, esperar y reintentar
+                            //  Payments vacío, esperar y reintentar
                             if ($attempt < $maxAttempts) {
                                 Log::info("⏸️ Payments vacío, esperando {$delaySeconds}s... (intento {$attempt})");
                                 sleep($delaySeconds);
                             } else {
-                                Log::warning('⚠️ Payments vacío después de todos los intentos', [
+                                Log::warning(' Payments vacío después de todos los intentos', [
                                     'merchant_order_id' => $merchantOrderId,
                                     'attempts' => $maxAttempts,
                                 ]);
                             }
                         }
                     } else {
-                        Log::error('❌ Error al obtener merchant_order', [
+                        Log::error(' Error al obtener merchant_order', [
                             'status_code' => $response->status(),
                             'body' => $response->body(),
                             'attempt' => $attempt,
@@ -232,7 +232,7 @@ class PaymentController extends Controller
                     }
                 }
 
-                // ✅ Si no encontró el payment después de todos los intentos, intentar consultar directamente
+                //  Si no encontró el payment después de todos los intentos, intentar consultar directamente
                 if (!$paymentFound && $paymentId) {
                     Log::info('🔄 Intentando obtener payment directamente por ID', [
                         'payment_id' => $paymentId,
@@ -246,7 +246,7 @@ class PaymentController extends Controller
                         if ($paymentResponse->successful()) {
                             $payment = $paymentResponse->json();
 
-                            Log::info('✅ Payment obtenido directamente', [
+                            Log::info(' Payment obtenido directamente', [
                                 'payment_id' => $payment['id'],
                                 'status' => $payment['status'],
                             ]);
@@ -263,7 +263,7 @@ class PaymentController extends Controller
                                     ],
                                 ]);
 
-                                Log::info('✅ Purchase actualizado desde payment directo', [
+                                Log::info(' Purchase actualizado desde payment directo', [
                                     'purchase_id' => $purchase->id,
                                 ]);
 
@@ -278,7 +278,7 @@ class PaymentController extends Controller
                 }
 
             } catch (\Exception $e) {
-                Log::error('❌ Exception obteniendo merchant_order', [
+                Log::error(' Exception obteniendo merchant_order', [
                     'merchant_order_id' => $merchantOrderId,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
@@ -286,9 +286,9 @@ class PaymentController extends Controller
             }
         }
 
-        // ✅ FALLBACK: Si llegamos aquí y el status de URL dice "approved", confiar en eso
+        //  FALLBACK: Si llegamos aquí y el status de URL dice "approved", confiar en eso
         if ($purchase->status !== 'approved' && $paymentStatus === 'approved' && $paymentId) {
-            Log::warning('⚠️ API de MP no disponible después de todos los intentos, usando URL como fallback', [
+            Log::warning(' API de MP no disponible después de todos los intentos, usando URL como fallback', [
                 'purchase_id' => $purchase->id,
                 'payment_id' => $paymentId,
                 'status_from_url' => $paymentStatus,
@@ -309,7 +309,7 @@ class PaymentController extends Controller
                 ],
             ]);
 
-            Log::info('✅ Purchase actualizado via URL fallback', [
+            Log::info(' Purchase actualizado via URL fallback', [
                 'purchase_id' => $purchase->id,
                 'payment_id' => $paymentId,
             ]);

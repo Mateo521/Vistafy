@@ -14,7 +14,7 @@ class DownloadController extends Controller
      */
     public function download(string $token)
     {
-        Log::info(' Descarga directa solicitada', [
+        Log::info('📥 Descarga directa solicitada', [
             'token' => substr($token, 0, 20) . '...',
         ]);
 
@@ -27,19 +27,24 @@ class DownloadController extends Controller
             abort(404, 'Token de descarga inválido');
         }
 
-        if ($purchase->status !== 'completed') {
-            Log::warning(' Pago no completado', [
+        //  CAMBIO: Verificar 'approved' en lugar de 'completed'
+        if ($purchase->status !== 'approved') {
+            Log::warning(' Pago no aprobado', [
                 'purchase_id' => $purchase->id,
                 'status' => $purchase->status,
             ]);
 
-            return redirect()->route('download.show', ['token' => $token]);
+            return Inertia::render('Download/Pending', [
+                'purchase' => $purchase,
+            ]);
         }
 
         $photo = $purchase->photo;
 
         if (!$photo || !Storage::disk('public')->exists($photo->path)) {
-            Log::error(' Archivo no encontrado');
+            Log::error(' Archivo no encontrado', [
+                'photo_path' => $photo ? $photo->path : 'N/A',
+            ]);
             abort(404, 'Archivo no encontrado');
         }
 
@@ -82,7 +87,8 @@ class DownloadController extends Controller
             'has_photo' => $purchase->photo ? 'SÍ' : 'NO',
         ]);
 
-        if ($purchase->status !== 'completed') {
+        //  CAMBIO: Verificar 'approved' en lugar de 'completed'
+        if ($purchase->status !== 'approved') {
             return Inertia::render('Download/Pending', [
                 'purchase' => $purchase,
             ]);

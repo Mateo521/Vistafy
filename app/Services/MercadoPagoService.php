@@ -196,7 +196,7 @@ class MercadoPagoService
         if ($topic === 'payment') {
             $paymentId = $data['data']['id'] ?? $data['id'] ?? null;
             if (!$paymentId) {
-                Log::warning('⚠️ Webhook payment sin id');
+                Log::warning(' Webhook payment sin id');
                 return;
             }
 
@@ -212,7 +212,7 @@ class MercadoPagoService
         if ($topic === 'merchant_order') {
             $merchantOrderId = $data['data']['id'] ?? $data['id'] ?? null;
             if (!$merchantOrderId) {
-                Log::warning('⚠️ Webhook merchant_order sin id');
+                Log::warning(' Webhook merchant_order sin id');
                 return;
             }
 
@@ -296,14 +296,14 @@ class MercadoPagoService
         ]);
 
         if (!isset($payment->external_reference)) {
-            Log::error('❌ Payment sin external_reference', ['payment_id' => $payment->id]);
+            Log::error(' Payment sin external_reference', ['payment_id' => $payment->id]);
             return;
         }
 
         $purchase = Purchase::find($payment->external_reference);
 
         if (!$purchase) {
-            Log::error('❌ Compra no encontrada', ['external_reference' => $payment->external_reference]);
+            Log::error(' Compra no encontrada', ['external_reference' => $payment->external_reference]);
             return;
         }
 
@@ -323,7 +323,7 @@ class MercadoPagoService
             ],
         ]);
 
-        Log::info('✅ Compra actualizada desde payment', [
+        Log::info(' Compra actualizada desde payment', [
             'purchase_id' => $purchase->id,
             'old_status' => $purchase->getOriginal('status'),
             'new_status' => $newStatus,
