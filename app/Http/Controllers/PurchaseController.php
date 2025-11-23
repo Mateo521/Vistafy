@@ -35,7 +35,7 @@ class PurchaseController extends Controller
             try {
                 $token = config('services.mercadopago.access_token');
 
-                Log::info('🔑 Usando token para búsqueda', [
+                Log::info(' Usando token para búsqueda', [
                     'token_preview' => substr($token, 0, 30) . '...',
                 ]);
 

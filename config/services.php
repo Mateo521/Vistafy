@@ -32,11 +32,11 @@ return [
         'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
         'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
 
-        // 🔥 Modo Sandbox / Test
+        //  Modo Sandbox / Test
         'test_mode' => env('MP_TEST_MODE', false), // << usa este SIEMPRE
         'sandbox_mode' => env('MP_TEST_MODE', false), // << opcional, pero útil si algo lo referencia
 
-        // 🔥 Datos del comprador de prueba
+        //  Datos del comprador de prueba
         'test_buyer_email' => env('MP_TEST_BUYER_EMAIL'),
         'test_buyer_dni' => env('MP_TEST_BUYER_DNI', '12345678'),
 

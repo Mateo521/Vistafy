@@ -33,7 +33,7 @@ class PaymentController extends Controller
         }
 
         try {
-            Log::info('🛒 Iniciando compra', [
+            Log::info(' Iniciando compra', [
                 'photo_id' => $photo->id,
                 'user_id' => auth()->id(),
                 'is_guest' => !auth()->check(),
@@ -146,7 +146,7 @@ class PaymentController extends Controller
                     ]);
                 }
 
-                Log::info('🔑 Usando token', [
+                Log::info(' Usando token', [
                     'token_preview' => substr($token, 0, 30) . '...',
                 ]);
 

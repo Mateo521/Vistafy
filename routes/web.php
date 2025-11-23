@@ -56,22 +56,23 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });
 
- 
+
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
 Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
 
+
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago'])
-    ->withoutMiddleware('web')      //  Saca TODO web
-    ->middleware('api')             //  Solo carga API
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]) // ✅ Solo deshabilita CSRF
     ->name('webhooks.mercadopago');
+
 
 
 
 Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'checkStatus'])
     ->name('purchases.check-status');
 
-    
+
 
 // Descarga directa
 Route::get('/pago/descargar/{token}', [DownloadController::class, 'download'])
