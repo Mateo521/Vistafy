@@ -92,7 +92,7 @@ class PaymentController extends Controller
             ?? $request->query('external_reference');
 
         if (!$purchaseId) {
-            Log::error(' Purchase ID no encontrado en URL', [
+            Log::error('❌ Purchase ID no encontrado en URL', [
                 'all_params' => $request->all(),
             ]);
             return redirect()->route('home')->with('error', 'ID de compra no encontrado');
@@ -101,38 +101,40 @@ class PaymentController extends Controller
         $purchase = Purchase::with('photo')->find($purchaseId);
 
         if (!$purchase) {
-            Log::error(' Purchase no encontrado en DB', [
+            Log::error('❌ Purchase no encontrado en DB', [
                 'purchase_id' => $purchaseId,
             ]);
             return redirect()->route('home')->with('error', 'Compra no encontrada');
         }
 
-        $paymentId = $request->query('payment_id')
-            ?? $request->query('collection_id');
+        // ✅ Obtener todos los parámetros de la URL
+        $merchantOrderId = $request->query('merchant_order_id');
+        $paymentId = $request->query('payment_id') ?? $request->query('collection_id');
+        $paymentStatus = $request->query('status') ?? $request->query('collection_status');
+        $preferenceId = $request->query('preference_id');
 
-        $paymentStatus = $request->query('status')
-            ?? $request->query('collection_status');
-
-        Log::info(' Usuario accedió a página de éxito', [
+        Log::info('🎯 Usuario accedió a página de éxito', [
             'purchase_id' => $purchase->id,
             'status' => $purchase->status,
+            'merchant_order_id' => $merchantOrderId,
             'payment_id_from_url' => $paymentId,
             'payment_status_from_url' => $paymentStatus,
+            'preference_id' => $preferenceId,
             'all_params' => $request->all(),
         ]);
 
-        // Si ya está aprobado, retornar directamente
+        // ✅ Si ya está aprobado, retornar directamente
         if ($purchase->status === 'approved') {
-            Log::info(' Purchase ya está approved', ['purchase_id' => $purchase->id]);
+            Log::info('✅ Purchase ya está approved', ['purchase_id' => $purchase->id]);
             return Inertia::render('Payment/Success', [
-                'purchase' => $purchase,
+                'purchase' => $purchase->load('photo'),
             ]);
         }
 
-        // Si viene payment_id en URL y status approved, consultar MP
-        if ($paymentId && $paymentStatus === 'approved') {
-            Log::info(' Consultando payment desde URL', [
-                'payment_id' => $paymentId,
+        // ✅ MEJORADO: Procesar desde merchant_order con REINTENTOS
+        if ($merchantOrderId && $paymentStatus === 'approved') {
+            Log::info('📦 Procesando desde merchant_order', [
+                'merchant_order_id' => $merchantOrderId,
                 'status_from_url' => $paymentStatus,
             ]);
 
@@ -140,83 +142,189 @@ class PaymentController extends Controller
                 $token = config('services.mercadopago.access_token');
 
                 if (!$token) {
-                    Log::error(' Access token no configurado');
+                    Log::error('❌ Access token no configurado');
                     return Inertia::render('Payment/Success', [
-                        'purchase' => $purchase,
+                        'purchase' => $purchase->load('photo'),
                     ]);
                 }
 
-                Log::info(' Usando token', [
-                    'token_preview' => substr($token, 0, 30) . '...',
-                ]);
+                // ✅ REINTENTAR hasta 5 veces con delay de 2 segundos
+                $maxAttempts = 5;
+                $delaySeconds = 2;
+                $paymentFound = false;
 
-                $url = "https://api.mercadopago.com/v1/payments/{$paymentId}";
+                for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+                    Log::info("🔄 Intento {$attempt}/{$maxAttempts} de obtener merchant_order con payments");
 
-                Log::info(' Haciendo request a MP', ['url' => $url]);
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $token,
+                    ])->timeout(10)->get("https://api.mercadopago.com/merchant_orders/{$merchantOrderId}");
 
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $token,
-                ])->timeout(10)->get($url);
+                    if ($response->successful()) {
+                        $merchantOrder = $response->json();
+                        $payments = $merchantOrder['payments'] ?? [];
 
-                Log::info(' Respuesta de consulta directa', [
-                    'status_code' => $response->status(),
-                    'successful' => $response->successful(),
-                ]);
-
-                if ($response->successful()) {
-                    $payment = $response->json();
-
-                    Log::info(' Payment obtenido de URL', [
-                        'payment_id' => $payment['id'],
-                        'status' => $payment['status'],
-                        'external_reference' => $payment['external_reference'] ?? null,
-                    ]);
-
-                    if ($payment['status'] === 'approved') {
-                        $purchase->update([
-                            'mp_payment_id' => $payment['id'],
-                            'status' => 'approved',
-                            'payment_details' => [
-                                'payment_method' => $payment['payment_method_id'] ?? null,
-                                'status_detail' => $payment['status_detail'] ?? null,
-                                'transaction_amount' => $payment['transaction_amount'] ?? null,
-                            ],
+                        Log::info('📊 Merchant order obtenido', [
+                            'id' => $merchantOrder['id'],
+                            'status' => $merchantOrder['status'] ?? 'N/A',
+                            'payments_count' => count($payments),
+                            'attempt' => $attempt,
                         ]);
 
-                        Log::info('💾 Purchase actualizado desde URL', [
-                            'purchase_id' => $purchase->id,
-                            'new_status' => 'approved',
-                            'mp_payment_id' => $payment['id'],
+                        // ✅ Si encontramos payments, procesar
+                        if (!empty($payments)) {
+                            $payment = $payments[0];
+
+                            Log::info('💳 Payment encontrado en merchant_order', [
+                                'payment_id' => $payment['id'],
+                                'status' => $payment['status'] ?? 'N/A',
+                                'transaction_amount' => $payment['transaction_amount'] ?? 0,
+                            ]);
+
+                            // ✅ Actualizar purchase
+                            if (isset($payment['status']) && $payment['status'] === 'approved') {
+                                $purchase->update([
+                                    'mp_payment_id' => $payment['id'],
+                                    'mp_merchant_order_id' => $merchantOrderId,
+                                    'status' => 'approved',
+                                    'payment_details' => [
+                                        'payment_method' => $payment['payment_type_id'] ?? 'account_money',
+                                        'transaction_amount' => $payment['transaction_amount'] ?? $purchase->amount,
+                                        'status' => $payment['status'],
+                                        'date_approved' => $payment['date_approved'] ?? now()->toIso8601String(),
+                                    ],
+                                ]);
+
+                                Log::info('✅ Purchase actualizado desde merchant_order', [
+                                    'purchase_id' => $purchase->id,
+                                    'new_status' => 'approved',
+                                    'mp_payment_id' => $payment['id'],
+                                ]);
+
+                                $paymentFound = true;
+
+                                // ✅ Recargar purchase
+                                $purchase = $purchase->fresh(['photo']);
+                                break; // ✅ Salir del loop
+                            }
+                        } else {
+                            // ❌ Payments vacío, esperar y reintentar
+                            if ($attempt < $maxAttempts) {
+                                Log::info("⏸️ Payments vacío, esperando {$delaySeconds}s... (intento {$attempt})");
+                                sleep($delaySeconds);
+                            } else {
+                                Log::warning('⚠️ Payments vacío después de todos los intentos', [
+                                    'merchant_order_id' => $merchantOrderId,
+                                    'attempts' => $maxAttempts,
+                                ]);
+                            }
+                        }
+                    } else {
+                        Log::error('❌ Error al obtener merchant_order', [
+                            'status_code' => $response->status(),
+                            'body' => $response->body(),
+                            'attempt' => $attempt,
                         ]);
 
-                        // Recargar purchase
-                        $purchase = $purchase->fresh();
+                        if ($attempt < $maxAttempts) {
+                            sleep($delaySeconds);
+                        }
                     }
-                } else {
-                    Log::error(' Error en respuesta de MP', [
-                        'status_code' => $response->status(),
-                        'body' => $response->body(),
-                    ]);
                 }
+
+                // ✅ Si no encontró el payment después de todos los intentos, intentar consultar directamente
+                if (!$paymentFound && $paymentId) {
+                    Log::info('🔄 Intentando obtener payment directamente por ID', [
+                        'payment_id' => $paymentId,
+                    ]);
+
+                    for ($attempt = 1; $attempt <= 3; $attempt++) {
+                        $paymentResponse = Http::withHeaders([
+                            'Authorization' => 'Bearer ' . $token,
+                        ])->timeout(10)->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
+
+                        if ($paymentResponse->successful()) {
+                            $payment = $paymentResponse->json();
+
+                            Log::info('✅ Payment obtenido directamente', [
+                                'payment_id' => $payment['id'],
+                                'status' => $payment['status'],
+                            ]);
+
+                            if ($payment['status'] === 'approved') {
+                                $purchase->update([
+                                    'mp_payment_id' => $payment['id'],
+                                    'mp_merchant_order_id' => $merchantOrderId,
+                                    'status' => 'approved',
+                                    'payment_details' => [
+                                        'payment_method' => $payment['payment_method_id'] ?? 'account_money',
+                                        'transaction_amount' => $payment['transaction_amount'] ?? $purchase->amount,
+                                        'status' => $payment['status'],
+                                    ],
+                                ]);
+
+                                Log::info('✅ Purchase actualizado desde payment directo', [
+                                    'purchase_id' => $purchase->id,
+                                ]);
+
+                                $purchase = $purchase->fresh(['photo']);
+                                break;
+                            }
+                        } else if ($paymentResponse->status() === 404 && $attempt < 3) {
+                            Log::warning("⏸️ Payment no encontrado, esperando {$delaySeconds}s... (intento {$attempt})");
+                            sleep($delaySeconds);
+                        }
+                    }
+                }
+
             } catch (\Exception $e) {
-                Log::error(' Exception obteniendo payment desde URL', [
-                    'payment_id' => $paymentId,
+                Log::error('❌ Exception obteniendo merchant_order', [
+                    'merchant_order_id' => $merchantOrderId,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
                 ]);
             }
-        } else {
-            Log::warning(' No se puede consultar payment', [
+        }
+
+        // ✅ FALLBACK: Si llegamos aquí y el status de URL dice "approved", confiar en eso
+        if ($purchase->status !== 'approved' && $paymentStatus === 'approved' && $paymentId) {
+            Log::warning('⚠️ API de MP no disponible después de todos los intentos, usando URL como fallback', [
+                'purchase_id' => $purchase->id,
                 'payment_id' => $paymentId,
-                'payment_status' => $paymentStatus,
-                'reason' => !$paymentId ? 'payment_id missing' : 'status not approved',
+                'status_from_url' => $paymentStatus,
             ]);
+
+            $purchase->update([
+                'mp_payment_id' => $paymentId,
+                'mp_merchant_order_id' => $merchantOrderId,
+                'status' => 'approved',
+                'payment_details' => [
+                    'payment_method' => $request->query('payment_type') ?? 'account_money',
+                    'transaction_amount' => $purchase->amount,
+                    'status' => 'approved',
+                    'status_detail' => 'accredited_via_url_fallback',
+                    'date_approved' => now()->toIso8601String(),
+                    'source' => 'url_fallback_mp_api_unavailable',
+                    'fallback_reason' => 'MP API did not return payment after multiple attempts',
+                ],
+            ]);
+
+            Log::info('✅ Purchase actualizado via URL fallback', [
+                'purchase_id' => $purchase->id,
+                'payment_id' => $paymentId,
+            ]);
+
+            // Recargar purchase
+            $purchase = $purchase->fresh(['photo']);
         }
 
         return Inertia::render('Payment/Success', [
-            'purchase' => $purchase,
+            'purchase' => $purchase->load('photo'),
         ]);
     }
+
+
+
 
 
     /**

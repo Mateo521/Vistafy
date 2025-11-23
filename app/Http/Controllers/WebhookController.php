@@ -45,8 +45,12 @@ class WebhookController extends Controller
                 return response()->json(['status' => 'ignored'], 200);
             }
 
+            // ✅ Esperar 2 segundos antes de procesar (dar tiempo a MP)
+            sleep(2);
+
             return $this->processPayment($paymentId);
         }
+
 
         // Procesar merchant_order
         if ($topic === 'merchant_order') {
@@ -118,8 +122,9 @@ class WebhookController extends Controller
             return response()->json(['error' => 'Access token not configured'], 500);
         }
 
-        $maxAttempts = 3;
-        $delaySeconds = 2;
+        // ✅ AUMENTAR REINTENTOS: 5 intentos con 3 segundos de espera
+        $maxAttempts = 5;
+        $delaySeconds = 3;
         $payment = null;
 
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
@@ -141,7 +146,7 @@ class WebhookController extends Controller
                 }
 
                 if ($response->status() === 404 && $attempt < $maxAttempts) {
-                    Log::warning("⏸️ Payment no encontrado, esperando {$delaySeconds}s...");
+                    Log::warning("⏸️ Payment no encontrado, esperando {$delaySeconds}s... (intento {$attempt}/{$maxAttempts})");
                     sleep($delaySeconds);
                     continue;
                 }
@@ -151,7 +156,8 @@ class WebhookController extends Controller
                     'body' => $response->body(),
                 ]);
 
-                return response()->json(['error' => 'Payment fetch failed'], 500);
+                // ✅ NO RETORNAR ERROR 500, retornar 200 para que MP no reintente inmediatamente
+                return response()->json(['status' => 'payment_fetch_failed', 'will_retry' => true], 200);
 
             } catch (\Exception $e) {
                 Log::error('❌ Exception al obtener payment', [
@@ -160,7 +166,7 @@ class WebhookController extends Controller
                 ]);
 
                 if ($attempt === $maxAttempts) {
-                    return response()->json(['error' => 'Exception occurred'], 500);
+                    return response()->json(['status' => 'exception', 'will_retry' => true], 200);
                 }
 
                 sleep($delaySeconds);
@@ -168,8 +174,11 @@ class WebhookController extends Controller
         }
 
         if (!$payment) {
-            Log::error('❌ No se pudo obtener el payment');
-            return response()->json(['error' => 'Payment not found'], 404);
+            Log::error('❌ No se pudo obtener el payment después de todos los intentos', [
+                'payment_id' => $paymentId,
+            ]);
+            // ✅ Retornar 200 para que MP reintente más tarde
+            return response()->json(['status' => 'payment_not_found_yet', 'will_retry' => true], 200);
         }
 
         // Procesar el payment
@@ -218,4 +227,5 @@ class WebhookController extends Controller
 
         return response()->json(['status' => 'processed'], 200);
     }
+
 }

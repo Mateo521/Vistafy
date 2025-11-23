@@ -7,7 +7,10 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\PaymentController;
+
+
 use App\Http\Controllers\WebhookController;
+
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -62,10 +65,6 @@ Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('pay
 Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
 
 
-Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago'])
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]) // ✅ Solo deshabilita CSRF
-    ->name('webhooks.mercadopago');
-
 
 
 
@@ -85,6 +84,7 @@ Route::get('/downloads/{token}', [DownloadController::class, 'show'])
 
 
 
+Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 
 
 /*

@@ -110,7 +110,7 @@ class MercadoPagoService
             ],
             'auto_return' => 'approved',
             'binary_mode' => false,
-            'notification_url' => route('webhooks.mercadopago'),
+            'notification_url' => url('/webhooks/mercadopago'),
             'external_reference' => (string) $purchase->id,
             // 'statement_descriptor' => 'VISTAFY',
             'payment_methods' => [
@@ -374,7 +374,7 @@ class MercadoPagoService
                     ],
                 ],
                 'external_reference' => (string) $purchase->id,
-                'notification_url' => route('webhooks.mercadopago'),
+                'notification_url' => url('/webhooks/mercadopago'),
                 'statement_descriptor' => 'VISTAFY',
             ];
 

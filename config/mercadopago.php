@@ -21,5 +21,5 @@ return [
     'success_url' => env('APP_URL') . '/payment/success',
     'failure_url' => env('APP_URL') . '/payment/failure',
     'pending_url' => env('APP_URL') . '/payment/pending',
-    'notification_url' => env('APP_URL') . '/api/webhooks/mercadopago',
+    'notification_url' => env('APP_URL') . '/webhooks/mercadopago',
 ];
