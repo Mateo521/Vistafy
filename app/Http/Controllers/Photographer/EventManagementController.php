@@ -24,12 +24,12 @@ class EventManagementController extends Controller
         $photographer = auth()->user()->photographer;
 
         // Eventos donde el fotógrafo tiene al menos una foto
-        $events = Event::whereHas('photos', function($query) use ($photographer) {
+        $events = Event::whereHas('photos', function ($query) use ($photographer) {
             $query->where('photographer_id', $photographer->id);
         })
-        ->withCount('photos')
-        ->latest()
-        ->paginate(12);
+            ->withCount('photos')
+            ->latest()
+            ->paginate(12);
 
         return Inertia::render('Photographer/Events/Index', [
             'events' => $events,
@@ -42,7 +42,7 @@ class EventManagementController extends Controller
     public function create()
     {
         $photographer = auth()->user()->photographer;
-        
+
         // Obtener fotos del fotógrafo disponibles
         $availablePhotos = Photo::where('photographer_id', $photographer->id)
             ->where('is_active', true)
@@ -84,7 +84,7 @@ class EventManagementController extends Controller
         // Asociar fotos si se proporcionaron
         if ($request->has('photo_ids') && !empty($request->photo_ids)) {
             $photographer = auth()->user()->photographer;
-            
+
             // Verificar que todas las fotos pertenezcan al fotógrafo
             $validPhotos = Photo::where('photographer_id', $photographer->id)
                 ->whereIn('id', $request->photo_ids)
@@ -92,7 +92,7 @@ class EventManagementController extends Controller
                 ->toArray();
 
             // Adjuntar fotos con orden
-            foreach ($validPhotos as$index => $photoId) {
+            foreach ($validPhotos as $index => $photoId) {
                 $event->photos()->attach($photoId, ['order' => $index]);
             }
         }
@@ -108,14 +108,16 @@ class EventManagementController extends Controller
     {
         $photographer = auth()->user()->photographer;
 
-        $event = Event::whereHas('photos', function($query) use ($photographer) {
+        $event = Event::whereHas('photos', function ($query) use ($photographer) {
             $query->where('photographer_id', $photographer->id);
         })
-        ->with(['photos' => function($query) use ($photographer) {
-            $query->where('photographer_id', $photographer->id)
-                  ->orderBy('event_photo.order');
-        }])
-        ->findOrFail($id);
+            ->with([
+                'photos' => function ($query) use ($photographer) {
+                    $query->where('photographer_id', $photographer->id)
+                        ->orderBy('event_photo.order');
+                }
+            ])
+            ->findOrFail($id);
 
         // Fotos disponibles para agregar al evento
         $availablePhotos = Photo::where('photographer_id', $photographer->id)
@@ -137,14 +139,31 @@ class EventManagementController extends Controller
     {
         $photographer = auth()->user()->photographer;
 
-        $event = Event::whereHas('photos', function($query) use ($photographer) {
+        $event = Event::whereHas('photos', function ($query) use ($photographer) {
             $query->where('photographer_id', $photographer->id);
         })
-        ->with(['photos' => function($query) use ($photographer) {
-            $query->where('photographer_id', $photographer->id)
-                  ->orderBy('event_photo.order');
-        }])
-        ->findOrFail($id);
+            ->with([
+                'photos' => function ($query) use ($photographer) {
+                    $query->where('photographer_id', $photographer->id)
+                        ->orderBy('event_photo.order');
+                }
+            ])
+            ->findOrFail($id);
+
+        // ✅ Formatear datos para el formulario
+        $eventData = [
+            'id' => $event->id,
+            'name' => $event->name,
+            'description' => $event->description,
+            'event_date' => $event->event_date,
+            'location' => $event->location,
+            'is_private' => $event->is_private,
+            'is_active' => $event->is_active,
+            'cover_image' => $event->cover_image,
+            'cover_image_url' => $event->cover_image ? asset('storage/' . $event->cover_image) : null,
+            'photos' => $event->photos,
+            'photos_count' => $event->photos->count(),
+        ];
 
         // Fotos disponibles
         $availablePhotos = Photo::where('photographer_id', $photographer->id)
@@ -153,7 +172,7 @@ class EventManagementController extends Controller
             ->get();
 
         return Inertia::render('Photographer/Events/Edit', [
-            'event' => $event,
+            'event' => $eventData,
             'availablePhotos' => $availablePhotos,
         ]);
     }
@@ -161,11 +180,11 @@ class EventManagementController extends Controller
     /**
      * Actualizar evento
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $photographer = auth()->user()->photographer;
 
-        $event = Event::whereHas('photos', function($query) use ($photographer) {
+        $event = Event::whereHas('photos', function ($query) use ($photographer) {
             $query->where('photographer_id', $photographer->id);
         })->findOrFail($id);
 
@@ -205,10 +224,10 @@ class EventManagementController extends Controller
 
             // Sincronizar fotos con orden
             $syncData = [];
-            foreach ($validPhotos as$index => $photoId) {
+            foreach ($validPhotos as $index => $photoId) {
                 $syncData[$photoId] = ['order' => $index];
             }
-            
+
             $event->photos()->sync($syncData);
         }
 
@@ -223,7 +242,7 @@ class EventManagementController extends Controller
     {
         $photographer = auth()->user()->photographer;
 
-        $event = Event::whereHas('photos', function($query) use ($photographer) {
+        $event = Event::whereHas('photos', function ($query) use ($photographer) {
             $query->where('photographer_id', $photographer->id);
         })->findOrFail($id);
 
@@ -242,7 +261,7 @@ class EventManagementController extends Controller
     /**
      * Agregar foto a evento existente
      */
-    public function addPhoto(Request $request,$id)
+    public function addPhoto(Request $request, $id)
     {
         $photographer = auth()->user()->photographer;
 
@@ -259,7 +278,7 @@ class EventManagementController extends Controller
 
         // Verificar que no esté ya en el evento
         if (!$event->photos()->where('photo_id', $photo->id)->exists()) {
-            $maxOrder =$event->photos()->max('order') ?? -1;
+            $maxOrder = $event->photos()->max('order') ?? -1;
             $event->photos()->attach($photo->id, ['order' => $maxOrder + 1]);
         }
 
@@ -269,7 +288,7 @@ class EventManagementController extends Controller
     /**
      * Remover foto de evento
      */
-    public function removePhoto(Request $request,$id)
+    public function removePhoto(Request $request, $id)
     {
         $photographer = auth()->user()->photographer;
 
@@ -292,7 +311,7 @@ class EventManagementController extends Controller
     /**
      * Reordenar fotos en evento
      */
-    public function reorderPhotos(Request $request,$id)
+    public function reorderPhotos(Request $request, $id)
     {
         $photographer = auth()->user()->photographer;
 
@@ -310,7 +329,7 @@ class EventManagementController extends Controller
             ->toArray();
 
         // Actualizar el orden
-        foreach ($validPhotos as$index => $photoId) {
+        foreach ($validPhotos as $index => $photoId) {
             $event->photos()->updateExistingPivot($photoId, ['order' => $index]);
         }
 

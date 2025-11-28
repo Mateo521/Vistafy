@@ -118,6 +118,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photographer.')->group(function () {
 
     // Dashboard
+    // Dashboard
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;
 
@@ -128,11 +129,28 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
             'total_downloads' => \App\Models\Photo::where('photographer_id', $photographer->id)->sum('downloads'),
         ];
 
+        
+        $recentEvents = \App\Models\Event::where('photographer_id', $photographer->id)
+            ->withCount('photos')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        
+        $recentPhotos = \App\Models\Photo::where('photographer_id', $photographer->id)
+            ->with('event:id,name')
+            ->latest()
+            ->take(8)
+            ->get();
+
         return Inertia::render('Photographer/Dashboard', [
             'stats' => $stats,
             'photographer' => $photographer,
+            'recentEvents' => $recentEvents,  // ✅ AGREGAR
+            'recentPhotos' => $recentPhotos,  // ✅ AGREGAR
         ]);
     })->name('dashboard');
+
 
     // Perfil
     Route::get('/mi-perfil', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'show'])->name('profile');

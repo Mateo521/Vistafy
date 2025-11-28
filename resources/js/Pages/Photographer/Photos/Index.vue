@@ -83,7 +83,7 @@ const formatFileSize = (bytes) => {
 
                     <!-- Empty State -->
                     <div v-if="!photos.data || photos.data.length === 0" class="text-center py-16">
-                        <div class="text-6xl mb-4">📷</div>
+                        <div class="text-6xl mb-4">-</div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-2">No tienes fotos subidas</h4>
                         <p class="text-gray-600 mb-6">Ve a un evento para subir tus primeras fotos</p>
                         <Link

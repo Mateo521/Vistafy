@@ -17,25 +17,16 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::where('is_active', true)
-            ->with([
-                'photographer:id,business_name,slug',
-                'coverPhoto:id,thumbnail_path',  // ← Cargar foto de portada
-            ])
-            ->withCount('photos'); // ← Contar fotos del evento
+        // ✅ Filtrar SOLO eventos del fotógrafo autenticado
+        $query = Event::where('photographer_id', auth()->user()->photographer->id)
+            ->withCount('photos');
 
-        // Filtros
+        // Filtros opcionales
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                     ->orWhere('description', 'like', '%' . $request->search . '%')
                     ->orWhere('location', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        if ($request->filled('photographer')) {
-            $query->whereHas('photographer', function ($q) use ($request) {
-                $q->where('slug', $request->photographer);
             });
         }
 
@@ -55,11 +46,24 @@ class EventController extends Controller
         // Paginar
         $events = $query->paginate(12)->withQueryString();
 
+        // Estadísticas del fotógrafo
+        $stats = [
+            'total_events' => Event::where('photographer_id', auth()->user()->photographer->id)->count(),
+            'active_events' => Event::where('photographer_id', auth()->user()->photographer->id)
+                ->where('is_active', true)->count(),
+            'total_photos' => Photo::whereHas('event', function ($q) {
+                $q->where('photographer_id', auth()->user()->photographer->id);
+            })->count(),
+            'total_sales' => 0, // Implementar cuando tengas ventas
+        ];
+
         return Inertia::render('Photographer/Events/Index', [
             'events' => $events,
-            'filters' => $request->only(['search', 'photographer', 'date_from', 'date_to', 'sort', 'order']),
+            'stats' => $stats,
+            'filters' => $request->only(['search', 'date_from', 'date_to', 'sort', 'order']),
         ]);
     }
+
 
     /**
      * Mostrar formulario de creación
@@ -148,15 +152,30 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        // Verificar que el evento pertenece al fotógrafo
         if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para editar este evento');
+            abort(403);
         }
 
+        $eventData = [
+            'id' => $event->id,
+            'name' => $event->name,
+            'description' => $event->description ?? '',
+            'long_description' => $event->long_description ?? '',
+            'event_date' => $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d') : null,
+            'location' => $event->location ?? '',
+            'is_private' => (bool) $event->is_private,
+            'is_active' => (bool) $event->is_active,
+            'cover_image' => $event->cover_image,
+            'cover_image_url' => $event->cover_image_url,  // ✅ Usa el accessor
+        ];
+
         return Inertia::render('Photographer/Events/Edit', [
-            'event' => $event,
+            'event' => $eventData,
         ]);
     }
+
+
+
 
     /**
      * Actualizar evento
@@ -175,6 +194,7 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'location' => 'nullable|string|max:255',
             'is_private' => 'boolean',
+            'is_active' => 'boolean',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
@@ -197,6 +217,7 @@ class EventController extends Controller
         return redirect()->route('photographer.events.index')
             ->with('success', 'Evento actualizado exitosamente');
     }
+
 
     /**
      * Eliminar evento

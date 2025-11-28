@@ -82,7 +82,7 @@ const formatDate = (dateString) => {
                             :href="route('photographer.events.create')"
                             class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
                         >
-                            ➕ Crear Primer Evento
+                             Crear Primer Evento
                         </Link>
                     </div>
 
@@ -128,7 +128,7 @@ const formatDate = (dateString) => {
                                                     : 'bg-blue-500 text-white'
                                             ]"
                                         >
-                                            {{ event.is_private ? '🔒 Privado' : '🌐 Público' }}
+                                            {{ event.is_private ? ' Privado' : ' Público' }}
                                         </span>
                                     </div>
 

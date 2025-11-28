@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str; 
 class Event extends Model
 {
     use HasFactory;
@@ -49,24 +49,30 @@ class Event extends Model
     }
 
     //  Accessor para obtener la URL de la imagen de portada
+    /**
+     * Obtener URL de la imagen de portada
+     */
     public function getCoverImageUrlAttribute()
     {
-        if ($this->coverPhoto && $this->coverPhoto->thumbnail_path) {
-            return asset('storage/' . $this->coverPhoto->thumbnail_path);
+        // Si tiene cover_image directo
+        if ($this->cover_image) {
+            return asset('storage/' . $this->cover_image);
         }
-        
-        // Si no hay foto de portada, usar la primera foto del evento
-        $firstPhoto =$this->photos()->first();
-        if ($firstPhoto && $firstPhoto->thumbnail_path) {
-            return asset('storage/' . $firstPhoto->thumbnail_path);
+
+        // Si no, usar la primera foto del evento
+        $firstPhoto = $this->photos()->first();
+
+        if ($firstPhoto) {
+            $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
+            return asset('storage/' . $path);
         }
-        
-        // Si no hay fotos, usar placeholder
-        return asset('images/event-placeholder.png');
+
+        return null;
     }
 
 
-   
+
+
 
     // Generar slug automáticamente
     protected static function boot()

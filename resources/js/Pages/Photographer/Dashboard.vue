@@ -145,7 +145,7 @@ const formatDate = (dateString) => {
                                         :class="event.is_private ? 'bg-red-500' : 'bg-green-500'"
                                         class="px-3 py-1 rounded-full text-white text-xs font-bold shadow-lg"
                                     >
-                                        {{ event.is_private ? '🔒 Privado' : '🌐 Público' }}
+                                        {{ event.is_private ? ' Privado' : ' Público' }}
                                     </span>
                                 </div>
 

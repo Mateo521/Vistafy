@@ -76,8 +76,35 @@ const handleImageError = (e) => {
     }
 };
 
-console.log('Stats recibidas:', props.stats);
-console.log('Eventos recibidos:', props.recentEvents);
+
+const videos = [
+    '/videos/promo-3.mp4',
+    '/videos/promo-4.mp4',
+    '/videos/promo-5.mp4'
+];
+
+const currentIndex = ref(0);
+const currentVideo = ref(videos[currentIndex.value]);
+const promoVideo = ref(null);
+
+onMounted(() => {
+    const videoEl = promoVideo.value;
+
+    videoEl.addEventListener('ended', () => {
+        // avanzar al siguiente video
+        currentIndex.value = (currentIndex.value + 1) % videos.length;
+        currentVideo.value = videos[currentIndex.value];
+
+        // recargar y reproducir
+        videoEl.load();
+        videoEl.play();
+    });
+});
+
+
+
+
+
 </script>
 
 <template>
@@ -136,37 +163,37 @@ console.log('Eventos recibidos:', props.recentEvents);
             <!-- Hero Section with Video Background -->
             <div class="relative h-screen overflow-hidden">
                 <!-- Video Background -->
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
-                    <source src="/videos/promo-3.mp4" type="video/mp4">
-                    <!-- Fallback si no carga el video -->
+                <video autoplay muted playsinline class="absolute inset-0 w-full h-full object-cover" ref="promoVideo">
+                    <source :src="currentVideo" type="video/mp4">
                     Tu navegador no soporta video HTML5.
                 </video>
 
+
                 <!-- Overlay oscuro para mejorar legibilidad -->
-                <div class="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-indigo-900/70 to-pink-900/80">
+                <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/90 via-indigo-900/70 to-orange-900/50">
                 </div>
 
                 <!-- Contenido del Hero -->
                 <div class="relative h-full flex items-center justify-center">
                     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl animate-fade-in">
-                            Revive Tus Momentos
+                            Reviví tus momentos
                             <span
                                 class="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300">
-                                en Alta Calidad
+                                en alta calidad perrix 🤙
                             </span>
                         </h1>
                         <p class="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto drop-shadow-lg">
-                            Busca tu código único y descarga tus fotos profesionales de eventos especiales
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, hic. Iste   ...
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link :href="route('gallery.index')"
                                 class="bg-white text-purple-900 px-10 py-4 rounded-xl hover:bg-gray-100 transition font-bold text-lg shadow-2xl hover:shadow-white/20 hover:scale-105 transform duration-300">
-                             Buscar mis Fotos
+                            Buscar mis fotos
                             </Link>
                             <a href="#eventos"
                                 class="bg-white/10 backdrop-blur-md text-white px-10 py-4 rounded-xl hover:bg-white/20 transition font-bold text-lg shadow-2xl border border-white/30">
-                                Ver Eventos
+                                Ver eventos
                             </a>
                         </div>
 
@@ -176,19 +203,19 @@ console.log('Eventos recibidos:', props.recentEvents);
                                 <div class="text-5xl font-bold text-white mb-2">
                                     {{ Math.floor(animatedPhotos) }}+
                                 </div>
-                                <div class="text-white/80 text-sm font-medium">Fotos Disponibles</div>
+                                <div class="text-white/80 text-sm font-medium">Fotos disponibles</div>
                             </div>
                             <div class="text-center backdrop-blur-sm bg-white/5 rounded-2xl p-6 border border-white/10">
                                 <div class="text-5xl font-bold text-white mb-2">
                                     {{ Math.floor(animatedEvents) }}+
                                 </div>
-                                <div class="text-white/80 text-sm font-medium">Eventos Activos</div>
+                                <div class="text-white/80 text-sm font-medium">Eventos</div>
                             </div>
                             <div class="text-center backdrop-blur-sm bg-white/5 rounded-2xl p-6 border border-white/10">
                                 <div class="text-5xl font-bold text-white mb-2">
                                     {{ Math.floor(animatedPhotographers) }}+
                                 </div>
-                                <div class="text-white/80 text-sm font-medium">Fotógrafos Pro</div>
+                                <div class="text-white/80 text-sm font-medium">Fotógrafos</div>
                             </div>
                         </div>
                     </div>
@@ -240,11 +267,11 @@ console.log('Eventos recibidos:', props.recentEvents);
                                     <div class="flex items-center justify-between">
                                         <span
                                             class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-bold text-gray-900">
-                                             {{ event.photos_count || 0 }} fotos
+                                            {{ event.photos_count || 0 }} fotos
                                         </span>
                                         <span v-if="!event.is_private"
                                             class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                            🌐 Público
+                                             Público
                                         </span>
                                     </div>
                                 </div>

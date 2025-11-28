@@ -93,7 +93,7 @@ const formatDate = (dateString) => {
 
                             <!-- Public Badge -->
                             <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                                🌐 Público
+                                 Público
                             </span>
                         </div>
                     </div>

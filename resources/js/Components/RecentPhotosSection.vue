@@ -127,7 +127,7 @@ const getImageUrl = (photo) => {
 
             <!-- Empty state -->
             <div v-else class="text-center py-20">
-                <div class="text-8xl mb-6">📷</div>
+                <div class="text-8xl mb-6">-</div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">No hay fotos recientes</h3>
                 <p class="text-gray-600">Las nuevas fotos aparecerán aquí</p>
             </div>
