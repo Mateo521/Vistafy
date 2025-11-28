@@ -180,43 +180,38 @@ class EventController extends Controller
     /**
      * Actualizar evento
      */
-    public function update(Request $request, Event $event)
-    {
-        // Verificar que el evento pertenece al fotógrafo
-        if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para actualizar este evento');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
-            'long_description' => 'nullable|string|max:2000',
-            'event_date' => 'required|date',
-            'location' => 'nullable|string|max:255',
-            'is_private' => 'boolean',
-            'is_active' => 'boolean',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-        ]);
-
-        // Actualizar slug si cambió el nombre
-        if ($validated['name'] !== $event->name) {
-            $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(6);
-        }
-
-        // Subir nueva imagen de portada si existe
-        if ($request->hasFile('cover_image')) {
-            // Eliminar imagen anterior
-            if ($event->cover_image) {
-                Storage::disk('public')->delete($event->cover_image);
-            }
-            $validated['cover_image'] = $request->file('cover_image')->store('events/covers', 'public');
-        }
-
-        $event->update($validated);
-
-        return redirect()->route('photographer.events.index')
-            ->with('success', 'Evento actualizado exitosamente');
+   public function update(Request $request, Event $event)
+{
+    // Verificar permisos
+    if ($event->photographer_id !== auth()->user()->photographer->id) {
+        abort(403, 'No tienes permiso para actualizar este evento');
     }
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string|max:500',
+        'long_description' => 'nullable|string|max:2000',
+        'event_date' => 'required|date',
+        'location' => 'nullable|string|max:255',
+        'is_private' => 'boolean',
+        'is_active' => 'boolean',
+        'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+    ]);
+
+    // Subir nueva imagen si existe
+    if ($request->hasFile('cover_image')) {
+        if ($event->cover_image) {
+            \Storage::disk('public')->delete($event->cover_image);
+        }
+        $validated['cover_image'] = $request->file('cover_image')->store('events/covers', 'public');
+    }
+
+    // Actualizar evento (el modelo se encarga del token automáticamente)
+    $event->update($validated);
+
+    return redirect()->route('photographer.events.index')
+        ->with('success', 'Evento actualizado exitosamente');
+}
 
 
     /**

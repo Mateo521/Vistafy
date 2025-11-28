@@ -10,7 +10,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;    // ← Para Route::has()
 
-use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Storage;
 
 class PublicGalleryController extends Controller
 {
@@ -19,7 +19,7 @@ class PublicGalleryController extends Controller
      */
     public function index()
     {
-        // Obtener eventos recientes
+        // Obtener eventos recientes PÚBLICOS
         $recentEvents = Event::with(['photographer.user'])
             ->where('is_active', true)
             ->orderBy('event_date', 'desc')
@@ -34,15 +34,19 @@ class PublicGalleryController extends Controller
                     'location' => $event->location,
                     'event_date' => $event->event_date->format('Y-m-d'),
                     'cover_image_url' => $event->cover_image_url,
-                    'photos_count' => $event->photos()->count(),
-                    'is_private' => $event->is_private,
+                    'photos_count' => $event->photos()->where('is_active', true)->count(), // ✅ Solo fotos activas
+                    'is_private' => $event->is_private, // ✅ Mantener para mostrar badge
                     'photographer' => optional($event->photographer)->business_name ?? optional($event->photographer->user)->name ?? 'Anónimo',
+                    // ❌ NO exponer private_token
                 ];
             });
 
-        //  OBTENER ÚLTIMAS FOTOS (ARREGLADO)
+        // OBTENER ÚLTIMAS FOTOS - Solo de eventos públicos
         $recentPhotos = Photo::with(['event', 'photographer.user'])
             ->where('is_active', true)
+            ->whereHas('event', function ($query) {
+                $query->where('is_active', true); // ✅ Solo de eventos activos
+            })
             ->latest('created_at')
             ->take(12)
             ->get()
@@ -62,17 +66,20 @@ class PublicGalleryController extends Controller
                     // Información del evento (simplificada)
                     'event_name' => optional($photo->event)->name,
                     'event_slug' => optional($photo->event)->slug,
-
+                    'event_is_private' => optional($photo->event)->is_private, // ✅ Para ocultar en UI si es necesario
+    
                     // Información del fotógrafo (simplificada)
                     'photographer_name' => optional($photo->photographer)->business_name ?? optional($photo->photographer->user)->name ?? null,
                 ];
             });
 
-        // Estadísticas
+        // Estadísticas - Solo públicos
         $stats = [
-            'total_photos' => Photo::count(),
-            'total_events' => Event::count(),
-            'total_photographers' => Photographer::count(),
+            'total_photos' => Photo::where('is_active', true)->count(),
+            'total_events' => Event::where('is_active', true)->count(),
+            'total_photographers' => Photographer::whereHas('user', function ($query) {
+                $query->where('is_active', true);
+            })->count(),
         ];
 
         return Inertia::render('Home', [
@@ -83,6 +90,7 @@ class PublicGalleryController extends Controller
             'canRegister' => Route::has('register'),
         ]);
     }
+
 
 
 
@@ -269,9 +277,11 @@ class PublicGalleryController extends Controller
             ->withCount('photos')
             ->with([
                 'photographer:id,business_name',
-                'coverPhoto',           // 
-                'photos' => function ($query) {  //  para el fallback
-                    $query->take(1);
+                //   'coverPhoto',           // 
+                'photos' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('created_at', 'asc')  // ✅ Primera foto
+                        ->take(1);
                 }
             ])
             ->latest('event_date')
@@ -285,9 +295,11 @@ class PublicGalleryController extends Controller
             ->withCount('photos')
             ->with([
                 'photographer:id,business_name',
-                'coverPhoto',           // 
-                'photos' => function ($query) {  //  para el fallback
-                    $query->take(1);
+                //    'coverPhoto',           // 
+                'photos' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('created_at', 'asc')  // ✅ Primera foto
+                        ->take(1);
                 }
             ])
             ->orderBy('photos_count', 'desc')

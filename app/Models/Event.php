@@ -4,31 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str; 
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+
 class Event extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'photographer_id',
-        'cover_photo_id',  // ← Relación con la foto de portada
         'name',
         'slug',
         'description',
+        'long_description',
+        'cover_image',
         'event_date',
         'location',
+        'is_private',
+        'private_token',
         'is_active',
-        // ... más campos
     ];
 
     protected $casts = [
-        'event_date' => 'datetime',
+        'is_private' => 'boolean',
         'is_active' => 'boolean',
-    ];
-
-    //  Agregar estos appends para que siempre estén disponibles
-    protected $appends = [
-        'cover_image_url',
+        'event_date' => 'date',
     ];
 
     // Relaciones
@@ -42,52 +42,60 @@ class Event extends Model
         return $this->hasMany(Photo::class);
     }
 
-    //  Relación con la foto de portada
-    public function coverPhoto()
-    {
-        return $this->belongsTo(Photo::class, 'cover_photo_id');
-    }
-
-    //  Accessor para obtener la URL de la imagen de portada
-    /**
-     * Obtener URL de la imagen de portada
-     */
+    // Accessor para URL de portada
     public function getCoverImageUrlAttribute()
-    {
-        // Si tiene cover_image directo
-        if ($this->cover_image) {
-            return asset('storage/' . $this->cover_image);
-        }
-
-        // Si no, usar la primera foto del evento
-        $firstPhoto = $this->photos()->first();
-
-        if ($firstPhoto) {
-            $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
-            return asset('storage/' . $path);
-        }
-
-        return null;
+{
+    // 1. Cover image directo
+    if ($this->cover_image) {
+        return asset('storage/' . $this->cover_image);
     }
+    
+    // 2. Primera foto del evento (ya cargada con with())
+    if ($this->relationLoaded('photos') && $this->photos->isNotEmpty()) {
+        $photo = $this->photos->first();
+        $path = $photo->thumbnail_path ?? $photo->watermarked_path ?? $photo->original_path;
+        return $path ? asset('storage/' . $path) : null;
+    }
+    
+    // 3. Fallback: buscar primera foto
+    $firstPhoto = $this->photos()->where('is_active', true)->first();
+    if ($firstPhoto) {
+        $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
+        return $path ? asset('storage/' . $path) : null;
+    }
+    
+    return null;
+}
 
 
-
-
-
-    // Generar slug automáticamente
+    // Auto-generar slug y token
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($event) {
             if (empty($event->slug)) {
-                $event->slug = Str::slug($event->name);
+                $event->slug = Str::slug($event->name) . '-' . Str::random(6);
+            }
+
+            if ($event->is_private && empty($event->private_token)) {
+                $event->private_token = Str::random(32);
             }
         });
 
         static::updating(function ($event) {
             if ($event->isDirty('name')) {
-                $event->slug = Str::slug($event->name);
+                $event->slug = Str::slug($event->name) . '-' . Str::random(6);
+            }
+
+            // Generar token si se volvió privado
+            if ($event->is_private && empty($event->private_token)) {
+                $event->private_token = Str::random(32);
+            }
+
+            // Eliminar token si ya no es privado
+            if (!$event->is_private && !empty($event->private_token)) {
+                $event->private_token = null;
             }
         });
     }
