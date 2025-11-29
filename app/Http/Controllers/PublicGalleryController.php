@@ -105,7 +105,8 @@ class PublicGalleryController extends Controller
         $query = Photo::with(['photographer', 'event'])
             ->where('is_active', true)
             ->whereHas('event', function ($q) {
-                $q->where('is_active', true);
+                $q->where('is_active', true)
+                   ->where('is_private', false);  
             });
 
         // Filtros
