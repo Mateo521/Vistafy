@@ -102,43 +102,37 @@ class PublicGalleryController extends Controller
      */
     public function gallery(Request $request)
     {
-        $query = Photo::where('is_active', true)
-            ->with(['photographer:id,business_name,region', 'event:id,name,slug']);
+        $query = Photo::with(['photographer', 'event'])
+            ->where('is_active', true)
+            ->whereHas('event', function ($q) {
+                $q->where('is_active', true);
+            });
 
-        // Filtro por búsqueda (ID o palabra clave)
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('unique_id', 'like', "%{$search}%")
-                    ->orWhere('title', 'like', "%{$search}%")
-                    ->orWhereHas('photographer', function ($q) use ($search) {
-                        $q->where('business_name', 'like', "%{$search}%");
+        // Filtros
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('unique_id', 'like', '%' . $request->search . '%')
+                    ->orWhere('title', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('photographer', function ($q2) use ($request) {
+                        $q2->where('business_name', 'like', '%' . $request->search . '%');
                     });
             });
         }
 
-        // Filtro por región
-        if ($request->has('region') && $request->region !== 'all') {
+        if ($request->filled('region') && $request->region !== 'all') {
             $query->whereHas('photographer', function ($q) use ($request) {
                 $q->where('region', $request->region);
             });
         }
 
-        // Filtro por evento
-        if ($request->has('event') && $request->event) {
-            $query->whereHas('events', function ($q) use ($request) {
-                $q->where('event.id', $request->event);
-            });
+        if ($request->filled('event')) {
+            $query->where('event_id', $request->event);
         }
 
         // Ordenamiento
-        $sortBy = $request->get('sort', 'recent');
-        switch ($sortBy) {
-            case 'recent':
-                $query->latest();
-                break;
+        switch ($request->get('sort', 'recent')) {
             case 'popular':
-                $query->orderBy('downloads', 'desc');
+                $query->orderByDesc('downloads');
                 break;
             case 'price_low':
                 $query->orderBy('price', 'asc');
@@ -152,19 +146,34 @@ class PublicGalleryController extends Controller
 
         $photos = $query->paginate(24)->withQueryString();
 
-        // Eventos para el filtro
-        $events = Event::where('is_private', false)
-            ->select('id', 'name', 'slug')
-            ->orderBy('name')
-            ->get();
+        // ✅ CORRECCIÓN: Transformar las fotos correctamente
+        $photos->getCollection()->transform(function ($photo) {
+            return [
+                'id' => $photo->id,
+                'unique_id' => $photo->unique_id,
+                'title' => $photo->title,
+                'price' => number_format($photo->price, 2), // ✅ Formato correcto
+                'thumbnail_url' => $photo->thumbnail_url,
+                'photographer' => $photo->photographer->business_name, // ✅ SOLO el nombre
+            ];
+        });
 
-        // Regiones disponibles
+        // Obtener regiones únicas
         $regions = [
-            ['value' => 'all', 'label' => 'Todas las Regiones'],
+            ['value' => 'all', 'label' => 'Todas las regiones'],
             ['value' => 'norte', 'label' => 'Norte'],
             ['value' => 'centro', 'label' => 'Centro'],
             ['value' => 'sur', 'label' => 'Sur'],
+            ['value' => 'oriente', 'label' => 'Oriente'],
+            ['value' => 'poniente', 'label' => 'Poniente'],
         ];
+
+        // Obtener eventos activos
+        $events = Event::where('is_active', true)
+            ->where('is_private', false)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
 
         return Inertia::render('Gallery/Index', [
             'photos' => $photos,
@@ -174,10 +183,11 @@ class PublicGalleryController extends Controller
                 'search' => $request->search,
                 'region' => $request->region ?? 'all',
                 'event' => $request->event,
-                'sort' => $sortBy,
+                'sort' => $request->sort ?? 'recent',
             ],
         ]);
     }
+
 
     /**
      * Mostrar foto individual con detalles

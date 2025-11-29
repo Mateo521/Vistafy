@@ -153,6 +153,7 @@ const changeSort = (sortValue) => {
                         <img :src="photo.thumbnail_url" :alt="photo.unique_id"
                             class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                             @error="(e) => e.target.src = 'https://via.placeholder.com/400?text=Sin+Imagen'" />
+                        <!-- ✅ Mostrar precio correctamente -->
                         <div
                             class="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-xs font-bold text-indigo-600 shadow">
                             ${{ photo.price }}
@@ -161,9 +162,19 @@ const changeSort = (sortValue) => {
 
                     <!-- Info -->
                     <div class="p-3">
-                        <div class="text-sm font-bold text-gray-900 text-center">{{ photo.unique_id }}</div>
-                        <div class="text-xs text-gray-500 text-center mt-1">{{ photo.photographer }}</div>
+                        <div class="text-sm font-bold text-gray-900 text-center">
+                            {{ photo.unique_id }}
+                        </div>
+                        <!-- ✅ Mostrar nombre del fotógrafo correctamente -->
+                        <div class="text-xs text-gray-500 text-center mt-1 truncate">
+                            {{ photo.photographer }}
+                        </div>
                     </div>
+
+
+
+
+
                     </Link>
                 </div>
 
@@ -199,7 +210,7 @@ const changeSort = (sortValue) => {
                 </div>
             </div>
 
-         
+
         </div>
 
     </AppLayout>
