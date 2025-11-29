@@ -17,7 +17,7 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        // ✅ Filtrar SOLO eventos del fotógrafo autenticado
+        //  Filtrar SOLO eventos del fotógrafo autenticado
         $query = Event::where('photographer_id', auth()->user()->photographer->id)
             ->withCount('photos');
 
@@ -125,9 +125,8 @@ class EventController extends Controller
             abort(403, 'No tienes permiso para ver este evento');
         }
 
-        // Cargar las fotos del evento con paginación
+        // ✅ Cargar fotos del evento con paginación
         $photos = $event->photos()
-            ->with('event:id,name')
             ->latest()
             ->paginate(24)
             ->withQueryString();
@@ -139,12 +138,28 @@ class EventController extends Controller
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
+        // ✅ SOLUCIÓN: Serializar manualmente para asegurar que todos los campos lleguen
         return Inertia::render('Photographer/Events/Show', [
-            'event' => $event,
+            'event' => [
+                'id' => $event->id,
+                'name' => $event->name,
+                'slug' => $event->slug,
+                'description' => $event->description,
+                'long_description' => $event->long_description,
+                'event_date' => $event->event_date?->format('Y-m-d'),
+                'location' => $event->location,
+                'cover_image' => $event->cover_image,
+                'cover_image_url' => $event->cover_image_url,
+                'is_private' => (bool) $event->is_private,
+                'is_active' => (bool) $event->is_active,
+                'private_token' => $event->private_token,
+                'photographer_id' => $event->photographer_id,
+            ],
             'photos' => $photos,
             'stats' => $stats,
         ]);
     }
+
 
 
     /**
@@ -166,7 +181,7 @@ class EventController extends Controller
             'is_private' => (bool) $event->is_private,
             'is_active' => (bool) $event->is_active,
             'cover_image' => $event->cover_image,
-            'cover_image_url' => $event->cover_image_url,  // ✅ Usa el accessor
+            'cover_image_url' => $event->cover_image_url,  //  Usa el accessor
         ];
 
         return Inertia::render('Photographer/Events/Edit', [
@@ -180,38 +195,38 @@ class EventController extends Controller
     /**
      * Actualizar evento
      */
-   public function update(Request $request, Event $event)
-{
-    // Verificar permisos
-    if ($event->photographer_id !== auth()->user()->photographer->id) {
-        abort(403, 'No tienes permiso para actualizar este evento');
-    }
-
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string|max:500',
-        'long_description' => 'nullable|string|max:2000',
-        'event_date' => 'required|date',
-        'location' => 'nullable|string|max:255',
-        'is_private' => 'boolean',
-        'is_active' => 'boolean',
-        'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-    ]);
-
-    // Subir nueva imagen si existe
-    if ($request->hasFile('cover_image')) {
-        if ($event->cover_image) {
-            \Storage::disk('public')->delete($event->cover_image);
+    public function update(Request $request, Event $event)
+    {
+        // Verificar permisos
+        if ($event->photographer_id !== auth()->user()->photographer->id) {
+            abort(403, 'No tienes permiso para actualizar este evento');
         }
-        $validated['cover_image'] = $request->file('cover_image')->store('events/covers', 'public');
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'long_description' => 'nullable|string|max:2000',
+            'event_date' => 'required|date',
+            'location' => 'nullable|string|max:255',
+            'is_private' => 'boolean',
+            'is_active' => 'boolean',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        ]);
+
+        // Subir nueva imagen si existe
+        if ($request->hasFile('cover_image')) {
+            if ($event->cover_image) {
+                \Storage::disk('public')->delete($event->cover_image);
+            }
+            $validated['cover_image'] = $request->file('cover_image')->store('events/covers', 'public');
+        }
+
+        // Actualizar evento (el modelo se encarga del token automáticamente)
+        $event->update($validated);
+
+        return redirect()->route('photographer.events.index')
+            ->with('success', 'Evento actualizado exitosamente');
     }
-
-    // Actualizar evento (el modelo se encarga del token automáticamente)
-    $event->update($validated);
-
-    return redirect()->route('photographer.events.index')
-        ->with('success', 'Evento actualizado exitosamente');
-}
 
 
     /**

@@ -146,8 +146,8 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
         return Inertia::render('Photographer/Dashboard', [
             'stats' => $stats,
             'photographer' => $photographer,
-            'recentEvents' => $recentEvents,  // ✅ AGREGAR
-            'recentPhotos' => $recentPhotos,  // ✅ AGREGAR
+            'recentEvents' => $recentEvents,  
+            'recentPhotos' => $recentPhotos,   
         ]);
     })->name('dashboard');
 

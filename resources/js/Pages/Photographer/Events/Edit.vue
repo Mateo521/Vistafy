@@ -30,7 +30,7 @@ const handleImageChange = (e) => {
 };
 
 const submit = () => {
-    // ✅ Agregar _method al formulario
+    //  Agregar _method al formulario
     form.transform((data) => ({
         ...data,
         _method: 'PUT'

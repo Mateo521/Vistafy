@@ -30,7 +30,7 @@ class Event extends Model
         'is_active' => 'boolean',
         'event_date' => 'date',
     ];
-
+    protected $appends = ['cover_image_url'];
     // Relaciones
     public function photographer()
     {
@@ -44,28 +44,28 @@ class Event extends Model
 
     // Accessor para URL de portada
     public function getCoverImageUrlAttribute()
-{
-    // 1. Cover image directo
-    if ($this->cover_image) {
-        return asset('storage/' . $this->cover_image);
+    {
+        // 1. Cover image directo
+        if ($this->cover_image) {
+            return asset('storage/' . $this->cover_image);
+        }
+
+        // 2. Primera foto del evento (ya cargada con with())
+        if ($this->relationLoaded('photos') && $this->photos->isNotEmpty()) {
+            $photo = $this->photos->first();
+            $path = $photo->thumbnail_path ?? $photo->watermarked_path ?? $photo->original_path;
+            return $path ? asset('storage/' . $path) : null;
+        }
+
+        // 3. Fallback: buscar primera foto
+        $firstPhoto = $this->photos()->where('is_active', true)->first();
+        if ($firstPhoto) {
+            $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
+            return $path ? asset('storage/' . $path) : null;
+        }
+
+        return null;
     }
-    
-    // 2. Primera foto del evento (ya cargada con with())
-    if ($this->relationLoaded('photos') && $this->photos->isNotEmpty()) {
-        $photo = $this->photos->first();
-        $path = $photo->thumbnail_path ?? $photo->watermarked_path ?? $photo->original_path;
-        return $path ? asset('storage/' . $path) : null;
-    }
-    
-    // 3. Fallback: buscar primera foto
-    $firstPhoto = $this->photos()->where('is_active', true)->first();
-    if ($firstPhoto) {
-        $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
-        return $path ? asset('storage/' . $path) : null;
-    }
-    
-    return null;
-}
 
 
     // Auto-generar slug y token

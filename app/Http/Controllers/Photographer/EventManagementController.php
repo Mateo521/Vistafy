@@ -150,7 +150,7 @@ class EventManagementController extends Controller
             ])
             ->findOrFail($id);
 
-        // ✅ Formatear datos para el formulario
+        //  Formatear datos para el formulario
         $eventData = [
             'id' => $event->id,
             'name' => $event->name,
