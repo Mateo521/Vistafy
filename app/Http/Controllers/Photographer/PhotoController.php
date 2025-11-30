@@ -192,7 +192,7 @@ class PhotoController extends Controller
                         'is_active' => $request->is_active ?? true,
                     ]);
 
-                    \Log::info("💾 Foto guardada en BD", [
+                    \Log::info(" Foto guardada en BD", [
                         'photo_id' => $photo->id,
                         'event_id' => $photo->event_id,
                         'original_path' => $photo->original_path, // ← VERIFICAR QUE SE GUARDÓ

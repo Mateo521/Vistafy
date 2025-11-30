@@ -145,7 +145,7 @@ const formatDate = (dateString) => {
                                         class="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition"
                                     >
                                         <span v-if="form.processing">Guardando...</span>
-                                        <span v-else>💾 Guardar Cambios</span>
+                                        <span v-else> Guardar Cambios</span>
                                     </button>
                                     
                                     <Link
