@@ -138,7 +138,7 @@ const formatDate = (dateString) => {
                                 @click="deletePhoto"
                                 class="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-semibold transition"
                             >
-                                🗑️ Eliminar
+                                 Eliminar
                             </button>
                         </div>
                     </div>

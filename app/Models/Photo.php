@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Support\Str;
 class Photo extends Model
 {
     use HasFactory;
@@ -40,14 +40,14 @@ class Photo extends Model
         'views' => 'integer',
     ];
 
-     
+
     protected $appends = [
         'thumbnail_url',
         'watermarked_url',
         'original_url',
     ];
 
- 
+
     /**
      * Resolver el binding por unique_id
      */
@@ -65,27 +65,46 @@ class Photo extends Model
         return $this->belongsTo(Event::class);
     }
 
+    public function getOriginalUrlAttribute()
+    {
+        if (!$this->original_path) {
+            return null;
+        }
+
+        if (Str::startsWith($this->original_path, ['http://', 'https://'])) {
+            return $this->original_path;
+        }
+
+        return asset('storage/' . $this->original_path);
+    }
     //  ACCESSORS PARA URLs PÚBLICAS
     public function getThumbnailUrlAttribute()
     {
-        return $this->thumbnail_path
-            ? asset('storage/' . $this->thumbnail_path)
-            : 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+        if (!$this->thumbnail_path) {
+            return 'https://via.placeholder.com/400?text=Sin+Imagen';
+        }
+
+        if (Str::startsWith($this->thumbnail_path, ['http://', 'https://'])) {
+            return $this->thumbnail_path;
+        }
+
+        return asset('storage/' . $this->thumbnail_path);
     }
 
     public function getWatermarkedUrlAttribute()
     {
-        return $this->watermarked_path
-            ? asset('storage/' . $this->watermarked_path)
-            : null;
+        if (!$this->watermarked_path) {
+            return $this->thumbnail_url; // Fallback
+        }
+
+        if (Str::startsWith($this->watermarked_path, ['http://', 'https://'])) {
+            return $this->watermarked_path;
+        }
+
+        return asset('storage/' . $this->watermarked_path);
     }
 
-    public function getOriginalUrlAttribute()
-    {
-        return $this->original_path
-            ? asset('storage/' . $this->original_path)
-            : null;
-    }
 
-    
+
+
 }

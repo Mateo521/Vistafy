@@ -43,8 +43,8 @@ const isRecent = (date) => {
 
 // Función para obtener la URL de la imagen
 const getImageUrl = (photo) => {
-    // Prioridad: thumbnail > watermark > file_path
-    return photo.thumbnail_url || photo.watermark_url || photo.file_url || null;
+    // Prioridad: thumbnail > watermark > file_path ## photo.thumbnail_url
+    return  photo.watermarked_url  || photo.thumbnail_url || photo.file_url || null;  
 };
 </script>
 

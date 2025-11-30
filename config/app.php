@@ -123,4 +123,11 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    'watermark_enabled' => env('WATERMARK_ENABLED', true),
+    'watermark_logo_path' => env('WATERMARK_LOGO_PATH', 'watermarks/logo.png'),
+    'watermark_opacity' => env('WATERMARK_OPACITY', 30),
+    'watermark_tile_size' => env('WATERMARK_TILE_SIZE', 300),
+    'watermark_rotation' => env('WATERMARK_ROTATION', -30),
+
 ];

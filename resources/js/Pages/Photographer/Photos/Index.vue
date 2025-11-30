@@ -145,7 +145,7 @@ const formatFileSize = (bytes) => {
                                             class="bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-[10px] font-semibold transition"
                                             title="Eliminar"
                                         >
-                                            🗑️
+                                            Eliminar
                                         </button>
                                     </div>
                                 </div>

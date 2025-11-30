@@ -48,7 +48,6 @@ class PublicGalleryController extends Controller
             ->whereHas('event', function ($query) {
                 $query->where('is_active', true)
                     ->where('is_private', false);
-
             })
             ->latest('created_at')
             ->take(12)
@@ -58,23 +57,30 @@ class PublicGalleryController extends Controller
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
 
-                    // URLs completas de las imágenes
-                    'file_url' => $photo->file_path ? Storage::url($photo->file_path) : null,
-                    'thumbnail_url' => $photo->thumbnail_path ? Storage::url($photo->thumbnail_path) : null,
-                    'watermark_url' => $photo->watermark_path ? Storage::url($photo->watermark_path) : null,
+                    //  Usar los nombres CORRECTOS de los campos
+                    'original_url' => $photo->original_path
+                        ? Storage::url($photo->original_path)
+                        : null,
+                    'thumbnail_url' => $photo->thumbnail_path
+                        ? Storage::url($photo->thumbnail_path)
+                        : null,
+                    'watermarked_url' => $photo->watermarked_path  //  watermarked_path (no watermark_path)
+                        ? Storage::url($photo->watermarked_path)
+                        : null,
 
                     'downloads' => $photo->downloads ?? 0,
                     'created_at' => $photo->created_at->toISOString(),
 
-                    // Información del evento (simplificada)
                     'event_name' => optional($photo->event)->name,
                     'event_slug' => optional($photo->event)->slug,
-                    'event_is_private' => optional($photo->event)->is_private, //  Para ocultar en UI si es necesario
-    
-                    // Información del fotógrafo (simplificada)
-                    'photographer_name' => optional($photo->photographer)->business_name ?? optional($photo->photographer->user)->name ?? null,
+                    'event_is_private' => optional($photo->event)->is_private,
+
+                    'photographer_name' => optional($photo->photographer)->business_name
+                        ?? optional($photo->photographer->user)->name
+                        ?? null,
                 ];
             });
+
 
         // Estadísticas - Solo públicos
         $stats = [
@@ -106,7 +112,7 @@ class PublicGalleryController extends Controller
             ->where('is_active', true)
             ->whereHas('event', function ($q) {
                 $q->where('is_active', true)
-                   ->where('is_private', false);  
+                    ->where('is_private', false);
             });
 
         // Filtros
@@ -147,15 +153,16 @@ class PublicGalleryController extends Controller
 
         $photos = $query->paginate(24)->withQueryString();
 
-        // ✅ CORRECCIÓN: Transformar las fotos correctamente
+        //  CORRECCIÓN: Transformar las fotos correctamente
         $photos->getCollection()->transform(function ($photo) {
             return [
                 'id' => $photo->id,
                 'unique_id' => $photo->unique_id,
                 'title' => $photo->title,
-                'price' => number_format($photo->price, 2), // ✅ Formato correcto
+                'price' => number_format($photo->price, 2), //  Formato correcto
                 'thumbnail_url' => $photo->thumbnail_url,
-                'photographer' => $photo->photographer->business_name, // ✅ SOLO el nombre
+                'watermarked_url' => $photo->watermarked_url,
+                'photographer' => $photo->photographer->business_name, //  SOLO el nombre
             ];
         });
 
@@ -227,6 +234,7 @@ class PublicGalleryController extends Controller
                 'description' => $photo->description,
                 'price' => $photo->price,
                 'preview_url' => $photo->preview_url,
+                'watermarked_url' => $photo->watermarked_url,
                 'thumbnail_url' => $photo->thumbnail_url,
                 'downloads' => $photo->downloads,
                 'photographer' => [
@@ -287,7 +295,7 @@ class PublicGalleryController extends Controller
      */
     public function showEvent(Request $request, $slug)
     {
-        // ✅ Buscar evento por slug (sin filtrar por is_private aún)
+        //  Buscar evento por slug (sin filtrar por is_private aún)
         $event = Event::where('slug', $slug)
             ->with([
                 'photographer' => function ($query) {
@@ -298,12 +306,12 @@ class PublicGalleryController extends Controller
             ->withCount('photos')
             ->firstOrFail();
 
-        // ✅ VALIDACIÓN 1: Evento OCULTO (is_active = false)
+        //  VALIDACIÓN 1: Evento OCULTO (is_active = false)
         if (!$event->is_active) {
             abort(404, 'Este evento no está disponible públicamente');
         }
 
-        // ✅ VALIDACIÓN 2: Evento PRIVADO (requiere token)
+        //  VALIDACIÓN 2: Evento PRIVADO (requiere token)
         if ($event->is_private) {
             $token = $request->query('token');
 
@@ -313,7 +321,7 @@ class PublicGalleryController extends Controller
             }
         }
 
-        // ✅ VALIDACIÓN 3: Evento PÚBLICO (sin restricciones adicionales)
+        //  VALIDACIÓN 3: Evento PÚBLICO (sin restricciones adicionales)
 
         // Query de fotos del evento
         $photosQuery = $event->photos()
@@ -335,7 +343,7 @@ class PublicGalleryController extends Controller
         // Obtener todos los fotógrafos únicos del evento con conteo de fotos
         $photographers = Photographer::select('photographers.id', 'photographers.business_name')
             ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
-            ->where('photos.event_id', $event->id) // ✅ Corregido: usar event_id directo
+            ->where('photos.event_id', $event->id) //  Corregido: usar event_id directo
             ->where('photos.is_active', true)
             ->with('user:id,name')
             ->selectRaw('COUNT(photos.id) as photos_count')
@@ -350,6 +358,7 @@ class PublicGalleryController extends Controller
                 'title' => $photo->title,
                 'price' => $photo->price,
                 'thumbnail_url' => $photo->thumbnail_url,
+                'watermarked_url' => $photo->watermarked_url,
                 'photographer' => [
                     'id' => $photo->photographer->id,
                     'business_name' => $photo->photographer->business_name,
@@ -369,7 +378,7 @@ class PublicGalleryController extends Controller
                 'photos_count' => $event->photos_count,
                 'cover_image_url' => $event->cover_image_url,
                 'downloads' => $event->photos()->sum('downloads'),
-                'is_private' => $event->is_private, // ✅ Agregar para mostrar badge
+                'is_private' => $event->is_private, //  Agregar para mostrar badge
                 'photographer' => [
                     'business_name' => $event->photographer->business_name,
                     'region' => $event->photographer->region,
@@ -533,7 +542,7 @@ class PublicGalleryController extends Controller
             }
         ])
             ->where('is_active', true)
-            ->where('is_private', false)  // ✅ Solo eventos públicos en el listado
+            ->where('is_private', false)  //  Solo eventos públicos en el listado
             ->withCount('photos');
 
         // Filtros opcionales

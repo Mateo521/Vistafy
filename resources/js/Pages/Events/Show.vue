@@ -188,11 +188,11 @@ const filterByPhotographer = () => {
                             <!-- Image -->
                             <div class="aspect-square overflow-hidden bg-gray-100 relative">
                                 <img 
-                                    :src="photo.thumbnail_url" 
+                                    :src="photo.watermarked_url" 
                                     :alt="photo.title || photo.unique_id"
                                     class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                                     @error="(e) => e.target.src = 'https://via.placeholder.com/400?text=Sin+Imagen'"
-                                />
+                                /> <!-- thumbnail_url -->
                                 <!-- Price Badge -->
                                 <div class="absolute top-2 right-2 bg-white/95 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-purple-600 shadow-lg">
                                     ${{ photo.price }}

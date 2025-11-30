@@ -125,7 +125,7 @@ class EventController extends Controller
             abort(403, 'No tienes permiso para ver este evento');
         }
 
-        // ✅ Cargar fotos del evento con paginación
+        //  Cargar fotos del evento con paginación
         $photos = $event->photos()
             ->latest()
             ->paginate(24)
@@ -138,7 +138,7 @@ class EventController extends Controller
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
-        // ✅ SOLUCIÓN: Serializar manualmente para asegurar que todos los campos lleguen
+        //  SOLUCIÓN: Serializar manualmente para asegurar que todos los campos lleguen
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
                 'id' => $event->id,

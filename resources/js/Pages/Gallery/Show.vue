@@ -110,9 +110,9 @@ const submitPurchase = async () => {
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div class="relative">
                             <!-- Main Image -->
-                            <img :src="photo.preview_url || photo.thumbnail_url" :alt="photo.title"
+                            <img :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"   
                                 class="w-full h-auto cursor-pointer" @click="showFullImage = true"
-                                @error="(e) => e.target.src = 'https://via.placeholder.com/800?text=Imagen+no+disponible'" />
+                                @error="(e) => e.target.src = 'https://via.placeholder.com/800?text=Imagen+no+disponible'" /> <!-- :src="photo.preview_url || photo.thumbnail_url" :alt="photo.title" -->
 
                             <!-- Watermark Notice -->
                             <div

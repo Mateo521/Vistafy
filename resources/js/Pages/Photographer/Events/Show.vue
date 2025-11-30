@@ -22,7 +22,7 @@ const props = defineProps({
     },
 });
 
-// ✅ URLs seguras con computed
+//  URLs seguras con computed
 const privateUrl = computed(() => {
     return `${window.location.origin}/eventos/${props.event.slug}?token=${props.event.private_token}`;
 });
@@ -33,7 +33,7 @@ const publicUrl = computed(() => {
 
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
-        alert('✅ Enlace copiado al portapapeles');
+        alert(' Enlace copiado al portapapeles');
     }).catch(() => {
         alert('❌ Error al copiar');
     });
@@ -74,7 +74,7 @@ const uploadPhotos = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            console.log('✅ Fotos subidas exitosamente');
+            console.log(' Fotos subidas exitosamente');
             showUploadModal.value = false;
             selectedFiles.value = [];
             previewUrls.value = [];
@@ -204,7 +204,7 @@ const updateCoverImage = (photoId) => {
                     </div>
                 </div>
 
-                <!-- ✅ AGREGAR ESTA SECCIÓN AQUÍ (Visibility & Sharing) -->
+                <!--  AGREGAR ESTA SECCIÓN AQUÍ (Visibility & Sharing) -->
                 <!-- Visibility & Sharing Section -->
                 <div class="mb-8">
                     <!-- Evento Privado -->
@@ -226,7 +226,7 @@ const updateCoverImage = (photoId) => {
                                     <!-- Enlace privado -->
                                     <div class="bg-white rounded-lg p-4 border-2 border-yellow-300 mb-4">
                                         <label class="block text-xs font-semibold text-yellow-800 mb-2">
-                                            🔗 ENLACE PRIVADO (con token)
+                                             ENLACE PRIVADO (con token)
                                         </label>
                                         <div class="flex items-center gap-2">
                                             <input :value="privateUrl" readonly
@@ -234,7 +234,7 @@ const updateCoverImage = (photoId) => {
                                                 @click="$event.target.select()" />
                                             <button @click="copyToClipboard(privateUrl)"
                                                 class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-semibold transition whitespace-nowrap">
-                                                📋 Copiar
+                                                 Copiar
                                             </button>
                                         </div>
                                     </div>
@@ -268,7 +268,7 @@ const updateCoverImage = (photoId) => {
 
                                     <div class="bg-white rounded-lg p-4 border-2 border-green-300">
                                         <label class="block text-xs font-semibold text-green-800 mb-2">
-                                            🔗 ENLACE PÚBLICO
+                                             ENLACE PÚBLICO
                                         </label>
                                         <div class="flex items-center gap-2">
                                             <input :value="publicUrl" readonly
@@ -276,7 +276,7 @@ const updateCoverImage = (photoId) => {
                                                 @click="$event.target.select()" />
                                             <button @click="copyToClipboard(publicUrl)"
                                                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition whitespace-nowrap">
-                                                📋 Copiar
+                                                 Copiar
                                             </button>
                                         </div>
                                     </div>
