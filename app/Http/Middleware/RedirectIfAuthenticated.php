@@ -22,7 +22,7 @@ class RedirectIfAuthenticated
                 if ($user->isPhotographer()) {
                     return redirect()->route('photographer.dashboard');
                 } elseif ($user->isAdmin()) {
-                    return redirect('/admin/dashboard'); // Si lo implementas después
+                    return redirect('/admin/panel'); // Si lo implementas después
                 }
                 
                 // Cliente normal va a la galería

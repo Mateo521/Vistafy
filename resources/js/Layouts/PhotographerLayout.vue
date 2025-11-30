@@ -48,7 +48,7 @@ const dashboardRoute = computed(() => {
                         <!-- Dashboard -->
                         <Link :href="dashboardRoute" :class="[
                             'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
-                            ($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/dashboard'))
+                            ($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))
                                 ? 'bg-purple-50 text-purple-600'
                                 : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600'
                         ]">
@@ -207,7 +207,7 @@ const dashboardRoute = computed(() => {
 
                     <Link :href="dashboardRoute" :class="[
                         'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all',
-                        ($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/dashboard'))
+                        ($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))
                             ? 'bg-purple-50 text-purple-600'
                             : 'text-gray-700 hover:bg-gray-100'
                     ]">

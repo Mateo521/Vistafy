@@ -4,12 +4,13 @@ import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+const user = computed(() => auth.value?.user);
 const mobileMenuOpen = ref(false);
 
 // Detectar si estamos en la página de inicio
 const isHomePage = computed(() => page.url === '/');
 
-//  NUEVO: Detectar scroll
+// NUEVO: Detectar scroll
 const scrolled = ref(false);
 
 const handleScroll = () => {
@@ -23,8 +24,43 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
 });
-</script>
 
+// ✅ NUEVO: Helpers para roles
+const isAdmin = computed(() => user.value?.is_admin === true);
+const isPhotographer = computed(() => user.value?.role === 'photographer');
+const isClient = computed(() => user.value?.role === 'client');
+
+// ✅ NUEVO: Ruta dinámica del dashboard según el rol
+const dashboardRoute = computed(() => {
+    if (!user.value) return null;
+    
+    if (isAdmin.value) {
+        return route('admin.dashboard');
+    }
+    
+    if (isPhotographer.value) {
+        return route('photographer.dashboard');
+    }
+    
+    // Para clientes, ir al home
+    return route('home');
+});
+
+// ✅ NUEVO: Texto dinámico del botón
+const dashboardText = computed(() => {
+    if (!user.value) return 'Dashboard';
+    
+    if (isAdmin.value) {
+        return ' Panel Admin';
+    }
+    
+    if (isPhotographer.value) {
+        return '📷 Mi Panel';
+    }
+    
+    return 'Mi Cuenta';
+});
+</script>
 
 <template>
     <div class="min-h-screen bg-gray-50">
@@ -32,7 +68,7 @@ onUnmounted(() => {
 
         <nav :class="[
             'fixed top-0 w-full z-50 transition-all duration-300',
-            //  CAMBIADO: Agregar fondo cuando se hace scroll en home
+            // CAMBIADO: Agregar fondo cuando se hace scroll en home
             isHomePage
                 ? (scrolled ? 'bg-white shadow-lg' : 'bg-transparent')
                 : 'bg-white shadow-sm'
@@ -44,7 +80,7 @@ onUnmounted(() => {
                     <Link href="/" class="flex items-center space-x-3 group">
                     <div :class="[
                         'w-12 h-12 rounded-xl flex items-center justify-center transition-all',
-                        //  CAMBIADO: Ajustar según scroll
+                        // CAMBIADO: Ajustar según scroll
                         isHomePage
                             ? (scrolled
                                 ? 'bg-gradient-to-br from-purple-600 to-indigo-600 group-hover:from-purple-700 group-hover:to-indigo-700'
@@ -60,7 +96,7 @@ onUnmounted(() => {
                     </div>
                     <span :class="[
                         'text-2xl font-bold transition-colors',
-                        //  CAMBIADO: Ajustar color según scroll
+                        // CAMBIADO: Ajustar color según scroll
                         isHomePage
                             ? (scrolled ? 'text-gray-900' : 'text-white drop-shadow-lg')
                             : 'text-gray-900'
@@ -111,7 +147,7 @@ onUnmounted(() => {
 
                     <!-- Auth Buttons -->
                     <div class="hidden md:flex items-center space-x-4">
-                        <template v-if="!auth?.user">
+                        <template v-if="!user">
                             <Link :href="route('login')" :class="[
                                 'px-5 py-2.5 font-medium transition-all',
                                 isHomePage && !scrolled
@@ -129,23 +165,38 @@ onUnmounted(() => {
                             ]">
                             Registrarse
                             </Link>
+
+                            
+                            <Link :href="route('photographer.register')" :class="[
+                                'px-6 py-2.5 rounded-lg font-semibold transition-all border-2',
+                                isHomePage && !scrolled
+                                    ? 'border-white/50 text-white hover:bg-white/10 backdrop-blur-md'
+                                    : 'border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
+                            ]">
+                             Soy fotógrafo
+                            </Link>
                         </template>
 
+                       
                         <template v-else>
-                            <Link :href="route('photographer.dashboard')" :class="[
-                                'px-5 py-2.5 font-medium transition-all',
-                                isHomePage && !scrolled
-                                    ? 'text-white/90 hover:text-white'
-                                    : 'text-gray-700 hover:text-purple-600'
-                            ]">
-                            Dashboard
+                            <Link 
+                                v-if="dashboardRoute"
+                                :href="dashboardRoute" 
+                                :class="[
+                                    'px-5 py-2.5 font-medium transition-all rounded-lg',
+                                    isHomePage && !scrolled
+                                        ? 'text-white/90 hover:text-white hover:bg-white/10'
+                                        : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
+                                ]"
+                            >
+                                {{ dashboardText }}
                             </Link>
 
                             <Link :href="route('logout')" method="post" as="button" :class="[
-                                'px-5 py-2.5 font-medium transition-all',
+                                'px-5 py-2.5 font-medium transition-all rounded-lg',
                                 isHomePage && !scrolled
-                                    ? 'text-white/90 hover:text-white'
-                                    : 'text-gray-700 hover:text-red-600'
+                                    ? 'text-white/90 hover:text-white hover:bg-red-500/20'
+                                    : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
                             ]">
                             Cerrar Sesión
                             </Link>
@@ -216,7 +267,7 @@ onUnmounted(() => {
                     </Link>
 
                     <div class="pt-4 border-t" :class="isHomePage ? 'border-white/10' : 'border-gray-200'">
-                        <template v-if="!auth?.user">
+                        <template v-if="!user">
                             <Link :href="route('login')" :class="[
                                 'block px-4 py-3 rounded-lg font-medium transition-all mb-2',
                                 isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100'
@@ -225,17 +276,33 @@ onUnmounted(() => {
                             </Link>
 
                             <Link :href="route('register')"
-                                class="block px-4 py-3 rounded-lg font-semibold text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all">
+                                class="block px-4 py-3 rounded-lg font-semibold text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all mb-2">
                             Registrarse
+                            </Link>
+
+                            <!-- ✅ NUEVO: Botón "Soy Fotógrafo" en mobile -->
+                            <Link :href="route('photographer.register')"
+                                :class="[
+                                    'block px-4 py-3 rounded-lg font-semibold text-center border-2 transition-all',
+                                    isHomePage
+                                        ? 'border-white/50 text-white hover:bg-white/10'
+                                        : 'border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
+                                ]">
+                             Soy Fotógrafo
                             </Link>
                         </template>
 
+                        <!-- ✅ ACTUALIZADO: Dashboard dinámico en mobile -->
                         <template v-else>
-                            <Link :href="route('photographer.dashboard')" :class="[
-                                'block px-4 py-3 rounded-lg font-medium transition-all mb-2',
-                                isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100'
-                            ]">
-                            Dashboard
+                            <Link 
+                                v-if="dashboardRoute"
+                                :href="dashboardRoute" 
+                                :class="[
+                                    'block px-4 py-3 rounded-lg font-medium transition-all mb-2',
+                                    isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100'
+                                ]"
+                            >
+                                {{ dashboardText }}
                             </Link>
 
                             <Link :href="route('logout')" method="post" as="button"

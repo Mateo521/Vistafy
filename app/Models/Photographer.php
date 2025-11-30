@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\Storage;
 class Photographer extends Model
 {
     use SoftDeletes;
@@ -23,13 +24,67 @@ class Photographer extends Model
         'phone',
         'is_active',
         'is_verified',
+        'status', // ✅ Nuevo
+        'rejection_reason', // ✅ Nuevo
+        'approved_at', // ✅ Nuevo
+        'approved_by', // ✅ Nuevo
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'is_verified' => 'boolean',
+        'approved_at' => 'datetime',
     ];
 
+    // ✅ Scopes para filtrar por estado
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+    
+
+    // Relaciones
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    
+    public function photos(): HasMany
+    {
+        return $this->hasMany(Photo::class);
+    }
     /**
      * Boot method para generar slug automáticamente
      */
@@ -40,7 +95,7 @@ class Photographer extends Model
         static::creating(function ($photographer) {
             if (empty($photographer->slug)) {
                 $photographer->slug = Str::slug($photographer->business_name);
-                
+
                 // Asegurar que el slug sea único
                 $count = 1;
                 while (static::where('slug', $photographer->slug)->exists()) {
@@ -51,29 +106,9 @@ class Photographer extends Model
         });
     }
 
-    /**
-     * Usuario asociado al fotógrafo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
-    /**
-     * Eventos del fotógrafo
-     */
-    public function events(): HasMany
-    {
-        return $this->hasMany(Event::class);
-    }
 
-    /**
-     * Fotos del fotógrafo
-     */
-    public function photos(): HasMany
-    {
-        return $this->hasMany(Photo::class);
-    }
+
 
     /**
      * Obtener el email del fotógrafo desde el usuario
@@ -88,21 +123,26 @@ class Photographer extends Model
      */
     public function getProfilePhotoUrlAttribute()
     {
-        if ($this->profile_photo) {
-            return asset('storage/' . $this->profile_photo);
+        if (!$this->profile_photo) {
+            return 'https://ui-avatars.com/api/?name=' . urlencode($this->business_name) . '&size=200&background=6366f1&color=fff';
         }
-        return null;
+
+        // ✅ Usar Storage::url() directamente
+        return Storage::url($this->profile_photo);
     }
+
 
     /**
      * Obtener URL de la foto de portada
      */
     public function getCoverPhotoUrlAttribute()
     {
-        if ($this->cover_photo) {
-            return asset('storage/' . $this->cover_photo);
+        if (!$this->cover_photo) {
+            return null;
         }
-        return null;
+
+        // ✅ Usar Storage::url() directamente
+        return Storage::url($this->cover_photo);
     }
 
     /**

@@ -13,7 +13,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // 'customer', 'photographer', 'admin'
+        'role',      // 'client', 'photographer'
+        'is_admin',  // ✅ NUEVO: true/false para admin
     ];
 
     protected $hidden = [
@@ -24,21 +25,43 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_admin' => 'boolean', // ✅ NUEVO
     ];
 
-    // Relaciones
+    // ✅ Relaciones
     public function photographer()
     {
         return $this->hasOne(Photographer::class);
     }
 
-    public function isPhotographer()
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    // ✅ Helpers de roles
+    public function isPhotographer(): bool
     {
         return $this->role === 'photographer';
     }
 
-    public function isAdmin()
+    public function isClient(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'client';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true; // ✅ ACTUALIZADO: usar campo is_admin
+    }
+
+    // ✅ Helper adicional: verificar si es fotógrafo aprobado
+    public function isApprovedPhotographer(): bool
+    {
+        if (!$this->isPhotographer()) {
+            return false;
+        }
+
+        return $this->photographer?->status === 'approved';
     }
 }

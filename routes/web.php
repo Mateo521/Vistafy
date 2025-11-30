@@ -7,10 +7,8 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\PaymentController;
-
-
+use App\Http\Controllers\Auth\PhotographerRegistrationController;
 use App\Http\Controllers\WebhookController;
-
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +39,17 @@ Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name(
 
 /*
 |--------------------------------------------------------------------------
-|  Rutas de Pago - Mercado Pago
+| ✅ NUEVO: Registro de Fotógrafos (Público)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/registro-fotografo', [PhotographerRegistrationController::class, 'create'])
+    ->name('photographer.register');
+Route::post('/registro-fotografo', [PhotographerRegistrationController::class, 'store']);
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de Pago - Mercado Pago
 |--------------------------------------------------------------------------
 */
 
@@ -59,19 +67,12 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });
 
-
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
 Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
 
-
-
-
-
 Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'checkStatus'])
     ->name('purchases.check-status');
-
-
 
 // Descarga directa
 Route::get('/pago/descargar/{token}', [DownloadController::class, 'download'])
@@ -81,11 +82,7 @@ Route::get('/pago/descargar/{token}', [DownloadController::class, 'download'])
 Route::get('/downloads/{token}', [DownloadController::class, 'show'])
     ->name('download.show');
 
-
-
-
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
-
 
 /*
 |--------------------------------------------------------------------------
@@ -111,13 +108,38 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Rutas del Panel de Fotógrafo
+| ✅ NUEVO: Páginas de Estado de Fotógrafo (Autenticadas)
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photographer.')->group(function () {
+Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(function () {
+    // Página de pendiente de aprobación
+    Route::get('/pendiente', function () {
+        return Inertia::render('Photographer/Pending');
+    })->name('pending');
 
-    // Dashboard
+    // Página de cuenta rechazada
+    Route::get('/rechazado', function () {
+        $photographer = auth()->user()->photographer;
+        return Inertia::render('Photographer/Rejected', [
+            'reason' => $photographer?->rejection_reason,
+        ]);
+    })->name('rejected');
+
+    // Página de cuenta suspendida
+    Route::get('/suspendido', function () {
+        return Inertia::render('Photographer/Suspended');
+    })->name('suspended');
+});
+
+/*
+|--------------------------------------------------------------------------
+| ✅ ACTUALIZADO: Panel de Fotógrafo (Requiere Aprobación)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name('photographer.')->group(function () {
+
     // Dashboard
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;
@@ -129,14 +151,12 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
             'total_downloads' => \App\Models\Photo::where('photographer_id', $photographer->id)->sum('downloads'),
         ];
 
-        
         $recentEvents = \App\Models\Event::where('photographer_id', $photographer->id)
             ->withCount('photos')
             ->latest()
             ->take(6)
             ->get();
 
-        
         $recentPhotos = \App\Models\Photo::where('photographer_id', $photographer->id)
             ->with('event:id,name')
             ->latest()
@@ -146,35 +166,71 @@ Route::middleware(['auth', 'photographer'])->prefix('fotografo')->name('photogra
         return Inertia::render('Photographer/Dashboard', [
             'stats' => $stats,
             'photographer' => $photographer,
-            'recentEvents' => $recentEvents,  
-            'recentPhotos' => $recentPhotos,   
+            'recentEvents' => $recentEvents,
+            'recentPhotos' => $recentPhotos,
         ]);
     })->name('dashboard');
 
-
     // Perfil
-    Route::get('/mi-perfil', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'show'])->name('profile');
-    Route::get('/mi-perfil/editar', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/mi-perfil/actualizar', [App\Http\Controllers\Photographer\PhotographerProfileController::class, 'update'])->name('profile.update');
+    Route::get('/mi-perfil', [PhotographerProfileController::class, 'show'])->name('profile');
+    Route::get('/mi-perfil/editar', [PhotographerProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/mi-perfil/actualizar', [PhotographerProfileController::class, 'update'])->name('profile.update');
 
     // Fotos
-    Route::get('/fotos', [App\Http\Controllers\Photographer\PhotoController::class, 'index'])->name('photos.index');
-    Route::get('/fotos/crear', [App\Http\Controllers\Photographer\PhotoController::class, 'create'])->name('photos.create');
-    Route::post('/fotos', [App\Http\Controllers\Photographer\PhotoController::class, 'store'])->name('photos.store');
-    Route::get('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'show'])->name('photos.show');
-    Route::get('/fotos/{photo}/editar', [App\Http\Controllers\Photographer\PhotoController::class, 'edit'])->name('photos.edit');
-    Route::put('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'update'])->name('photos.update');
-    Route::delete('/fotos/{photo}', [App\Http\Controllers\Photographer\PhotoController::class, 'destroy'])->name('photos.destroy');
+    Route::get('/fotos', [PhotoController::class, 'index'])->name('photos.index');
+    Route::get('/fotos/crear', [PhotoController::class, 'create'])->name('photos.create');
+    Route::post('/fotos', [PhotoController::class, 'store'])->name('photos.store');
+    Route::get('/fotos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
+    Route::get('/fotos/{photo}/editar', [PhotoController::class, 'edit'])->name('photos.edit');
+    Route::put('/fotos/{photo}', [PhotoController::class, 'update'])->name('photos.update');
+    Route::delete('/fotos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
 
     // Eventos
-    Route::get('/eventos', [App\Http\Controllers\Photographer\EventController::class, 'index'])->name('events.index');
-    Route::get('/eventos/crear', [App\Http\Controllers\Photographer\EventController::class, 'create'])->name('events.create');
-    Route::post('/eventos', [App\Http\Controllers\Photographer\EventController::class, 'store'])->name('events.store');
-    Route::get('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'show'])->name('events.show');
-    Route::get('/eventos/{event}/editar', [App\Http\Controllers\Photographer\EventController::class, 'edit'])->name('events.edit');
-    Route::put('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'update'])->name('events.update');
-    Route::delete('/eventos/{event}', [App\Http\Controllers\Photographer\EventController::class, 'destroy'])->name('events.destroy');
-    Route::post('/eventos/{event}/cover-image', [App\Http\Controllers\Photographer\EventController::class, 'updateCoverImage'])->name('events.cover-image');
+    Route::get('/eventos', [EventController::class, 'index'])->name('events.index');
+    Route::get('/eventos/crear', [EventController::class, 'create'])->name('events.create');
+    Route::post('/eventos', [EventController::class, 'store'])->name('events.store');
+    Route::get('/eventos/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/eventos/{event}/editar', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/eventos/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/eventos/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
 });
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de Administrador
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Dashboard de admin
+    Route::get('/panel', function () {
+        $stats = [
+            'total_photographers' => \App\Models\Photographer::count(),
+            'pending_photographers' => \App\Models\Photographer::where('status', 'pending')->count(),
+            'approved_photographers' => \App\Models\Photographer::where('status', 'approved')->count(),
+            'rejected_photographers' => \App\Models\Photographer::where('status', 'rejected')->count(),
+            'suspended_photographers' => \App\Models\Photographer::where('status', 'suspended')->count(),
+            'total_events' => \App\Models\Event::count(),
+            'total_photos' => \App\Models\Photo::count(),
+            'total_users' => \App\Models\User::count(),
+        ];
+
+        return Inertia::render('Admin/Dashboard', [
+            'stats' => $stats,
+        ]);
+    })->name('dashboard');
+
+    // ✅ Gestión de fotógrafos
+    Route::get('/fotografos', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'index'])->name('photographers.index');
+    Route::post('/fotografos/{photographer}/aprobar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'approve'])->name('photographers.approve');
+    Route::post('/fotografos/{photographer}/rechazar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reject'])->name('photographers.reject');
+    Route::post('/fotografos/{photographer}/suspender', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'suspend'])->name('photographers.suspend');
+    Route::post('/fotografos/{photographer}/reactivar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reactivate'])->name('photographers.reactivate');
+});
+
 
 require __DIR__ . '/auth.php';

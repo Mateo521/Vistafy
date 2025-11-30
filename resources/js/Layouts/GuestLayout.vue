@@ -18,7 +18,7 @@ import { Link } from '@inertiajs/vue3';
         </div>
 
         <!-- Contenedor del formulario con glassmorphism -->
-        <div class="relative z-10 w-full max-w-md px-6 py-8">
+        <div class="relative z-10 w-full max-w-xl px-6 py-8">
             <!-- Logo -->
             <div class="flex justify-center mb-8">
                 <Link :href="route('home')" class="transform hover:scale-105 transition duration-300">
