@@ -172,9 +172,10 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     })->name('dashboard');
 
     // Perfil
-    Route::get('/mi-perfil', [PhotographerProfileController::class, 'show'])->name('profile');
-    Route::get('/mi-perfil/editar', [PhotographerProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/mi-perfil/actualizar', [PhotographerProfileController::class, 'update'])->name('profile.update');
+    Route::get('/perfil/editar', [App\Http\Controllers\Photographer\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/perfil/actualizar', [App\Http\Controllers\Photographer\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/perfil/foto-perfil', [App\Http\Controllers\Photographer\ProfileController::class, 'deleteProfilePhoto'])->name('profile.photo.delete');
+    Route::delete('/perfil/banner', [App\Http\Controllers\Photographer\ProfileController::class, 'deleteBannerPhoto'])->name('profile.banner.delete');
 
     // Fotos
     Route::get('/fotos', [PhotoController::class, 'index'])->name('photos.index');

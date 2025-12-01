@@ -9,26 +9,6 @@ use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'photographer']);
-    }
-
-    /**
-     * Mostrar perfil del fotógrafo
-     */
-    public function show()
-    {
-        $photographer = auth()->user()->photographer->load('photos');
-
-        return Inertia::render('Photographer/Profile/Show', [
-            'photographer' => $photographer,
-        ]);
-    }
-
-    /**
-     * Formulario de edición
-     */
     public function edit()
     {
         $photographer = auth()->user()->photographer;
@@ -38,23 +18,18 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Actualizar perfil
-     */
     public function update(Request $request)
     {
         $photographer = auth()->user()->photographer;
 
-        $request->validate([
+        $validated = $request->validate([
             'business_name' => 'required|string|max:255',
-            'region' => 'required|in:norte,centro,sur',
             'bio' => 'nullable|string|max:1000',
             'phone' => 'nullable|string|max:20',
-            'profile_photo' => 'nullable|image|max:2048',
-            'cover_photo' => 'nullable|image|max:5120',
+            'region' => 'required|string|max:100',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'banner_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
-
-        $data =$request->only(['business_name', 'region', 'bio', 'phone']);
 
         // Manejar foto de perfil
         if ($request->hasFile('profile_photo')) {
@@ -63,23 +38,47 @@ class ProfileController extends Controller
                 Storage::disk('public')->delete($photographer->profile_photo);
             }
 
-            $path =$request->file('profile_photo')->store('photographers/profiles', 'public');
-            $data['profile_photo'] = $path;
+            $path = $request->file('profile_photo')->store('photographers/profiles', 'public');
+            $validated['profile_photo'] = $path;
         }
 
-        // Manejar foto de portada
-        if ($request->hasFile('cover_photo')) {
-            // Eliminar foto anterior
-            if ($photographer->cover_photo) {
-                Storage::disk('public')->delete($photographer->cover_photo);
+        // Manejar banner
+        if ($request->hasFile('banner_photo')) {
+            // Eliminar banner anterior
+            if ($photographer->banner_photo) {
+                Storage::disk('public')->delete($photographer->banner_photo);
             }
 
-            $path =$request->file('cover_photo')->store('photographers/covers', 'public');
-            $data['cover_photo'] = $path;
+            $path = $request->file('banner_photo')->store('photographers/banners', 'public');
+            $validated['banner_photo'] = $path;
         }
 
-        $photographer->update($data);
+        $photographer->update($validated);
 
-        return redirect()->route('photographer.profile')->with('success', 'Perfil actualizado exitosamente');
+        return redirect()->back()->with('success', '¡Perfil actualizado correctamente!');
+    }
+
+    public function deleteProfilePhoto()
+    {
+        $photographer = auth()->user()->photographer;
+
+        if ($photographer->profile_photo) {
+            Storage::disk('public')->delete($photographer->profile_photo);
+            $photographer->update(['profile_photo' => null]);
+        }
+
+        return redirect()->back()->with('success', 'Foto de perfil eliminada');
+    }
+
+    public function deleteBannerPhoto()
+    {
+        $photographer = auth()->user()->photographer;
+
+        if ($photographer->banner_photo) {
+            Storage::disk('public')->delete($photographer->banner_photo);
+            $photographer->update(['banner_photo' => null]);
+        }
+
+        return redirect()->back()->with('success', 'Banner eliminado');
     }
 }

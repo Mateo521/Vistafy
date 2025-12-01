@@ -19,23 +19,32 @@ class Photographer extends Model
         'slug',
         'region',
         'bio',
-        'profile_photo',
-        'cover_photo',
         'phone',
+        'profile_photo',      // ✅ NUEVO
+        'banner_photo',       // ✅ NUEVO
         'is_active',
         'is_verified',
-        'status', //  Nuevo
-        'rejection_reason', //  Nuevo
-        'approved_at', //  Nuevo
-        'approved_by', //  Nuevo
+        'status',
+        'rejection_reason',
+        'approved_at',
+        'approved_by',
+        'suspended_at',
+        'suspended_by',
+        'suspension_reason',
     ];
+
 
     protected $casts = [
         'is_active' => 'boolean',
         'is_verified' => 'boolean',
         'approved_at' => 'datetime',
+        'suspended_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'profile_photo_url',
+        'banner_photo_url',
+    ];
     //  Scopes para filtrar por estado
     public function scopeApproved($query)
     {
@@ -62,7 +71,7 @@ class Photographer extends Model
     {
         return $this->status === 'pending';
     }
-    
+
 
     // Relaciones
     public function user(): BelongsTo
@@ -80,7 +89,7 @@ class Photographer extends Model
         return $this->hasMany(Event::class);
     }
 
-    
+
     public function photos(): HasMany
     {
         return $this->hasMany(Photo::class);
@@ -123,14 +132,11 @@ class Photographer extends Model
      */
     public function getProfilePhotoUrlAttribute()
     {
-        if (!$this->profile_photo) {
-            return 'https://ui-avatars.com/api/?name=' . urlencode($this->business_name) . '&size=200&background=6366f1&color=fff';
+        if ($this->profile_photo && Storage::disk('public')->exists($this->profile_photo)) {
+            return Storage::url($this->profile_photo);
         }
-
-        //  Usar Storage::url() directamente
-        return Storage::url($this->profile_photo);
+        return null;
     }
-
 
     /**
      * Obtener URL de la foto de portada
@@ -143,6 +149,19 @@ class Photographer extends Model
 
         //  Usar Storage::url() directamente
         return Storage::url($this->cover_photo);
+    }
+
+    public function getBannerPhotoUrlAttribute()
+    {
+        if ($this->banner_photo && Storage::disk('public')->exists($this->banner_photo)) {
+            return Storage::url($this->banner_photo);
+        }
+        return null;
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 
     /**

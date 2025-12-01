@@ -54,9 +54,10 @@ class PhotographerController extends Controller
         // Agregar URLs completas para las fotos
         $photographers->getCollection()->transform(function ($photographer) {
             $photographer->profile_photo_url = $photographer->profile_photo_url;
-            $photographer->cover_photo_url = $photographer->cover_photo_url;
+            $photographer->banner_photo_url = $photographer->banner_photo_url;
             return $photographer;
         });
+
 
         // Regiones únicas para filtro
         $regions = Photographer::where('is_verified', true)
@@ -139,7 +140,7 @@ class PhotographerController extends Controller
                 'instagram' => $photographer->instagram,
                 'facebook' => $photographer->facebook,
                 'profile_photo_url' => $photographer->profile_photo_url,
-                'cover_photo_url' => $photographer->cover_photo_url,
+                'banner_photo_url' => $photographer->banner_photo_url,
                 'user' => [
                     'name' => $photographer->user->name,
                     'email' => $photographer->user->email,

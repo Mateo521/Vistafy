@@ -1,11 +1,25 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { UserCircleIcon } from '@heroicons/vue/24/outline';
 
 const showingNavigationDropdown = ref(false);
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+
+// ✅ AGREGAR: Obtener foto de perfil
+const profilePhotoUrl = computed(() => {
+    if (user.value.role === 'photographer' && user.value.photographer?.profile_photo_url) {
+        return user.value.photographer.profile_photo_url;
+    }
+    return null;
+});
+
+// ✅ AGREGAR: Obtener iniciales
+const userInitials = computed(() => {
+    return user.value.name.charAt(0).toUpperCase();
+});
 
 // Determinar la ruta del dashboard según el rol
 const dashboardRoute = computed(() => {
@@ -18,6 +32,7 @@ const dashboardRoute = computed(() => {
     }
 });
 </script>
+
 
 <template>
     <div class="min-h-screen bg-gray-50">
@@ -100,6 +115,19 @@ const dashboardRoute = computed(() => {
                         </svg>
                         <span>Perfil</span>
                         </Link>
+
+                        <!-- Perfil de Fotógrafo (Solo Fotógrafo) -->
+                        <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')" :class="[
+                            'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
+                            $page.url.includes('/fotografo/perfil')
+                                ? 'bg-purple-50 text-purple-600'
+                                : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600'
+                        ]">
+                        <UserCircleIcon class="w-5 h-5" />
+                        <span>Mi Perfil Público</span>
+                        </Link>
+
+
                     </div>
 
                     <!-- Right Side -->
@@ -118,12 +146,19 @@ const dashboardRoute = computed(() => {
                         <div class="relative">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all">
-                                <div
-                                    class="w-9 h-9 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
-                                    <span class="text-white font-semibold text-sm">
-                                        {{ user.name.charAt(0).toUpperCase() }}
-                                    </span>
+
+                                <!-- ✅ Avatar con Foto de Perfil -->
+                                <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-purple-200">
+                                    <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
+                                        class="w-full h-full object-cover" />
+                                    <div v-else
+                                        class="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+                                        <span class="text-white font-semibold text-sm">
+                                            {{ userInitials }}
+                                        </span>
+                                    </div>
                                 </div>
+
                                 <div class="text-left">
                                     <div class="text-sm font-semibold text-gray-900">{{ user.name }}</div>
                                     <div class="text-xs text-gray-500 capitalize">{{ user.role }}</div>
@@ -154,6 +189,12 @@ const dashboardRoute = computed(() => {
                                     </svg>
                                     <span>Configuración</span>
                                     </Link>
+
+                                    <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')"
+                                        class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                    <UserCircleIcon class="w-4 h-4" />
+                                    <span>Mi Perfil Público</span>
+                                    </Link>
                                 </div>
 
                                 <div class="border-t border-gray-100 py-2">
@@ -168,6 +209,12 @@ const dashboardRoute = computed(() => {
                                 </div>
                             </div>
                         </div>
+
+
+
+
+
+
                     </div>
 
                     <!-- Mobile menu button -->
@@ -191,19 +238,28 @@ const dashboardRoute = computed(() => {
             <!-- Mobile Menu -->
             <div v-show="showingNavigationDropdown" class="md:hidden border-t border-gray-200 bg-white">
                 <div class="px-4 py-4 space-y-2">
-                    <!-- User Info -->
+
+
+
+                    <!-- ✅ User Info con Foto -->
                     <div class="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-lg mb-4">
-                        <div
-                            class="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
-                            <span class="text-white font-semibold">
-                                {{ user.name.charAt(0).toUpperCase() }}
-                            </span>
+                        <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-200">
+                            <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
+                                class="w-full h-full object-cover" />
+                            <div v-else
+                                class="w-full h-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+                                <span class="text-white font-semibold">
+                                    {{ userInitials }}
+                                </span>
+                            </div>
                         </div>
                         <div>
                             <div class="text-sm font-semibold text-gray-900">{{ user.name }}</div>
                             <div class="text-xs text-gray-500 capitalize">{{ user.role }}</div>
                         </div>
                     </div>
+
+
 
                     <Link :href="dashboardRoute" :class="[
                         'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all',
@@ -255,6 +311,33 @@ const dashboardRoute = computed(() => {
                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <span>Perfil</span>
+
+                    <Link :href="route('profile.edit')" :class="[
+                        'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all',
+                        $page.url.includes('/profile')
+                            ? 'bg-purple-50 text-purple-600'
+                            : 'text-gray-700 hover:bg-gray-100'
+                    ]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>Configuración</span>
+                    </Link>
+
+                    <!-- ✅ Perfil Público para Fotógrafos -->
+                    <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')" :class="[
+                        'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all',
+                        $page.url.includes('/fotografo/perfil')
+                            ? 'bg-purple-50 text-purple-600'
+                            : 'text-gray-700 hover:bg-gray-100'
+                    ]">
+                    <UserCircleIcon class="w-5 h-5" />
+                    <span>Mi Perfil Público</span>
+                    </Link>
+
+
+
                     </Link>
 
                     <div class="pt-4 border-t border-gray-200 space-y-2">

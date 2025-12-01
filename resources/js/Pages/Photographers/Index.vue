@@ -169,19 +169,29 @@ const getInitials = (name) => {
             <!-- Grid de Fotógrafos -->
             <div v-if="photographers.data.length > 0">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  
+                  
+                  
                     <Link v-for="photographer in photographers.data" :key="photographer.id"
                         :href="route('photographers.show', photographer.slug)"
-                        class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-purple-300">
-                    <!-- Header Card con Gradiente -->
-                    <div class="h-32 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 relative">
+                        class="group bg-white rounded-2xl shadow-md hover:shadow-2xl overflow-visible transition-all duration-300 border border-gray-100 hover:border-purple-300 relative">
+                    <!-- ✅ QUITAR: overflow-hidden -->
+
+                    <!-- Header Card con Banner o Gradiente -->
+                    <div class="h-32 relative  rounded-t-2xl"> <!-- overflow-hidden -->
+                        <!-- ✅ AGREGAR: rounded-t-2xl aquí para mantener el border-radius en la parte superior -->
+                        <img v-if="photographer.banner_photo_url" :src="photographer.banner_photo_url"
+                            :alt="photographer.business_name" class="w-full h-full object-cover" />
+                        <div v-else class="w-full h-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400">
+                        </div>
                         <div class="absolute inset-0 bg-black/10"></div>
 
                         <!-- Avatar -->
-                        <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+                        <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2 z-20">
                             <div class="w-24 h-24 rounded-full bg-white p-1 shadow-xl">
-                                <div v-if="photographer.user.profile_photo_url"
+                                <div v-if="photographer.profile_photo_url"
                                     class="w-full h-full rounded-full overflow-hidden">
-                                    <img :src="photographer.user.profile_photo_url" :alt="photographer.business_name"
+                                    <img :src="photographer.profile_photo_url" :alt="photographer.business_name"
                                         class="w-full h-full object-cover" />
                                 </div>
                                 <div v-else
@@ -195,7 +205,9 @@ const getInitials = (name) => {
                     </div>
 
                     <!-- Contenido -->
-                    <div class="pt-16 pb-6 px-6">
+                    <div class="pt-16 pb-6 px-6 relative z-10 rounded-b-2xl bg-white">
+                        <!-- ✅ AGREGAR: rounded-b-2xl bg-white -->
+
                         <!-- Nombre -->
                         <h3
                             class="text-xl font-bold text-gray-900 text-center mb-2 group-hover:text-purple-600 transition">
@@ -242,7 +254,7 @@ const getInitials = (name) => {
                     </div>
 
                     <!-- Badge Verificado -->
-                    <div class="absolute top-4 right-4">
+                    <div class="absolute top-4 right-4 z-30">
                         <div
                             class="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
                             <svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
@@ -254,7 +266,14 @@ const getInitials = (name) => {
                         </div>
                     </div>
                     </Link>
+
+
+
+
+
                 </div>
+
+
 
                 <!-- Paginación -->
                 <div v-if="photographers.last_page > 1" class="mt-12">
