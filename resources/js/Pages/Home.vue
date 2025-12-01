@@ -80,7 +80,10 @@ const handleImageError = (e) => {
 const videos = [
     '/videos/promo-3.mp4',
     '/videos/promo-4.mp4',
-    '/videos/promo-5.mp4'
+    '/videos/promo-5.mp4',
+    '/videos/promo-6.mp4',
+    '/videos/promo-7.mp4',
+    '/videos/promo-8.mp4',
 ];
 
 const currentIndex = ref(0);
@@ -184,7 +187,7 @@ onMounted(() => {
                             </span>
                         </h1>
                         <p class="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto drop-shadow-lg">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, hic. Iste   ...
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit, hic. Iste ...
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link :href="route('gallery.index')"
@@ -271,7 +274,7 @@ onMounted(() => {
                                         </span>
                                         <span v-if="!event.is_private"
                                             class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                             Público
+                                            Público
                                         </span>
                                     </div>
                                 </div>

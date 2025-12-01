@@ -97,10 +97,10 @@ const reactivatePhotographer = (photographer) => {
 // Helpers
 const getStatusBadge = (status) => {
     const badges = {
-        pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-300', text: '⏳ Pendiente' },
-        approved: { color: 'bg-green-100 text-green-800 border-green-300', text: '✅ Aprobado' },
-        rejected: { color: 'bg-red-100 text-red-800 border-red-300', text: '❌ Rechazado' },
-        suspended: { color: 'bg-orange-100 text-orange-800 border-orange-300', text: '🚫 Suspendido' },
+        pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-300', text: ' Pendiente' },
+        approved: { color: 'bg-green-100 text-green-800 border-green-300', text: ' Aprobado' },
+        rejected: { color: 'bg-red-100 text-red-800 border-red-300', text: ' Rechazado' },
+        suspended: { color: 'bg-orange-100 text-orange-800 border-orange-300', text: ' Suspendido' },
     };
     return badges[status] || { color: 'bg-gray-100 text-gray-800', text: status };
 };
@@ -116,7 +116,7 @@ const getStatusBadge = (status) => {
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">📷 Gestión de Fotógrafos</h1>
+                        <h1 class="text-3xl font-bold text-gray-900"> Gestión de Fotógrafos</h1>
                         <p class="text-gray-600 mt-2">Administra las solicitudes y estados de los fotógrafos</p>
                     </div>
                     <Link :href="route('admin.dashboard')"
@@ -143,7 +143,7 @@ const getStatusBadge = (status) => {
                             ? 'bg-yellow-50 border-yellow-500'
                             : 'bg-white border-gray-200 hover:border-yellow-300'
                     ]">
-                        <p class="text-sm font-medium text-yellow-700">⏳ Pendientes</p>
+                        <p class="text-sm font-medium text-yellow-700"> Pendientes</p>
                         <p class="text-2xl font-bold text-yellow-800">{{ stats.pending }}</p>
                     </button>
 
@@ -153,7 +153,7 @@ const getStatusBadge = (status) => {
                             ? 'bg-green-50 border-green-500'
                             : 'bg-white border-gray-200 hover:border-green-300'
                     ]">
-                        <p class="text-sm font-medium text-green-700">✅ Aprobados</p>
+                        <p class="text-sm font-medium text-green-700"> Aprobados</p>
                         <p class="text-2xl font-bold text-green-800">{{ stats.approved }}</p>
                     </button>
 
@@ -163,7 +163,7 @@ const getStatusBadge = (status) => {
                             ? 'bg-red-50 border-red-500'
                             : 'bg-white border-gray-200 hover:border-red-300'
                     ]">
-                        <p class="text-sm font-medium text-red-700">❌ Rechazados</p>
+                        <p class="text-sm font-medium text-red-700"> Rechazados</p>
                         <p class="text-2xl font-bold text-red-800">{{ stats.rejected }}</p>
                     </button>
 
@@ -173,7 +173,7 @@ const getStatusBadge = (status) => {
                             ? 'bg-orange-50 border-orange-500'
                             : 'bg-white border-gray-200 hover:border-orange-300'
                     ]">
-                        <p class="text-sm font-medium text-orange-700">🚫 Suspendidos</p>
+                        <p class="text-sm font-medium text-orange-700"> Suspendidos</p>
                         <p class="text-2xl font-bold text-orange-800">{{ stats.suspended }}</p>
                     </button>
                 </div>
@@ -186,7 +186,7 @@ const getStatusBadge = (status) => {
                             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
                         <button type="submit"
                             class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                            🔍 Buscar
+                            Buscar
                         </button>
                     </form>
                 </div>
@@ -296,7 +296,7 @@ const getStatusBadge = (status) => {
                                                 @click="approvePhotographer(photographer)"
                                                 class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition"
                                                 title="Aprobar">
-                                                ✅ Aprobar
+                                                Aprobar
                                             </button>
 
                                             <!-- Rechazar (solo si está pendiente) -->
@@ -304,7 +304,7 @@ const getStatusBadge = (status) => {
                                                 @click="openRejectModal(photographer)"
                                                 class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition"
                                                 title="Rechazar">
-                                                ❌ Rechazar
+                                                Rechazar
                                             </button>
 
                                             <!-- Suspender (solo si está aprobado) -->
@@ -312,7 +312,7 @@ const getStatusBadge = (status) => {
                                                 @click="openSuspendModal(photographer)"
                                                 class="inline-flex items-center px-3 py-1.5 bg-orange-600 text-white text-xs font-medium rounded hover:bg-orange-700 transition"
                                                 title="Suspender">
-                                                🚫 Suspender
+                                                Suspender
                                             </button>
 
                                             <!-- Reactivar (solo si está suspendido) -->
@@ -320,15 +320,16 @@ const getStatusBadge = (status) => {
                                                 @click="reactivatePhotographer(photographer)"
                                                 class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition"
                                                 title="Reactivar">
-                                                🔄 Reactivar
+                                                Reactivar
                                             </button>
 
                                             <!-- Ver Detalles -->
-                                            <button
+                                            <Link :href="route('admin.photographers.show', photographer.id)"
                                                 class="inline-flex items-center px-3 py-1.5 bg-gray-600 text-white text-xs font-medium rounded hover:bg-gray-700 transition"
                                                 title="Ver detalles">
-                                                👁️ Ver
-                                            </button>
+                                            Ver
+                                            </Link>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -373,7 +374,7 @@ const getStatusBadge = (status) => {
 
                 <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900">❌ Rechazar Fotógrafo</h3>
+                        <h3 class="text-2xl font-bold text-gray-900"> Rechazar Fotógrafo</h3>
                         <button @click="showRejectModal = false" class="text-gray-400 hover:text-gray-600 transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -442,7 +443,7 @@ const getStatusBadge = (status) => {
 
                 <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900">🚫 Suspender Fotógrafo</h3>
+                        <h3 class="text-2xl font-bold text-gray-900"> Suspender Fotógrafo</h3>
                         <button @click="showSuspendModal = false" class="text-gray-400 hover:text-gray-600 transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

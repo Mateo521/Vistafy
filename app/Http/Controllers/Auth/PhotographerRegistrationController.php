@@ -66,9 +66,9 @@ class PhotographerRegistrationController extends Controller
             'phone' => $request->phone,
             'bio' => $request->bio,
             'profile_photo' => $profilePhotoPath,
-            'is_active' => false, // ✅ Inactivo hasta aprobación
+            'is_active' => false, //  Inactivo hasta aprobación
             'is_verified' => false,
-            'status' => 'pending', // ✅ Pendiente de aprobación
+            'status' => 'pending', //  Pendiente de aprobación
         ]);
 
         event(new Registered($user));

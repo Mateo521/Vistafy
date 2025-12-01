@@ -34,7 +34,7 @@ class EnsurePhotographerIsApproved
             abort(403, 'No tienes un perfil de fotógrafo asociado.');
         }
 
-        // ✅ Verificar el estado del fotógrafo
+        //  Verificar el estado del fotógrafo
         switch ($photographer->status) {
             case 'pending':
                 return redirect()->route('photographer.pending');
@@ -46,7 +46,7 @@ class EnsurePhotographerIsApproved
                 return redirect()->route('photographer.suspended');
             
             case 'approved':
-                // ✅ Fotógrafo aprobado, puede continuar
+                //  Fotógrafo aprobado, puede continuar
                 return $next($request);
             
             default:

@@ -22,7 +22,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
                     <!-- Título -->
                     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        ⏳ Cuenta Pendiente de Aprobación
+                         Cuenta Pendiente de Aprobación
                     </h1>
 
                     <!-- Descripción -->

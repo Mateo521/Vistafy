@@ -53,7 +53,7 @@ class PhotographerSeeder extends Seeder
         ];
 
         foreach ($photographers as $photographerData) {
-            // ✅ Verificar si el usuario ya existe
+            //  Verificar si el usuario ya existe
             $user = User::updateOrCreate(
                 ['email' => $photographerData['email']],
                 [
@@ -65,7 +65,7 @@ class PhotographerSeeder extends Seeder
                 ]
             );
 
-            // ✅ Verificar si el fotógrafo ya existe
+            //  Verificar si el fotógrafo ya existe
             Photographer::updateOrCreate(
                 ['user_id' => $user->id],
                 [
@@ -83,6 +83,6 @@ class PhotographerSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ ' . count($photographers) . ' fotógrafos creados/actualizados correctamente');
+        $this->command->info(' ' . count($photographers) . ' fotógrafos creados/actualizados correctamente');
     }
 }

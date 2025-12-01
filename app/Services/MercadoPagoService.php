@@ -189,7 +189,7 @@ class MercadoPagoService
 
     public function processWebhookNotification(array $data): void
     {
-        Log::info('🔔 Webhook recibido de Mercado Pago', $data);
+        Log::info(' Webhook recibido de Mercado Pago', $data);
 
         $topic = $data['topic'] ?? $data['type'] ?? null;
 
@@ -200,7 +200,7 @@ class MercadoPagoService
                 return;
             }
 
-            Log::info('💳 Procesando payment webhook', ['payment_id' => $paymentId]);
+            Log::info(' Procesando payment webhook', ['payment_id' => $paymentId]);
 
             $payment = $this->getPayment((string) $paymentId);
             if ($payment) {
@@ -216,7 +216,7 @@ class MercadoPagoService
                 return;
             }
 
-            Log::info('📦 Procesando merchant_order webhook', ['merchant_order_id' => $merchantOrderId]);
+            Log::info(' Procesando merchant_order webhook', ['merchant_order_id' => $merchantOrderId]);
 
             $merchantOrder = $this->getMerchantOrder((string) $merchantOrderId);
             if (!$merchantOrder) {
@@ -226,7 +226,7 @@ class MercadoPagoService
             // Procesar los payments dentro del merchant_order
             $payments = $merchantOrder['payments'] ?? [];
 
-            Log::info('💰 Payments en merchant_order', ['count' => count($payments), 'payments' => $payments]);
+            Log::info(' Payments en merchant_order', ['count' => count($payments), 'payments' => $payments]);
 
             foreach ($payments as $p) {
                 $paymentId = $p['id'] ?? null;
@@ -242,7 +242,7 @@ class MercadoPagoService
             return;
         }
 
-        Log::info('ℹ️ Tipo de notificación ignorada', ['topic' => $topic]);
+        Log::info(' Tipo de notificación ignorada', ['topic' => $topic]);
     }
 
     /**
@@ -288,7 +288,7 @@ class MercadoPagoService
      */
     protected function handlePaymentObject(object $payment): void
     {
-        Log::info('🔍 Procesando payment object', [
+        Log::info(' Procesando payment object', [
             'id' => $payment->id,
             'status' => $payment->status,
             'status_detail' => $payment->status_detail ?? 'N/A',

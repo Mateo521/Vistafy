@@ -10,7 +10,7 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        // ✅ Usar updateOrCreate para evitar duplicados
+        //  Usar updateOrCreate para evitar duplicados
         $admin = User::updateOrCreate(
             ['email' => 'admin@photomarket.com'], // Buscar por email
             [
@@ -23,8 +23,8 @@ class AdminSeeder extends Seeder
         );
 
         $this->command->info($admin->wasRecentlyCreated 
-            ? '✅ Administrador creado correctamente' 
-            : '✅ Administrador actualizado correctamente'
+            ? ' Administrador creado correctamente' 
+            : ' Administrador actualizado correctamente'
         );
 
         // Admin de prueba
@@ -40,8 +40,8 @@ class AdminSeeder extends Seeder
         );
 
         $this->command->info($testAdmin->wasRecentlyCreated 
-            ? '✅ Admin Test creado correctamente' 
-            : '✅ Admin Test actualizado correctamente'
+            ? ' Admin Test creado correctamente' 
+            : ' Admin Test actualizado correctamente'
         );
 
         $this->command->line('');

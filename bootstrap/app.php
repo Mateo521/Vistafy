@@ -16,11 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        // ✅ Registrar alias de middleware
+        //  Registrar alias de middleware
         $middleware->alias([
             'photographer' => \App\Http\Middleware\EnsureUserIsPhotographer::class,
             'photographer.approved' => \App\Http\Middleware\EnsurePhotographerIsApproved::class,
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class, // ✅ VERIFICAR ESTO
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class, //  VERIFICAR ESTO
         ]);
 
         // Excluir webhooks de la verificación CSRF

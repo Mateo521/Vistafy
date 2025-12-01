@@ -35,7 +35,7 @@ const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
         alert(' Enlace copiado al portapapeles');
     }).catch(() => {
-        alert('❌ Error al copiar');
+        alert(' Error al copiar');
     });
 };
 
@@ -82,7 +82,7 @@ const uploadPhotos = () => {
             uploadForm.event_id = props.event.id;
         },
         onError: (errors) => {
-            console.error('❌ Error al subir fotos:', errors);
+            console.error(' Error al subir fotos:', errors);
             alert('Error al subir las fotos. Revisa la consola para más detalles.');
         }
     });

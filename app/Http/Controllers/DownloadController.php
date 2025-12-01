@@ -68,7 +68,7 @@ class DownloadController extends Controller
      */
     public function show(string $token)
     {
-        Log::info('👁️ Página de descarga solicitada', [
+        Log::info(' Página de descarga solicitada', [
             'token' => substr($token, 0, 20) . '...',
         ]);
 

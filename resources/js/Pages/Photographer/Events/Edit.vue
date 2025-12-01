@@ -202,7 +202,7 @@ const deleteEvent = () => {
                                         @change="form.is_active = false; form.is_private = false"
                                         class="w-5 h-5 text-red-600" />
                                     <span class="ml-3">
-                                        <span class="font-semibold text-gray-900">👁️ Oculto</span>
+                                        <span class="font-semibold text-gray-900"> Oculto</span>
                                         <p class="text-sm text-gray-600">Solo tú puedes verlo</p>
                                     </span>
                                 </label>

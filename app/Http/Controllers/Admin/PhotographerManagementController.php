@@ -19,7 +19,7 @@ class PhotographerManagementController extends Controller
         $search = $request->input('search', '');
 
         $query = Photographer::with(['user', 'events', 'photos'])
-            ->withCount(['events', 'photos']) // ✅ Contar eventos y fotos
+            ->withCount(['events', 'photos'])
             ->when($status !== 'all', function ($q) use ($status) {
                 return $q->where('status', $status);
             })
@@ -52,6 +52,25 @@ class PhotographerManagementController extends Controller
         ]);
     }
 
+    /**
+     * ✅ NUEVO: Mostrar detalles de un fotógrafo
+     */
+    public function show(Photographer $photographer)
+    {
+        $photographer->load(['user', 'events', 'photos']);
+
+        // Estadísticas del fotógrafo
+        $stats = [
+            'events' => $photographer->events()->count(),
+            'photos' => $photographer->photos()->count(),
+            'downloads' => $photographer->photos()->sum('downloads') ?? 0,
+        ];
+
+        return Inertia::render('Admin/Photographers/Show', [
+            'photographer' => $photographer,
+            'stats' => $stats,
+        ]);
+    }
 
     /**
      * Aprobar un fotógrafo
@@ -70,7 +89,7 @@ class PhotographerManagementController extends Controller
                 'approved_by' => auth()->id(),
                 'is_active' => true,
                 'is_verified' => true,
-                'rejection_reason' => null, // Limpiar razón de rechazo si existía
+                'rejection_reason' => null,
             ]);
 
             DB::commit();
@@ -126,6 +145,38 @@ class PhotographerManagementController extends Controller
     }
 
     /**
+     * ✅ NUEVO: Revertir rechazo (volver a pendiente)
+     */
+    public function revert(Photographer $photographer)
+    {
+        if ($photographer->status !== 'rejected') {
+            return back()->with('error', 'Solo se pueden revertir fotógrafos rechazados.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $photographer->update([
+                'status' => 'pending',
+                'rejection_reason' => null,
+                'is_active' => false,
+                'is_verified' => false,
+                'approved_at' => null,
+                'approved_by' => null,
+            ]);
+
+            DB::commit();
+
+            // TODO: Enviar email notificando la reversión
+            // Mail::to($photographer->user->email)->send(new PhotographerRevertedMail($photographer));
+
+            return back()->with('success', "Fotógrafo '{$photographer->business_name}' devuelto a estado Pendiente para revisión.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error al revertir el rechazo: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Suspender un fotógrafo
      */
     public function suspend(Request $request, Photographer $photographer)
@@ -142,7 +193,7 @@ class PhotographerManagementController extends Controller
         try {
             $photographer->update([
                 'status' => 'suspended',
-                'rejection_reason' => $request->reason, // Usar este campo para el motivo de suspensión
+                'rejection_reason' => $request->reason,
                 'is_active' => false,
             ]);
 
@@ -173,7 +224,7 @@ class PhotographerManagementController extends Controller
                 'status' => 'approved',
                 'is_active' => true,
                 'is_verified' => true,
-                'rejection_reason' => null, // Limpiar motivo de suspensión
+                'rejection_reason' => null,
                 'approved_at' => $photographer->approved_at ?? now(),
                 'approved_by' => $photographer->approved_by ?? auth()->id(),
             ]);

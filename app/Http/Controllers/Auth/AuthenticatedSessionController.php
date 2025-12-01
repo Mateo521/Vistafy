@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // ✅ REDIRECCIÓN INTELIGENTE SEGÚN ROL
+        //  REDIRECCIÓN INTELIGENTE SEGÚN ROL
         return $this->redirectBasedOnRole();
     }
 
@@ -52,7 +52,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * ✅ NUEVA FUNCIÓN: Redirigir según el rol del usuario
+     *  NUEVA FUNCIÓN: Redirigir según el rol del usuario
      */
     protected function redirectBasedOnRole(): RedirectResponse
     {

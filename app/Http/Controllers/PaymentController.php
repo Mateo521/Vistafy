@@ -133,7 +133,7 @@ class PaymentController extends Controller
 
         //  MEJORADO: Procesar desde merchant_order con REINTENTOS
         if ($merchantOrderId && $paymentStatus === 'approved') {
-            Log::info('📦 Procesando desde merchant_order', [
+            Log::info(' Procesando desde merchant_order', [
                 'merchant_order_id' => $merchantOrderId,
                 'status_from_url' => $paymentStatus,
             ]);
@@ -154,7 +154,7 @@ class PaymentController extends Controller
                 $paymentFound = false;
 
                 for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
-                    Log::info("🔄 Intento {$attempt}/{$maxAttempts} de obtener merchant_order con payments");
+                    Log::info(" Intento {$attempt}/{$maxAttempts} de obtener merchant_order con payments");
 
                     $response = Http::withHeaders([
                         'Authorization' => 'Bearer ' . $token,
@@ -175,7 +175,7 @@ class PaymentController extends Controller
                         if (!empty($payments)) {
                             $payment = $payments[0];
 
-                            Log::info('💳 Payment encontrado en merchant_order', [
+                            Log::info(' Payment encontrado en merchant_order', [
                                 'payment_id' => $payment['id'],
                                 'status' => $payment['status'] ?? 'N/A',
                                 'transaction_amount' => $payment['transaction_amount'] ?? 0,
@@ -210,7 +210,7 @@ class PaymentController extends Controller
                         } else {
                             //  Payments vacío, esperar y reintentar
                             if ($attempt < $maxAttempts) {
-                                Log::info("⏸️ Payments vacío, esperando {$delaySeconds}s... (intento {$attempt})");
+                                Log::info(" Payments vacío, esperando {$delaySeconds}s... (intento {$attempt})");
                                 sleep($delaySeconds);
                             } else {
                                 Log::warning(' Payments vacío después de todos los intentos', [
@@ -234,7 +234,7 @@ class PaymentController extends Controller
 
                 //  Si no encontró el payment después de todos los intentos, intentar consultar directamente
                 if (!$paymentFound && $paymentId) {
-                    Log::info('🔄 Intentando obtener payment directamente por ID', [
+                    Log::info(' Intentando obtener payment directamente por ID', [
                         'payment_id' => $paymentId,
                     ]);
 
@@ -271,7 +271,7 @@ class PaymentController extends Controller
                                 break;
                             }
                         } else if ($paymentResponse->status() === 404 && $attempt < 3) {
-                            Log::warning("⏸️ Payment no encontrado, esperando {$delaySeconds}s... (intento {$attempt})");
+                            Log::warning(" Payment no encontrado, esperando {$delaySeconds}s... (intento {$attempt})");
                             sleep($delaySeconds);
                         }
                     }

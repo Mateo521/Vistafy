@@ -29,7 +29,7 @@ defineProps({
 
                     <!-- Título -->
                     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        ❌ Solicitud No Aprobada
+                         Solicitud No Aprobada
                     </h1>
 
                     <!-- Descripción -->

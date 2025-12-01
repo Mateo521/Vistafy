@@ -260,7 +260,7 @@ const getInitials = (name) => {
                 <div v-if="photographers.last_page > 1" class="mt-12">
                     <nav class="flex items-center justify-center gap-2 flex-wrap">
                         <template v-for="(link, index) in photographers.links" :key="index">
-                            <!-- ✅ Solo renderizar si hay URL -->
+                            <!--  Solo renderizar si hay URL -->
                             <Link v-if="link.url" :href="link.url" :class="[
                                 'px-4 py-2 rounded-lg font-medium transition-all duration-200',
                                 link.active
@@ -268,7 +268,7 @@ const getInitials = (name) => {
                                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                             ]" v-html="link.label" />
 
-                            <!-- ✅ Mostrar como span deshabilitado si NO hay URL -->
+                            <!--  Mostrar como span deshabilitado si NO hay URL -->
                             <span v-else :class="[
                                 'px-4 py-2 rounded-lg font-medium opacity-50 cursor-not-allowed',
                                 'bg-white text-gray-400 border border-gray-200'

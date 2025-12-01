@@ -11,7 +11,7 @@ class WebhookController extends Controller
 {
     public function mercadoPago(Request $request)
     {
-        Log::info('🔔 Webhook recibido raw', [
+        Log::info(' Webhook recibido raw', [
             'raw' => $request->getContent(),
             'headers' => $request->headers->all(),
         ]);
@@ -27,7 +27,7 @@ class WebhookController extends Controller
             ];
         }
 
-        Log::info('📦 Webhook recibido de Mercado Pago', $data);
+        Log::info(' Webhook recibido de Mercado Pago', $data);
 
         $topic = $data['topic'] ?? $data['type'] ?? null;
 
@@ -61,7 +61,7 @@ class WebhookController extends Controller
                 return response()->json(['status' => 'ignored'], 200);
             }
 
-            Log::info('📦 Procesando merchant_order', ['id' => $merchantOrderId]);
+            Log::info(' Procesando merchant_order', ['id' => $merchantOrderId]);
 
             try {
                 $accessToken = config('services.mercadopago.access_token');
@@ -74,7 +74,7 @@ class WebhookController extends Controller
                     $merchantOrder = $response->json();
                     $payments = $merchantOrder['payments'] ?? [];
 
-                    Log::info('💰 Payments en merchant_order', [
+                    Log::info(' Payments en merchant_order', [
                         'count' => count($payments),
                         'payments' => $payments,
                     ]);
@@ -83,7 +83,7 @@ class WebhookController extends Controller
                         $paymentId = $payments[0]['id'] ?? null;
 
                         if ($paymentId) {
-                            Log::info('💳 Procesando payment desde merchant_order', ['payment_id' => $paymentId]);
+                            Log::info(' Procesando payment desde merchant_order', ['payment_id' => $paymentId]);
                             return $this->processPayment($paymentId);
                         }
                     }
@@ -107,13 +107,13 @@ class WebhookController extends Controller
             return response()->json(['status' => 'error'], 200);
         }
 
-        Log::info('ℹ️ Tipo de notificación no manejada', ['topic' => $topic]);
+        Log::info(' Tipo de notificación no manejada', ['topic' => $topic]);
         return response()->json(['status' => 'ignored'], 200);
     }
 
     private function processPayment($paymentId)
     {
-        Log::info('💳 Procesando payment', ['payment_id' => $paymentId]);
+        Log::info(' Procesando payment', ['payment_id' => $paymentId]);
 
         $accessToken = config('services.mercadopago.access_token');
 
@@ -129,7 +129,7 @@ class WebhookController extends Controller
 
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             try {
-                Log::info("🔄 Intento {$attempt}/{$maxAttempts}", ['payment_id' => $paymentId]);
+                Log::info(" Intento {$attempt}/{$maxAttempts}", ['payment_id' => $paymentId]);
 
                 $response = Http::withHeaders([
                     'Authorization' => 'Bearer ' . $accessToken,
@@ -146,7 +146,7 @@ class WebhookController extends Controller
                 }
 
                 if ($response->status() === 404 && $attempt < $maxAttempts) {
-                    Log::warning("⏸️ Payment no encontrado, esperando {$delaySeconds}s... (intento {$attempt}/{$maxAttempts})");
+                    Log::warning(" Payment no encontrado, esperando {$delaySeconds}s... (intento {$attempt}/{$maxAttempts})");
                     sleep($delaySeconds);
                     continue;
                 }

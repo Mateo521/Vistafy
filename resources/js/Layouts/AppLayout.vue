@@ -25,12 +25,12 @@ onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
-// ✅ NUEVO: Helpers para roles
+//  NUEVO: Helpers para roles
 const isAdmin = computed(() => user.value?.is_admin === true);
 const isPhotographer = computed(() => user.value?.role === 'photographer');
 const isClient = computed(() => user.value?.role === 'client');
 
-// ✅ NUEVO: Ruta dinámica del dashboard según el rol
+//  NUEVO: Ruta dinámica del dashboard según el rol
 const dashboardRoute = computed(() => {
     if (!user.value) return null;
     
@@ -46,7 +46,7 @@ const dashboardRoute = computed(() => {
     return route('home');
 });
 
-// ✅ NUEVO: Texto dinámico del botón
+//  NUEVO: Texto dinámico del botón
 const dashboardText = computed(() => {
     if (!user.value) return 'Dashboard';
     
@@ -55,7 +55,7 @@ const dashboardText = computed(() => {
     }
     
     if (isPhotographer.value) {
-        return '📷 Mi Panel';
+        return ' Mi Panel';
     }
     
     return 'Mi Cuenta';
@@ -280,7 +280,7 @@ const dashboardText = computed(() => {
                             Registrarse
                             </Link>
 
-                            <!-- ✅ NUEVO: Botón "Soy Fotógrafo" en mobile -->
+                            <!--  NUEVO: Botón "Soy Fotógrafo" en mobile -->
                             <Link :href="route('photographer.register')"
                                 :class="[
                                     'block px-4 py-3 rounded-lg font-semibold text-center border-2 transition-all',
@@ -288,11 +288,11 @@ const dashboardText = computed(() => {
                                         ? 'border-white/50 text-white hover:bg-white/10'
                                         : 'border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
                                 ]">
-                             Soy Fotógrafo
+                             Soy fotógrafo
                             </Link>
                         </template>
 
-                        <!-- ✅ ACTUALIZADO: Dashboard dinámico en mobile -->
+                        <!--  ACTUALIZADO: Dashboard dinámico en mobile -->
                         <template v-else>
                             <Link 
                                 v-if="dashboardRoute"

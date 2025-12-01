@@ -92,7 +92,7 @@ defineProps({
 
                 <!-- Estados de Fotógrafos -->
                 <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">📊 Estados de Fotógrafos</h2>
+                    <h2 class="text-xl font-bold text-gray-900 mb-6"> Estados de Fotógrafos</h2>
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <!-- Pendientes -->
@@ -101,7 +101,7 @@ defineProps({
                             class="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 hover:bg-yellow-100 transition cursor-pointer"
                         >
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm font-medium text-yellow-800">⏳ Pendientes</span>
+                                <span class="text-sm font-medium text-yellow-800"> Pendientes</span>
                                 <span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                                     {{ stats.pending_photographers }}
                                 </span>
@@ -115,7 +115,7 @@ defineProps({
                             class="bg-green-50 border-2 border-green-200 rounded-lg p-4 hover:bg-green-100 transition cursor-pointer"
                         >
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm font-medium text-green-800">✅ Aprobados</span>
+                                <span class="text-sm font-medium text-green-800"> Aprobados</span>
                                 <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                                     {{ stats.approved_photographers }}
                                 </span>
@@ -129,7 +129,7 @@ defineProps({
                             class="bg-red-50 border-2 border-red-200 rounded-lg p-4 hover:bg-red-100 transition cursor-pointer"
                         >
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm font-medium text-red-800">❌ Rechazados</span>
+                                <span class="text-sm font-medium text-red-800"> Rechazados</span>
                                 <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                                     {{ stats.rejected_photographers }}
                                 </span>
@@ -143,7 +143,7 @@ defineProps({
                             class="bg-orange-50 border-2 border-orange-200 rounded-lg p-4 hover:bg-orange-100 transition cursor-pointer"
                         >
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm font-medium text-orange-800">🚫 Suspendidos</span>
+                                <span class="text-sm font-medium text-orange-800"> Suspendidos</span>
                                 <span class="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                                     {{ stats.suspended_photographers }}
                                 </span>
@@ -155,7 +155,7 @@ defineProps({
 
                 <!-- Acciones Rápidas -->
                 <div class="bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6">⚡ Acciones Rápidas</h2>
+                    <h2 class="text-xl font-bold text-gray-900 mb-6"> Acciones Rápidas</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Link

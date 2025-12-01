@@ -210,7 +210,7 @@ const submit = () => {
                                         class="w-5 h-5 text-red-600"
                                     />
                                     <span class="ml-3">
-                                        <span class="font-semibold text-gray-900">👁️ Oculto</span>
+                                        <span class="font-semibold text-gray-900"> Oculto</span>
                                         <p class="text-sm text-gray-600">No aparece en ningún listado público (solo tú lo verás)</p>
                                     </span>
                                 </label>

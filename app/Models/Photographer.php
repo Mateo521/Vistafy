@@ -24,10 +24,10 @@ class Photographer extends Model
         'phone',
         'is_active',
         'is_verified',
-        'status', // ✅ Nuevo
-        'rejection_reason', // ✅ Nuevo
-        'approved_at', // ✅ Nuevo
-        'approved_by', // ✅ Nuevo
+        'status', //  Nuevo
+        'rejection_reason', //  Nuevo
+        'approved_at', //  Nuevo
+        'approved_by', //  Nuevo
     ];
 
     protected $casts = [
@@ -36,7 +36,7 @@ class Photographer extends Model
         'approved_at' => 'datetime',
     ];
 
-    // ✅ Scopes para filtrar por estado
+    //  Scopes para filtrar por estado
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
@@ -127,7 +127,7 @@ class Photographer extends Model
             return 'https://ui-avatars.com/api/?name=' . urlencode($this->business_name) . '&size=200&background=6366f1&color=fff';
         }
 
-        // ✅ Usar Storage::url() directamente
+        //  Usar Storage::url() directamente
         return Storage::url($this->profile_photo);
     }
 
@@ -141,7 +141,7 @@ class Photographer extends Model
             return null;
         }
 
-        // ✅ Usar Storage::url() directamente
+        //  Usar Storage::url() directamente
         return Storage::url($this->cover_photo);
     }
 

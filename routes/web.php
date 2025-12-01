@@ -39,7 +39,7 @@ Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name(
 
 /*
 |--------------------------------------------------------------------------
-| ✅ NUEVO: Registro de Fotógrafos (Público)
+|  NUEVO: Registro de Fotógrafos (Público)
 |--------------------------------------------------------------------------
 */
 
@@ -108,7 +108,7 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| ✅ NUEVO: Páginas de Estado de Fotógrafo (Autenticadas)
+|  NUEVO: Páginas de Estado de Fotógrafo (Autenticadas)
 |--------------------------------------------------------------------------
 */
 
@@ -134,7 +134,7 @@ Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(f
 
 /*
 |--------------------------------------------------------------------------
-| ✅ ACTUALIZADO: Panel de Fotógrafo (Requiere Aprobación)
+|  ACTUALIZADO: Panel de Fotógrafo (Requiere Aprobación)
 |--------------------------------------------------------------------------
 */
 
@@ -225,12 +225,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     })->name('dashboard');
 
     // ✅ Gestión de fotógrafos
-    Route::get('/fotografos', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'index'])->name('photographers.index');
-    Route::post('/fotografos/{photographer}/aprobar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'approve'])->name('photographers.approve');
-    Route::post('/fotografos/{photographer}/rechazar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reject'])->name('photographers.reject');
-    Route::post('/fotografos/{photographer}/suspender', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'suspend'])->name('photographers.suspend');
-    Route::post('/fotografos/{photographer}/reactivar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reactivate'])->name('photographers.reactivate');
+    Route::prefix('fotografos')->name('photographers.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'index'])->name('index');
+        Route::get('/{photographer}', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'show'])->name('show'); // ✅ NUEVA - Ver detalles
+        Route::post('/{photographer}/aprobar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'approve'])->name('approve');
+        Route::post('/{photographer}/rechazar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reject'])->name('reject');
+        Route::post('/{photographer}/revertir', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'revert'])->name('revert'); // ✅ NUEVA - Revertir rechazo
+        Route::post('/{photographer}/suspender', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'suspend'])->name('suspend');
+        Route::post('/{photographer}/reactivar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reactivate'])->name('reactivate');
+    });
 });
+
 
 
 require __DIR__ . '/auth.php';

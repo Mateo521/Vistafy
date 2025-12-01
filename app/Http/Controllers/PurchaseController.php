@@ -10,7 +10,7 @@ class PurchaseController extends Controller
 {
     public function checkStatus(Purchase $purchase)
     {
-        Log::info('🔍 Verificando status de compra', [
+        Log::info(' Verificando status de compra', [
             'purchase_id' => $purchase->id,
             'current_status' => $purchase->status,
             'mp_payment_id' => $purchase->mp_payment_id,
@@ -28,7 +28,7 @@ class PurchaseController extends Controller
 
         //  Si está pending/in_process, consultar MP
         if (in_array($purchase->status, ['pending', 'in_process'])) {
-            Log::info('🔄 Status es pending, consultando MP...', [
+            Log::info(' Status es pending, consultando MP...', [
                 'purchase_id' => $purchase->id,
             ]);
 
@@ -62,7 +62,7 @@ class PurchaseController extends Controller
                             $searchData = $searchResponse->json();
                             $merchantOrders = $searchData['results'] ?? [];
 
-                            Log::info('📦 Merchant orders encontrados', [
+                            Log::info(' Merchant orders encontrados', [
                                 'count' => count($merchantOrders),
                             ]);
 
@@ -73,7 +73,7 @@ class PurchaseController extends Controller
                                 if (!empty($payments)) {
                                     $payment = $payments[0];
 
-                                    Log::info('💳 Payment encontrado', [
+                                    Log::info(' Payment encontrado', [
                                         'payment_id' => $payment['id'],
                                         'status' => $payment['status'] ?? 'N/A',
                                     ]);
