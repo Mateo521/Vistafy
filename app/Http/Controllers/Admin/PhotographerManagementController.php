@@ -53,7 +53,7 @@ class PhotographerManagementController extends Controller
     }
 
     /**
-     * ✅ NUEVO: Mostrar detalles de un fotógrafo
+     *  NUEVO: Mostrar detalles de un fotógrafo
      */
     public function show(Photographer $photographer)
     {
@@ -145,7 +145,7 @@ class PhotographerManagementController extends Controller
     }
 
     /**
-     * ✅ NUEVO: Revertir rechazo (volver a pendiente)
+     *  NUEVO: Revertir rechazo (volver a pendiente)
      */
     public function revert(Photographer $photographer)
     {

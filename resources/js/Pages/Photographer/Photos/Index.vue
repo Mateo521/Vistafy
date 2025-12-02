@@ -18,7 +18,7 @@ const props = defineProps({
     stats: Object,
 });
 
-const deletePhoto = (photoId) => {  // ✅ SIN el parámetro event
+const deletePhoto = (photoId) => {  //  SIN el parámetro event
     if (confirm('¿Estás seguro de eliminar esta foto?')) {
         router.delete(route('photographer.photos.destroy', photoId), {
             preserveScroll: true,
@@ -26,7 +26,7 @@ const deletePhoto = (photoId) => {  // ✅ SIN el parámetro event
     }
 };
 
-const toggleActive = (photo) => {  // ✅ SIN el parámetro event
+const toggleActive = (photo) => {  //  SIN el parámetro event
     router.put(route('photographer.photos.update', photo.id), {
         is_active: !photo.is_active,
         price: photo.price,

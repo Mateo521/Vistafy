@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('photographers', function (Blueprint $table) {
-            // ✅ Verificar si NO existe antes de agregar
+            //  Verificar si NO existe antes de agregar
             if (!Schema::hasColumn('photographers', 'profile_photo')) {
                 $table->string('profile_photo')->nullable()->after('bio');
             }
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('photographers', function (Blueprint $table) {
-            // ✅ Verificar si existe antes de eliminar
+            //  Verificar si existe antes de eliminar
             if (Schema::hasColumn('photographers', 'profile_photo')) {
                 $table->dropColumn('profile_photo');
             }

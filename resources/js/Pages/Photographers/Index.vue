@@ -175,11 +175,11 @@ const getInitials = (name) => {
                     <Link v-for="photographer in photographers.data" :key="photographer.id"
                         :href="route('photographers.show', photographer.slug)"
                         class="group bg-white rounded-2xl shadow-md hover:shadow-2xl overflow-visible transition-all duration-300 border border-gray-100 hover:border-purple-300 relative">
-                    <!-- ✅ QUITAR: overflow-hidden -->
+                    <!--  QUITAR: overflow-hidden -->
 
                     <!-- Header Card con Banner o Gradiente -->
                     <div class="h-32 relative  rounded-t-2xl"> <!-- overflow-hidden -->
-                        <!-- ✅ AGREGAR: rounded-t-2xl aquí para mantener el border-radius en la parte superior -->
+                        <!--  AGREGAR: rounded-t-2xl aquí para mantener el border-radius en la parte superior -->
                         <img v-if="photographer.banner_photo_url" :src="photographer.banner_photo_url"
                             :alt="photographer.business_name" class="w-full h-full object-cover" />
                         <div v-else class="w-full h-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400">
@@ -206,7 +206,7 @@ const getInitials = (name) => {
 
                     <!-- Contenido -->
                     <div class="pt-16 pb-6 px-6 relative z-10 rounded-b-2xl bg-white">
-                        <!-- ✅ AGREGAR: rounded-b-2xl bg-white -->
+                        <!--  AGREGAR: rounded-b-2xl bg-white -->
 
                         <!-- Nombre -->
                         <h3

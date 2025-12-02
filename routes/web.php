@@ -225,13 +225,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         ]);
     })->name('dashboard');
 
-    // ✅ Gestión de fotógrafos
+    //  Gestión de fotógrafos
     Route::prefix('fotografos')->name('photographers.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'index'])->name('index');
-        Route::get('/{photographer}', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'show'])->name('show'); // ✅ NUEVA - Ver detalles
+        Route::get('/{photographer}', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'show'])->name('show'); //  NUEVA - Ver detalles
         Route::post('/{photographer}/aprobar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'approve'])->name('approve');
         Route::post('/{photographer}/rechazar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reject'])->name('reject');
-        Route::post('/{photographer}/revertir', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'revert'])->name('revert'); // ✅ NUEVA - Revertir rechazo
+        Route::post('/{photographer}/revertir', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'revert'])->name('revert'); //  NUEVA - Revertir rechazo
         Route::post('/{photographer}/suspender', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'suspend'])->name('suspend');
         Route::post('/{photographer}/reactivar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reactivate'])->name('reactivate');
     });

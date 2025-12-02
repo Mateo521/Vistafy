@@ -333,7 +333,7 @@ const formatDate = (date) => {
             </div>
         </div>
 
-        <!-- ✅ MODAL: Revertir Rechazo -->
+        <!--  MODAL: Revertir Rechazo -->
         <Teleport to="body">
             <div v-if="showRevertModal" class="fixed inset-0 z-50 overflow-y-auto">
                 <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -387,7 +387,7 @@ const formatDate = (date) => {
             </div>
         </Teleport>
 
-        <!-- ✅ MODAL: Suspender -->
+        <!--  MODAL: Suspender -->
         <Teleport to="body">
             <div v-if="showSuspendModal" class="fixed inset-0 z-50 overflow-y-auto">
                 <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -434,7 +434,7 @@ const formatDate = (date) => {
             </div>
         </Teleport>
 
-        <!-- ✅ MODAL: Reactivar -->
+        <!--  MODAL: Reactivar -->
         <Teleport to="body">
             <div v-if="showActivateModal" class="fixed inset-0 z-50 overflow-y-auto">
                 <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">

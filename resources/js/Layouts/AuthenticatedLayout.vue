@@ -8,7 +8,7 @@ const showingNavigationDropdown = ref(false);
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-// ✅ AGREGAR: Obtener foto de perfil
+//  AGREGAR: Obtener foto de perfil
 const profilePhotoUrl = computed(() => {
     if (user.value.role === 'photographer' && user.value.photographer?.profile_photo_url) {
         return user.value.photographer.profile_photo_url;
@@ -16,7 +16,7 @@ const profilePhotoUrl = computed(() => {
     return null;
 });
 
-// ✅ AGREGAR: Obtener iniciales
+//  AGREGAR: Obtener iniciales
 const userInitials = computed(() => {
     return user.value.name.charAt(0).toUpperCase();
 });
@@ -147,7 +147,7 @@ const dashboardRoute = computed(() => {
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all">
 
-                                <!-- ✅ Avatar con Foto de Perfil -->
+                                <!--  Avatar con Foto de Perfil -->
                                 <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-purple-200">
                                     <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
                                         class="w-full h-full object-cover" />
@@ -241,7 +241,7 @@ const dashboardRoute = computed(() => {
 
 
 
-                    <!-- ✅ User Info con Foto -->
+                    <!--  User Info con Foto -->
                     <div class="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-lg mb-4">
                         <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-200">
                             <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
@@ -325,7 +325,7 @@ const dashboardRoute = computed(() => {
                     <span>Configuración</span>
                     </Link>
 
-                    <!-- ✅ Perfil Público para Fotógrafos -->
+                    <!--  Perfil Público para Fotógrafos -->
                     <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')" :class="[
                         'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all',
                         $page.url.includes('/fotografo/perfil')

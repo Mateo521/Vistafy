@@ -20,8 +20,8 @@ class Photographer extends Model
         'region',
         'bio',
         'phone',
-        'profile_photo',      // ✅ NUEVO
-        'banner_photo',       // ✅ NUEVO
+        'profile_photo',      //  NUEVO
+        'banner_photo',       //  NUEVO
         'is_active',
         'is_verified',
         'status',
