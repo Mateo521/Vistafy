@@ -263,7 +263,7 @@ const updateCoverImage = (photoId) => {
                                         Evento Público
                                     </h3>
                                     <p class="text-green-700 mb-4">
-                                        Este evento es visible en la galería pública. Comparte el enlace:
+                                        Este evento es visible en la galería pública. Compartí el enlace:
                                     </p>
 
                                     <div class="bg-white rounded-lg p-4 border-2 border-green-300">

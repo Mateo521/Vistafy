@@ -47,7 +47,7 @@ const submit = () => {
                  Únete como Fotógrafo
             </h1>
             <p class="text-white/80">
-                Comparte tu trabajo y llega a más clientes
+                Compartí tu trabajo y llega a más clientes
             </p>
         </div>
 

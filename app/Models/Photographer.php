@@ -138,18 +138,7 @@ class Photographer extends Model
         return null;
     }
 
-    /**
-     * Obtener URL de la foto de portada
-     */
-    public function getCoverPhotoUrlAttribute()
-    {
-        if (!$this->cover_photo) {
-            return null;
-        }
-
-        //  Usar Storage::url() directamente
-        return Storage::url($this->cover_photo);
-    }
+ 
 
     public function getBannerPhotoUrlAttribute()
     {

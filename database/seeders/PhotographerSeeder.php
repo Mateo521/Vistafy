@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Photographer;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class PhotographerSeeder extends Seeder
 {
@@ -52,8 +53,8 @@ class PhotographerSeeder extends Seeder
             ],
         ];
 
-        foreach ($photographers as $photographerData) {
-            //  Verificar si el usuario ya existe
+        foreach ($photographers as $index => $photographerData) {
+            // Verificar si el usuario ya existe
             $user = User::updateOrCreate(
                 ['email' => $photographerData['email']],
                 [
@@ -65,7 +66,11 @@ class PhotographerSeeder extends Seeder
                 ]
             );
 
-            //  Verificar si el fotógrafo ya existe
+            //  Crear imágenes de muestra
+            $profilePhotoPath = $this->createSampleImage('profile', $index + 1);
+            $bannerPhotoPath = $this->createSampleImage('banner', $index + 1);
+
+            // Verificar si el fotógrafo ya existe
             Photographer::updateOrCreate(
                 ['user_id' => $user->id],
                 [
@@ -74,6 +79,8 @@ class PhotographerSeeder extends Seeder
                     'region' => $regions[array_rand($regions)],
                     'bio' => $photographerData['bio'],
                     'phone' => '+54 9 11 ' . rand(1000, 9999) . '-' . rand(1000, 9999),
+                    'profile_photo' => $profilePhotoPath,  //  AGREGAR
+                    'banner_photo' => $bannerPhotoPath,    //  AGREGAR
                     'is_active' => true,
                     'is_verified' => true,
                     'status' => 'approved',
@@ -83,6 +90,53 @@ class PhotographerSeeder extends Seeder
             );
         }
 
-        $this->command->info(' ' . count($photographers) . ' fotógrafos creados/actualizados correctamente');
+        $this->command->info('✓ ' . count($photographers) . ' fotógrafos creados/actualizados correctamente');
+    }
+    /**
+     *  Crear una imagen de muestra con placeholders reales
+     */
+    private function createSampleImage(string $type, int $index): string
+    {
+        $folder = $type === 'profile' ? 'photographers/profiles' : 'photographers/banners';
+        
+        // Crear carpeta si no existe
+        Storage::disk('public')->makeDirectory($folder);
+
+        // Generar nombre de archivo único
+        $filename = Str::random(40) . '.jpg';
+        $path = $folder . '/' . $filename;
+
+        // Descargar imagen de placeholder (con diferentes semillas para variedad)
+        $size = $type === 'profile' ? '400x400' : '1200x400';
+        $seed = $index + ($type === 'profile' ? 100 : 200);
+        $imageUrl = "https://picsum.photos/{$size}?random={$seed}";
+        
+        try {
+            // Intentar descargar imagen real
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 10,
+                    'user_agent' => 'Mozilla/5.0',
+                ],
+            ]);
+            
+            $imageData = @file_get_contents($imageUrl, false, $context);
+            
+            if ($imageData === false) {
+                throw new \Exception('Failed to download image');
+            }
+            
+            Storage::disk('public')->put($path, $imageData);
+            $this->command->info("  ✓ Imagen {$type} creada: {$filename}");
+            
+        } catch (\Exception $e) {
+            // Si falla, crear imagen simple de 1x1 pixel
+            $this->command->warn("  ⚠ No se pudo descargar imagen, creando placeholder simple");
+            
+            $imageData = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+            Storage::disk('public')->put($path, $imageData);
+        }
+
+        return $path;
     }
 }
