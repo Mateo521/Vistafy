@@ -15,12 +15,12 @@ class EnsureUserIsPhotographer
         }
 
         if (!auth()->user()->isPhotographer() && !auth()->user()->isAdmin()) {
-            abort(403, 'No tienes permisos de fotógrafo');
+            abort(403, 'No tenés permisos de fotógrafo');
         }
 
         // Verificar que tenga perfil de fotógrafo
         if (auth()->user()->isPhotographer() && !auth()->user()->photographer) {
-            abort(403, 'No tienes un perfil de fotógrafo configurado');
+            abort(403, 'No tenés un perfil de fotógrafo configurado');
         }
 
         return $next($request);

@@ -241,7 +241,7 @@ const formatDate = (dateString) => {
                     <div v-else class="bg-white rounded-xl shadow-lg p-12 text-center">
                         <div class="text-6xl mb-4"></div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-2">No hay fotos aún</h4>
-                        <p class="text-gray-600 mb-6">Sube tus primeras fotos para comenzar</p>
+                        <p class="text-gray-600 mb-6">Subí tus primeras fotos para comenzar</p>
                         <Link :href="route('photographer.photos.create')"
                             class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition">
                         + Subir Fotos

@@ -44,7 +44,7 @@ const submit = () => {
         <!-- Título -->
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-white mb-2">
-                 Únete como Fotógrafo
+                 Unite como Fotógrafo
             </h1>
             <p class="text-white/80">
                 Compartí tu trabajo y llega a más clientes
@@ -174,7 +174,7 @@ const submit = () => {
                         v-model="form.bio"
                         rows="4"
                         class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl focus:ring-2 focus:ring-white/50 resize-none"
-                        placeholder="Cuéntanos sobre tu experiencia, estilo fotográfico, especializaciones..."
+                        placeholder="Contanos sobre tu experiencia, estilo fotográfico, especializaciones..."
                     ></textarea>
                     <InputError class="mt-2 text-red-300" :message="form.errors.bio" />
                     <p class="text-white/50 text-xs mt-1">{{ form.bio?.length || 0 }} / 1000 caracteres</p>
@@ -192,7 +192,7 @@ const submit = () => {
                                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <span class="text-white/80 text-sm">
-                                {{ form.profile_photo ? form.profile_photo.name : 'Sube tu foto de perfil' }}
+                                {{ form.profile_photo ? form.profile_photo.name : 'Subí tu foto de perfil' }}
                             </span>
                             <input
                                 id="profile_photo"
@@ -218,7 +218,7 @@ const submit = () => {
                         <p class="text-yellow-100 font-medium mb-1">Verificación requerida</p>
                         <p class="text-yellow-200/80 text-sm">
                             Tu cuenta será revisada por nuestro equipo antes de activarse. 
-                            Te notificaremos por email cuando sea aprobada. Este proceso puede tomar entre 24-48 horas.
+                            Te vamos a notificar por email cuando sea aprobada. Este proceso puede tomar entre 24-48 horas.
                         </p>
                     </div>
                 </div>
@@ -249,16 +249,16 @@ const submit = () => {
         <!-- Footer -->
         <template #footer>
             <p class="text-white/80">
-                ¿Ya tienes cuenta?
+                ¿Ya tenés cuenta?
                 <Link
                     :href="route('login')"
                     class="font-bold text-white hover:text-white/80 underline transition"
                 >
-                    Inicia sesión aquí
+                    Inicia sesión acá
                 </Link>
             </p>
             <p class="text-white/60 text-sm mt-2">
-                ¿Eres cliente?
+                ¿Sos cliente?
                 <Link
                     :href="route('register')"
                     class="text-white/80 hover:text-white underline transition"

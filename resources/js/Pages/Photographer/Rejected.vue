@@ -100,7 +100,7 @@ defineProps({
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="text-green-600 font-bold">4.</span>
-                                <span>Contacta a nuestro equipo si tienes preguntas o necesitas orientación.</span>
+                                <span>Contacta a nuestro equipo si tenés preguntas o necesitas orientación.</span>
                             </li>
                         </ul>
                     </div>
@@ -110,8 +110,8 @@ defineProps({
                         <p class="text-gray-700 mb-3">
                             Si crees que esto es un error o deseas más información, contáctanos:
                         </p>
-                        <a href="mailto:soporte@photomarket.com" class="text-indigo-600 font-bold hover:underline text-lg">
-                            soporte@photomarket.com
+                        <a href="mailto:soporte@empresa.com" class="text-indigo-600 font-bold hover:underline text-lg">
+                            soporte@empresa.com
                         </a>
                     </div>
 
@@ -128,7 +128,7 @@ defineProps({
                         </Link>
 
                         <a
-                            href="mailto:soporte@photomarket.com"
+                            href="mailto:soporte@empresa.com"
                             class="inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition border-2 border-gray-200"
                         >
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

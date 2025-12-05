@@ -30,7 +30,7 @@ const submit = () => {
                 Crea tu cuenta 
             </h1>
             <p class="text-white/80">
-                Únete y descubre increíbles fotografías
+                Unite y Descubrí increíbles fotografías de pies
             </p>
         </div>
 
@@ -188,12 +188,12 @@ const submit = () => {
         <!-- Footer con link a login -->
         <template #footer>
             <p class="text-white/80">
-                ¿Ya tienes cuenta?
+                ¿Ya tenés cuenta?
                 <Link
                     :href="route('login')"
                     class="font-bold text-white hover:text-white/80 underline transition"
                 >
-                    Inicia sesión aquí
+                    Inicia sesión acá
                 </Link>
             </p>
         </template>

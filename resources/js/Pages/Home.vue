@@ -241,7 +241,7 @@ onMounted(() => {
                             Eventos Destacados
                         </h2>
                         <p class="text-xl text-gray-600">
-                            Descubre las galerías de nuestros eventos más recientes
+                            Descubrí las galerías de nuestros eventos más recientes
                         </p>
                     </div>
 
@@ -340,7 +340,7 @@ onMounted(() => {
                     <div v-else class="text-center py-20">
                         <div class="text-8xl mb-6"></div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">No hay eventos disponibles</h3>
-                        <p class="text-gray-600">Los eventos aparecerán aquí próximamente</p>
+                        <p class="text-gray-600">Los eventos aparecerán acá próximamente</p>
                     </div>
 
                     <!-- Botón Ver Todos -->
@@ -357,7 +357,7 @@ onMounted(() => {
                 </div>
             </div>
             <RecentPhotosSection :photos="recentPhotos" title="Últimas Fotos Subidas"
-                subtitle="Descubre las fotografías más recientes de nuestros eventos" />
+                subtitle="Descubrí las fotografías más recientes loremmm " />
             <!-- Footer -->
             <!--footer class="bg-gray-900 text-white py-16">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

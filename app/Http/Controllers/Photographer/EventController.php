@@ -122,7 +122,7 @@ class EventController extends Controller
     {
         // Verificar que el evento pertenece al fotógrafo
         if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para ver este evento');
+            abort(403, 'No tenés permiso para ver este evento');
         }
 
         //  Cargar fotos del evento con paginación
@@ -199,7 +199,7 @@ class EventController extends Controller
     {
         // Verificar permisos
         if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para actualizar este evento');
+            abort(403, 'No tenés permiso para actualizar este evento');
         }
 
         $validated = $request->validate([
@@ -236,7 +236,7 @@ class EventController extends Controller
     {
         // Verificar que el evento pertenece al fotógrafo autenticado
         if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para eliminar este evento.');
+            abort(403, 'No tenés permiso para eliminar este evento.');
         }
 
         DB::beginTransaction();
@@ -288,7 +288,7 @@ class EventController extends Controller
     {
         // Verificar que el evento pertenece al fotógrafo
         if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para actualizar este evento');
+            abort(403, 'No tenés permiso para actualizar este evento');
         }
 
         $request->validate([

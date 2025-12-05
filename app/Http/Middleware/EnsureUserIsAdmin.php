@@ -10,7 +10,7 @@ class EnsureUserIsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Debug: ver si llega aquí
+        // Debug: ver si llega acá
         \Log::info('EnsureUserIsAdmin middleware ejecutado', [
             'user_id' => auth()->id(),
             'is_admin' => auth()->user()?->is_admin,
@@ -27,7 +27,7 @@ class EnsureUserIsAdmin
                 'is_admin' => auth()->user()->is_admin,
             ]);
             
-            abort(403, 'No tienes permisos de administrador.');
+            abort(403, 'No tenés permisos de administrador.');
         }
 
         return $next($request);

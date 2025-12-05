@@ -114,7 +114,7 @@ onUnmounted(() => {
             </h1>
 
             <p class="text-gray-600 mb-6">
-                Tu pago está siendo procesado. Te notificaremos cuando se complete.
+                Tu pago está siendo procesado. Te vamos a notificar cuando se complete.
             </p>
 
             <!-- Información -->

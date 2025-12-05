@@ -31,7 +31,7 @@ class EnsurePhotographerIsApproved
         $photographer = $user->photographer;
 
         if (!$photographer) {
-            abort(403, 'No tienes un perfil de fotógrafo asociado.');
+            abort(403, 'No tenés un perfil de fotógrafo asociado.');
         }
 
         //  Verificar el estado del fotógrafo

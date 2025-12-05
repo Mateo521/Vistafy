@@ -76,7 +76,7 @@ const formatDate = (dateString) => {
                     <!-- Empty State -->
                     <div v-if="!events.data || events.data.length === 0" class="text-center py-16">
                         <div class="text-6xl mb-4"></div>
-                        <h4 class="text-xl font-semibold text-gray-900 mb-2">No tienes eventos creados</h4>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">No tenés eventos creados</h4>
                         <p class="text-gray-600 mb-6">Crea tu primer evento para comenzar a subir fotos</p>
                         <Link
                             :href="route('photographer.events.create')"

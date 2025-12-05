@@ -132,7 +132,7 @@ class PhotoController extends Controller
         // Verificar que el usuario tiene un perfil de fotógrafo
         if (!auth()->user()->photographer) {
             \Log::error(' Usuario no tiene perfil de fotógrafo');
-            return redirect()->back()->with('error', 'No tienes un perfil de fotógrafo activo');
+            return redirect()->back()->with('error', 'No tenés un perfil de fotógrafo activo');
         }
 
         $request->validate([
@@ -150,7 +150,7 @@ class PhotoController extends Controller
             $event = Event::find($request->event_id);
             if (!$event || $event->photographer_id !== $photographer->id) {
                 \Log::error(' Evento no pertenece al fotógrafo');
-                return redirect()->back()->with('error', 'No tienes permiso para subir fotos a este evento');
+                return redirect()->back()->with('error', 'No tenés permiso para subir fotos a este evento');
             }
         }
 
@@ -319,7 +319,7 @@ class PhotoController extends Controller
         DB::beginTransaction();
 
         try {
-            // Si se sube una nueva imagen, re-procesar
+            // Si se Subí una nueva imagen, re-procesar
             if ($request->hasFile('new_image')) {
                 // Eliminar archivos antiguos
                 if ($photo->original_path) {
@@ -385,7 +385,7 @@ class PhotoController extends Controller
                 'auth_photographer_id' => $photographer->id,
             ]);
 
-            abort(403, 'No tienes permiso para eliminar esta foto.');
+            abort(403, 'No tenés permiso para eliminar esta foto.');
         }
 
         DB::beginTransaction();

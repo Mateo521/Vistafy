@@ -12,7 +12,7 @@ const props = defineProps({
     },
     subtitle: {
         type: String,
-        default: 'Descubre las fotografías más recientes de nuestros eventos'
+        default: 'Descubrí las fotografías más recientes lorem ipsum'
     }
 });
 
@@ -129,7 +129,7 @@ const getImageUrl = (photo) => {
             <div v-else class="text-center py-20">
                 <div class="text-8xl mb-6">-</div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-2">No hay fotos recientes</h3>
-                <p class="text-gray-600">Las nuevas fotos aparecerán aquí</p>
+                <p class="text-gray-600">Las nuevas fotos aparecerán acá</p>
             </div>
 
             <!-- Botón Ver Todas -->

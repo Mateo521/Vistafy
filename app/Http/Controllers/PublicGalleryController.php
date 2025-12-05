@@ -317,7 +317,7 @@ class PublicGalleryController extends Controller
 
             // Validar que el token sea correcto
             if (!$token || $token !== $event->private_token) {
-                abort(403, 'No tienes permiso para ver este evento privado. Solicita el enlace correcto al fotógrafo.');
+                abort(403, 'No tenés permiso para ver este evento privado. Solicita el enlace correcto al fotógrafo.');
             }
         }
 

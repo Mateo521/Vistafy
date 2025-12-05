@@ -303,7 +303,7 @@ const submitPurchase = async () => {
                                         <!-- Link para login -->
                                         <div class="mt-4 text-center">
                                             <p class="text-sm text-gray-600">
-                                                ¿Ya tienes cuenta?
+                                                ¿Ya tenés cuenta?
                                                 <a :href="route('login')" class="text-blue-600 hover:underline">
                                                     Inicia sesión
                                                 </a>

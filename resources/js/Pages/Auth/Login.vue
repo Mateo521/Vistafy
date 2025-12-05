@@ -172,12 +172,12 @@ const submit = () => {
         <!-- Footer con link a registro -->
         <template #footer>
             <p class="text-white/80">
-                ¿No tienes cuenta?
+                ¿No tenés cuenta?
                 <Link
                     :href="route('register')"
                     class="font-bold text-white hover:text-white/80 underline transition"
                 >
-                    Regístrate aquí
+                    Regístrate acá
                 </Link>
             </p>
         </template>

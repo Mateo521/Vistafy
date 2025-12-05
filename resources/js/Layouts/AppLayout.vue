@@ -339,8 +339,7 @@ const dashboardText = computed(() => {
                             <span class="text-2xl font-bold">Empresa</span>
                         </div>
                         <p class="text-gray-400 max-w-md">
-                            Capturando tus mejores momentos en alta calidad. Encuentra y descarga tus fotos de eventos
-                            especiales de manera rápida y sencilla.
+                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi architecto vel accusamus voluptatibus libero maiores sunt tempora itaque beatae eligendi necessitatibus, officiis animi velit eos voluptatem molestiae magnam hic similique!   
                         </p>
                     </div>
 

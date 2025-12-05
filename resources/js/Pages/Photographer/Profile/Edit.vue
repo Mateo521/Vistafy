@@ -271,7 +271,7 @@ const submit = () => {
                                 </label>
                                 <textarea v-model="form.bio" rows="4"
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    placeholder="Cuéntanos sobre tu experiencia, servicios y especialidades..."
+                                    placeholder="Contanos sobre tu experiencia, servicios y especialidades..."
                                     maxlength="1000"></textarea>
                                 <p class="mt-1 text-sm text-gray-500">
                                     {{ form.bio?.length || 0 }} / 1000 caracteres

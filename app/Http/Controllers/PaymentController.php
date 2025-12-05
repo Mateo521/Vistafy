@@ -286,7 +286,7 @@ class PaymentController extends Controller
             }
         }
 
-        //  FALLBACK: Si llegamos aquí y el status de URL dice "approved", confiar en eso
+        //  FALLBACK: Si llegamos acá y el status de URL dice "approved", confiar en eso
         if ($purchase->status !== 'approved' && $paymentStatus === 'approved' && $paymentId) {
             Log::warning(' API de MP no disponible después de todos los intentos, usando URL como fallback', [
                 'purchase_id' => $purchase->id,

@@ -127,8 +127,8 @@ import { Head, Link } from '@inertiajs/vue3';
                             Para apelar esta suspensión o solicitar más información:
                         </p>
                         <div class="space-y-2">
-                            <a href="mailto:soporte@photomarket.com" class="block text-indigo-600 font-bold hover:underline text-lg">
-                                📧 soporte@photomarket.com
+                            <a href="mailto:soporte@empresa.com" class="block text-indigo-600 font-bold hover:underline text-lg">
+                                📧 soporte@empresa.com
                             </a>
                             <p class="text-sm text-gray-600">
                                 Asunto sugerido: "Apelación de Suspensión - [Tu Nombre]"
@@ -165,7 +165,7 @@ import { Head, Link } from '@inertiajs/vue3';
                         </Link>
 
                         <a
-                            href="mailto:soporte@photomarket.com?subject=Apelación de Suspensión"
+                            href="mailto:soporte@empresa.com?subject=Apelación de Suspensión"
                             class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition"
                         >
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -71,7 +71,7 @@ const getInitials = (name) => {
                         Fotógrafos Profesionales
                     </h1>
                     <p class="text-xl sm:text-2xl text-purple-100 max-w-3xl mx-auto">
-                        Descubre el talento detrás de las imágenes. Conecta con fotógrafos verificados.
+                        Descubrí el talento detrás de las imágenes. Conecta con fotógrafos verificados.
                     </p>
                 </div>
 
@@ -179,7 +179,7 @@ const getInitials = (name) => {
 
                     <!-- Header Card con Banner o Gradiente -->
                     <div class="h-32 relative  rounded-t-2xl"> <!-- overflow-hidden -->
-                        <!--  AGREGAR: rounded-t-2xl aquí para mantener el border-radius en la parte superior -->
+                        <!--  AGREGAR: rounded-t-2xl acá para mantener el border-radius en la parte superior -->
                         <img v-if="photographer.banner_photo_url" :src="photographer.banner_photo_url"
                             :alt="photographer.business_name" class="w-full h-full object-cover" />
                         <div v-else class="w-full h-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400">

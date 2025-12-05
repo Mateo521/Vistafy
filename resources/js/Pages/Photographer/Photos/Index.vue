@@ -105,7 +105,7 @@ const formatFileSize = (bytes) => {
                     <!-- Empty State -->
                     <div v-if="!photos.data || photos.data.length === 0" class="text-center py-16">
                         <PhotoIcon class="h-24 w-24 mx-auto text-gray-300 mb-4" />
-                        <h4 class="text-xl font-semibold text-gray-900 mb-2">No tienes fotos subidas</h4>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">No tenés fotos subidas</h4>
                         <p class="text-gray-600 mb-6">Ve a un evento para subir tus primeras fotos</p>
                         <Link :href="route('photographer.events.index')"
                             class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition">

@@ -204,7 +204,7 @@ const updateCoverImage = (photoId) => {
                     </div>
                 </div>
 
-                <!--  AGREGAR ESTA SECCIÓN AQUÍ (Visibility & Sharing) -->
+                <!--  AGREGAR ESTA SECCIÓN acá (Visibility & Sharing) -->
                 <!-- Visibility & Sharing Section -->
                 <div class="mb-8">
                     <!-- Evento Privado -->
