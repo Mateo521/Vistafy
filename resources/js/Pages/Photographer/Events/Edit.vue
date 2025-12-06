@@ -1,7 +1,15 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { 
+    PhotoIcon, 
+    GlobeAltIcon, 
+    LockClosedIcon, 
+    EyeSlashIcon, 
+    TrashIcon,
+    ArrowLeftIcon
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     event: Object,
@@ -30,7 +38,6 @@ const handleImageChange = (e) => {
 };
 
 const submit = () => {
-    //  Agregar _method al formulario
     form.transform((data) => ({
         ...data,
         _method: 'PUT'
@@ -38,196 +45,194 @@ const submit = () => {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            console.log('Evento actualizado');
+            // Notificación opcional
         },
     });
 };
 
-
 const deleteEvent = () => {
-    if (confirm('¿Estás seguro de eliminar este evento? Se eliminarán todas las fotos asociadas.')) {
+    if (confirm('ATENCIÓN: ¿Estás seguro de eliminar este evento? Esta acción no se puede deshacer y se borrarán todas las fotos asociadas.')) {
         router.delete(route('photographer.events.destroy', props.event.id));
     }
 };
 </script>
 
 <template>
-
     <Head title="Editar Evento" />
-  
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Editar Evento
-                </h2>
-                <button @click="deleteEvent"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition">
-                    Eliminar Evento
-                </button>
-            </div>
-        </template>
-
         <div class="py-12">
             <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white rounded-lg shadow-lg p-8">
+                
+                <div class="mb-10 border-b border-gray-200 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <Link :href="route('photographer.events.index')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors flex items-center gap-1">
+                            <ArrowLeftIcon class="w-3 h-3" /> Volver
+                        </Link>
+                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                            Editar Evento
+                        </h1>
+                        <p class="text-sm text-slate-500 font-light mt-1">Modifique los detalles, visibilidad o elimine la galería.</p>
+                    </div>
+                    
+                    <Link :href="route('photographer.events.show', event.id)" 
+                        class="px-5 py-2 border border-slate-300 text-slate-600 text-xs font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm">
+                        Ver Galería
+                    </Link>
+                </div>
 
-                    <form @submit.prevent="submit" class="space-y-6">
+                <form @submit.prevent="submit" class="space-y-8">
 
-                        <!-- Nombre -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Nombre del Evento *
-                            </label>
-                            <input v-model="form.name" type="text" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                placeholder="Ej: Boda Juan y María" />
-                            <div v-if="form.errors.name" class="text-red-600 text-sm mt-1">
-                                {{ form.errors.name }}
-                            </div>
-                        </div>
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                            Detalles Principales
+                        </h2>
 
-                        <!-- Descripción Corta -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Descripción Corta
-                            </label>
-                            <input v-model="form.description" type="text" maxlength="500"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                placeholder="Breve descripción del evento" />
-                            <p class="text-xs text-gray-500 mt-1">
-                                {{ form.description?.length || 0 }}/500 caracteres
-                            </p>
-                        </div>
-
-                        <!-- Descripción Larga -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Descripción Detallada
-                            </label>
-                            <textarea v-model="form.long_description" rows="4" maxlength="2000"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                placeholder="Descripción completa del evento..."></textarea>
-                            <p class="text-xs text-gray-500 mt-1">
-                                {{ form.long_description?.length || 0 }}/2000 caracteres
-                            </p>
-                        </div>
-
-                        <!-- Fecha y Ubicación -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Fecha -->
+                        <div class="space-y-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Fecha del Evento *
-                                </label>
-                                <input v-model="form.event_date" type="date" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                                <div v-if="form.errors.event_date" class="text-red-600 text-sm mt-1">
-                                    {{ form.errors.event_date }}
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Nombre del Evento</label>
+                                <input v-model="form.name" type="text" required
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900"
+                                    placeholder="Nombre del evento" />
+                                <div v-if="form.errors.name" class="text-red-600 text-xs mt-1">{{ form.errors.name }}</div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Fecha</label>
+                                    <input v-model="form.event_date" type="date" required
+                                        class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900" />
+                                    <div v-if="form.errors.event_date" class="text-red-600 text-xs mt-1">{{ form.errors.event_date }}</div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Ubicación</label>
+                                    <input v-model="form.location" type="text"
+                                        class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900"
+                                        placeholder="Lugar del evento" />
                                 </div>
                             </div>
 
-                            <!-- Ubicación -->
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Ubicación
-                                </label>
-                                <input v-model="form.location" type="text"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    placeholder="Ej: Salón Los Pinos, CABA" />
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Descripción Corta</label>
+                                <textarea v-model="form.description" rows="2" maxlength="500"
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 resize-none"></textarea>
+                                <p class="text-[10px] text-right text-slate-400">{{ form.description?.length || 0 }}/500</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Descripción Detallada</label>
+                                <textarea v-model="form.long_description" rows="5" maxlength="2000"
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900"></textarea>
+                                <p class="text-[10px] text-right text-slate-400">{{ form.long_description?.length || 0 }}/2000</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Imagen de Portada -->
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                            Imagen de Portada
+                        </h2>
+
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="w-full md:w-1/2">
+                                <div class="aspect-video bg-gray-100 border border-gray-200 rounded-sm overflow-hidden relative group">
+                                    <img v-if="previewImage" :src="previewImage" class="w-full h-full object-cover" />
+                                    <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
+                                        <PhotoIcon class="w-12 h-12" />
+                                    </div>
+                                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="text-white text-xs font-bold uppercase tracking-widest">Vista Previa</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 flex flex-col justify-center">
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Cambiar Imagen</label>
+                                <input type="file" accept="image/jpeg,image/png,image/jpg" @change="handleImageChange"
+                                    class="block w-full text-sm text-slate-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-sm file:border-0
+                                    file:text-xs file:font-bold file:uppercase file:tracking-widest
+                                    file:bg-slate-100 file:text-slate-700
+                                    hover:file:bg-slate-200 cursor-pointer" 
+                                />
+                                <p class="text-xs text-slate-400 mt-2 font-light">Se recomienda una imagen horizontal de alta resolución (JPG, PNG).</p>
+                                <div v-if="form.errors.cover_image" class="text-red-600 text-xs mt-2">{{ form.errors.cover_image }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                            Configuración de Acceso
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <label class="cursor-pointer group">
+                                <input type="radio" class="peer sr-only" :checked="form.is_active && !form.is_private" @change="form.is_active = true; form.is_private = false">
+                                <div class="p-4 border border-gray-200 rounded-sm hover:border-slate-400 peer-checked:border-emerald-500 peer-checked:bg-emerald-50/30 transition-all h-full">
+                                    <div class="flex items-center gap-2 mb-2 text-emerald-700">
+                                        <GlobeAltIcon class="w-5 h-5" />
+                                        <span class="text-sm font-bold uppercase tracking-wide">Público</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-light">Visible para todos en el directorio.</p>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer group">
+                                <input type="radio" class="peer sr-only" :checked="form.is_active && form.is_private" @change="form.is_active = true; form.is_private = true">
+                                <div class="p-4 border border-gray-200 rounded-sm hover:border-slate-400 peer-checked:border-amber-500 peer-checked:bg-amber-50/30 transition-all h-full">
+                                    <div class="flex items-center gap-2 mb-2 text-amber-700">
+                                        <LockClosedIcon class="w-5 h-5" />
+                                        <span class="text-sm font-bold uppercase tracking-wide">Privado</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-light">Solo accesible mediante enlace/token.</p>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer group">
+                                <input type="radio" class="peer sr-only" :checked="!form.is_active" @change="form.is_active = false; form.is_private = false">
+                                <div class="p-4 border border-gray-200 rounded-sm hover:border-slate-400 peer-checked:border-slate-500 peer-checked:bg-slate-50 transition-all h-full">
+                                    <div class="flex items-center gap-2 mb-2 text-slate-700">
+                                        <EyeSlashIcon class="w-5 h-5" />
+                                        <span class="text-sm font-bold uppercase tracking-wide">Borrador</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-light">Oculto. Solo visible para usted.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-4 pt-4">
+                        <Link :href="route('photographer.events.index')" 
+                            class="px-6 py-3 border border-slate-300 text-slate-600 text-xs font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm">
+                            Cancelar
+                        </Link>
+                        <button type="submit" :disabled="form.processing" 
+                            class="px-8 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm shadow-md disabled:opacity-50">
+                            {{ form.processing ? 'Guardando...' : 'Guardar Cambios' }}
+                        </button>
+                    </div>
+
+                </form>
+
+                <div class="mt-16 pt-10 border-t border-red-100">
+                    <div class="bg-red-50/50 border border-red-100 rounded-sm p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Imagen de Portada
-                            </label>
-
-                            <!-- Preview -->
-                            <div v-if="previewImage" class="mb-4">
-                                <img :src="previewImage" alt="Preview" class="w-full h-64 object-cover rounded-lg" />
-                            </div>
-
-                            <input type="file" accept="image/jpeg,image/png,image/jpg" @change="handleImageChange"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                            <p class="text-xs text-gray-500 mt-1">
-                                JPG, PNG. Máximo 5MB.
+                            <h3 class="text-sm font-bold text-red-700 uppercase tracking-wider mb-1 flex items-center gap-2">
+                                <TrashIcon class="w-4 h-4" /> Zona de Peligro
+                            </h3>
+                            <p class="text-xs text-red-600/70 font-light max-w-lg">
+                                Esta acción eliminará permanentemente el evento y todas las fotografías asociadas. Esta acción no se puede deshacer.
                             </p>
-                            <div v-if="form.errors.cover_image" class="text-red-600 text-sm mt-1">
-                                {{ form.errors.cover_image }}
-                            </div>
                         </div>
-
-
-                        <!-- Opciones - MODO ALTERNANTE -->
-                        <div class="space-y-4 bg-gray-50 p-6 rounded-lg">
-                            <label class="block text-sm font-semibold text-gray-700 mb-4">
-                                Visibilidad del Evento
-                            </label>
-
-                            <div class="space-y-3">
-                                <!-- Público y Activo -->
-                                <label
-                                    class="flex items-center cursor-pointer p-4 bg-white rounded-lg border-2 transition"
-                                    :class="form.is_active && !form.is_private ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'">
-                                    <input type="radio" :checked="form.is_active && !form.is_private"
-                                        @change="form.is_active = true; form.is_private = false"
-                                        class="w-5 h-5 text-green-600" />
-                                    <span class="ml-3">
-                                        <span class="font-semibold text-gray-900">🌍 Público</span>
-                                        <p class="text-sm text-gray-600">Cualquiera puede ver las fotos</p>
-                                    </span>
-                                </label>
-
-                                <!-- Privado y Activo -->
-                                <label
-                                    class="flex items-center cursor-pointer p-4 bg-white rounded-lg border-2 transition"
-                                    :class="form.is_active && form.is_private ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200 hover:border-gray-300'">
-                                    <input type="radio" :checked="form.is_active && form.is_private"
-                                        @change="form.is_active = true; form.is_private = true"
-                                        class="w-5 h-5 text-yellow-600" />
-                                    <span class="ml-3">
-                                        <span class="font-semibold text-gray-900">🔒 Privado</span>
-                                        <p class="text-sm text-gray-600">Solo con enlace privado</p>
-                                    </span>
-                                </label>
-
-                                <!-- Inactivo (oculto) -->
-                                <label
-                                    class="flex items-center cursor-pointer p-4 bg-white rounded-lg border-2 transition"
-                                    :class="!form.is_active ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'">
-                                    <input type="radio" :checked="!form.is_active"
-                                        @change="form.is_active = false; form.is_private = false"
-                                        class="w-5 h-5 text-red-600" />
-                                    <span class="ml-3">
-                                        <span class="font-semibold text-gray-900"> Oculto</span>
-                                        <p class="text-sm text-gray-600">Solo tú puedes verlo</p>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-
-
-
-                        <!-- Botones -->
-                        <div class="flex items-center justify-between pt-6 border-t">
-                            <a :href="route('photographer.events.index')"
-                                class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition">
-                                ← Cancelar
-                            </a>
-
-                            <button type="submit" :disabled="form.processing"
-                                class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span v-if="form.processing">Guardando...</span>
-                                <span v-else>Guardar Cambios</span>
-                            </button>
-                        </div>
-
-                    </form>
-
+                        <button @click="deleteEvent" 
+                            class="px-6 py-2 bg-white border border-red-200 text-red-600 text-xs font-bold uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition rounded-sm whitespace-nowrap">
+                            Eliminar Evento
+                        </button>
+                    </div>
                 </div>
+
             </div>
         </div>
     </AuthenticatedLayout>

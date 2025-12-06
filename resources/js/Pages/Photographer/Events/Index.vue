@@ -1,7 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import PhotographerLayout from '@/Layouts/PhotographerLayout.vue';
+import { 
+    CalendarIcon, 
+    MapPinIcon, 
+    PhotoIcon, 
+    CurrencyDollarIcon,
+    TrashIcon,
+    PencilSquareIcon,
+    EyeIcon,
+    PlusIcon
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     events: Object,
@@ -9,7 +18,7 @@ const props = defineProps({
 });
 
 const deleteEvent = (eventId) => {
-    if (confirm('¿Estás seguro de eliminar este evento? Se eliminarán todas las fotos asociadas.')) {
+    if (confirm('¿Confirmar eliminación del evento? Se perderán todas las fotos y datos asociados de forma permanente.')) {
         router.delete(route('photographer.events.destroy', eventId), {
             preserveScroll: true,
         });
@@ -19,197 +28,180 @@ const deleteEvent = (eventId) => {
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric'
     });
+};
+
+const handleImageError = (e) => {
+    e.target.style.display = 'none';
+    const parent = e.target.parentElement;
+    if (!parent.querySelector('.placeholder-institutional')) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-gray-100 text-slate-300';
+        placeholder.innerHTML = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>`;
+        parent.appendChild(placeholder);
+    }
 };
 </script>
 
 <template>
-    <Head title="Mis Eventos" />
+    <Head title="Gestión de Eventos" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Mis Eventos
-                </h2>
-                <Link
-                    :href="route('photographer.events.create')"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition shadow-lg hover:shadow-xl inline-flex items-center"
-                >
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Crear Evento
-                </Link>
-            </div>
-        </template>
-
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 
-                <!-- Stats Cards -->
-                <div v-if="stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-                        <div class="text-3xl font-bold mb-2">{{ stats.total_events }}</div>
-                        <div class="text-blue-100">Total de Eventos</div>
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-6 gap-4">
+                    <div>
+                        <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                            Portafolio
+                        </span>
+                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                            Cartera de Eventos
+                        </h1>
                     </div>
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-                        <div class="text-3xl font-bold mb-2">{{ stats.active_events }}</div>
-                        <div class="text-green-100">Eventos Activos</div>
+                    <Link
+                        :href="route('photographer.events.create')"
+                        class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-sm text-xs font-bold uppercase tracking-widest transition shadow-sm inline-flex items-center gap-2"
+                    >
+                        <PlusIcon class="w-4 h-4" />
+                        Nuevo Evento
+                    </Link>
+                </div>
+
+                <div v-if="stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Eventos Totales</span>
+                            <CalendarIcon class="h-5 w-5 text-slate-300" />
+                        </div>
+                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_events }}</span>
                     </div>
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-                        <div class="text-3xl font-bold mb-2">{{ stats.total_photos }}</div>
-                        <div class="text-purple-100">Fotos Totales</div>
+
+                    <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Publicados</span>
+                            <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
+                        </div>
+                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.active_events }}</span>
                     </div>
-                    <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg shadow-lg p-6 text-white">
-                        <div class="text-3xl font-bold mb-2">{{ stats.total_sales || 0 }}</div>
-                        <div class="text-pink-100">Ventas Totales</div>
+
+                    <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Material Corgado</span>
+                            <PhotoIcon class="h-5 w-5 text-slate-300" />
+                        </div>
+                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_photos }}</span>
+                    </div>
+
+                    <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ventas</span>
+                            <CurrencyDollarIcon class="h-5 w-5 text-slate-300" />
+                        </div>
+                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_sales || 0 }}</span>
                     </div>
                 </div>
 
-                <!-- Events Grid -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Mis Eventos</h3>
-
-                    <!-- Empty State -->
-                    <div v-if="!events.data || events.data.length === 0" class="text-center py-16">
-                        <div class="text-6xl mb-4"></div>
-                        <h4 class="text-xl font-semibold text-gray-900 mb-2">No tenés eventos creados</h4>
-                        <p class="text-gray-600 mb-6">Crea tu primer evento para comenzar a subir fotos</p>
-                        <Link
-                            :href="route('photographer.events.create')"
-                            class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
-                        >
-                             Crear Primer Evento
+                <div>
+                    <div v-if="!events.data || events.data.length === 0" class="text-center py-24 border border-dashed border-gray-300 rounded-sm bg-gray-50">
+                        <CalendarIcon class="h-16 w-16 mx-auto text-gray-300 mb-4 stroke-1" />
+                        <h4 class="text-lg font-serif font-medium text-slate-900 mb-2">Sin eventos registrados</h4>
+                        <p class="text-sm text-slate-500 font-light mb-8 max-w-sm mx-auto">Comience creando un evento para organizar sus sesiones fotográficas.</p>
+                        <Link :href="route('photographer.events.create')"
+                            class="inline-block border-b border-slate-900 text-slate-900 text-xs font-bold uppercase tracking-widest pb-1 hover:text-slate-600 hover:border-slate-600 transition">
+                            Crear Primer Evento
                         </Link>
                     </div>
 
-                    <!-- Events List -->
-                    <div v-else>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                            <div
-                                v-for="event in events.data"
-                                :key="event.id"
-                                class="bg-white border-2 border-gray-200 rounded-lg overflow-hidden hover:border-indigo-300 hover:shadow-xl transition"
-                            >
-                                <!-- Cover Image -->
-                                <div class="relative h-48 bg-gradient-to-br from-indigo-400 to-purple-500">
-                                     <img v-if="event.cover_image_url" :src="event.cover_image_url"
-                        :alt="event.name"
-                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" @error="(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextElementSibling.style.display = 'flex';
-                        }" />
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                    
-                                    <!-- Status Badge -->
-                                    <div class="absolute top-3 right-3">
-                                        <span
-                                            :class="[
-                                                'px-3 py-1 rounded-full text-xs font-bold shadow-lg',
-                                                event.is_active
-                                                    ? 'bg-green-500 text-white'
-                                                    : 'bg-red-500 text-white'
-                                            ]"
-                                        >
-                                            {{ event.is_active ? '✓ Activo' : '✗ Inactivo' }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Privacy Badge -->
-                                    <div class="absolute top-3 left-3">
-                                        <span
-                                            :class="[
-                                                'px-3 py-1 rounded-full text-xs font-bold shadow-lg',
-                                                event.is_private
-                                                    ? 'bg-yellow-500 text-yellow-900'
-                                                    : 'bg-blue-500 text-white'
-                                            ]"
-                                        >
-                                            {{ event.is_private ? ' Privado' : ' Público' }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Photo Count -->
-                                    <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                            <span class="text-sm font-bold text-gray-800">
-                                                {{ event.photos_count || 0 }} fotos
-                                            </span>
-                                        </div>
-                                    </div>
+                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div v-for="event in events.data" :key="event.id"
+                            class="group bg-white border border-gray-200 rounded-sm overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 flex flex-col"
+                        >
+                            <div class="relative h-56 bg-gray-100 overflow-hidden border-b border-gray-100">
+                                <img v-if="event.cover_image_url" :src="event.cover_image_url" 
+                                    :alt="event.name"
+                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale-[0.3] group-hover:grayscale-0"
+                                    @error="handleImageError" 
+                                />
+                                <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
+                                    <PhotoIcon class="w-12 h-12" />
                                 </div>
 
-                                <!-- Event Info -->
-                                <div class="p-5">
-                                    <h4 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
-                                        {{ event.name }}
-                                    </h4>
-                                    
-                                    <div class="space-y-2 text-sm text-gray-600 mb-4">
-                                        <div class="flex items-center">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                            {{ formatDate(event.event_date) }}
-                                        </div>
-                                        <div v-if="event.location" class="flex items-center">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                            </svg>
-                                            {{ event.location }}
-                                        </div>
-                                    </div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                                
+                                <div class="absolute top-4 right-4">
+                                    <span :class="[
+                                        'px-2 py-1 text-[10px] font-bold uppercase tracking-widest border',
+                                        event.is_private 
+                                            ? 'bg-slate-900 text-white border-slate-900' 
+                                            : 'bg-white text-slate-900 border-white'
+                                    ]">
+                                        {{ event.is_private ? 'Privado' : 'Público' }}
+                                    </span>
+                                </div>
 
-                                    <!-- Actions -->
-                                    <div class="flex gap-2">
-                                        <Link
-                                            :href="route('photographer.events.show', event.id)"
-                                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-center px-4 py-2 rounded-lg font-semibold text-sm transition"
-                                        >
-                                            Ver
+                                <div class="absolute bottom-4 left-4 text-white">
+                                    <div class="flex items-center text-xs font-medium">
+                                        <CalendarIcon class="w-4 h-4 mr-1.5" />
+                                        {{ formatDate(event.event_date) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 flex-1 flex flex-col">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-serif font-bold text-slate-900 line-clamp-1 group-hover:text-slate-600 transition-colors">
+                                        {{ event.name }}
+                                    </h3>
+                                </div>
+
+                                <div v-if="event.location" class="flex items-center text-xs text-slate-500 mb-4 uppercase tracking-wide">
+                                    <MapPinIcon class="w-3 h-3 mr-1" />
+                                    {{ event.location }}
+                                </div>
+
+                                <p v-if="event.description" class="text-sm text-slate-500 font-light line-clamp-2 mb-6 leading-relaxed flex-1">
+                                    {{ event.description }}
+                                </p>
+
+                                <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+                                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                        {{ event.photos_count || 0 }} Fotos
+                                    </div>
+                                    
+                                    <div class="flex gap-3">
+                                        <Link :href="route('photographer.events.show', event.id)" title="Ver"
+                                            class="text-slate-400 hover:text-slate-900 transition">
+                                            <EyeIcon class="w-5 h-5" />
                                         </Link>
-                                        <Link
-                                            :href="route('photographer.events.edit', event.id)"
-                                            class="flex-1 bg-gray-600 hover:bg-gray-700 text-white text-center px-4 py-2 rounded-lg font-semibold text-sm transition"
-                                        >
-                                            Editar
+                                        <Link :href="route('photographer.events.edit', event.id)" title="Editar"
+                                            class="text-slate-400 hover:text-slate-900 transition">
+                                            <PencilSquareIcon class="w-5 h-5" />
                                         </Link>
-                                        <button
-                                            @click="deleteEvent(event.id)"
-                                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition"
-                                        >
-                                            Eliminar
+                                        <button @click="deleteEvent(event.id)" title="Eliminar"
+                                            class="text-slate-400 hover:text-red-600 transition">
+                                            <TrashIcon class="w-5 h-5" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Pagination -->
-                        <div v-if="events.last_page > 1" class="flex items-center justify-center gap-2 flex-wrap">
+                    <div v-if="events.last_page > 1" class="mt-12 pt-8 border-t border-gray-200">
+                        <div class="flex items-center justify-center gap-2">
                             <template v-for="(link, index) in events.links" :key="index">
-                                <Link
-                                    v-if="link.url"
-                                    :href="link.url"
-                                    v-html="link.label"
-                                    :class="[
-                                        'px-4 py-2 rounded-lg font-medium transition',
-                                        link.active
-                                            ? 'bg-indigo-600 text-white shadow-lg'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    ]"
-                                />
-                                <span
-                                    v-else
-                                    v-html="link.label"
-                                    class="px-4 py-2 rounded-lg font-medium bg-gray-100 text-gray-400 cursor-not-allowed"
-                                />
+                                <Link v-if="link.url" :href="link.url" 
+                                    class="h-8 min-w-[2rem] px-2 flex items-center justify-center text-xs font-medium rounded-sm transition-colors border"
+                                    :class="link.active 
+                                        ? 'bg-slate-900 text-white border-slate-900' 
+                                        : 'bg-white text-slate-600 border-gray-200 hover:border-slate-400 hover:text-slate-900'"
+                                >
+                                    <span v-html="link.label"></span>
+                                </Link>
+                                <span v-else v-html="link.label" class="h-8 min-w-[2rem] px-2 flex items-center justify-center text-xs text-gray-300 border border-transparent cursor-not-allowed"></span>
                             </template>
                         </div>
                     </div>
@@ -218,8 +210,4 @@ const formatDate = (dateString) => {
             </div>
         </div>
     </AuthenticatedLayout>
-
-
-
-    
 </template>

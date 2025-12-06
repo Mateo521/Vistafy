@@ -39,233 +39,216 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Registro de Fotógrafo" />
+        <Head title="Solicitud Profesional" />
 
-        <!-- Título -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">
-                 Unite como Fotógrafo
+        <div class="text-center mb-10">
+            <span class="text-xs font-bold tracking-[0.2em] text-white/60 uppercase mb-3 block">
+                Portal de Talentos
+            </span>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
+                Solicitud de Ingreso
             </h1>
-            <p class="text-white/80">
-                Compartí tu trabajo y llega a más clientes
+            <p class="text-white/60 text-sm font-light max-w-sm mx-auto leading-relaxed">
+                Únase a nuestra red de fotógrafos certificados. Su solicitud será evaluada por nuestro equipo de curaduría.
             </p>
         </div>
 
-        <!-- Formulario -->
-        <form @submit.prevent="submit" class="space-y-6">
-            <!-- Información Personal -->
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                <h3 class="text-white font-bold text-lg mb-4"> Información Personal</h3>
-                
-                <!-- Nombre Completo -->
-                <div class="mb-4">
-                    <InputLabel for="name" value="Nombre Completo" class="text-white font-medium mb-2" />
-                    <TextInput
-                        id="name"
-                        type="text"
-                        class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl"
-                        v-model="form.name"
-                        placeholder="Tu nombre completo"
-                        required
-                        autofocus
-                    />
-                    <InputError class="mt-2 text-red-300" :message="form.errors.name" />
+        <form @submit.prevent="submit" class="space-y-8">
+            
+            <div>
+                <div class="flex items-center gap-4 mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-white whitespace-nowrap">
+                        01. Credenciales de Acceso
+                    </h3>
+                    <div class="h-[1px] w-full bg-white/10"></div>
                 </div>
 
-                <!-- Email -->
-                <div class="mb-4">
-                    <InputLabel for="email" value="Correo Electrónico" class="text-white font-medium mb-2" />
-                    <TextInput
-                        id="email"
-                        type="email"
-                        class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl"
-                        v-model="form.email"
-                        placeholder="tu@email.com"
-                        required
-                    />
-                    <InputError class="mt-2 text-red-300" :message="form.errors.email" />
-                </div>
-
-                <!-- Password -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-5">
                     <div>
-                        <InputLabel for="password" value="Contraseña" class="text-white font-medium mb-2" />
+                        <label for="name" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Nombre Completo</label>
                         <TextInput
-                            id="password"
-                            type="password"
-                            class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl"
-                            v-model="form.password"
-                            placeholder="Mínimo 8 caracteres"
+                            id="name"
+                            type="text"
+                            class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
+                            v-model="form.name"
+                            placeholder="Nombre y Apellido"
+                            required
+                            autofocus
+                            autocomplete="name"
+                        />
+                        <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.name" />
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Correo Profesional</label>
+                        <TextInput
+                            id="email"
+                            type="email"
+                            class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
+                            v-model="form.email"
+                            placeholder="contacto@estudio.com"
                             required
                         />
-                        <InputError class="mt-2 text-red-300" :message="form.errors.password" />
+                        <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.email" />
                     </div>
 
-                    <div>
-                        <InputLabel for="password_confirmation" value="Confirmar Contraseña" class="text-white font-medium mb-2" />
-                        <TextInput
-                            id="password_confirmation"
-                            type="password"
-                            class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl"
-                            v-model="form.password_confirmation"
-                            placeholder="Repite tu contraseña"
-                            required
-                        />
-                        <InputError class="mt-2 text-red-300" :message="form.errors.password_confirmation" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Información Profesional -->
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                <h3 class="text-white font-bold text-lg mb-4"> Información Profesional</h3>
-
-                <!-- Nombre del Negocio -->
-                <div class="mb-4">
-                    <InputLabel for="business_name" value="Nombre del Negocio / Estudio" class="text-white font-medium mb-2" />
-                    <TextInput
-                        id="business_name"
-                        type="text"
-                        class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl"
-                        v-model="form.business_name"
-                        placeholder="Ej: Estudio Lumina"
-                        required
-                    />
-                    <InputError class="mt-2 text-red-300" :message="form.errors.business_name" />
-                </div>
-
-                <!-- Región y Teléfono -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <InputLabel for="region" value="Región" class="text-white font-medium mb-2" />
-                        <select
-                            id="region"
-                            v-model="form.region"
-                            class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white rounded-xl focus:ring-2 focus:ring-white/50"
-                            required
-                        >
-                            <option value="" disabled class="bg-gray-800">Selecciona tu región</option>
-                            <option v-for="region in regions" :key="region" :value="region" class="bg-gray-800">
-                                {{ region }}
-                            </option>
-                        </select>
-                        <InputError class="mt-2 text-red-300" :message="form.errors.region" />
-                    </div>
-
-                    <div>
-                        <InputLabel for="phone" value="Teléfono" class="text-white font-medium mb-2" />
-                        <TextInput
-                            id="phone"
-                            type="tel"
-                            class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl"
-                            v-model="form.phone"
-                            placeholder="+54 9 11 1234-5678"
-                            required
-                        />
-                        <InputError class="mt-2 text-red-300" :message="form.errors.phone" />
-                    </div>
-                </div>
-
-                <!-- Biografía -->
-                <div class="mb-4">
-                    <InputLabel for="bio" value="Biografía / Descripción" class="text-white font-medium mb-2" />
-                    <textarea
-                        id="bio"
-                        v-model="form.bio"
-                        rows="4"
-                        class="block w-full bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-white/50 rounded-xl focus:ring-2 focus:ring-white/50 resize-none"
-                        placeholder="Contanos sobre tu experiencia, estilo fotográfico, especializaciones..."
-                    ></textarea>
-                    <InputError class="mt-2 text-red-300" :message="form.errors.bio" />
-                    <p class="text-white/50 text-xs mt-1">{{ form.bio?.length || 0 }} / 1000 caracteres</p>
-                </div>
-
-                <!-- Foto de Perfil -->
-                <div>
-                    <InputLabel for="profile_photo" value="Foto de Perfil" class="text-white font-medium mb-2" />
-                    <div class="mt-2 flex items-center gap-4">
-                        <label
-                            for="profile_photo"
-                            class="cursor-pointer bg-white/10 backdrop-blur-sm border-2 border-dashed border-white/30 rounded-xl px-6 py-4 text-center hover:bg-white/20 transition flex-1"
-                        >
-                            <svg class="mx-auto h-12 w-12 text-white/50 mb-2" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="text-white/80 text-sm">
-                                {{ form.profile_photo ? form.profile_photo.name : 'Subí tu foto de perfil' }}
-                            </span>
-                            <input
-                                id="profile_photo"
-                                type="file"
-                                class="sr-only"
-                                accept="image/*"
-                                @change="handleFileUpload"
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="password" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Contraseña</label>
+                            <TextInput
+                                id="password"
+                                type="password"
+                                class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
+                                v-model="form.password"
+                                placeholder="********"
+                                required
                             />
-                        </label>
+                            <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.password" />
+                        </div>
+                        <div>
+                            <label for="password_confirmation" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Confirmar</label>
+                            <TextInput
+                                id="password_confirmation"
+                                type="password"
+                                class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
+                                v-model="form.password_confirmation"
+                                placeholder="********"
+                                required
+                            />
+                        </div>
                     </div>
-                    <InputError class="mt-2 text-red-300" :message="form.errors.profile_photo" />
-                    <p class="text-white/50 text-xs mt-1">Formato: JPG, PNG. Máximo 2MB</p>
                 </div>
             </div>
 
-            <!-- Aviso de Aprobación -->
-            <div class="bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-4">
-                <div class="flex gap-3">
-                    <svg class="w-6 h-6 text-yellow-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+            <div>
+                <div class="flex items-center gap-4 mb-6 mt-8">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-white whitespace-nowrap">
+                        02. Perfil Profesional
+                    </h3>
+                    <div class="h-[1px] w-full bg-white/10"></div>
+                </div>
+
+                <div class="space-y-5">
                     <div>
-                        <p class="text-yellow-100 font-medium mb-1">Verificación requerida</p>
-                        <p class="text-yellow-200/80 text-sm">
-                            Tu cuenta será revisada por nuestro equipo antes de activarse. 
-                            Te vamos a notificar por email cuando sea aprobada. Este proceso puede tomar entre 24-48 horas.
-                        </p>
+                        <label for="business_name" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Nombre del Estudio / Marca</label>
+                        <TextInput
+                            id="business_name"
+                            type="text"
+                            class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
+                            v-model="form.business_name"
+                            placeholder="Ej: Visual Arts Photography"
+                            required
+                        />
+                        <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.business_name" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="region" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Región Operativa</label>
+                            <div class="relative">
+                                <select
+                                    id="region"
+                                    v-model="form.region"
+                                    class="block w-full bg-white/5 border-white/20 text-white rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm appearance-none"
+                                    required
+                                >
+                                    <option value="" disabled class="bg-slate-900 text-gray-500">Seleccionar...</option>
+                                    <option v-for="region in regions" :key="region" :value="region" class="bg-slate-900 text-white">
+                                        {{ region }}
+                                    </option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white/50">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                            </div>
+                            <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.region" />
+                        </div>
+
+                        <div>
+                            <label for="phone" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Teléfono de Contacto</label>
+                            <TextInput
+                                id="phone"
+                                type="tel"
+                                class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
+                                v-model="form.phone"
+                                placeholder="+54 9 11 ..."
+                                required
+                            />
+                            <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.phone" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="bio" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Reseña Profesional</label>
+                        <textarea
+                            id="bio"
+                            v-model="form.bio"
+                            rows="4"
+                            class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm resize-none"
+                            placeholder="Describa su experiencia, estilo y equipo técnico..."
+                        ></textarea>
+                        <div class="flex justify-between mt-1">
+                            <InputError class="text-red-300 text-xs" :message="form.errors.bio" />
+                            <span class="text-[10px] text-white/30">{{ form.bio?.length || 0 }} / 1000</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">Foto de Perfil / Logo</label>
+                        <label for="profile_photo" class="group relative flex flex-col items-center justify-center w-full h-32 border border-white/20 border-dashed rounded-sm cursor-pointer hover:bg-white/5 hover:border-white/40 transition-all duration-300">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-3 text-white/30 group-hover:text-white/60 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                <p class="text-xs text-white/60 group-hover:text-white/90 font-light">
+                                    <span v-if="form.profile_photo" class="font-medium text-white">{{ form.profile_photo.name }}</span>
+                                    <span v-else>Click para subir imagen</span>
+                                </p>
+                                <p v-if="!form.profile_photo" class="text-[9px] text-white/30 mt-1 uppercase tracking-wider">JPG, PNG (Max 2MB)</p>
+                            </div>
+                            <input id="profile_photo" type="file" class="hidden" accept="image/*" @change="handleFileUpload" />
+                        </label>
+                        <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.profile_photo" />
                     </div>
                 </div>
             </div>
 
-            <!-- Botón de registro -->
-            <PrimaryButton
-                class="w-full justify-center bg-white hover:bg-white/90 text-indigo-600 font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-200"
-                :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
-                :disabled="form.processing"
-            >
-                <svg v-if="form.processing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span v-else>Registrarme como Fotógrafo</span>
-            </PrimaryButton>
+            <div class="bg-amber-900/20 border border-amber-700/30 p-4 rounded-sm flex items-start gap-4">
+                <svg class="w-5 h-5 text-amber-500/80 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-amber-500 mb-1">Proceso de Verificación</h4>
+                    <p class="text-xs text-amber-100/60 leading-relaxed font-light">
+                        Su perfil pasará a estado "Pendiente" tras el registro. Nuestro equipo validará su portafolio en 24-48hs. Recibirá una notificación al ser aprobado.
+                    </p>
+                </div>
+            </div>
 
-            <!-- Términos -->
-            <p class="text-xs text-white/60 text-center">
-                Al registrarte, aceptas nuestros
-                <a href="#" class="underline hover:text-white/80">Términos de Servicio</a>
-                y
-                <a href="#" class="underline hover:text-white/80">Política de Privacidad</a>
+            <div class="pt-2">
+                <PrimaryButton
+                    class="w-full justify-center bg-white hover:bg-gray-100 text-slate-900 font-bold py-4 rounded-sm uppercase tracking-widest text-xs border border-transparent transition-all duration-300"
+                    :class="{ 'opacity-70 cursor-not-allowed': form.processing }"
+                    :disabled="form.processing"
+                >
+                    <span v-if="form.processing">Enviando solicitud...</span>
+                    <span v-else>Enviar Solicitud</span>
+                </PrimaryButton>
+            </div>
+
+            <p class="text-[10px] text-white/30 text-center leading-relaxed px-4">
+                Al enviar esta solicitud, acepta los <a href="#" class="underline hover:text-white transition">Términos Comerciales</a> para profesionales.
             </p>
         </form>
 
-        <!-- Footer -->
         <template #footer>
-            <p class="text-white/80">
-                ¿Ya tenés cuenta?
-                <Link
-                    :href="route('login')"
-                    class="font-bold text-white hover:text-white/80 underline transition"
-                >
-                    Inicia sesión acá
+            <div class="text-center mt-8 pt-8 border-t border-white/10">
+                <p class="text-white/50 text-xs font-light mb-2">
+                    ¿Ya tiene una cuenta profesional?
+                    <Link :href="route('login')" class="text-white font-bold hover:underline ml-1 transition">
+                        Acceso Socios
+                    </Link>
+                </p>
+                <Link :href="route('register')" class="text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition">
+                    Registro para Clientes
                 </Link>
-            </p>
-            <p class="text-white/60 text-sm mt-2">
-                ¿Sos cliente?
-                <Link
-                    :href="route('register')"
-                    class="text-white/80 hover:text-white underline transition"
-                >
-                    Regístrate como cliente
-                </Link>
-            </p>
+            </div>
         </template>
     </GuestLayout>
 </template>

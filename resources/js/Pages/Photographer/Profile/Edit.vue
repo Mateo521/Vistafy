@@ -6,7 +6,8 @@ import {
     UserCircleIcon,
     PhotoIcon,
     TrashIcon,
-    CheckCircleIcon
+    CheckCircleIcon,
+    ArrowUpTrayIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -26,16 +27,8 @@ const profilePhotoPreview = ref(null);
 const bannerPhotoPreview = ref(null);
 
 const regions = [
-    'Buenos Aires',
-    'CABA',
-    'Córdoba',
-    'Santa Fe',
-    'Mendoza',
-    'Tucumán',
-    'Rosario',
-    'Salta',
-    'Neuquén',
-    'Entre Ríos',
+    'Buenos Aires', 'CABA', 'Córdoba', 'Santa Fe', 'Mendoza', 
+    'Tucumán', 'Rosario', 'Salta', 'Neuquén', 'Entre Ríos',
 ];
 
 const handleProfilePhotoChange = (event) => {
@@ -43,9 +36,7 @@ const handleProfilePhotoChange = (event) => {
     if (file) {
         form.profile_photo = file;
         const reader = new FileReader();
-        reader.onload = (e) => {
-            profilePhotoPreview.value = e.target.result;
-        };
+        reader.onload = (e) => profilePhotoPreview.value = e.target.result;
         reader.readAsDataURL(file);
     }
 };
@@ -55,26 +46,20 @@ const handleBannerPhotoChange = (event) => {
     if (file) {
         form.banner_photo = file;
         const reader = new FileReader();
-        reader.onload = (e) => {
-            bannerPhotoPreview.value = e.target.result;
-        };
+        reader.onload = (e) => bannerPhotoPreview.value = e.target.result;
         reader.readAsDataURL(file);
     }
 };
 
 const deleteProfilePhoto = () => {
     if (confirm('¿Eliminar la foto de perfil?')) {
-        router.delete(route('photographer.profile.photo.delete'), {
-            preserveScroll: true,
-        });
+        router.delete(route('photographer.profile.photo.delete'), { preserveScroll: true });
     }
 };
 
 const deleteBannerPhoto = () => {
     if (confirm('¿Eliminar el banner?')) {
-        router.delete(route('photographer.profile.banner.delete'), {
-            preserveScroll: true,
-        });
+        router.delete(route('photographer.profile.banner.delete'), { preserveScroll: true });
     }
 };
 
@@ -91,208 +76,148 @@ const submit = () => {
 </script>
 
 <template>
-
-    <Head title="Editar Perfil" />
+    <Head title="Perfil Profesional" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                <UserCircleIcon class="inline h-6 w-6 mr-2" />
-                Editar Perfil
-            </h2>
-        </template>
-
         <div class="py-12">
             <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
-                <div v-if="$page.props.flash?.success"
-                    class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
-                    <div class="flex items-center">
-                        <CheckCircleIcon class="h-5 w-5 text-green-500 mr-3" />
-                        <p class="text-green-700 font-medium">{{ $page.props.flash.success }}</p>
-                    </div>
+                <div class="mb-10 border-b border-gray-200 pb-6">
+                    <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                        Configuración
+                    </span>
+                    <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        Perfil Público
+                    </h1>
+                    <p class="text-sm text-slate-500 font-light mt-1">Gestione la información visible para sus clientes.</p>
                 </div>
 
+                <div v-if="$page.props.flash?.success" class="mb-8 bg-emerald-50 text-emerald-800 px-4 py-3 rounded-sm text-xs font-medium flex items-center gap-2 border border-emerald-100">
+                    <CheckCircleIcon class="w-4 h-4" /> {{ $page.props.flash.success }}
+                </div>
 
-                <form @submit.prevent="submit" class="space-y-6">
+                <form @submit.prevent="submit" class="space-y-8">
 
-                    <!-- Banner Photo -->
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <PhotoIcon class="h-5 w-5" />
-                                Banner de Perfil (Opcional)
-                            </h3>
-                            <p class="text-sm text-gray-600 mb-4">
-                                Imagen de fondo para tu perfil público. Tamaño recomendado: 1920x400px
-                            </p>
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                            Identidad Visual
+                        </h2>
 
-                            <!-- Banner Preview -->
-                            <div class="mb-4">
-                                <div class="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
-                                    <img v-if="bannerPhotoPreview || photographer.banner_photo_url"
-                                        :src="bannerPhotoPreview || photographer.banner_photo_url"
-                                        class="w-full h-full object-cover" alt="Banner" />
-                                    <div v-else class="flex items-center justify-center h-full text-gray-400">
-                                        <div class="text-center">
-                                            <PhotoIcon class="h-12 w-12 mx-auto mb-2" />
-                                            <p class="text-sm">Sin banner</p>
-                                        </div>
-                                    </div>
+                        <div class="mb-8">
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Banner de Portada</label>
+                            
+                            <div class="relative h-48 bg-slate-100 border border-gray-200 rounded-sm overflow-hidden group">
+                                <img v-if="bannerPhotoPreview || photographer.banner_photo_url"
+                                    :src="bannerPhotoPreview || photographer.banner_photo_url"
+                                    class="w-full h-full object-cover transition-opacity group-hover:opacity-75" 
+                                />
+                                <div v-else class="flex flex-col items-center justify-center h-full text-slate-300">
+                                    <PhotoIcon class="h-10 w-10 mb-2" />
+                                    <span class="text-[10px] uppercase tracking-widest">1920x400 Recomendado</span>
+                                </div>
+
+                                <div class="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
+                                    <label class="cursor-pointer bg-white text-slate-900 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 transition rounded-sm flex items-center gap-2">
+                                        <ArrowUpTrayIcon class="w-3 h-3" /> Cambiar
+                                        <input type="file" accept="image/*" @change="handleBannerPhotoChange" class="hidden" />
+                                    </label>
+                                    <button v-if="photographer.banner_photo_url" @click.prevent="deleteBannerPhoto" 
+                                        class="bg-red-600 text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition rounded-sm flex items-center gap-2">
+                                        <TrashIcon class="w-3 h-3" />
+                                    </button>
                                 </div>
                             </div>
+                            <p v-if="form.errors.banner_photo" class="text-red-600 text-xs mt-2">{{ form.errors.banner_photo }}</p>
+                        </div>
 
-                            <div class="flex gap-3">
-                                <label
-                                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition cursor-pointer text-center">
-                                    <PhotoIcon class="inline h-4 w-4 mr-2" />
-                                    Seleccionar Banner
-                                    <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp"
-                                        @change="handleBannerPhotoChange" class="hidden" />
-                                </label>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Foto de Perfil</label>
+                            <div class="flex items-center gap-6">
+                                <div class="relative w-24 h-24 bg-slate-100 border border-gray-200 rounded-sm overflow-hidden group flex-shrink-0">
+                                    <img v-if="profilePhotoPreview || photographer.profile_photo_url"
+                                        :src="profilePhotoPreview || photographer.profile_photo_url"
+                                        class="w-full h-full object-cover" 
+                                    />
+                                    <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
+                                        <UserCircleIcon class="h-10 w-10" />
+                                    </div>
+                                </div>
 
-                                <button v-if="photographer.banner_photo_url" @click.prevent="deleteBannerPhoto"
-                                    type="button"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg font-semibold transition inline-flex items-center gap-2">
-                                    <TrashIcon class="h-4 w-4" />
-                                    Eliminar
-                                </button>
+                                <div class="space-y-3">
+                                    <div class="flex gap-3">
+                                        <label class="cursor-pointer border border-slate-300 text-slate-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm">
+                                            Seleccionar
+                                            <input type="file" accept="image/*" @change="handleProfilePhotoChange" class="hidden" />
+                                        </label>
+                                        <button v-if="photographer.profile_photo_url" @click.prevent="deleteProfilePhoto" 
+                                            class="text-red-600 hover:text-red-800 text-[10px] font-bold uppercase tracking-widest border border-transparent hover:border-red-200 px-3 py-2 transition rounded-sm">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 font-light">JPG, PNG o WEBP. Máximo 2MB.</p>
+                                    <p v-if="form.errors.profile_photo" class="text-red-600 text-xs">{{ form.errors.profile_photo }}</p>
+                                </div>
                             </div>
-
-                            <p v-if="form.errors.banner_photo" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.banner_photo }}
-                            </p>
                         </div>
                     </div>
 
-                    <!-- Profile Photo -->
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <UserCircleIcon class="h-5 w-5" />
-                                Foto de Perfil (Opcional)
-                            </h3>
-                            <p class="text-sm text-gray-600 mb-4">
-                                Tu foto de perfil se mostrará en el directorio de fotógrafos. Tamaño recomendado:
-                                400x400px
-                            </p>
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                            Datos del Negocio
+                        </h2>
 
-                            <!-- Profile Photo Preview -->
-                            <div class="mb-4 flex justify-center">
-                                <div class="relative">
-                                    <div
-                                        class="h-40 w-40 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
-                                        <img v-if="profilePhotoPreview || photographer.profile_photo_url"
-                                            :src="profilePhotoPreview || photographer.profile_photo_url"
-                                            class="w-full h-full object-cover" alt="Foto de perfil" />
-                                        <div v-else class="flex items-center justify-center h-full text-gray-400">
-                                            <UserCircleIcon class="h-20 w-20" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3">
-                                <label
-                                    class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition cursor-pointer text-center">
-                                    <PhotoIcon class="inline h-4 w-4 mr-2" />
-                                    Seleccionar Foto
-                                    <input type="file" accept="image/jpeg,image/png,image/jpg,image/webp"
-                                        @change="handleProfilePhotoChange" class="hidden" />
-                                </label>
-
-                                <button v-if="photographer.profile_photo_url" @click.prevent="deleteProfilePhoto"
-                                    type="button"
-                                    class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg font-semibold transition inline-flex items-center gap-2">
-                                    <TrashIcon class="h-4 w-4" />
-                                    Eliminar
-                                </button>
-                            </div>
-
-                            <p v-if="form.errors.profile_photo" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.profile_photo }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Business Info -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Información del Negocio</h3>
-
-                        <div class="space-y-4">
-                            <!-- Business Name -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nombre del Negocio <span class="text-red-500">*</span>
-                                </label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Nombre Comercial</label>
                                 <input v-model="form.business_name" type="text"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    placeholder="Ej: Estudio Fotográfico XYZ" required />
-                                <p v-if="form.errors.business_name" class="mt-2 text-sm text-red-600">
-                                    {{ form.errors.business_name }}
-                                </p>
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300"
+                                    placeholder="Ej: Estudio Fotográfico" required 
+                                />
+                                <p v-if="form.errors.business_name" class="text-red-600 text-xs mt-1">{{ form.errors.business_name }}</p>
                             </div>
 
-                            <!-- Region -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Región <span class="text-red-500">*</span>
-                                </label>
-                                <select v-model="form.region"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    required>
-                                    <option value="">Selecciona una región</option>
-                                    <option v-for="region in regions" :key="region" :value="region">
-                                        {{ region }}
-                                    </option>
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Región</label>
+                                <select v-model="form.region" required
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 bg-white">
+                                    <option value="" disabled>Seleccione una opción</option>
+                                    <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
                                 </select>
-                                <p v-if="form.errors.region" class="mt-2 text-sm text-red-600">
-                                    {{ form.errors.region }}
-                                </p>
+                                <p v-if="form.errors.region" class="text-red-600 text-xs mt-1">{{ form.errors.region }}</p>
                             </div>
 
-                            <!-- Phone -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Teléfono
-                                </label>
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Teléfono</label>
                                 <input v-model="form.phone" type="text"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    placeholder="+54 9 11 1234-5678" />
-                                <p v-if="form.errors.phone" class="mt-2 text-sm text-red-600">
-                                    {{ form.errors.phone }}
-                                </p>
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300"
+                                    placeholder="+54 9 11 ..." 
+                                />
+                                <p v-if="form.errors.phone" class="text-red-600 text-xs mt-1">{{ form.errors.phone }}</p>
                             </div>
 
-                            <!-- Bio -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Biografía / Descripción
-                                </label>
-                                <textarea v-model="form.bio" rows="4"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                    placeholder="Contanos sobre tu experiencia, servicios y especialidades..."
-                                    maxlength="1000"></textarea>
-                                <p class="mt-1 text-sm text-gray-500">
-                                    {{ form.bio?.length || 0 }} / 1000 caracteres
-                                </p>
-                                <p v-if="form.errors.bio" class="mt-2 text-sm text-red-600">
-                                    {{ form.errors.bio }}
-                                </p>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Biografía</label>
+                                <textarea v-model="form.bio" rows="4" maxlength="1000"
+                                    class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 resize-none"
+                                    placeholder="Describa su experiencia y servicios..."
+                                ></textarea>
+                                <div class="flex justify-between mt-1">
+                                    <p v-if="form.errors.bio" class="text-red-600 text-xs">{{ form.errors.bio }}</p>
+                                    <span class="text-[10px] text-slate-400 ml-auto">{{ form.bio?.length || 0 }} / 1000</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
-                    <div class="flex justify-end gap-4">
+                    <div class="flex justify-end pt-4">
                         <button type="submit" :disabled="form.processing"
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition disabled:opacity-50 inline-flex items-center gap-2">
-                            <CheckCircleIcon class="h-5 w-5" />
-                            {{ form.processing ? 'Guardando...' : 'Guardar Cambios' }}
+                            class="bg-slate-900 text-white px-8 py-3 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition shadow-md disabled:opacity-50 flex items-center gap-2">
+                            <span v-if="form.processing">Guardando...</span>
+                            <span v-else>Guardar Cambios</span>
                         </button>
                     </div>
-                </form>
 
+                </form>
             </div>
         </div>
     </AuthenticatedLayout>

@@ -2,6 +2,14 @@
 import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { 
+    MagnifyingGlassIcon, 
+    FunnelIcon, 
+    CheckCircleIcon, 
+    XCircleIcon, 
+    NoSymbolIcon, 
+    ArrowPathIcon 
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     photographers: {
@@ -24,13 +32,8 @@ const showSuspendModal = ref(false);
 const selectedPhotographer = ref(null);
 
 // Formularios
-const rejectForm = useForm({
-    reason: '',
-});
-
-const suspendForm = useForm({
-    reason: '',
-});
+const rejectForm = useForm({ reason: '' });
+const suspendForm = useForm({ reason: '' });
 
 // Búsqueda y filtros
 const searchForm = useForm({
@@ -38,19 +41,22 @@ const searchForm = useForm({
     status: props.filters.status,
 });
 
-const search = () => {
+const handleSearch = () => {
     searchForm.get(route('admin.photographers.index'), {
         preserveState: true,
         preserveScroll: true,
     });
 };
 
+const filterByStatus = (status) => {
+    searchForm.status = status;
+    handleSearch();
+};
+
 // Acciones
 const approvePhotographer = (photographer) => {
-    if (confirm(`¿Aprobar a ${photographer.business_name}?`)) {
-        router.post(route('admin.photographers.approve', photographer.id), {}, {
-            preserveScroll: true,
-        });
+    if (confirm(`¿Confirmar aprobación para ${photographer.business_name}?`)) {
+        router.post(route('admin.photographers.approve', photographer.id), {}, { preserveScroll: true });
     }
 };
 
@@ -87,418 +93,278 @@ const suspendPhotographer = () => {
 };
 
 const reactivatePhotographer = (photographer) => {
-    if (confirm(`¿Reactivar a ${photographer.business_name}?`)) {
-        router.post(route('admin.photographers.reactivate', photographer.id), {}, {
-            preserveScroll: true,
-        });
+    if (confirm(`¿Restaurar acceso a ${photographer.business_name}?`)) {
+        router.post(route('admin.photographers.reactivate', photographer.id), {}, { preserveScroll: true });
     }
 };
 
-// Helpers
-const getStatusBadge = (status) => {
-    const badges = {
-        pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-300', text: ' Pendiente' },
-        approved: { color: 'bg-green-100 text-green-800 border-green-300', text: ' Aprobado' },
-        rejected: { color: 'bg-red-100 text-red-800 border-red-300', text: ' Rechazado' },
-        suspended: { color: 'bg-orange-100 text-orange-800 border-orange-300', text: ' Suspendido' },
+// Helpers de diseño
+const getStatusConfig = (status) => {
+    const configs = {
+        pending: { dot: 'bg-amber-400', text: 'Pendiente', class: 'text-amber-700' },
+        approved: { dot: 'bg-emerald-500', text: 'Activo', class: 'text-emerald-700' },
+        rejected: { dot: 'bg-red-500', text: 'Rechazado', class: 'text-red-700' },
+        suspended: { dot: 'bg-gray-400', text: 'Suspendido', class: 'text-gray-600' },
     };
-    return badges[status] || { color: 'bg-gray-100 text-gray-800', text: status };
+    return configs[status] || { dot: 'bg-gray-300', text: status, class: 'text-gray-500' };
 };
 </script>
 
 <template>
     <AuthenticatedLayout>
-
-        <Head title="Gestión de Fotógrafos" />
+        <Head title="Gestión de Profesionales" />
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-8">
+                
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-6 gap-4">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900"> Gestión de Fotógrafos</h1>
-                        <p class="text-gray-600 mt-2">Administra las solicitudes y estados de los fotógrafos</p>
+                        <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                            Administración
+                        </span>
+                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                            Gestión de Fotógrafos
+                        </h1>
                     </div>
-                    <Link :href="route('admin.dashboard')"
-                        class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                    ← Volver al Dashboard
+                    <Link :href="route('admin.dashboard')" 
+                        class="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 border-b border-transparent hover:border-slate-900 transition pb-1">
+                        ← Volver al Panel
                     </Link>
                 </div>
 
-                <!-- Estadísticas Rápidas -->
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                    <button @click="searchForm.status = 'all'; search()" :class="[
-                        'p-4 rounded-lg border-2 transition',
-                        filters.status === 'all'
-                            ? 'bg-indigo-50 border-indigo-500'
-                            : 'bg-white border-gray-200 hover:border-indigo-300'
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+                    <button v-for="(stat, key) in {
+                        'all': { label: 'Total', count: stats.total },
+                        'pending': { label: 'Pendientes', count: stats.pending },
+                        'approved': { label: 'Activos', count: stats.approved },
+                        'rejected': { label: 'Rechazados', count: stats.rejected },
+                        'suspended': { label: 'Suspendidos', count: stats.suspended }
+                    }" :key="key"
+                    @click="filterByStatus(key)"
+                    :class="[
+                        'p-4 text-left border transition-all duration-200 rounded-sm flex flex-col justify-between h-24 group',
+                        searchForm.status === key 
+                            ? 'bg-slate-900 border-slate-900 text-white shadow-md' 
+                            : 'bg-white border-gray-200 text-slate-500 hover:border-slate-400 hover:text-slate-900'
                     ]">
-                        <p class="text-sm font-medium text-gray-600">Todos</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ stats.total }}</p>
-                    </button>
-
-                    <button @click="searchForm.status = 'pending'; search()" :class="[
-                        'p-4 rounded-lg border-2 transition',
-                        filters.status === 'pending'
-                            ? 'bg-yellow-50 border-yellow-500'
-                            : 'bg-white border-gray-200 hover:border-yellow-300'
-                    ]">
-                        <p class="text-sm font-medium text-yellow-700"> Pendientes</p>
-                        <p class="text-2xl font-bold text-yellow-800">{{ stats.pending }}</p>
-                    </button>
-
-                    <button @click="searchForm.status = 'approved'; search()" :class="[
-                        'p-4 rounded-lg border-2 transition',
-                        filters.status === 'approved'
-                            ? 'bg-green-50 border-green-500'
-                            : 'bg-white border-gray-200 hover:border-green-300'
-                    ]">
-                        <p class="text-sm font-medium text-green-700"> Aprobados</p>
-                        <p class="text-2xl font-bold text-green-800">{{ stats.approved }}</p>
-                    </button>
-
-                    <button @click="searchForm.status = 'rejected'; search()" :class="[
-                        'p-4 rounded-lg border-2 transition',
-                        filters.status === 'rejected'
-                            ? 'bg-red-50 border-red-500'
-                            : 'bg-white border-gray-200 hover:border-red-300'
-                    ]">
-                        <p class="text-sm font-medium text-red-700"> Rechazados</p>
-                        <p class="text-2xl font-bold text-red-800">{{ stats.rejected }}</p>
-                    </button>
-
-                    <button @click="searchForm.status = 'suspended'; search()" :class="[
-                        'p-4 rounded-lg border-2 transition',
-                        filters.status === 'suspended'
-                            ? 'bg-orange-50 border-orange-500'
-                            : 'bg-white border-gray-200 hover:border-orange-300'
-                    ]">
-                        <p class="text-sm font-medium text-orange-700"> Suspendidos</p>
-                        <p class="text-2xl font-bold text-orange-800">{{ stats.suspended }}</p>
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-80">{{ stat.label }}</span>
+                        <span :class="['text-3xl font-serif font-medium', searchForm.status === key ? 'text-white' : 'text-slate-900']">
+                            {{ stat.count }}
+                        </span>
                     </button>
                 </div>
 
-                <!-- Buscador -->
-                <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-                    <form @submit.prevent="search" class="flex gap-4">
-                        <input v-model="searchForm.search" type="text"
-                            placeholder="Buscar por nombre, email o negocio..."
-                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                        <button type="submit"
-                            class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                            Buscar
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Lista de Fotógrafos -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div v-if="photographers.data.length === 0" class="p-12 text-center">
-                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                        </svg>
-                        <p class="text-xl font-bold text-gray-900 mb-2">No hay fotógrafos</p>
-                        <p class="text-gray-600">No se encontraron fotógrafos con los filtros seleccionados.</p>
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input 
+                            v-model="searchForm.search" 
+                            @keyup.enter="handleSearch"
+                            type="text" 
+                            placeholder="Buscar por nombre, email o ID..." 
+                            class="block w-full pl-10 pr-3 py-3 border-gray-300 rounded-sm leading-5 bg-white placeholder-gray-400 focus:outline-none focus:placeholder-gray-500 focus:border-slate-900 focus:ring-0 sm:text-sm transition-colors"
+                        >
                     </div>
+                    <button @click="handleSearch" class="bg-slate-900 text-white px-8 py-3 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition">
+                        Filtrar
+                    </button>
+                </div>
 
-                    <div v-else class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
+                <div class="bg-white border border-gray-200 shadow-sm rounded-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-100">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Fotógrafo
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Región
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Estado
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Eventos
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Fotos
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Registro
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Acciones
-                                    </th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">Profesional</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">Región</th>
+                                    <th scope="col" class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">Eventos</th>
+                                    <th scope="col" class="px-6 py-4 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fotos</th>
+                                    <th scope="col" class="px-6 py-4 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gestión</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="photographer in photographers.data" :key="photographer.id"
-                                    class="hover:bg-gray-50">
-                                    <!-- Fotógrafo -->
+                            <tbody class="bg-white divide-y divide-gray-100">
+                                <tr v-if="photographers.data.length === 0">
+                                    <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                                        <p class="font-serif italic">No se encontraron registros que coincidan con la búsqueda.</p>
+                                    </td>
+                                </tr>
+                                
+                                <tr v-for="photographer in photographers.data" :key="photographer.id" class="hover:bg-gray-50/80 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                                <span class="text-indigo-600 font-bold text-lg">
-                                                    {{ photographer.business_name.charAt(0) }}
-                                                </span>
+                                            <div class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 font-serif font-bold text-lg border border-gray-200">
+                                                {{ photographer.business_name.charAt(0) }}
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ photographer.business_name }}
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    {{ photographer.user.email }}
-                                                </div>
+                                                <div class="text-sm font-bold text-slate-900 font-serif">{{ photographer.business_name }}</div>
+                                                <div class="text-xs text-slate-500 font-mono">{{ photographer.user.email }}</div>
                                             </div>
                                         </div>
                                     </td>
 
-                                    <!-- Región -->
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ photographer.region }}</div>
+                                        <div class="text-xs text-slate-600 font-medium uppercase tracking-wide">{{ photographer.region }}</div>
                                     </td>
 
-                                    <!-- Estado -->
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            :class="['px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border', getStatusBadge(photographer.status).color]">
-                                            {{ getStatusBadge(photographer.status).text }}
-                                        </span>
+                                        <div class="flex items-center">
+                                            <span :class="['h-2 w-2 rounded-full mr-2', getStatusConfig(photographer.status).dot]"></span>
+                                            <span :class="['text-xs font-bold uppercase tracking-wider', getStatusConfig(photographer.status).class]">
+                                                {{ getStatusConfig(photographer.status).text }}
+                                            </span>
+                                        </div>
                                     </td>
 
-                                    <!-- Eventos -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-mono text-slate-600">
                                         {{ photographer.events_count || 0 }}
                                     </td>
-
-                                    <!-- Fotos -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-mono text-slate-600">
                                         {{ photographer.photos_count || 0 }}
                                     </td>
 
-                                    <!-- Fecha de Registro -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ new Date(photographer.created_at).toLocaleDateString('es-ES') }}
-                                    </td>
-
-                                    <!-- Acciones -->
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <!-- Aprobar (solo si está pendiente) -->
-                                            <button v-if="photographer.status === 'pending'"
-                                                @click="approvePhotographer(photographer)"
-                                                class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition"
-                                                title="Aprobar">
-                                                Aprobar
-                                            </button>
+                                        <div class="flex items-center justify-end gap-3">
+                                            
+                                            <template v-if="photographer.status === 'pending'">
+                                                <button @click="approvePhotographer(photographer)" title="Aprobar" class="text-emerald-600 hover:text-emerald-900 transition">
+                                                    <CheckCircleIcon class="h-5 w-5" />
+                                                </button>
+                                                <button @click="openRejectModal(photographer)" title="Rechazar" class="text-red-600 hover:text-red-900 transition">
+                                                    <XCircleIcon class="h-5 w-5" />
+                                                </button>
+                                            </template>
 
-                                            <!-- Rechazar (solo si está pendiente) -->
-                                            <button v-if="photographer.status === 'pending'"
-                                                @click="openRejectModal(photographer)"
-                                                class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition"
-                                                title="Rechazar">
-                                                Rechazar
-                                            </button>
+                                            <template v-if="photographer.status === 'approved'">
+                                                <button @click="openSuspendModal(photographer)" title="Suspender acceso" class="text-amber-500 hover:text-amber-700 transition">
+                                                    <NoSymbolIcon class="h-5 w-5" />
+                                                </button>
+                                            </template>
 
-                                            <!-- Suspender (solo si está aprobado) -->
-                                            <button v-if="photographer.status === 'approved'"
-                                                @click="openSuspendModal(photographer)"
-                                                class="inline-flex items-center px-3 py-1.5 bg-orange-600 text-white text-xs font-medium rounded hover:bg-orange-700 transition"
-                                                title="Suspender">
-                                                Suspender
-                                            </button>
+                                            <template v-if="photographer.status === 'suspended'">
+                                                <button @click="reactivatePhotographer(photographer)" title="Reactivar" class="text-blue-600 hover:text-blue-900 transition">
+                                                    <ArrowPathIcon class="h-5 w-5" />
+                                                </button>
+                                            </template>
 
-                                            <!-- Reactivar (solo si está suspendido) -->
-                                            <button v-if="photographer.status === 'suspended'"
-                                                @click="reactivatePhotographer(photographer)"
-                                                class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition"
-                                                title="Reactivar">
-                                                Reactivar
-                                            </button>
-
-                                            <!-- Ver Detalles -->
-                                            <Link :href="route('admin.photographers.show', photographer.id)"
-                                                class="inline-flex items-center px-3 py-1.5 bg-gray-600 text-white text-xs font-medium rounded hover:bg-gray-700 transition"
-                                                title="Ver detalles">
-                                            Ver
+                                            <Link :href="route('admin.photographers.show', photographer.id)" 
+                                                class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 border border-transparent hover:border-slate-900 px-2 py-1 transition ml-2">
+                                                Ver
                                             </Link>
-
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Paginación -->
-                    <div v-if="photographers.data.length > 0" class="bg-gray-50 px-6 py-4 border-t border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <div class="text-sm text-gray-700">
-                                Mostrando
-                                <span class="font-medium">{{ photographers.from }}</span>
-                                a
-                                <span class="font-medium">{{ photographers.to }}</span>
-                                de
-                                <span class="font-medium">{{ photographers.total }}</span>
-                                resultados
-                            </div>
-
-                            <div class="flex gap-2">
-                                <Link v-for="(link, index) in photographers.links" :key="index" :href="link.url || '#'"
-                                    :class="[
-                                        'px-4 py-2 text-sm font-medium rounded-lg transition',
-                                        link.active
-                                            ? 'bg-indigo-600 text-white'
-                                            : link.url
-                                                ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-                                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    ]" v-html="link.label" :preserve-scroll="true" :preserve-state="true" />
-                            </div>
+                    
+                    <div v-if="photographers.data.length > 0" class="bg-white border-t border-gray-200 px-6 py-4 flex items-center justify-between">
+                        <span class="text-xs text-slate-400">
+                            {{ photographers.from }} - {{ photographers.to }} de {{ photographers.total }} registros
+                        </span>
+                        <div class="flex gap-1">
+                            <Link v-for="(link, index) in photographers.links" :key="index" :href="link.url || '#'"
+                                :class="[
+                                    'px-3 py-1 text-xs font-medium transition rounded-sm',
+                                    link.active 
+                                        ? 'bg-slate-900 text-white' 
+                                        : (link.url ? 'bg-white text-slate-600 hover:bg-gray-100' : 'text-gray-300 cursor-not-allowed')
+                                ]" 
+                                v-html="link.label"
+                                :preserve-scroll="true" 
+                                :preserve-state="true" 
+                            />
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <!-- Modal: Rechazar Fotógrafo -->
         <div v-if="showRejectModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showRejectModal = false">
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="fixed inset-0 bg-black opacity-50"></div>
-
-                <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900"> Rechazar Fotógrafo</h3>
-                        <button @click="showRejectModal = false" class="text-gray-400 hover:text-gray-600 transition">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="mb-6">
-                        <p class="text-gray-700 mb-4">
-                            Estás a punto de rechazar a:
-                        </p>
-                        <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-red-500">
-                            <p class="font-bold text-gray-900">{{ selectedPhotographer?.business_name }}</p>
-                            <p class="text-sm text-gray-600">{{ selectedPhotographer?.user.email }}</p>
-                        </div>
-                    </div>
-
-                    <form @submit.prevent="rejectPhotographer">
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Motivo del rechazo <span class="text-red-500">*</span>
-                            </label>
-                            <textarea v-model="rejectForm.reason" rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                                placeholder="Explica por qué se rechaza la solicitud (mínimo 10 caracteres)..."
-                                required></textarea>
-                            <p v-if="rejectForm.errors.reason" class="mt-2 text-sm text-red-600">
-                                {{ rejectForm.errors.reason }}
-                            </p>
-                        </div>
-
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-                            <div class="flex">
-                                <svg class="h-5 w-5 text-yellow-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <p class="text-sm text-yellow-700">
-                                    El fotógrafo recibirá un email con el motivo del rechazo y no podrá acceder a su
-                                    panel.
-                                </p>
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-slate-900 opacity-75"></div>
+                </div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                
+                <div class="inline-block align-bottom bg-white rounded-sm text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <XCircleIcon class="h-6 w-6 text-red-600" />
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-serif font-bold text-slate-900">
+                                    Rechazar Solicitud
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                        Está a punto de rechazar a <strong>{{ selectedPhotographer?.business_name }}</strong>. Esta acción notificará al usuario.
+                                    </p>
+                                    <div class="mt-4">
+                                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Motivo del rechazo</label>
+                                        <textarea v-model="rejectForm.reason" rows="3" class="w-full border-gray-300 rounded-sm text-sm focus:border-slate-900 focus:ring-0 resize-none"></textarea>
+                                        <p v-if="rejectForm.errors.reason" class="text-xs text-red-600 mt-1">{{ rejectForm.errors.reason }}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="flex gap-4">
-                            <button type="button" @click="showRejectModal = false"
-                                class="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium">
-                                Cancelar
-                            </button>
-                            <button type="submit" :disabled="rejectForm.processing"
-                                class="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium disabled:opacity-50">
-                                {{ rejectForm.processing ? 'Rechazando...' : 'Confirmar Rechazo' }}
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button @click="rejectPhotographer" :disabled="rejectForm.processing" class="w-full inline-flex justify-center rounded-sm border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            Confirmar Rechazo
+                        </button>
+                        <button @click="showRejectModal = false" class="mt-3 w-full inline-flex justify-center rounded-sm border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal: Suspender Fotógrafo -->
         <div v-if="showSuspendModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showSuspendModal = false">
-            <div class="flex items-center justify-center min-h-screen px-4">
-                <div class="fixed inset-0 bg-black opacity-50"></div>
-
-                <div class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900"> Suspender Fotógrafo</h3>
-                        <button @click="showSuspendModal = false" class="text-gray-400 hover:text-gray-600 transition">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="mb-6">
-                        <p class="text-gray-700 mb-4">
-                            Estás a punto de suspender a:
-                        </p>
-                        <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-orange-500">
-                            <p class="font-bold text-gray-900">{{ selectedPhotographer?.business_name }}</p>
-                            <p class="text-sm text-gray-600">{{ selectedPhotographer?.user.email }}</p>
-                        </div>
-                    </div>
-
-                    <form @submit.prevent="suspendPhotographer">
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Motivo de la suspensión (opcional)
-                            </label>
-                            <textarea v-model="suspendForm.reason" rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                placeholder="Explica por qué se suspende la cuenta..."></textarea>
-                        </div>
-
-                        <div class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6">
-                            <div class="flex">
-                                <svg class="h-5 w-5 text-orange-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <p class="text-sm text-orange-700">
-                                    El fotógrafo perderá acceso a su panel y sus eventos dejarán de ser visibles. Puedes
-                                    reactivarlo después.
-                                </p>
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-slate-900 opacity-75"></div>
+                </div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                
+                <div class="inline-block align-bottom bg-white rounded-sm text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <NoSymbolIcon class="h-6 w-6 text-amber-600" />
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-serif font-bold text-slate-900">
+                                    Suspender Cuenta
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                        Se revocará el acceso a <strong>{{ selectedPhotographer?.business_name }}</strong>. Sus galerías dejarán de ser visibles públicamente.
+                                    </p>
+                                    <div class="mt-4">
+                                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Motivo (Opcional)</label>
+                                        <textarea v-model="suspendForm.reason" rows="3" class="w-full border-gray-300 rounded-sm text-sm focus:border-slate-900 focus:ring-0 resize-none"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="flex gap-4">
-                            <button type="button" @click="showSuspendModal = false"
-                                class="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium">
-                                Cancelar
-                            </button>
-                            <button type="submit" :disabled="suspendForm.processing"
-                                class="flex-1 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium disabled:opacity-50">
-                                {{ suspendForm.processing ? 'Suspendiendo...' : 'Confirmar Suspensión' }}
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button @click="suspendPhotographer" :disabled="suspendForm.processing" class="w-full inline-flex justify-center rounded-sm border border-transparent shadow-sm px-4 py-2 bg-slate-900 text-base font-medium text-white hover:bg-slate-800 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            Suspender
+                        </button>
+                        <button @click="showSuspendModal = false" class="mt-3 w-full inline-flex justify-center rounded-sm border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Cancelar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
     </AuthenticatedLayout>
 </template>
