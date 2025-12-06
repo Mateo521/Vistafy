@@ -50,7 +50,7 @@ class PublicGalleryController extends Controller
                     ->where('is_private', false);
             })
             ->latest('created_at')
-            ->take(12)
+            ->take(20)
             ->get()
             ->map(function ($photo) {
                 return [
