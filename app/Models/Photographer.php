@@ -23,6 +23,10 @@ class Photographer extends Model
         'longitude', // <--- AGREGAR
         'bio',
         'phone',
+        'website',
+        'instagram',
+        'facebook',
+
         'profile_photo',      //  NUEVO
         'banner_photo',       //  NUEVO
         'is_active',
@@ -105,6 +109,11 @@ class Photographer extends Model
         return $this->hasMany(Event::class);
     }
 
+    public function guestEvents()
+    {
+        return $this->belongsToMany(Event::class, 'event_photographer')
+            ->withTimestamps();
+    }
 
     public function photos(): HasMany
     {

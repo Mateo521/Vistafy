@@ -8,7 +8,11 @@ import {
     CalendarIcon,
     PhotoIcon,
     XMarkIcon,
-    ArrowLongRightIcon
+    ArrowLongRightIcon,
+    EnvelopeIcon,
+    PhoneIcon,
+    CameraIcon, // Para Instagram
+    HandThumbUpIcon // Para Facebook
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -67,8 +71,6 @@ const formatDate = (dateString) => {
                 <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
             </div>
 
-
-            
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-16 pb-12 border-b border-gray-100">
                 <div class="flex flex-col md:flex-row gap-8 items-start">
                     
@@ -85,37 +87,71 @@ const formatDate = (dateString) => {
                     </div>
 
                     <div class="flex-1 pt-4 md:pt-16">
-                        <div class="flex flex-col md:flex-row justify-between items-start gap-6">
-                            <div>
+                        <div class="flex flex-col lg:flex-row justify-between items-start gap-8">
+                            
+                            <div class="flex-1">
                                 <h1 class="text-4xl font-serif font-bold text-slate-900 mb-2">
                                     {{ photographer.business_name }}
                                 </h1>
-                                <div v-if="photographer.region" class="flex items-center text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">
-                                    <MapPinIcon class="w-4 h-4 mr-1" />
-                                    {{ photographer.region }}
+                                
+                                <div class="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-500 mb-6">
+                                    <span v-if="photographer.region" class="flex items-center">
+                                        <MapPinIcon class="w-4 h-4 mr-1" />
+                                        {{ photographer.region }}
+                                    </span>
+                                    <span class="flex items-center text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm border border-emerald-100">
+                                        Verificado
+                                    </span>
                                 </div>
-                                <p v-if="photographer.bio" class="text-slate-600 font-light max-w-2xl text-sm leading-relaxed mb-6">
+
+                                <p v-if="photographer.bio" class="text-slate-600 font-light max-w-2xl text-sm leading-relaxed mb-8">
                                     {{ photographer.bio }}
                                 </p>
+
+                                <div class="flex flex-wrap gap-3 border-t border-gray-100 pt-6">
+                                    
+                                    <a v-if="photographer.email" :href="`mailto:${photographer.email}`" 
+                                        class="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-sm text-xs font-bold uppercase tracking-wider text-slate-700 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors">
+                                        <EnvelopeIcon class="w-4 h-4" />
+                                        Email
+                                    </a>
+
+                                    <a v-if="photographer.phone" :href="`https://wa.me/${photographer.phone.replace(/[^0-9]/g, '')}`" target="_blank"
+                                        class="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-sm text-xs font-bold uppercase tracking-wider text-slate-700 hover:bg-green-600 hover:text-white hover:border-green-600 transition-colors">
+                                        <PhoneIcon class="w-4 h-4" />
+                                        WhatsApp
+                                    </a>
+
+                                    <div class="flex gap-2 ml-2 pl-2 border-l border-gray-200">
+                                        <a v-if="photographer.website" :href="photographer.website" target="_blank" 
+                                            class="p-2 text-slate-400 hover:text-slate-900 transition" title="Sitio Web">
+                                            <GlobeAltIcon class="w-5 h-5" />
+                                        </a>
+
+                                        <a v-if="photographer.instagram" :href="`https://instagram.com/${photographer.instagram}`" target="_blank" 
+                                            class="p-2 text-slate-400 hover:text-pink-600 transition" title="Instagram">
+                                            <CameraIcon class="w-5 h-5" />
+                                        </a>
+
+                                        <a v-if="photographer.facebook" :href="`https://facebook.com/${photographer.facebook}`" target="_blank" 
+                                            class="p-2 text-slate-400 hover:text-blue-600 transition" title="Facebook">
+                                            <HandThumbUpIcon class="w-5 h-5" />
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="flex gap-8 border-l border-gray-200 pl-8">
+                            <div class="flex lg:flex-col gap-8 lg:border-l lg:border-gray-200 lg:pl-12 lg:min-w-[150px]">
                                 <div>
-                                    <span class="block text-2xl font-serif font-bold text-slate-900">{{ stats.total_events }}</span>
+                                    <span class="block text-3xl font-serif font-bold text-slate-900">{{ stats.total_events }}</span>
                                     <span class="text-[10px] uppercase tracking-widest text-slate-400">Eventos</span>
                                 </div>
                                 <div>
-                                    <span class="block text-2xl font-serif font-bold text-slate-900">{{ stats.total_photos }}</span>
+                                    <span class="block text-3xl font-serif font-bold text-slate-900">{{ stats.total_photos }}</span>
                                     <span class="text-[10px] uppercase tracking-widest text-slate-400">Fotos</span>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="flex gap-4 mt-2">
-                            <a v-if="photographer.website" :href="photographer.website" target="_blank" class="text-slate-400 hover:text-slate-900 transition">
-                                <GlobeAltIcon class="w-5 h-5" />
-                            </a>
-                            </div>
                     </div>
                 </div>
             </div>

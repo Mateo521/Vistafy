@@ -17,11 +17,54 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        //  Filtrar SOLO eventos del fotógrafo autenticado
-        $query = Event::where('photographer_id', auth()->user()->photographer->id)
+        $photographer = $request->user()->photographer;
+
+        // --- 1. Query para MIS EVENTOS (Dueño) ---
+        $myEventsQuery = $photographer->events()
             ->withCount('photos');
 
-        // Filtros opcionales
+        $this->applyFilters($myEventsQuery, $request);
+
+        $myEvents = $myEventsQuery
+            ->orderBy($request->get('sort', 'event_date'), $request->get('order', 'desc'))
+            ->paginate(9, ['*'], 'page') // Paginación principal
+            ->withQueryString();
+
+        // --- 2. Query para COLABORACIONES (Invitado) ---
+        // Asegúrate de tener la relación guestEvents() en el modelo Photographer
+        $collaborationsQuery = $photographer->guestEvents()
+            ->withCount('photos')
+            ->with('photographer'); // Cargar al dueño original del evento
+
+        $this->applyFilters($collaborationsQuery, $request);
+
+        $collaborations = $collaborationsQuery
+            ->orderBy($request->get('sort', 'event_date'), $request->get('order', 'desc'))
+            ->paginate(9, ['*'], 'collab_page') // Importante: Nombre de página distinto
+            ->withQueryString();
+
+        // --- Estadísticas ---
+        $stats = [
+            'total_events' => $photographer->events()->count(),
+            'active_events' => $photographer->events()->where('is_active', true)->count(),
+            // Contamos fotos subidas por ESTE fotógrafo (no importa si es evento propio o ajeno)
+            'total_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->count(),
+            'total_sales' => 0,
+        ];
+
+        return Inertia::render('Photographer/Events/Index', [
+            'events' => $myEvents,
+            'collaborations' => $collaborations, // <--- Nueva prop
+            'stats' => $stats,
+            'filters' => $request->only(['search', 'date_from', 'date_to', 'sort', 'order']),
+        ]);
+    }
+
+    /**
+     * Helper privado para aplicar los mismos filtros a ambas listas
+     */
+    private function applyFilters($query, $request)
+    {
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -37,33 +80,7 @@ class EventController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('event_date', '<=', $request->date_to);
         }
-
-        // Ordenar
-        $sortBy = $request->get('sort', 'event_date');
-        $sortOrder = $request->get('order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Paginar
-        $events = $query->paginate(12)->withQueryString();
-
-        // Estadísticas del fotógrafo
-        $stats = [
-            'total_events' => Event::where('photographer_id', auth()->user()->photographer->id)->count(),
-            'active_events' => Event::where('photographer_id', auth()->user()->photographer->id)
-                ->where('is_active', true)->count(),
-            'total_photos' => Photo::whereHas('event', function ($q) {
-                $q->where('photographer_id', auth()->user()->photographer->id);
-            })->count(),
-            'total_sales' => 0, // Implementar cuando tengas ventas
-        ];
-
-        return Inertia::render('Photographer/Events/Index', [
-            'events' => $events,
-            'stats' => $stats,
-            'filters' => $request->only(['search', 'date_from', 'date_to', 'sort', 'order']),
-        ]);
     }
-
 
     /**
      * Mostrar formulario de creación
@@ -118,27 +135,37 @@ class EventController extends Controller
     /**
      * Mostrar evento específico
      */
-    public function show(Event $event)
+public function show($id)
     {
-        // Verificar que el evento pertenece al fotógrafo
-        if ($event->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tenés permiso para ver este evento');
+        $photographer = auth()->user()->photographer;
+
+        // 1. Cargar evento con relaciones necesarias (Dueño y Colaboradores)
+        $event = Event::with(['photographer', 'collaborators'])
+            ->findOrFail($id);
+
+        // 2. VERIFICACIÓN DE PERMISOS (Dueño O Colaborador)
+        $isOwner = $event->photographer_id === $photographer->id;
+        // Verificamos si el ID del fotógrafo actual está en la colección de colaboradores
+        $isCollaborator = $event->collaborators->contains($photographer->id);
+
+        if (!$isOwner && !$isCollaborator) {
+            abort(403, 'No tenés permiso para gestionar este evento.');
         }
 
-        //  Cargar fotos del evento con paginación
+        // 3. Cargar fotos
         $photos = $event->photos()
             ->latest()
             ->paginate(24)
             ->withQueryString();
 
-        // Estadísticas del evento
+        // 4. Estadísticas
         $stats = [
             'total_photos' => $event->photos()->count(),
             'active_photos' => $event->photos()->where('is_active', true)->count(),
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
-        //  SOLUCIÓN: Serializar manualmente para asegurar que todos los campos lleguen
+        // 5. Retornar a la vista con datos enriquecidos
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
                 'id' => $event->id,
@@ -154,12 +181,29 @@ class EventController extends Controller
                 'is_active' => (bool) $event->is_active,
                 'private_token' => $event->private_token,
                 'photographer_id' => $event->photographer_id,
+                
+                // --- NUEVOS DATOS PARA LA VISTA ---
+                'is_owner' => $isOwner, // Útil para ocultar botones de editar/borrar en el front
+                
+                'photographer' => [ // Datos del Dueño para la tarjeta "Equipo"
+                    'id' => $event->photographer->id,
+                    'business_name' => $event->photographer->business_name,
+                    'profile_photo_url' => $event->photographer->profile_photo_url,
+                ],
+                
+                'collaborators' => $event->collaborators->map(function($collab) { // Lista de colaboradores
+                    return [
+                        'id' => $collab->id,
+                        'business_name' => $collab->business_name,
+                        'profile_photo_url' => $collab->profile_photo_url,
+                    ];
+                }),
+                // ----------------------------------
             ],
             'photos' => $photos,
             'stats' => $stats,
         ]);
     }
-
 
 
     /**

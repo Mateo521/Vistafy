@@ -21,6 +21,10 @@ return new class extends Migration {
 
             $table->text('bio')->nullable();
 
+            $table->string('website')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('facebook')->nullable();
+
             // Imágenes
             $table->string('profile_photo')->nullable();
             $table->string('banner_photo')->nullable();

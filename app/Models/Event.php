@@ -73,6 +73,29 @@ class Event extends Model
     }
 
 
+    // 1. El Dueño / Creador (Relación original)
+    public function owner()
+    {
+        return $this->belongsTo(Photographer::class, 'photographer_id');
+    }
+
+    // 2. Los Colaboradores (Nueva relación)
+    public function collaborators()
+    {
+        return $this->belongsToMany(Photographer::class, 'event_photographer')
+                    ->withTimestamps();
+    }
+    
+    // Helper para saber quiénes pueden subir fotos (Dueño + Colaboradores)
+    public function canUpload(Photographer $photographer)
+    {
+        return $this->photographer_id === $photographer->id || 
+               $this->collaborators->contains($photographer->id);
+    }
+
+    
+
+
     // Auto-generar slug y token
     protected static function boot()
     {

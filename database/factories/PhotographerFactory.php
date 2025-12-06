@@ -16,6 +16,11 @@ class PhotographerFactory extends Factory
             'phone' => $this->faker->phoneNumber(),
             'region' => $region,
             'bio' => $this->faker->paragraph(3),
+
+            'website' => 'https://www.' . $this->faker->domainName(),
+            'instagram' => $this->faker->userName(), // Solo el usuario (ej: 'juanperez')
+            'facebook' => $this->faker->userName(),  // Solo el usuario
+
             'profile_photo' => null, // O una URL externa
             'banner_photo' => null,
             'status' => 'approved', // Por defecto aprobados

@@ -206,14 +206,15 @@ class PublicGalleryController extends Controller
             ->where('is_active', true)
             ->with([
                 'photographer' => function ($query) {
-                    $query->select('id', 'user_id', 'business_name', 'region', 'bio', 'phone', 'profile_photo');
+                    // 1. AGREGAR 'slug' AQUÍ
+                    $query->select('id', 'user_id', 'business_name', 'slug', 'region', 'bio', 'phone', 'profile_photo');
                 },
                 'photographer.user:id,email',
-                'event:id,name,slug,event_date'
+                'event:id,name,slug,event_date,location' // Agregué location también por si acaso
             ])
             ->firstOrFail();
 
-        // Fotos relacionadas (del mismo fotógrafo o evento)
+        // Fotos relacionadas
         $relatedPhotos = Photo::where('is_active', true)
             ->where('id', '!=', $photo->id)
             ->where(function ($q) use ($photo) {
@@ -224,7 +225,15 @@ class PublicGalleryController extends Controller
             })
             ->with('photographer:id,business_name')
             ->take(8)
-            ->get();
+            ->get()
+            ->map(function ($p) { // Mapear las relacionadas para asegurar URLs correctas
+                return [
+                    'id' => $p->id,
+                    'unique_id' => $p->unique_id,
+                    'thumbnail_url' => $p->thumbnail_url,
+                    'price' => $p->price
+                ];
+            });
 
         return Inertia::render('Gallery/Show', [
             'photo' => [
@@ -233,21 +242,33 @@ class PublicGalleryController extends Controller
                 'title' => $photo->title,
                 'description' => $photo->description,
                 'price' => $photo->price,
-                'preview_url' => $photo->preview_url,
+                // Usar accessors del modelo para URLs correctas
                 'watermarked_url' => $photo->watermarked_url,
                 'thumbnail_url' => $photo->thumbnail_url,
                 'downloads' => $photo->downloads,
+                'width' => $photo->width,   // Datos técnicos
+                'height' => $photo->height, // Datos técnicos
+
                 'photographer' => [
                     'id' => $photo->photographer->id,
                     'business_name' => $photo->photographer->business_name,
+                    // 2. AGREGAR 'slug' AQUÍ PARA EL ENLACE
+                    'slug' => $photo->photographer->slug,
                     'region' => $photo->photographer->region,
                     'bio' => $photo->photographer->bio,
                     'phone' => $photo->photographer->phone,
                     'email' => $photo->photographer->user->email ?? null,
                     'profile_photo_url' => $photo->photographer->profile_photo_url,
+                    'website' => $photo->photographer->website ?? null, // Si tienes estos campos
+                    'instagram' => $photo->photographer->instagram ?? null,
                 ],
-                'events' => $photo->events,
-                'created_at' => $photo->created_at->diffForHumans(),
+                'event' => $photo->event ? [
+                    'id' => $photo->event->id,
+                    'name' => $photo->event->name,
+                    'slug' => $photo->event->slug,
+                    'location' => $photo->event->location,
+                ] : null,
+                'created_at' => $photo->created_at->format('Y-m-d'),
             ],
             'relatedPhotos' => $relatedPhotos,
         ]);
@@ -474,7 +495,10 @@ class PublicGalleryController extends Controller
                 'region' => $photographer->region,
                 'bio' => $photographer->bio,
                 'phone' => $photographer->phone,
-                'email' => $photographer->user->email ?? null,
+                'website' => $photographer->website,
+                'instagram' => $photographer->instagram,
+                'facebook' => $photographer->facebook,
+                'email' => $photographer->user->email, // Email viene del usuario
                 'profile_photo_url' => $photographer->profile_photo_url,
                 'cover_photo_url' => $photographer->cover_photo_url,
             ],
@@ -534,7 +558,7 @@ class PublicGalleryController extends Controller
     }
 
 
-   public function events(Request $request)
+    public function events(Request $request)
     {
         $query = Event::with([
             'photographer' => function ($query) {
@@ -568,7 +592,7 @@ class PublicGalleryController extends Controller
         }
 
         // --- OBTENER RESULTADOS ---
-        
+
         $events = $query->latest('event_date')
             ->paginate(12)
             ->withQueryString();
@@ -596,8 +620,8 @@ class PublicGalleryController extends Controller
         // --- OBTENER LISTA DE FOTÓGRAFOS (Para el select del filtro) ---
         // Solo fotógrafos que tengan al menos un evento público activo
         $photographers = \App\Models\Photographer::whereHas('events', function ($q) {
-                $q->where('is_active', true)->where('is_private', false);
-            })
+            $q->where('is_active', true)->where('is_private', false);
+        })
             ->select('id', 'business_name', 'user_id')
             ->with('user:id,name')
             ->orderBy('business_name')

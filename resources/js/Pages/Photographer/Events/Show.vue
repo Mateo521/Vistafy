@@ -8,6 +8,7 @@ import {
     PhotoIcon, 
     ArrowDownTrayIcon,
     EyeIcon,
+    UserGroupIcon,
     TrashIcon,
     CloudArrowUpIcon,
     ClipboardDocumentIcon,
@@ -196,10 +197,62 @@ const formatDate = (dateString) => {
                             </transition>
                         </div>
 
+                        <div class="bg-white border border-gray-200 rounded-sm p-6 shadow-sm">
+                            <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-2">
+                                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 flex items-center gap-2">
+                                    <UserGroupIcon class="w-4 h-4" /> Equipo
+                                </h3>
+                                <button class="text-[10px] font-bold uppercase tracking-widest text-indigo-600 hover:text-slate-900 transition">
+                                    + Invitar
+                                </button>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-serif border-2 border-white shadow-sm ring-1 ring-gray-100">
+                                        {{ event.photographer?.business_name?.charAt(0) || 'YO' }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-slate-900 truncate">
+                                            {{ event.photographer?.business_name || 'Tú' }}
+                                        </p>
+                                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">Organizador</p>
+                                    </div>
+                                </div>
+
+                                <div v-if="event.collaborators && event.collaborators.length > 0" 
+                                     v-for="collab in event.collaborators" :key="collab.id" 
+                                     class="flex items-center gap-3 pt-3 border-t border-gray-50">
+                                    
+                                    <img v-if="collab.profile_photo_url" :src="collab.profile_photo_url" 
+                                         class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-gray-100">
+                                    <div v-else class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs font-serif border-2 border-white shadow-sm ring-1 ring-gray-100">
+                                        {{ collab.business_name.charAt(0) }}
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-slate-700 truncate">{{ collab.business_name }}</p>
+                                        <p class="text-[10px] text-slate-400 uppercase tracking-wider">Colaborador</p>
+                                    </div>
+                                    
+                                    <button class="text-slate-300 hover:text-red-500 transition">
+                                        <XMarkIcon class="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <div v-else class="pt-2">
+                                    <p class="text-xs text-slate-400 font-light italic">
+                                        Aún no hay colaboradores asignados.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div v-if="event.description" class="bg-white border border-gray-200 rounded-sm p-6 shadow-sm">
                             <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-gray-100 pb-2">Notas</h3>
                             <p class="text-sm text-slate-600 font-light leading-relaxed">{{ event.description }}</p>
                         </div>
+
                     </div>
 
                     <div class="lg:col-span-2">
