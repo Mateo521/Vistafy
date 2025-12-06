@@ -12,13 +12,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 class Photographer extends Model
 {
- use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
         'business_name',
         'slug',
         'region',
+        'latitude',  // <--- AGREGAR
+        'longitude', // <--- AGREGAR
         'bio',
         'phone',
         'profile_photo',      //  NUEVO
@@ -34,6 +36,19 @@ class Photographer extends Model
         'suspension_reason',
     ];
 
+
+    const REGION_COORDINATES = [
+        'Buenos Aires' => ['lat' => -34.6037, 'lng' => -58.3816],
+        'CABA' => ['lat' => -34.6037, 'lng' => -58.3816],
+        'Córdoba' => ['lat' => -31.4201, 'lng' => -64.1888],
+        'Santa Fe' => ['lat' => -31.6107, 'lng' => -60.6973],
+        'Mendoza' => ['lat' => -32.8895, 'lng' => -68.8458],
+        'Tucumán' => ['lat' => -26.8083, 'lng' => -65.2176],
+        'Rosario' => ['lat' => -32.9442, 'lng' => -60.6505],
+        'Salta' => ['lat' => -24.7821, 'lng' => -65.4232],
+        'Neuquén' => ['lat' => -38.9516, 'lng' => -68.0591],
+        'Entre Ríos' => ['lat' => -31.7413, 'lng' => -60.5115],
+    ];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -102,6 +117,20 @@ class Photographer extends Model
     {
         parent::boot();
 
+        // Antes de guardar (crear o editar), asignar coordenadas
+        static::saving(function ($photographer) {
+            if ($photographer->isDirty('region') && $photographer->region) {
+                // Buscamos si la región existe en nuestra lista
+                $coords = self::REGION_COORDINATES[$photographer->region] ?? null;
+
+                if ($coords) {
+                    $photographer->latitude = $coords['lat'];
+                    $photographer->longitude = $coords['lng'];
+                }
+            }
+        });
+
+
         static::creating(function ($photographer) {
             if (empty($photographer->slug)) {
                 $photographer->slug = Str::slug($photographer->business_name);
@@ -139,7 +168,7 @@ class Photographer extends Model
         return null;
     }
 
- 
+
 
     public function getBannerPhotoUrlAttribute()
     {
@@ -149,19 +178,19 @@ class Photographer extends Model
         return null;
     }
 
-   /**
- * Usar slug por defecto para rutas públicas
- */
-public function getRouteKeyName()
-{
-    // Si estamos en una ruta de admin, usar ID
-    if (request()->is('admin/*')) {
-        return 'id';
+    /**
+     * Usar slug por defecto para rutas públicas
+     */
+    public function getRouteKeyName()
+    {
+        // Si estamos en una ruta de admin, usar ID
+        if (request()->is('admin/*')) {
+            return 'id';
+        }
+
+        // Para rutas públicas, usar slug
+        return 'slug';
     }
-    
-    // Para rutas públicas, usar slug
-    return 'slug';
-}
 
     /**
      * Scope para fotógrafos verificados

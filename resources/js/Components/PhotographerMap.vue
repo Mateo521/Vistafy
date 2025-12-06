@@ -11,51 +11,39 @@ const props = defineProps({
 });
 
 const mapContainer = ref(null);
-const isMapReady = ref(false); // <--- NUEVA VARIABLE REACTIVA
-let map = null; // Mantenemos el mapa como variable normal (mejor rendimiento)
+const isMapReady = ref(false);
+let map = null;
 let markers = [];
 
-const regionCoords = {
-    'Buenos Aires': [-34.6037, -58.3816],
-    'CABA': [-34.6037, -58.3816],
-    'Córdoba': [-31.4201, -64.1888],
-    'Santa Fe': [-31.6107, -60.6973],
-    'Mendoza': [-32.8895, -68.8458],
-    'Tucumán': [-26.8083, -65.2176],
-    'Rosario': [-32.9442, -60.6505],
-    'Salta': [-24.7821, -65.4232],
-    'Neuquén': [-38.9516, -68.0591],
-    'Entre Ríos': [-31.7413, -60.5115],
+// Función "Jitter" para evitar superposición exacta
+const jitter = (coord) => {
+    return parseFloat(coord) + (Math.random() - 0.5) * 0.005; // Reducido para mayor precisión
 };
-
-const jitter = (coord) => coord + (Math.random() - 0.5) * 0.1;
 
 const initMap = () => {
     if (!mapContainer.value) return;
 
-    // Evitar reinicializar si ya existe
     if (map) map.remove();
 
-    // 1. Crear Mapa
+    // 1. Configuración: Habilitamos Zoom
     map = L.map(mapContainer.value, {
-        scrollWheelZoom: false,
-        zoomControl: false,
+        scrollWheelZoom: true, // ¡Habilitado!
+        zoomControl: false,    // Lo agregamos manualmente abajo para posicionarlo
         attributionControl: false
     }).setView([-38.4161, -63.6167], 4);
 
-    // 2. Cargar Tiles
+    // 2. Control de Zoom (Abajo a la derecha)
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // 3. Capa Base (CartoDB Positron)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19
     }).addTo(map);
 
-    // 3. Agregar pines
     addMarkers();
 
-    // 4. AVISAR A VUE QUE EL MAPA ESTÁ LISTO
-    // Usamos un pequeño timeout para asegurar que el render visual terminó
     setTimeout(() => {
-        isMapReady.value = true; 
-        // Forzar un recálculo de tamaño por si el contenedor cambió
+        isMapReady.value = true;
         map.invalidateSize();
     }, 200);
 };
@@ -64,17 +52,43 @@ const addMarkers = () => {
     markers.forEach(marker => marker.remove());
     markers = [];
 
-    props.photographers.forEach(photographer => {
-        const regionName = photographer.region ? photographer.region.trim() : null;
-        const baseCoords = regionCoords[regionName];
+    // Agrupar por ubicación exacta
+    const grouped = {};
+    
+    props.photographers.forEach(p => {
+        if(p.latitude && p.longitude) {
+            const key = `${p.latitude},${p.longitude}`;
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(p);
+        }
+    });
+
+    Object.values(grouped).forEach(group => {
+        const count = group.length;
         
-        if (baseCoords) {
-            const lat = jitter(baseCoords[0]);
-            const lng = jitter(baseCoords[1]);
+        group.forEach((photographer, index) => {
+            let lat = parseFloat(photographer.latitude);
+            let lng = parseFloat(photographer.longitude);
+
+            // Dispersión circular si hay múltiples en el mismo punto
+            if (count > 1) {
+                const radius = 0.05; // Ajustado para que no se separen tanto visualmente
+                const angle = (index / count) * (2 * Math.PI);
+                lat += Math.cos(angle) * radius;
+                lng += Math.sin(angle) * radius;
+            }
 
             const customIcon = L.divIcon({
                 className: 'custom-map-marker',
-                html: `<div style="width: 12px; height: 12px; background-color: #0f172a; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                html: `<div style="
+                    width: 12px; 
+                    height: 12px; 
+                    background-color: #0f172a; 
+                    border-radius: 50%; 
+                    border: 2px solid white; 
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+                    transition: all 0.2s ease;
+                "></div>`,
                 iconSize: [12, 12],
                 iconAnchor: [6, 6]
             });
@@ -82,16 +96,32 @@ const addMarkers = () => {
             const marker = L.marker([lat, lng], { icon: customIcon })
                 .addTo(map)
                 .bindPopup(`
-                    <div style="text-align: center; font-family: sans-serif;">
-                        <strong style="display:block; font-size: 12px; color: #0f172a;">${photographer.business_name}</strong>
-                        <span style="font-size: 10px; color: #64748b; text-transform: uppercase;">${photographer.region}</span>
-                        <a href="/fotografos/${photographer.slug}" style="display:block; margin-top:4px; font-size:10px; font-weight:bold; color:#0f172a; text-decoration:none;">Ver Perfil</a>
+                    <div style="text-align: center; font-family: ui-serif, Georgia, serif; min-width: 140px;">
+                        <strong style="display:block; font-size: 14px; color: #0f172a; margin-bottom: 4px; line-height: 1.2;">
+                            ${photographer.business_name}
+                        </strong>
+                        <div style="font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; font-family: sans-serif; margin-bottom: 8px;">
+                            ${photographer.region}
+                        </div>
+                        <a href="/fotografos/${photographer.slug}" 
+                           style="display:block; font-size:10px; font-weight:bold; color:white; background: #0f172a; padding: 6px 10px; text-decoration:none; border-radius: 2px; font-family: sans-serif; transition: background 0.2s;">
+                           VER PERFIL
+                        </a>
                     </div>
                 `);
             
             markers.push(marker);
-        }
+        });
     });
+
+    // AJUSTE DE ZOOM AUTOMÁTICO
+    if (markers.length > 0) {
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.1), {
+            maxZoom: 11, // <--- ESTO EVITA QUE EL ZOOM SE ACERQUE DEMASIADO
+            padding: [50, 50]
+        });
+    }
 };
 
 onMounted(async () => {
@@ -106,7 +136,7 @@ watch(() => props.photographers, () => {
 
 <template>
     <div class="relative w-full h-full bg-slate-100">
-        <div ref="mapContainer" class="w-full h-full z-0"></div>
+        <div ref="mapContainer" class="w-full h-full z-0 outline-none map-editorial"></div>
         
         <transition 
             enter-active-class="transition-opacity duration-300"
@@ -128,9 +158,39 @@ watch(() => props.photographers, () => {
 </template>
 
 <style>
+/* Estilos base Leaflet */
 .leaflet-pane { z-index: 10 !important; }
 .leaflet-top, .leaflet-bottom { z-index: 20 !important; }
-/* Arreglo visual para popups */
-.leaflet-popup-content-wrapper { border-radius: 2px !important; padding: 0 !important; }
-.leaflet-popup-content { margin: 12px 16px !important; }
+
+/* Personalización de Controles de Zoom (Estilo Editorial) */
+.map-editorial .leaflet-control-zoom a {
+    background-color: #ffffff !important;
+    color: #0f172a !important; /* Texto negro */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0 !important; /* Cuadrados */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.2s;
+}
+.map-editorial .leaflet-control-zoom a:hover {
+    background-color: #0f172a !important; /* Fondo negro al hover */
+    color: #ffffff !important; /* Texto blanco */
+    border-color: #0f172a !important;
+}
+
+/* Popups */
+.leaflet-popup-content-wrapper { 
+    border-radius: 2px !important; 
+    padding: 0 !important; 
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e2e8f0;
+}
+.leaflet-popup-content { margin: 16px 20px !important; }
+.leaflet-popup-tip { background: white !important; border: 1px solid #e2e8f0; border-top: none; border-left: none; }
+
+/* Marcadores */
+.custom-map-marker:hover div { 
+    transform: scale(1.5); 
+    background-color: #3b82f6 !important; 
+    border-color: #eff6ff !important;
+}
 </style>
