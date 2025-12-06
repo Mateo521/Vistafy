@@ -43,7 +43,25 @@ const isRecent = (date) => {
 };
 
 const getImageUrl = (photo) => {
-    return photo.watermarked_url || photo.thumbnail_url || photo.file_url || null;  
+    // 1. Obtener la propiedad disponible (url procesada o path crudo)
+    let url = photo.watermarked_url || photo.thumbnail_url || photo.original_path;
+    
+    if (!url) return null;
+
+    // 2. CORRECCIÓN DE EMERGENCIA:
+    // Si la URL contiene "/storage/http", significa que Laravel la concatenó mal.
+    // La limpiamos tomando todo lo que está después de "/storage/"
+    if (url.includes('/storage/http')) {
+        const parts = url.split('/storage/');
+        return parts[1]; // Devuelve "https://picsum..." limpio
+    }
+
+    // 3. Si es una ruta local simple (ej: "fotos/archivo.jpg"), agregamos /storage/
+    if (!url.startsWith('http') && !url.startsWith('/storage')) {
+        return `/storage/${url}`;
+    }
+
+    return url;
 };
 </script>
 

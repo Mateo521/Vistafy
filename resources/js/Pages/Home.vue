@@ -220,51 +220,74 @@ const handleImageError = (e) => {
 </template>
 
 <style>
-/* Personalización de Swiper para estilo Editorial */
+/* --- ESTILOS SWIPER EDITORIAL MEJORADOS --- */
+
+/* Ajuste del contenedor para evitar cortes en las sombras */
 .editorial-swiper {
-    padding-left: 4px; /* Evita cortes de sombra */
-    padding-right: 4px;
+    padding: 20px 4px 60px 4px !important; /* Más espacio abajo para la paginación si se usa */
 }
 
+/* Estilo Base de los Botones */
 .editorial-swiper .swiper-button-next,
 .editorial-swiper .swiper-button-prev {
-    background-color: white;
-    width: 44px;
-    height: 44px;
-    border-radius: 2px; /* Cuadrado suavizado */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    color: #0f172a; /* Slate-900 */
-    transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
+    width: 56px;  /* Más grandes para dar sensación de "aire" */
+    height: 56px;
+    padding:10px 7px;
+    background-color: #ffffff;
+    border: 1px solid #0f172a; /* Borde Slate-900 fino y elegante */
+    border-radius: 5px; /* Bordes rectos (o 2px si prefieres suavidad mínima) */
+    color: #0f172a; /* Icono negro */
+    
+    /* Sombra sutil para levantar */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Posicionamiento */
+    top: 45%; /* Ajuste visual para centrar con respecto a las imágenes */
+    z-index: 50;
 }
 
+/* Ajuste del Icono (Flecha) interno */
 .editorial-swiper .swiper-button-next:after,
 .editorial-swiper .swiper-button-prev:after {
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 14px; /* Icono más pequeño = más elegante */
+    font-weight: 900; /* Pero con trazo fuerte */
 }
 
+/* Estado Hover (Inversión de colores) */
 .editorial-swiper .swiper-button-next:hover,
 .editorial-swiper .swiper-button-prev:hover {
-    background-color: #0f172a;
-    color: white;
+    background-color: #0f172a; /* Fondo Negro */
+    color: #ffffff; /* Icono Blanco */
     border-color: #0f172a;
+    transform: translateY(-2px); /* Efecto de levitación sutil */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+/* Estado Desactivado (cuando no hay más slides) */
 .editorial-swiper .swiper-button-disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+    opacity: 0; /* Desaparecen completamente para limpiar la vista */
+    cursor: default;
+    pointer-events: none;
 }
 
+/* Ajuste de posición lateral para que no tapen el contenido */
+.editorial-swiper .swiper-button-prev {
+    left: 0px;
+}
+.editorial-swiper .swiper-button-next {
+    right: 0px;
+}
+
+/* --- Animaciones Generales --- */
 @keyframes fade-in {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fade-in {
     animation: fade-in 1s ease-out forwards;
 }
-
 .animate-fade-in-delayed {
     opacity: 0;
     animation: fade-in 1s ease-out 0.3s forwards;
