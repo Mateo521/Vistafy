@@ -534,18 +534,21 @@ class PublicGalleryController extends Controller
     }
 
 
-    public function events(Request $request)
+   public function events(Request $request)
     {
         $query = Event::with([
             'photographer' => function ($query) {
-                $query->select('id', 'business_name', 'region', 'profile_photo');
+                $query->select('id', 'business_name', 'region', 'profile_photo', 'user_id');
+                $query->with('user:id,name'); // Cargar usuario por si no tiene business_name
             }
         ])
             ->where('is_active', true)
-            ->where('is_private', false)  //  Solo eventos públicos en el listado
+            ->where('is_private', false)
             ->withCount('photos');
 
-        // Filtros opcionales
+        // --- FILTROS ---
+
+        // 1. Búsqueda General
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -554,17 +557,23 @@ class PublicGalleryController extends Controller
             });
         }
 
-        if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
-        }
-
+        // 2. Filtro por Fecha
         if ($request->filled('date')) {
             $query->whereDate('event_date', $request->date);
         }
 
-        $events = $query->latest('event_date')->paginate(12)->withQueryString();
+        // 3. NUEVO: Filtro por Fotógrafo
+        if ($request->filled('photographer_id')) {
+            $query->where('photographer_id', $request->photographer_id);
+        }
 
-        // Formatear eventos
+        // --- OBTENER RESULTADOS ---
+        
+        $events = $query->latest('event_date')
+            ->paginate(12)
+            ->withQueryString();
+
+        // Formatear eventos para la vista
         $events->getCollection()->transform(function ($event) {
             return [
                 'id' => $event->id,
@@ -576,16 +585,34 @@ class PublicGalleryController extends Controller
                 'cover_image_url' => $event->cover_image_url,
                 'photos_count' => $event->photos_count,
                 'photographer' => [
-                    'business_name' => $event->photographer->business_name,
+                    'id' => $event->photographer->id,
+                    'business_name' => $event->photographer->business_name ?? $event->photographer->user->name,
                     'region' => $event->photographer->region,
                     'profile_photo_url' => $event->photographer->profile_photo_url,
                 ],
             ];
         });
 
+        // --- OBTENER LISTA DE FOTÓGRAFOS (Para el select del filtro) ---
+        // Solo fotógrafos que tengan al menos un evento público activo
+        $photographers = \App\Models\Photographer::whereHas('events', function ($q) {
+                $q->where('is_active', true)->where('is_private', false);
+            })
+            ->select('id', 'business_name', 'user_id')
+            ->with('user:id,name')
+            ->orderBy('business_name')
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'business_name' => $p->business_name ?? $p->user->name,
+                ];
+            });
+
         return Inertia::render('Events/Index', [
             'events' => $events,
-            'filters' => $request->only(['search', 'location', 'date']),
+            'photographers' => $photographers, // Enviamos la lista a la vista
+            'filters' => $request->only(['search', 'date', 'photographer_id']),
         ]);
     }
 
