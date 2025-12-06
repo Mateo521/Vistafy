@@ -18,41 +18,49 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+public function update(Request $request)
     {
         $photographer = auth()->user()->photographer;
 
+        // 1. AGREGAR LOS CAMPOS NUEVOS A LA VALIDACIÓN
         $validated = $request->validate([
             'business_name' => 'required|string|max:255',
             'bio' => 'nullable|string|max:1000',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:50',
             'region' => 'required|string|max:100',
+            
+            // --- NUEVOS CAMPOS (Faltaban estos) ---
+            'website' => 'nullable|url|max:255',
+            'instagram' => 'nullable|string|max:255',
+            'facebook' => 'nullable|string|max:255',
+            // --------------------------------------
+
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'banner_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // Manejar foto de perfil
+        // 2. Manejar foto de perfil (Tu lógica estaba bien, la mantenemos)
         if ($request->hasFile('profile_photo')) {
-            // Eliminar foto anterior
             if ($photographer->profile_photo) {
                 Storage::disk('public')->delete($photographer->profile_photo);
             }
-
-            $path = $request->file('profile_photo')->store('photographers/profiles', 'public');
-            $validated['profile_photo'] = $path;
+            $validated['profile_photo'] = $request->file('profile_photo')->store('photographers/profiles', 'public');
+        } else {
+            // Importante: Eliminar la clave si es null para no borrar la foto existente por error
+            unset($validated['profile_photo']);
         }
 
-        // Manejar banner
+        // 3. Manejar banner
         if ($request->hasFile('banner_photo')) {
-            // Eliminar banner anterior
             if ($photographer->banner_photo) {
                 Storage::disk('public')->delete($photographer->banner_photo);
             }
-
-            $path = $request->file('banner_photo')->store('photographers/banners', 'public');
-            $validated['banner_photo'] = $path;
+            $validated['banner_photo'] = $request->file('banner_photo')->store('photographers/banners', 'public');
+        } else {
+            unset($validated['banner_photo']);
         }
 
+        // 4. Actualizar
         $photographer->update($validated);
 
         return redirect()->back()->with('success', '¡Perfil actualizado correctamente!');

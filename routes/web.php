@@ -142,6 +142,27 @@ Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(f
 
 Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name('photographer.')->group(function () {
 
+
+    // --- PERFIL PROFESIONAL ---
+    // El prefijo 'perfil' se suma a 'fotografo' -> /fotografo/perfil
+    Route::prefix('perfil')->name('profile.')->group(function () {
+
+        // 1. Mostrar el formulario
+        // URL: /fotografo/perfil/editar
+        // Nombre de ruta: photographer.profile.edit
+        Route::get('/editar', [PhotographerProfileController::class, 'edit'])->name('edit');
+
+        // 2. Guardar los cambios
+        // URL: /fotografo/perfil/actualizar
+        // Nombre de ruta: photographer.profile.update
+        // Usamos PATCH porque es una actualización parcial
+        Route::patch('/actualizar', [PhotographerProfileController::class, 'update'])->name('update');
+
+        // 3. Eliminar fotos específicas
+        Route::delete('/foto-perfil', [PhotographerProfileController::class, 'deleteProfilePhoto'])->name('photo.delete');
+        Route::delete('/banner', [PhotographerProfileController::class, 'deleteBannerPhoto'])->name('banner.delete');
+    });
+
     // Dashboard
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;

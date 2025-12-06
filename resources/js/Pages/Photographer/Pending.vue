@@ -1,135 +1,97 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { 
+    ClockIcon, 
+    CheckCircleIcon, 
+    ArrowRightOnRectangleIcon, 
+    EnvelopeIcon
+} from '@heroicons/vue/24/outline';
 </script>
 
 <template>
     <AuthenticatedLayout>
-        <Head title="Cuenta Pendiente" />
+        <Head title="Estado de Solicitud" />
 
-        <div class="py-12">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Card con glassmorphism -->
-                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl shadow-2xl p-8 md:p-12 text-center">
-                    <!-- Icono animado -->
-                    <div class="mb-6">
-                        <div class="inline-flex items-center justify-center w-24 h-24 bg-yellow-100 rounded-full animate-pulse">
-                            <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+        <div class="py-12 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+            <div class="max-w-2xl w-full px-4 sm:px-6 lg:px-8">
+                
+                <div class="bg-white border border-gray-200 p-10 rounded-sm shadow-sm text-center relative overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 via-slate-900 to-amber-400"></div>
+
+                    <div class="mb-8 flex justify-center">
+                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100">
+                            <ClockIcon class="w-10 h-10 text-slate-400 stroke-1" />
                         </div>
                     </div>
 
-                    <!-- Título -->
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                         Cuenta Pendiente de Aprobación
+                    <h1 class="text-3xl font-serif font-bold text-slate-900 mb-4">
+                        Solicitud en Proceso
                     </h1>
-
-                    <!-- Descripción -->
-                    <p class="text-lg text-gray-700 mb-6">
-                        ¡Gracias por registrarte como fotógrafo en <strong>Empresa</strong>!
+                    <p class="text-slate-500 font-light text-sm leading-relaxed max-w-lg mx-auto mb-10">
+                        Hemos recibido su registro correctamente. Actualmente, su perfil se encuentra en la etapa de validación por parte de nuestro equipo de curaduría.
                     </p>
 
-                    <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left">
-                        <h2 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            ¿Qué sigue ahora?
-                        </h2>
-                        <ul class="space-y-3 text-gray-700">
-                            <li class="flex items-start gap-2">
-                                <span class="text-indigo-600 font-bold">1.</span>
-                                <span>Nuestro equipo está revisando tu perfil y documentación.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-indigo-600 font-bold">2.</span>
-                                <span>Verificaremos que cumples con nuestros estándares de calidad.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-indigo-600 font-bold">3.</span>
-                                <span>Te vamos a notificar por <strong>email</strong> cuando tu cuenta sea aprobada.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-indigo-600 font-bold">4.</span>
-                                <span>El proceso suele tomar entre <strong>24 y 48 horas</strong>.</span>
-                            </li>
-                        </ul>
+                    <div class="max-w-md mx-auto mb-12">
+                        <div class="relative">
+                            <div class="absolute left-4 top-0 h-full w-px bg-gray-200"></div>
+
+                            <div class="relative flex items-start mb-8 group">
+                                <div class="absolute left-0 w-8 h-8 bg-white border-2 border-emerald-500 rounded-full flex items-center justify-center z-10">
+                                    <CheckCircleIcon class="w-5 h-5 text-emerald-600" />
+                                </div>
+                                <div class="ml-12 text-left">
+                                    <h4 class="text-xs font-bold uppercase tracking-widest text-emerald-700">Registro Completado</h4>
+                                    <p class="text-[10px] text-slate-400 mt-1">Sus datos han sido guardados.</p>
+                                </div>
+                            </div>
+
+                            <div class="relative flex items-start mb-8 group">
+                                <div class="absolute left-0 w-8 h-8 bg-white border-2 border-amber-400 rounded-full flex items-center justify-center z-10 shadow-sm">
+                                    <div class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+                                </div>
+                                <div class="ml-12 text-left">
+                                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-900">Validación de Perfil</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Estimado: 24 - 48 horas hábiles.</p>
+                                    <div class="mt-2 inline-flex items-center px-2 py-1 bg-amber-50 border border-amber-100 rounded-sm">
+                                        <span class="text-[9px] font-bold text-amber-700 uppercase tracking-wider">En curso</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="relative flex items-start group opacity-50">
+                                <div class="absolute left-0 w-8 h-8 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center z-10">
+                                    <div class="w-2 h-2 bg-gray-200 rounded-full"></div>
+                                </div>
+                                <div class="ml-12 text-left">
+                                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400">Activación de Cuenta</h4>
+                                    <p class="text-[10px] text-slate-400 mt-1">Acceso total al panel profesional.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Información de contacto -->
-                    <div class="bg-blue-50 rounded-2xl p-6 mb-8 text-left">
-                        <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            ¿tenés preguntas?
-                        </h3>
-                        <p class="text-gray-700">
-                            Si tenés alguna duda o necesitas actualizar tu información, contáctanos en:
-                        </p>
-                        <a href="mailto:soporte@empresa.com" class="text-indigo-600 font-bold hover:underline">
-                            soporte@empresa.com
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 border-t border-gray-50">
+                        <Link :href="route('home')" class="px-6 py-3 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm w-full sm:w-auto text-center">
+                            Volver al Sitio
+                        </Link>
+
+                        <a href="mailto:soporte@empresa.com" class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm w-full sm:w-auto text-center flex items-center justify-center gap-2">
+                            <EnvelopeIcon class="w-4 h-4" />
+                            Contactar Soporte
                         </a>
                     </div>
 
-                    <!-- Acciones -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            :href="route('home')"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            Volver al Inicio
-                        </Link>
-
-                        <Link
-                            :href="route('profile.edit')"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition border-2 border-gray-200"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            Ver mi Perfil
-                        </Link>
-                    </div>
-
-                    <!-- Timeline estimado -->
-                    <div class="mt-10 pt-8 border-t border-gray-200">
-                        <p class="text-sm text-gray-500 mb-4">Timeline estimado:</p>
-                        <div class="flex items-center justify-center gap-2 text-xs text-gray-600">
-                            <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white mb-1">
-                                    ✓
-                                </div>
-                                <span>Registro</span>
-                            </div>
-                            <div class="w-12 h-0.5 bg-gray-300"></div>
-                            <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white mb-1 animate-pulse">
-                                    ⏳
-                                </div>
-                                <span>Revisión</span>
-                            </div>
-                            <div class="w-12 h-0.5 bg-gray-300"></div>
-                            <div class="flex flex-col items-center opacity-50">
-                                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-white mb-1">
-                                    ?
-                                </div>
-                                <span>Aprobación</span>
-                            </div>
-                            <div class="w-12 h-0.5 bg-gray-300"></div>
-                            <div class="flex flex-col items-center opacity-50">
-                                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-white mb-1">
-                                    🚀
-                                </div>
-                                <span>Activo</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
+                <div class="text-center mt-6">
+                    <Link :href="route('logout')" method="post" as="button" class="text-xs text-slate-400 hover:text-red-600 transition flex items-center justify-center gap-1 mx-auto">
+                        <ArrowRightOnRectangleIcon class="w-3 h-3" />
+                        Cerrar Sesión
+                    </Link>
+                </div>
+
             </div>
         </div>
     </AuthenticatedLayout>

@@ -1,6 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { 
+    ExclamationTriangleIcon, 
+    XCircleIcon, 
+    QuestionMarkCircleIcon, 
+    ArrowLeftIcon,
+    EnvelopeIcon
+} from '@heroicons/vue/24/outline';
 
 defineProps({
     reason: {
@@ -12,131 +19,82 @@ defineProps({
 
 <template>
     <AuthenticatedLayout>
-        <Head title="Cuenta Rechazada" />
+        <Head title="Estado de Solicitud" />
 
-        <div class="py-12">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Card con tema rojo -->
-                <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-3xl shadow-2xl p-8 md:p-12 text-center">
-                    <!-- Icono -->
-                    <div class="mb-6">
-                        <div class="inline-flex items-center justify-center w-24 h-24 bg-red-100 rounded-full">
-                            <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
+        <div class="py-12 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+            <div class="max-w-2xl w-full px-4 sm:px-6 lg:px-8">
+
+                <div class="bg-white border border-red-200 p-10 rounded-sm shadow-sm text-center relative overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
+
+                    <div class="mb-8 flex justify-center">
+                        <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center border border-red-100">
+                            <ExclamationTriangleIcon class="w-10 h-10 text-red-500 stroke-1" />
                         </div>
                     </div>
 
-                    <!-- Título -->
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                         Solicitud No Aprobada
+                    <h1 class="text-3xl font-serif font-bold text-slate-900 mb-4">
+                        Solicitud No Aprobada
                     </h1>
-
-                    <!-- Descripción -->
-                    <p class="text-lg text-gray-700 mb-6">
-                        Lamentamos informarte que tu solicitud de registro como fotógrafo no ha sido aprobada.
+                    <p class="text-slate-500 font-light text-sm leading-relaxed max-w-lg mx-auto mb-10">
+                        Tras revisar su perfil, lamentamos informarle que su solicitud de ingreso como fotógrafo no ha cumplido con nuestros criterios actuales de selección.
                     </p>
 
-                    <!-- Motivo del rechazo -->
-                    <div v-if="reason" class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left">
-                        <h2 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Motivo del rechazo:
-                        </h2>
-                        <p class="text-gray-700 bg-red-50 p-4 rounded-lg border border-red-200">
+                    <div v-if="reason" class="bg-red-50 border border-red-100 rounded-sm p-6 mb-8 text-left">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-red-800 mb-2 flex items-center gap-2">
+                            <XCircleIcon class="w-4 h-4" /> Motivo del Rechazo
+                        </h4>
+                        <p class="text-sm text-red-700 font-light leading-relaxed">
                             {{ reason }}
                         </p>
                     </div>
 
-                    <!-- Razones comunes -->
-                    <div class="bg-blue-50 rounded-2xl p-6 mb-8 text-left">
-                        <h3 class="font-bold text-gray-900 mb-3">Razones comunes de rechazo:</h3>
-                        <ul class="space-y-2 text-gray-700 text-sm">
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Información incompleta o incorrecta en el perfil</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Falta de portafolio o trabajos previos</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Calidad insuficiente del trabajo presentado</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>No cumplir con los estándares de servicio requeridos</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Datos de contacto no verificables</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- ¿Qué puedes hacer? -->
-                    <div class="bg-green-50 rounded-2xl p-6 mb-8 text-left">
-                        <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            ¿Qué puedes hacer?
+                    <div class="text-left mb-10">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-gray-100 pb-2">
+                            Criterios de Evaluación
                         </h3>
-                        <ul class="space-y-3 text-gray-700">
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-600 font-bold">1.</span>
-                                <span>Revisa el motivo del rechazo y corrige los problemas mencionados.</span>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3 text-sm text-slate-600 font-light">
+                                <span class="w-1.5 h-1.5 bg-slate-300 rounded-full mt-2 flex-shrink-0"></span>
+                                Veracidad de la información de contacto y portafolio.
                             </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-600 font-bold">2.</span>
-                                <span>Mejora tu portafolio y asegúrate de cumplir con nuestros estándares.</span>
+                            <li class="flex items-start gap-3 text-sm text-slate-600 font-light">
+                                <span class="w-1.5 h-1.5 bg-slate-300 rounded-full mt-2 flex-shrink-0"></span>
+                                Calidad técnica y artística del material presentado.
                             </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-600 font-bold">3.</span>
-                                <span>Puedes volver a aplicar después de <strong>30 días</strong>.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-green-600 font-bold">4.</span>
-                                <span>Contacta a nuestro equipo si tenés preguntas o necesitas orientación.</span>
+                            <li class="flex items-start gap-3 text-sm text-slate-600 font-light">
+                                <span class="w-1.5 h-1.5 bg-slate-300 rounded-full mt-2 flex-shrink-0"></span>
+                                Cumplimiento de los términos y condiciones de servicio.
                             </li>
                         </ul>
                     </div>
 
-                    <!-- Contacto -->
-                    <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 mb-8">
-                        <p class="text-gray-700 mb-3">
-                            Si crees que esto es un error o deseas más información, contáctanos:
-                        </p>
-                        <a href="mailto:soporte@empresa.com" class="text-indigo-600 font-bold hover:underline text-lg">
-                            soporte@empresa.com
-                        </a>
+                    <div class="bg-slate-50 border border-gray-200 rounded-sm p-6 text-left mb-8">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
+                            <QuestionMarkCircleIcon class="w-4 h-4" /> ¿Qué puede hacer ahora?
+                        </h3>
+                        <div class="space-y-4 text-sm text-slate-600 font-light">
+                            <p>
+                                <strong class="text-slate-900 font-medium">Corregir y Reintentar:</strong> Si el rechazo se debe a información faltante, puede contactar a soporte para actualizar su solicitud.
+                            </p>
+                            <p>
+                                <strong class="text-slate-900 font-medium">Nueva Solicitud:</strong> Podrá aplicar nuevamente transcurridos 30 días desde la fecha de esta notificación.
+                            </p>
+                        </div>
                     </div>
 
-                    <!-- Acciones -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            :href="route('home')"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            Volver al Inicio
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 border-t border-gray-50">
+                        <Link :href="route('home')" class="px-6 py-3 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm w-full sm:w-auto text-center flex items-center justify-center gap-2">
+                            <ArrowLeftIcon class="w-4 h-4" /> Volver al Inicio
                         </Link>
 
-                        <a
-                            href="mailto:soporte@empresa.com"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition border-2 border-gray-200"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
+                        <a href="mailto:soporte@empresa.com" class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm w-full sm:w-auto text-center flex items-center justify-center gap-2">
+                            <EnvelopeIcon class="w-4 h-4" />
                             Contactar Soporte
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
