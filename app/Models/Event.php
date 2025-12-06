@@ -46,7 +46,12 @@ class Event extends Model
     public function getCoverImageUrlAttribute()
     {
         // 1. Cover image directo
-        if ($this->cover_image) {
+     if ($this->cover_image) {
+            // SI ES URL EXTERNA (Como las del seeder), RETORNARLA DIRECTA
+            if (Str::startsWith($this->cover_image, ['http://', 'https://'])) {
+                return $this->cover_image;
+            }
+            // SI ES RUTA LOCAL, USAR STORAGE
             return asset('storage/' . $this->cover_image);
         }
 
