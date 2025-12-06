@@ -10,18 +10,21 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('photographer_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->text('long_description')->nullable();
+            $table->string('cover_image')->nullable();
             $table->date('event_date')->nullable();
             $table->string('location')->nullable();
-            $table->boolean('is_private')->default(false);
-            $table->string('private_token')->nullable()->unique(); // Para QR/link privado
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
             
-            $table->index('slug');
-            $table->index('private_token');
+            $table->boolean('is_private')->default(false);
+            $table->string('private_token')->nullable()->unique();
+            $table->boolean('is_active')->default(true);
+            
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

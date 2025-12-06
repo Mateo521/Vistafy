@@ -67,6 +67,8 @@ const formatDate = (dateString) => {
                 <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
             </div>
 
+
+            
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-16 pb-12 border-b border-gray-100">
                 <div class="flex flex-col md:flex-row gap-8 items-start">
                     

@@ -132,6 +132,7 @@ const getStatusConfig = (status) => {
                     </Link>
                 </div>
 
+                
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
                     <button v-for="(stat, key) in {
                         'all': { label: 'Total', count: stats.total },

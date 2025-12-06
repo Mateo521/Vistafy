@@ -10,35 +10,30 @@ return new class extends Migration
     {
         Schema::create('photos', function (Blueprint $table) {
             $table->id();
-            
-            // Relaciones
             $table->foreignId('photographer_id')->constrained()->onDelete('cascade');
-            $table->foreignId('event_id')->nullable()->constrained()->onDelete('set null'); // Puede ser nullable si la foto no pertenece a un evento aún
-
-            // Identificadores y Info
-            $table->string('unique_id')->unique(); // ID público (ej: A1B2C3)
+            // Aquí definimos la relación directa con eventos (1 a muchos)
+            $table->foreignId('event_id')->nullable()->constrained()->onDelete('set null');
+            
+            $table->string('unique_id')->unique();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
 
-            // Rutas de archivos
-            $table->string('original_path');
+            // Paths
+            $table->string('original_path'); // URL o path local
             $table->string('watermarked_path')->nullable();
             $table->string('thumbnail_path')->nullable();
             
-            // Metadatos técnicos
+            // Metadata
             $table->string('original_name')->nullable();
-            $table->bigInteger('file_size')->nullable(); // Usar bigInteger por si son archivos grandes
+            $table->bigInteger('file_size')->nullable();
             $table->integer('width')->nullable();
             $table->integer('height')->nullable();
-            
-            // ESTA ES LA LÍNEA QUE TE FALTA:
-            $table->string('mime_type')->nullable(); 
+            $table->string('mime_type')->nullable();
 
             // Negocio
-            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('price', 10, 2)->default(5.00);
             $table->boolean('is_active')->default(true);
             
-            // Estadísticas
             $table->integer('downloads')->default(0);
             $table->integer('views')->default(0);
 
