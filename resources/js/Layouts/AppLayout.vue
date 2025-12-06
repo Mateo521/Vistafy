@@ -3,18 +3,17 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const page = usePage();
-const auth = computed(() => page.props.auth);
-const user = computed(() => auth.value?.user);
+const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
-
-// Detectar si estamos en la página de inicio
-const isHomePage = computed(() => page.url === '/');
-
-// NUEVO: Detectar scroll
 const scrolled = ref(false);
 
+// Detectar ruta para aplicar estilos específicos
+const isHomePage = computed(() => page.url === '/');
+
+// Lógica de Scroll para cambiar el estado de la barra de navegación
 const handleScroll = () => {
-    scrolled.value = window.scrollY > 50;
+    // Cambiamos el estado después de 20px de scroll para una respuesta rápida
+    scrolled.value = window.scrollY > 20;
 };
 
 onMounted(() => {
@@ -25,358 +24,175 @@ onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
 });
 
-//  NUEVO: Helpers para roles
-const isAdmin = computed(() => user.value?.is_admin === true);
-const isPhotographer = computed(() => user.value?.role === 'photographer');
-const isClient = computed(() => user.value?.role === 'client');
-
-//  NUEVO: Ruta dinámica del dashboard según el rol
-const dashboardRoute = computed(() => {
+// Lógica de redirección y texto según rol (Simplificada)
+const dashboardInfo = computed(() => {
     if (!user.value) return null;
     
-    if (isAdmin.value) {
-        return route('admin.dashboard');
+    if (user.value.is_admin) {
+        return { route: route('admin.dashboard'), text: 'ADMINISTRACIÓN' };
     }
-    
-    if (isPhotographer.value) {
-        return route('photographer.dashboard');
+    if (user.value.role === 'photographer') {
+        return { route: route('photographer.dashboard'), text: 'PANEL PROFESIONAL' };
     }
-    
-    // Para clientes, ir al home
-    return route('home');
-});
-
-//  NUEVO: Texto dinámico del botón
-const dashboardText = computed(() => {
-    if (!user.value) return 'Dashboard';
-    
-    if (isAdmin.value) {
-        return ' Panel Admin';
-    }
-    
-    if (isPhotographer.value) {
-        return ' Mi Panel';
-    }
-    
-    return 'Mi Cuenta';
+    return { route: route('home'), text: 'MI CUENTA' }; // Clientes al home o perfil
 });
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50">
-        <!-- Navigation Unificada -->
-
+    <div class="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
+        
         <nav :class="[
-            'fixed top-0 w-full z-50 transition-all duration-300',
-            // CAMBIADO: Agregar fondo cuando se hace scroll en home
-            isHomePage
-                ? (scrolled ? 'bg-white shadow-lg' : 'bg-transparent')
-                : 'bg-white shadow-sm'
+            'fixed top-0 w-full z-50 transition-all duration-500 ease-in-out border-b',
+            isHomePage && !scrolled 
+                ? 'bg-transparent border-transparent py-6' 
+                : 'bg-white/95 backdrop-blur-md border-gray-100 py-4 shadow-sm'
         ]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-20">
+                <div class="flex justify-between items-center">
 
-                    <!-- Logo -->
-                    <Link href="/" class="flex items-center space-x-3 group">
-                    <div :class="[
-                        'w-12 h-12 rounded-xl flex items-center justify-center transition-all',
-                        // CAMBIADO: Ajustar según scroll
-                        isHomePage
-                            ? (scrolled
-                                ? 'bg-gradient-to-br from-purple-600 to-indigo-600 group-hover:from-purple-700 group-hover:to-indigo-700'
-                                : 'bg-white/10 backdrop-blur-md border border-white/20 group-hover:bg-white/20'
-                            )
-                            : 'bg-gradient-to-br from-purple-600 to-indigo-600 group-hover:from-purple-700 group-hover:to-indigo-700'
-                    ]">
-                        <svg class="w-7 h-7 transition-transform group-hover:scale-110 text-white" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <span :class="[
-                        'text-2xl font-bold transition-colors',
-                        // CAMBIADO: Ajustar color según scroll
-                        isHomePage
-                            ? (scrolled ? 'text-gray-900' : 'text-white drop-shadow-lg')
-                            : 'text-gray-900'
-                    ]">
-                        Empresa
-                    </span>
+                    <Link href="/" class="group z-50 relative">
+                        <div class="flex flex-col">
+                            <span :class="[
+                                'text-2xl font-serif font-bold tracking-tight transition-colors duration-300',
+                                isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
+                            ]">
+                                EMPRESA
+                            </span>
+                            <span :class="[
+                                'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
+                                isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
+                            ]">
+                                Photography
+                            </span>
+                        </div>
                     </Link>
 
-                    <!-- Menu Principal (Desktop) -->
-                    <div class="hidden md:flex items-center space-x-2">
-                        <Link href="/" :class="[
-                            'px-4 py-2 rounded-lg font-medium transition-all',
-                            $page.url === '/'
-                                ? (isHomePage && !scrolled ? 'bg-white/20 text-white backdrop-blur-md' : 'bg-purple-50 text-purple-600')
-                                : (isHomePage && !scrolled ? 'text-white/90 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600')
-                        ]">
-                        Inicio
-                        </Link>
-
-                        <Link :href="route('events.index')" :class="[
-                            'px-4 py-2 rounded-lg font-medium transition-all',
-                            $page.url.startsWith('/eventos')
-                                ? (isHomePage && !scrolled ? 'bg-white/20 text-white backdrop-blur-md' : 'bg-purple-50 text-purple-600')
-                                : (isHomePage && !scrolled ? 'text-white/90 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600')
-                        ]">
-                        Eventos
-                        </Link>
-
-                        <Link :href="route('gallery.index')" :class="[
-                            'px-4 py-2 rounded-lg font-medium transition-all',
-                            $page.url.startsWith('/galeria')
-                                ? (isHomePage && !scrolled ? 'bg-white/20 text-white backdrop-blur-md' : 'bg-purple-50 text-purple-600')
-                                : (isHomePage && !scrolled ? 'text-white/90 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600')
-                        ]">
-                        Galería
-                        </Link>
-
-                        <Link :href="route('photographers.index')" :class="[
-                            'px-4 py-2 rounded-lg font-medium transition-all',
-                            $page.url.startsWith('/fotografos')
-                                ? (isHomePage && !scrolled ? 'bg-white/20 text-white backdrop-blur-md' : 'bg-purple-50 text-purple-600')
-                                : (isHomePage && !scrolled ? 'text-white/90 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100 hover:text-purple-600')
-                        ]">
-                        Fotógrafos
-                        </Link>
-                    </div>
-
-
-                    <!-- Auth Buttons -->
-                    <div class="hidden md:flex items-center space-x-4">
-                        <template v-if="!user">
-                            <Link :href="route('login')" :class="[
-                                'px-5 py-2.5 font-medium transition-all',
-                                isHomePage && !scrolled
-                                    ? 'text-white/90 hover:text-white'
-                                    : 'text-gray-700 hover:text-purple-600'
+                    <div class="hidden md:flex items-center space-x-12">
+                        <div class="flex space-x-8">
+                            <Link v-for="item in [
+                                { label: 'Inicio', route: '/', active: $page.url === '/' },
+                                { label: 'Eventos', route: route('events.index'), active: $page.url.startsWith('/eventos') },
+                                { label: 'Galería', route: route('gallery.index'), active: $page.url.startsWith('/galeria') },
+                                { label: 'Fotógrafos', route: route('photographers.index'), active: $page.url.startsWith('/fotografos') }
+                            ]" 
+                            :key="item.label"
+                            :href="item.route" 
+                            :class="[
+                                'text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
+                                isHomePage && !scrolled 
+                                    ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
+                                    : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
                             ]">
-                            Iniciar Sesión
+                                {{ item.label }}
                             </Link>
+                        </div>
 
-                            <Link :href="route('register')" :class="[
-                                'px-6 py-2.5 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105',
-                                isHomePage && !scrolled
-                                    ? 'bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30'
-                                    : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700'
-                            ]">
-                            Registrarse
-                            </Link>
+                        <div :class="['h-4 w-px', isHomePage && !scrolled ? 'bg-white/20' : 'bg-slate-200']"></div>
 
-                            
-                            <Link :href="route('photographer.register')" :class="[
-                                'px-6 py-2.5 rounded-lg font-semibold transition-all border-2',
-                                isHomePage && !scrolled
-                                    ? 'border-white/50 text-white hover:bg-white/10 backdrop-blur-md'
-                                    : 'border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
-                            ]">
-                             Soy fotógrafo
-                            </Link>
-                        </template>
-
-                       
-                        <template v-else>
-                            <Link 
-                                v-if="dashboardRoute"
-                                :href="dashboardRoute" 
-                                :class="[
-                                    'px-5 py-2.5 font-medium transition-all rounded-lg',
-                                    isHomePage && !scrolled
-                                        ? 'text-white/90 hover:text-white hover:bg-white/10'
-                                        : 'text-gray-700 hover:text-purple-600 hover:bg-purple-50'
-                                ]"
-                            >
-                                {{ dashboardText }}
-                            </Link>
-
-                            <Link :href="route('logout')" method="post" as="button" :class="[
-                                'px-5 py-2.5 font-medium transition-all rounded-lg',
-                                isHomePage && !scrolled
-                                    ? 'text-white/90 hover:text-white hover:bg-red-500/20'
-                                    : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
-                            ]">
-                            Cerrar Sesión
-                            </Link>
-                        </template>
-                    </div>
-
-
-                    <!-- Mobile menu button -->
-                    <div class="md:hidden">
-                        <button @click="mobileMenuOpen = !mobileMenuOpen" :class="[
-                            'p-2 rounded-lg transition-colors',
-                            isHomePage && !scrolled
-                                ? 'text-white hover:bg-white/10'
-                                : 'text-gray-700 hover:bg-gray-100'
-                        ]">
-                            <svg v-if="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div v-show="mobileMenuOpen" class="md:hidden border-t"
-                :class="isHomePage ? 'bg-black/90 backdrop-blur-lg border-white/10' : 'bg-white border-gray-200'">
-                <div class="px-4 py-4 space-y-2">
-                    <Link href="/" :class="[
-                        'block px-4 py-3 rounded-lg font-medium transition-all',
-                        $page.url === '/'
-                            ? 'bg-white/20 text-white'
-                            : (isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100')
-                    ]">
-                    Inicio
-                    </Link>
-
-                    <Link :href="route('events.index')" :class="[
-                        'block px-4 py-3 rounded-lg font-medium transition-all',
-                        $page.url.startsWith('/eventos')
-                            ? 'bg-white/20 text-white'
-                            : (isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100')
-                    ]">
-                    Eventos
-                    </Link>
-
-                    <Link :href="route('gallery.index')" :class="[
-                        'block px-4 py-3 rounded-lg font-medium transition-all',
-                        $page.url.startsWith('/galeria')
-                            ? 'bg-white/20 text-white'
-                            : (isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100')
-                    ]">
-                    Galería
-                    </Link>
-
-                    <Link :href="route('photographers.index')" :class="[
-                        'block px-4 py-3 rounded-lg font-medium transition-all',
-                        $page.url.startsWith('/fotografos')
-                            ? 'bg-white/20 text-white'
-                            : (isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100')
-                    ]">
-                    Fotógrafos
-                    </Link>
-
-                    <div class="pt-4 border-t" :class="isHomePage ? 'border-white/10' : 'border-gray-200'">
-                        <template v-if="!user">
-                            <Link :href="route('login')" :class="[
-                                'block px-4 py-3 rounded-lg font-medium transition-all mb-2',
-                                isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100'
-                            ]">
-                            Iniciar Sesión
-                            </Link>
-
-                            <Link :href="route('register')"
-                                class="block px-4 py-3 rounded-lg font-semibold text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 transition-all mb-2">
-                            Registrarse
-                            </Link>
-
-                            <!--  NUEVO: Botón "Soy Fotógrafo" en mobile -->
-                            <Link :href="route('photographer.register')"
-                                :class="[
-                                    'block px-4 py-3 rounded-lg font-semibold text-center border-2 transition-all',
-                                    isHomePage
-                                        ? 'border-white/50 text-white hover:bg-white/10'
-                                        : 'border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
+                        <div class="flex items-center space-x-6">
+                            <template v-if="!user">
+                                <Link :href="route('login')" :class="[
+                                    'text-xs font-bold uppercase tracking-widest transition-colors',
+                                    isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
                                 ]">
-                             Soy fotógrafo
-                            </Link>
+                                    Ingresar
+                                </Link>
+                                <Link :href="route('register')" :class="[
+                                    'px-6 py-2 text-xs font-bold uppercase tracking-widest border transition-all duration-300',
+                                    isHomePage && !scrolled 
+                                        ? 'border-white text-white hover:bg-white hover:text-slate-900' 
+                                        : 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
+                                ]">
+                                    Registrarse
+                                </Link>
+                            </template>
+
+                            <template v-else>
+                                <div class="flex items-center space-x-4">
+                                    <Link v-if="dashboardInfo" :href="dashboardInfo.route" :class="[
+                                        'text-xs font-bold uppercase tracking-widest transition-colors',
+                                        isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
+                                    ]">
+                                        {{ dashboardInfo.text }}
+                                    </Link>
+                                    <Link :href="route('logout')" method="post" as="button" :class="[
+                                        'text-xs font-bold uppercase tracking-widest transition-colors',
+                                        isHomePage && !scrolled ? 'text-red-300 hover:text-red-100' : 'text-red-600 hover:text-red-800'
+                                    ]">
+                                        Salir
+                                    </Link>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none">
+                        <div class="space-y-1.5">
+                            <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'rotate-45 translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                            <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'opacity-0' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                            <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? '-rotate-45 -translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <transition
+                enter-active-class="transition duration-300 ease-out"
+                enter-from-class="opacity-0 -translate-y-4"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition duration-200 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-4"
+            >
+                <div v-show="mobileMenuOpen" class="absolute top-0 left-0 w-full bg-white shadow-xl pt-24 pb-10 px-6 border-b border-gray-100 md:hidden">
+                    <div class="flex flex-col space-y-6 text-center">
+                        <Link v-for="item in ['Inicio', 'Eventos', 'Galería', 'Fotógrafos']" 
+                            :key="item" href="#" 
+                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
+                            {{ item }}
+                        </Link>
+                        <hr class="border-gray-100 w-1/3 mx-auto my-4">
+                        <template v-if="!user">
+                            <Link :href="route('login')" class="text-sm text-slate-600">Iniciar Sesión</Link>
+                            <Link :href="route('register')" class="text-sm font-bold text-slate-900">Crear Cuenta</Link>
                         </template>
-
-                        <!--  ACTUALIZADO: Dashboard dinámico en mobile -->
                         <template v-else>
-                            <Link 
-                                v-if="dashboardRoute"
-                                :href="dashboardRoute" 
-                                :class="[
-                                    'block px-4 py-3 rounded-lg font-medium transition-all mb-2',
-                                    isHomePage ? 'text-white/90 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-100'
-                                ]"
-                            >
-                                {{ dashboardText }}
-                            </Link>
-
-                            <Link :href="route('logout')" method="post" as="button"
-                                class="w-full text-left px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 transition-all">
-                            Cerrar Sesión
-                            </Link>
+                            <Link :href="route('logout')" method="post" class="text-sm text-red-600">Cerrar Sesión</Link>
                         </template>
                     </div>
                 </div>
-            </div>
+            </transition>
         </nav>
 
-        <!-- Contenido de la Página -->
-
-        <main :class="isHomePage ? '' : 'pt-20'">
+        <main :class="['relative z-0 min-h-screen', isHomePage ? 'pt-0' : 'pt-24']">
             <slot />
         </main>
 
-
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-white py-16 mt-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-                    <!-- Logo y descripción -->
-                    <div class="md:col-span-2">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div
-                                class="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <span class="text-2xl font-bold">Empresa</span>
-                        </div>
-                        <p class="text-gray-400 max-w-md">
-                         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi architecto vel accusamus voluptatibus libero maiores sunt tempora itaque beatae eligendi necessitatibus, officiis animi velit eos voluptatem molestiae magnam hic similique!   
-                        </p>
+        <footer class="bg-slate-900 text-white border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
+                    
+                    <div class="text-center md:text-left">
+                        <span class="text-xl font-serif font-bold tracking-wide block">EMPRESA</span>
+                        <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional Photography</span>
                     </div>
 
-                    <!-- Enlaces -->
-                    <div>
-                        <h3 class="font-semibold mb-4">Enlaces</h3>
-                        <ul class="space-y-2 text-gray-400">
-                            <li>
-                                <Link href="/" class="hover:text-white transition">Inicio</Link>
-                            </li>
-                            <li>
-                                <Link :href="route('events.index')" class="hover:text-white transition">Eventos</Link>
-                            </li>
-                            <li>
-                                <Link :href="route('gallery.index')" class="hover:text-white transition">Galería</Link>
-                            </li>
-                            <li>
-                                <Link :href="route('photographers.index')" class="hover:text-white transition">
-                                Fotógrafos</Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Contacto -->
-                    <div>
-                        <h3 class="font-semibold mb-4">Contacto</h3>
-                        <ul class="space-y-2 text-gray-400">
-                            <li>info@Empresa.com</li>
-                            <li>+1 234 567 890</li>
-                        </ul>
+                    <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-400">
+                        <Link href="#" class="hover:text-white transition">Eventos</Link>
+                        <Link href="#" class="hover:text-white transition">Nosotros</Link>
+                        <Link href="#" class="hover:text-white transition">Soporte</Link>
                     </div>
                 </div>
 
-                <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
-                    © {{ new Date().getFullYear() }} Empresa. Todos los derechos reservados.
+                <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
+                    <p>© {{ new Date().getFullYear() }} Empresa S.A.</p>
+                    <div class="flex space-x-6 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-slate-300 transition">Privacidad</a>
+                        <a href="#" class="hover:text-slate-300 transition">Términos</a>
+                    </div>
                 </div>
             </div>
         </footer>
+
     </div>
 </template>
