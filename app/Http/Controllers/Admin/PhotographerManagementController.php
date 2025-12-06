@@ -75,34 +75,63 @@ class PhotographerManagementController extends Controller
     /**
      * Aprobar un fotógrafo
      */
-    public function approve(Photographer $photographer)
-    {
-        if ($photographer->status === 'approved') {
-            return back()->with('error', 'Este fotógrafo ya está aprobado.');
-        }
+  public function approve(Photographer $photographer)
+{
+    // ✅ Log 1: Verificar que llega al método
+    \Log::info('🔵 APPROVE: Método llamado', [
+        'photographer_id' => $photographer->id,
+        'photographer_slug' => $photographer->slug,
+        'status_actual' => $photographer->status,
+        'user_id' => auth()->id(),
+    ]);
 
-        DB::beginTransaction();
-        try {
-            $photographer->update([
+    if ($photographer->status === 'approved') {
+        \Log::info('🟡 APPROVE: Ya está aprobado');
+        return back()->with('error', 'Este fotógrafo ya está aprobado.');
+    }
+
+    DB::beginTransaction();
+    try {
+        \Log::info('🟢 APPROVE: Antes de actualizar', [
+            'data' => [
                 'status' => 'approved',
                 'approved_at' => now(),
                 'approved_by' => auth()->id(),
                 'is_active' => true,
                 'is_verified' => true,
-                'rejection_reason' => null,
-            ]);
+            ]
+        ]);
 
-            DB::commit();
+        $photographer->update([
+            'status' => 'approved',
+            'approved_at' => now(),
+            'approved_by' => auth()->id(),
+            'is_active' => true,
+            'is_verified' => true,
+            'rejection_reason' => null,
+        ]);
 
-            // TODO: Enviar email de notificación al fotógrafo
-            // Mail::to($photographer->user->email)->send(new PhotographerApprovedMail($photographer));
+        \Log::info('🟢 APPROVE: Después de actualizar', [
+            'status_nuevo' => $photographer->fresh()->status,
+            'is_active' => $photographer->fresh()->is_active,
+            'is_verified' => $photographer->fresh()->is_verified,
+        ]);
 
-            return back()->with('success', "Fotógrafo '{$photographer->business_name}' aprobado correctamente.");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error al aprobar el fotógrafo: ' . $e->getMessage());
-        }
+        DB::commit();
+        
+        \Log::info('✅ APPROVE: Commit exitoso');
+
+        return back()->with('success', "Fotógrafo '{$photographer->business_name}' aprobado correctamente.");
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('❌ APPROVE: Error', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+        return back()->with('error', 'Error al aprobar el fotógrafo: ' . $e->getMessage());
     }
+}
 
     /**
      * Rechazar un fotógrafo
@@ -176,68 +205,82 @@ class PhotographerManagementController extends Controller
         }
     }
 
-    /**
-     * Suspender un fotógrafo
-     */
-    public function suspend(Request $request, Photographer $photographer)
-    {
-        $request->validate([
-            'reason' => 'nullable|string|max:500',
+/**
+ * Suspender un fotógrafo
+ */
+public function suspend(Request $request, Photographer $photographer)
+{
+    \Log::info('🔵 SUSPEND: Método llamado', [
+        'photographer_id' => $photographer->id,
+        'request_data' => $request->all(),
+    ]);
+
+    $request->validate([
+        'reason' => 'nullable|string|max:500',  // ✅ Cambiar a nullable
+    ]);
+
+    if ($photographer->status === 'suspended') {
+        return back()->with('error', 'Este fotógrafo ya está suspendido.');
+    }
+
+    DB::beginTransaction();
+    try {
+        $photographer->update([
+            'status' => 'suspended',
+            'suspended_at' => now(),
+            'suspended_by' => auth()->id(),
+            'suspension_reason' => $request->reason,  // ✅ Puede ser null
+            'is_active' => false,
         ]);
 
-        if ($photographer->status === 'suspended') {
-            return back()->with('error', 'Este fotógrafo ya está suspendido.');
-        }
+        DB::commit();
+        
+        \Log::info('✅ SUSPEND: Fotógrafo suspendido');
 
-        DB::beginTransaction();
-        try {
-            $photographer->update([
-                'status' => 'suspended',
-                'rejection_reason' => $request->reason,
-                'is_active' => false,
-            ]);
+        return back()->with('success', "Fotógrafo '{$photographer->business_name}' suspendido.");
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('❌ SUSPEND: Error', ['error' => $e->getMessage()]);
+        return back()->with('error', 'Error al suspender: ' . $e->getMessage());
+    }
+}
 
-            DB::commit();
-
-            // TODO: Enviar email de notificación al fotógrafo
-            // Mail::to($photographer->user->email)->send(new PhotographerSuspendedMail($photographer));
-
-            return back()->with('success', "Fotógrafo '{$photographer->business_name}' suspendido.");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error al suspender el fotógrafo: ' . $e->getMessage());
-        }
+/**
+ * Reactivar un fotógrafo suspendido
+ */
+public function reactivate(Photographer $photographer)
+{
+    if ($photographer->status !== 'suspended') {
+        return back()->with('error', 'Solo se pueden reactivar fotógrafos suspendidos.');
     }
 
-    /**
-     * Reactivar un fotógrafo suspendido
-     */
-    public function reactivate(Photographer $photographer)
-    {
-        if ($photographer->status !== 'suspended') {
-            return back()->with('error', 'Solo se pueden reactivar fotógrafos suspendidos.');
-        }
+    DB::beginTransaction();
+    try {
+        $photographer->update([
+            'status' => 'approved',
+            'is_active' => true,
+            'is_verified' => true,
+            'suspension_reason' => null,               // ✅ Limpiar suspension_reason
+            'suspended_at' => null,                    // ✅ Limpiar suspended_at
+            'suspended_by' => null,                    // ✅ Limpiar suspended_by
+            'approved_at' => $photographer->approved_at ?? now(),
+            'approved_by' => $photographer->approved_by ?? auth()->id(),
+        ]);
 
-        DB::beginTransaction();
-        try {
-            $photographer->update([
-                'status' => 'approved',
-                'is_active' => true,
-                'is_verified' => true,
-                'rejection_reason' => null,
-                'approved_at' => $photographer->approved_at ?? now(),
-                'approved_by' => $photographer->approved_by ?? auth()->id(),
-            ]);
+        DB::commit();
 
-            DB::commit();
+        \Log::info('✅ REACTIVATE: Fotógrafo reactivado', [
+            'photographer_id' => $photographer->id,
+        ]);
 
-            // TODO: Enviar email de notificación al fotógrafo
-            // Mail::to($photographer->user->email)->send(new PhotographerReactivatedMail($photographer));
-
-            return back()->with('success', "Fotógrafo '{$photographer->business_name}' reactivado correctamente.");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error al reactivar el fotógrafo: ' . $e->getMessage());
-        }
+        return back()->with('success', "Fotógrafo '{$photographer->business_name}' reactivado correctamente.");
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('❌ REACTIVATE: Error', ['error' => $e->getMessage()]);
+        return back()->with('error', 'Error al reactivar el fotógrafo: ' . $e->getMessage());
     }
+}
+
 }

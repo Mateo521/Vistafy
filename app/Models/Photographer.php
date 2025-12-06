@@ -148,10 +148,19 @@ class Photographer extends Model
         return null;
     }
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
+   /**
+ * Usar slug por defecto para rutas públicas
+ */
+public function getRouteKeyName()
+{
+    // Si estamos en una ruta de admin, usar ID
+    if (request()->is('admin/*')) {
+        return 'id';
     }
+    
+    // Para rutas públicas, usar slug
+    return 'slug';
+}
 
     /**
      * Scope para fotógrafos verificados

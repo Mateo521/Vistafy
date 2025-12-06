@@ -6,6 +6,8 @@ use App\Http\Controllers\Photographer\EventController;
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
+use App\Http\Controllers\Admin\PhotographerManagementController;
+
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Auth\PhotographerRegistrationController;
 use App\Http\Controllers\WebhookController;
@@ -206,7 +208,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
 */
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    
+
     // Dashboard de admin
     Route::get('/panel', function () {
         $stats = [
@@ -227,14 +229,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     //  Gestión de fotógrafos
     Route::prefix('fotografos')->name('photographers.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'index'])->name('index');
-        Route::get('/{photographer}', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'show'])->name('show'); //  NUEVA - Ver detalles
-        Route::post('/{photographer}/aprobar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'approve'])->name('approve');
-        Route::post('/{photographer}/rechazar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reject'])->name('reject');
-        Route::post('/{photographer}/revertir', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'revert'])->name('revert'); //  NUEVA - Revertir rechazo
-        Route::post('/{photographer}/suspender', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'suspend'])->name('suspend');
-        Route::post('/{photographer}/reactivar', [\App\Http\Controllers\Admin\PhotographerManagementController::class, 'reactivate'])->name('reactivate');
+        Route::get('/', [PhotographerManagementController::class, 'index'])->name('index');
+
+        // ✅ Usar solo {photographer} - el modelo decidirá usar ID en admin
+        Route::get('/{photographer}', [PhotographerManagementController::class, 'show'])->name('show');
+        Route::post('/{photographer}/aprobar', [PhotographerManagementController::class, 'approve'])->name('approve');
+        Route::post('/{photographer}/rechazar', [PhotographerManagementController::class, 'reject'])->name('reject');
+        Route::post('/{photographer}/suspender', [PhotographerManagementController::class, 'suspend'])->name('suspend');
+        Route::post('/{photographer}/reactivar', [PhotographerManagementController::class, 'reactivate'])->name('reactivate');
+        Route::post('/{photographer}/revertir', [PhotographerManagementController::class, 'revert'])->name('revert');
     });
+
 });
 
 
