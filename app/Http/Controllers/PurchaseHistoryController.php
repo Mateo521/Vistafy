@@ -24,18 +24,18 @@ class PurchaseHistoryController extends Controller
                 return [
                     'id' => $purchase->id,
                     'order_token' => $purchase->order_token,
-                    'total_amount' => (float) $purchase->total_amount, // ✅ Convertir a float
+                    'total_amount' => (float) $purchase->total_amount, //  Convertir a float
                     'currency' => $purchase->currency,
                     'status' => $purchase->status,
                     'created_at' => $purchase->created_at->format('d/m/Y H:i'),
                     'created_at_human' => $purchase->created_at->diffForHumans(),
-                    'item_count' => $purchase->items->count(), // ✅ Contar items correctamente
+                    'item_count' => $purchase->items->count(), //  Contar items correctamente
                     'items' => $purchase->items->map(function ($item) {
                         return [
                             'id' => $item->id,
                             'photo_id' => $item->photo_id,
-                            'unit_price' => (float) $item->unit_price, // ✅ Convertir a float
-                            'download_count' => (int) ($item->download_count ?? 0), // ✅ Convertir a int
+                            'unit_price' => (float) $item->unit_price, //  Convertir a float
+                            'download_count' => (int) ($item->download_count ?? 0), //  Convertir a int
                             'photo' => [
                                 'id' => $item->photo->id,
                                 'unique_id' => $item->photo->unique_id,
@@ -61,7 +61,7 @@ class PurchaseHistoryController extends Controller
     }
 
     /**
-     * 📥 Descargar foto original
+     *  Descargar foto original
      */
     public function download($purchaseId, $photoId)
     {
@@ -93,7 +93,7 @@ class PurchaseHistoryController extends Controller
     }
 
     /**
-     * 📥 Descargar todas las fotos de una compra como ZIP
+     *  Descargar todas las fotos de una compra como ZIP
      */
     public function downloadAll($purchaseId)
     {

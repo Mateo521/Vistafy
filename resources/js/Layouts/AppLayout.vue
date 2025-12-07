@@ -9,7 +9,7 @@ const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
 const scrolled = ref(false);
 const cartCount = ref(0);
-const userMenuOpen = ref(false); // ✅ NUEVO: Estado del menú de usuario
+const userMenuOpen = ref(false); //  NUEVO: Estado del menú de usuario
 
 // Detectar ruta para aplicar estilos específicos
 const isHomePage = computed(() => page.url === '/');
@@ -67,7 +67,7 @@ const dashboardInfo = computed(() => {
         };
     }
     
-    // ✅ Usuario regular: menú desplegable
+    //  Usuario regular: menú desplegable
     return {
         single: false,
         items: [
@@ -176,7 +176,7 @@ const dashboardInfo = computed(() => {
                             <!-- Authenticated: Dashboard/User Menu -->
                             <template v-else>
                                 <div class="flex items-center space-x-4">
-                                    <!-- ✅ Admin/Photographer: Link directo -->
+                                    <!--  Admin/Photographer: Link directo -->
                                     <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" :class="[
                                         'text-xs font-bold uppercase tracking-widest transition-colors',
                                         isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
@@ -184,7 +184,7 @@ const dashboardInfo = computed(() => {
                                         {{ dashboardInfo.text }}
                                     </Link>
 
-                                    <!-- ✅ Usuario Regular: Dropdown -->
+                                    <!--  Usuario Regular: Dropdown -->
                                     <div v-else class="relative">
                                         <button @click="userMenuOpen = !userMenuOpen" :class="[
                                             'flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors',
