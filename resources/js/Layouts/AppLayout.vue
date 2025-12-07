@@ -1,30 +1,53 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { ShoppingCartIcon } from '@heroicons/vue/24/outline';
+import axios from 'axios';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
 const scrolled = ref(false);
+const cartCount = ref(0);
 
 // Detectar ruta para aplicar estilos específicos
 const isHomePage = computed(() => page.url === '/');
 
 // Lógica de Scroll para cambiar el estado de la barra de navegación
 const handleScroll = () => {
-    // Cambiamos el estado después de 20px de scroll para una respuesta rápida
     scrolled.value = window.scrollY > 20;
+};
+
+// 🛒 Cargar contador del carrito
+const loadCartCount = async () => {
+    if (!user.value) {
+        cartCount.value = 0;
+        return;
+    }
+
+    try {
+        const response = await axios.get(route('cart.count'));
+        cartCount.value = response.data.count || 0;
+    } catch (error) {
+        console.error('Error cargando contador del carrito:', error);
+        cartCount.value = 0;
+    }
 };
 
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
+    loadCartCount();
+
+    // Escuchar eventos personalizados para actualizar el contador
+    window.addEventListener('cart-updated', loadCartCount);
 });
 
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('cart-updated', loadCartCount);
 });
 
-// Lógica de redirección y texto según rol (Simplificada)
+// Lógica de redirección y texto según rol
 const dashboardInfo = computed(() => {
     if (!user.value) return null;
     
@@ -34,7 +57,7 @@ const dashboardInfo = computed(() => {
     if (user.value.role === 'photographer') {
         return { route: route('photographer.dashboard'), text: 'PANEL PROFESIONAL' };
     }
-    return { route: route('home'), text: 'MI CUENTA' }; // Clientes al home o perfil
+    return { route: route('profile.edit'), text: 'MI CUENTA' };  
 });
 </script>
 
@@ -50,6 +73,7 @@ const dashboardInfo = computed(() => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center">
 
+                    <!-- Logo -->
                     <Link href="/" class="group z-50 relative">
                         <div class="flex flex-col">
                             <span :class="[
@@ -67,6 +91,7 @@ const dashboardInfo = computed(() => {
                         </div>
                     </Link>
 
+                    <!-- Desktop Menu -->
                     <div class="hidden md:flex items-center space-x-12">
                         <div class="flex space-x-8">
                             <Link v-for="item in [
@@ -90,6 +115,26 @@ const dashboardInfo = computed(() => {
                         <div :class="['h-4 w-px', isHomePage && !scrolled ? 'bg-white/20' : 'bg-slate-200']"></div>
 
                         <div class="flex items-center space-x-6">
+                            <!-- 🛒 Carrito (solo para usuarios autenticados) -->
+                            <Link v-if="user" :href="route('cart.index')" 
+                                class="relative group">
+                                <ShoppingCartIcon :class="[
+                                    'w-5 h-5 transition-colors duration-300',
+                                    isHomePage && !scrolled ? 'text-white group-hover:text-white/80' : 'text-slate-900 group-hover:text-slate-600'
+                                ]" />
+                                
+                                <!-- Contador -->
+                                <span v-if="cartCount > 0" :class="[
+                                    'absolute -top-2 -right-2 min-w-[1.25rem] h-5 flex items-center justify-center px-1 rounded-full text-[10px] font-bold transition-colors duration-300',
+                                    isHomePage && !scrolled 
+                                        ? 'bg-white text-slate-900' 
+                                        : 'bg-slate-900 text-white'
+                                ]">
+                                    {{ cartCount > 99 ? '99+' : cartCount }}
+                                </span>
+                            </Link>
+
+                            <!-- Guest: Login/Register -->
                             <template v-if="!user">
                                 <Link :href="route('login')" :class="[
                                     'text-xs font-bold uppercase tracking-widest transition-colors',
@@ -107,11 +152,12 @@ const dashboardInfo = computed(() => {
                                 </Link>
                             </template>
 
+                            <!-- Authenticated: Dashboard/Logout -->
                             <template v-else>
                                 <div class="flex items-center space-x-4">
                                     <Link v-if="dashboardInfo" :href="dashboardInfo.route" :class="[
                                         'text-xs font-bold uppercase tracking-widest transition-colors',
-                                        isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
+                                        isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
                                     ]">
                                         {{ dashboardInfo.text }}
                                     </Link>
@@ -126,6 +172,7 @@ const dashboardInfo = computed(() => {
                         </div>
                     </div>
 
+                    <!-- Mobile Menu Button -->
                     <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none">
                         <div class="space-y-1.5">
                             <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'rotate-45 translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
@@ -136,6 +183,7 @@ const dashboardInfo = computed(() => {
                 </div>
             </div>
 
+            <!-- Mobile Menu -->
             <transition
                 enter-active-class="transition duration-300 ease-out"
                 enter-from-class="opacity-0 -translate-y-4"
@@ -146,18 +194,53 @@ const dashboardInfo = computed(() => {
             >
                 <div v-show="mobileMenuOpen" class="absolute top-0 left-0 w-full bg-white shadow-xl pt-24 pb-10 px-6 border-b border-gray-100 md:hidden">
                     <div class="flex flex-col space-y-6 text-center">
-                        <Link v-for="item in ['Inicio', 'Eventos', 'Galería', 'Fotógrafos']" 
-                            :key="item" href="#" 
+                        <!-- Navigation Links -->
+                        <Link :href="route('home')" 
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
-                            {{ item }}
+                            Inicio
                         </Link>
+                        <Link :href="route('events.index')" 
+                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
+                            Eventos
+                        </Link>
+                        <Link :href="route('gallery.index')" 
+                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
+                            Galería
+                        </Link>
+                        <Link :href="route('photographers.index')" 
+                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
+                            Fotógrafos
+                        </Link>
+
+                        <!-- 🛒 Carrito Mobile -->
+                        <Link v-if="user" :href="route('cart.index')" 
+                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 flex items-center justify-center gap-2">
+                            <ShoppingCartIcon class="w-5 h-5" />
+                            Carrito
+                            <span v-if="cartCount > 0" class="bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                {{ cartCount }}
+                            </span>
+                        </Link>
+
                         <hr class="border-gray-100 w-1/3 mx-auto my-4">
+                        
+                        <!-- Auth Links -->
                         <template v-if="!user">
-                            <Link :href="route('login')" class="text-sm text-slate-600">Iniciar Sesión</Link>
-                            <Link :href="route('register')" class="text-sm font-bold text-slate-900">Crear Cuenta</Link>
+                            <Link :href="route('login')" class="text-sm text-slate-600 hover:text-slate-900">
+                                Iniciar Sesión
+                            </Link>
+                            <Link :href="route('register')" class="text-sm font-bold text-slate-900">
+                                Crear Cuenta
+                            </Link>
                         </template>
                         <template v-else>
-                            <Link :href="route('logout')" method="post" class="text-sm text-red-600">Cerrar Sesión</Link>
+                            <Link v-if="dashboardInfo" :href="dashboardInfo.route" 
+                                class="text-sm font-bold text-slate-900">
+                                {{ dashboardInfo.text }}
+                            </Link>
+                            <Link :href="route('logout')" method="post" class="text-sm text-red-600">
+                                Cerrar Sesión
+                            </Link>
                         </template>
                     </div>
                 </div>
@@ -178,7 +261,7 @@ const dashboardInfo = computed(() => {
                     </div>
 
                     <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-400">
-                        <Link href="#" class="hover:text-white transition">Eventos</Link>
+                        <Link :href="route('events.index')" class="hover:text-white transition">Eventos</Link>
                         <Link href="#" class="hover:text-white transition">Nosotros</Link>
                         <Link href="#" class="hover:text-white transition">Soporte</Link>
                     </div>

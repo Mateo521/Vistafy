@@ -125,7 +125,7 @@ class DatabaseSeeder extends Seeder
         });
 
         echo "\n=============================================\n";
-        echo "✅ Base de datos poblada con éxito.\n";
+        echo " Base de datos poblada con éxito.\n";
         echo "---------------------------------------------\n";
         echo "👤 Admin:     admin@empresa.com / password\n";
         echo "📸 Fotógrafo: foto@empresa.com / password\n";

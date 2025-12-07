@@ -77,7 +77,7 @@ class PhotographerManagementController extends Controller
      */
   public function approve(Photographer $photographer)
 {
-    // ✅ Log 1: Verificar que llega al método
+    //  Log 1: Verificar que llega al método
     \Log::info('🔵 APPROVE: Método llamado', [
         'photographer_id' => $photographer->id,
         'photographer_slug' => $photographer->slug,
@@ -119,13 +119,13 @@ class PhotographerManagementController extends Controller
 
         DB::commit();
         
-        \Log::info('✅ APPROVE: Commit exitoso');
+        \Log::info(' APPROVE: Commit exitoso');
 
         return back()->with('success', "Fotógrafo '{$photographer->business_name}' aprobado correctamente.");
         
     } catch (\Exception $e) {
         DB::rollBack();
-        \Log::error('❌ APPROVE: Error', [
+        \Log::error(' APPROVE: Error', [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
         ]);
@@ -216,7 +216,7 @@ public function suspend(Request $request, Photographer $photographer)
     ]);
 
     $request->validate([
-        'reason' => 'nullable|string|max:500',  // ✅ Cambiar a nullable
+        'reason' => 'nullable|string|max:500',  //  Cambiar a nullable
     ]);
 
     if ($photographer->status === 'suspended') {
@@ -229,19 +229,19 @@ public function suspend(Request $request, Photographer $photographer)
             'status' => 'suspended',
             'suspended_at' => now(),
             'suspended_by' => auth()->id(),
-            'suspension_reason' => $request->reason,  // ✅ Puede ser null
+            'suspension_reason' => $request->reason,  //  Puede ser null
             'is_active' => false,
         ]);
 
         DB::commit();
         
-        \Log::info('✅ SUSPEND: Fotógrafo suspendido');
+        \Log::info(' SUSPEND: Fotógrafo suspendido');
 
         return back()->with('success', "Fotógrafo '{$photographer->business_name}' suspendido.");
         
     } catch (\Exception $e) {
         DB::rollBack();
-        \Log::error('❌ SUSPEND: Error', ['error' => $e->getMessage()]);
+        \Log::error(' SUSPEND: Error', ['error' => $e->getMessage()]);
         return back()->with('error', 'Error al suspender: ' . $e->getMessage());
     }
 }
@@ -261,16 +261,16 @@ public function reactivate(Photographer $photographer)
             'status' => 'approved',
             'is_active' => true,
             'is_verified' => true,
-            'suspension_reason' => null,               // ✅ Limpiar suspension_reason
-            'suspended_at' => null,                    // ✅ Limpiar suspended_at
-            'suspended_by' => null,                    // ✅ Limpiar suspended_by
+            'suspension_reason' => null,               //  Limpiar suspension_reason
+            'suspended_at' => null,                    //  Limpiar suspended_at
+            'suspended_by' => null,                    //  Limpiar suspended_by
             'approved_at' => $photographer->approved_at ?? now(),
             'approved_by' => $photographer->approved_by ?? auth()->id(),
         ]);
 
         DB::commit();
 
-        \Log::info('✅ REACTIVATE: Fotógrafo reactivado', [
+        \Log::info(' REACTIVATE: Fotógrafo reactivado', [
             'photographer_id' => $photographer->id,
         ]);
 
@@ -278,7 +278,7 @@ public function reactivate(Photographer $photographer)
         
     } catch (\Exception $e) {
         DB::rollBack();
-        \Log::error('❌ REACTIVATE: Error', ['error' => $e->getMessage()]);
+        \Log::error(' REACTIVATE: Error', ['error' => $e->getMessage()]);
         return back()->with('error', 'Error al reactivar el fotógrafo: ' . $e->getMessage());
     }
 }

@@ -1,208 +1,168 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {
-  CheckCircleIcon,
-  XCircleIcon,
-  ClockIcon,
-  CreditCardIcon
+    CheckCircleIcon,
+    XCircleIcon,
+    ClockIcon,
+    CreditCardIcon,
+    BeakerIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
-  purchase: Object,
+    purchase: Object,
 });
 
 const selectedStatus = ref('approved');
 const processing = ref(false);
 
 const simulatePayment = () => {
-  if (processing.value) return;
-  processing.value = true;
+    if (processing.value) return;
+    processing.value = true;
 
-  router.post(route('payment.simulate.process', props.purchase.id), {
-    status: selectedStatus.value
-  }, {
-    onFinish: () => {
-      processing.value = false;
-    }
-  });
+    router.post(route('payment.simulate.process', props.purchase.id), {
+        status: selectedStatus.value
+    }, {
+        onFinish: () => {
+            processing.value = false;
+        }
+    });
 };
 
-
 const formatPrice = (amount) => {
-  // 🔥 Validar que sea un número
-  const numericAmount = parseFloat(amount);
-  
-  if (isNaN(numericAmount)) {
-    console.error('❌ Precio inválido:', amount);
-    return '$0.00 ARS';
-  }
-  
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS'
-  }).format(numericAmount);
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount)) return '$0.00';
+    return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS'
+    }).format(numericAmount);
 };
 </script>
 
 <template>
-  <Head title="Simulación de Pago" />
+    <Head title="Simulación de Pasarela" />
 
-  <AppLayout>
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
-      <div class="max-w-2xl mx-auto px-4">
-      
-        <!-- Info de Simulación -->
-        <div class="mb-6 rounded-lg bg-yellow-50 border-2 border-yellow-200 p-4">
-          <div class="flex items-center gap-3">
-            <svg class="w-6 h-6 text-yellow-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 
-                3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42
-                c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0
-                11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1
-                1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-            <div>
-              <h3 class="font-bold text-yellow-900">🧪 Modo Simulación</h3>
-              <p class="text-sm text-yellow-800">
-                Esto es un entorno de prueba. Ningún pago real será procesado.
-              </p>
+    <AppLayout>
+        <div class="min-h-screen bg-gray-50 py-12 flex items-center justify-center">
+            <div class="max-w-xl w-full px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-900 rounded-sm mb-6 shadow-lg">
+                        <BeakerIcon class="w-8 h-8 text-white" />
+                    </div>
+                    <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                        Entorno de Desarrollo
+                    </span>
+                    <h1 class="text-3xl font-serif font-bold text-slate-900 mb-2">
+                        Simulador de Pagos
+                    </h1>
+                    <p class="text-sm text-slate-500 font-light max-w-sm mx-auto">
+                        Esta herramienta permite probar el flujo de compra sin realizar transacciones reales.
+                    </p>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-sm shadow-xl overflow-hidden">
+                    
+                    <div class="p-8 border-b border-gray-100 bg-gray-50/50">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-2">
+                            <CreditCardIcon class="w-4 h-4" /> Resumen de la Orden
+                        </h3>
+                        
+                        <div class="space-y-4 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500">ID de Referencia</span>
+                                <span class="font-mono text-slate-900">#{{ purchase.id }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500">Cliente</span>
+                                <span class="font-medium text-slate-900">{{ purchase.buyer_email }}</span>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-200 mt-4 space-y-2">
+                                <div v-for="item in purchase.items" :key="item.id" class="flex justify-between items-start text-xs">
+                                    <span class="text-slate-600">Foto #{{ item.photo.unique_id }}</span>
+                                    <span class="font-mono text-slate-900">{{ formatPrice(item.unit_price) }}</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-200 flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-900">Total a Pagar</span>
+                                <span class="text-xl font-serif font-bold text-slate-900">
+                                    {{ formatPrice(purchase.total_amount) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-8">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6">
+                            Seleccione Resultado Simulado
+                        </h3>
+
+                        <div class="space-y-3">
+                            <label class="group relative flex items-center p-4 border rounded-sm cursor-pointer transition-all duration-300"
+                                :class="selectedStatus === 'approved' ? 'border-emerald-500 bg-emerald-50/30' : 'border-gray-200 hover:border-slate-400'">
+                                <input type="radio" v-model="selectedStatus" value="approved" class="sr-only" />
+                                <div class="flex items-center gap-4 w-full">
+                                    <div :class="['w-10 h-10 rounded-full flex items-center justify-center border transition-colors', selectedStatus === 'approved' ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white border-gray-200 text-gray-300']">
+                                        <CheckCircleIcon class="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900 text-sm">Pago Aprobado</div>
+                                        <div class="text-xs text-slate-500 font-light">Simula una transacción exitosa inmediata.</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="group relative flex items-center p-4 border rounded-sm cursor-pointer transition-all duration-300"
+                                :class="selectedStatus === 'rejected' ? 'border-red-500 bg-red-50/30' : 'border-gray-200 hover:border-slate-400'">
+                                <input type="radio" v-model="selectedStatus" value="rejected" class="sr-only" />
+                                <div class="flex items-center gap-4 w-full">
+                                    <div :class="['w-10 h-10 rounded-full flex items-center justify-center border transition-colors', selectedStatus === 'rejected' ? 'bg-red-500 border-red-500 text-white' : 'bg-white border-gray-200 text-gray-300']">
+                                        <XCircleIcon class="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900 text-sm">Pago Rechazado</div>
+                                        <div class="text-xs text-slate-500 font-light">Simula un error de tarjeta o fondos insuficientes.</div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="group relative flex items-center p-4 border rounded-sm cursor-pointer transition-all duration-300"
+                                :class="selectedStatus === 'pending' ? 'border-amber-500 bg-amber-50/30' : 'border-gray-200 hover:border-slate-400'">
+                                <input type="radio" v-model="selectedStatus" value="pending" class="sr-only" />
+                                <div class="flex items-center gap-4 w-full">
+                                    <div :class="['w-10 h-10 rounded-full flex items-center justify-center border transition-colors', selectedStatus === 'pending' ? 'bg-amber-500 border-amber-500 text-white' : 'bg-white border-gray-200 text-gray-300']">
+                                        <ClockIcon class="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900 text-sm">Pago Pendiente</div>
+                                        <div class="text-xs text-slate-500 font-light">Simula una revisión de seguridad o pago en efectivo.</div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="mt-8">
+                            <button 
+                                @click="simulatePayment"
+                                :disabled="processing"
+                                class="w-full bg-slate-900 text-white py-4 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                <svg v-if="processing" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span v-if="processing">Procesando...</span>
+                                <span v-else>Ejecutar Simulación</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-          </div>
         </div>
-
-        <!-- Tarjeta con Detalles -->
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          
-          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6 text-white">
-            <div class="flex items-center justify-center mb-4">
-              <CreditCardIcon class="w-12 h-12" />
-            </div>
-            <h1 class="text-3xl font-bold text-center">Simulador de Pago</h1>
-            <p class="text-indigo-100 text-center mt-2">Mercado Pago — Modo Desarrollo</p>
-          </div>
-
-          <!-- Detalles de Compra -->
-          <div class="px-8 py-6 border-b">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Detalles de la compra</h2>
-            <div class="space-y-3">
-              <div class="flex justify-between">
-                <span class="text-gray-600">ID de compra:</span>
-                <span class="font-mono text-sm font-semibold">
-                  #{{ purchase.id }}
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Email:</span>
-                <span class="font-medium">{{ purchase.buyer_email }}</span>
-              </div>
-              <div v-if="purchase.items && purchase.items.length > 0">
-                <div v-for="item in purchase.items" :key="item.id" class="flex justify-between items-start">
-                  <div>
-                    <p class="font-medium text-gray-900">Foto #{{ item.photo.unique_id }}</p>
-                    <p v-if="item.photo.event" class="text-sm text-gray-500">{{ item.photo.event.name }}</p>
-                  </div>
-                  <span class="font-semibold">{{ formatPrice(item.unit_price) }}</span>
-                </div>
-              </div>
-              <div class="flex justify-between items-center pt-3 border-t-2 border-gray-200">
-                <span class="text-lg font-bold text-gray-900">Total:</span>
-                <span class="text-2xl font-bold text-indigo-600">
-                  {{ formatPrice(purchase.total_amount) }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Selección de Estado -->
-          <div class="px-8 py-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Selecciona el resultado del pago</h2>
-            <div class="space-y-3">
-              
-              <label class="relative flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-green-50"
-                     :class="selectedStatus === 'approved' ? 'border-green-500 bg-green-50' : 'border-gray-200'">
-                <input type="radio" v-model="selectedStatus" value="approved" class="sr-only" />
-                <CheckCircleIcon class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" />
-                <div class="flex-1">
-                  <div class="font-semibold text-gray-900">✅ Pago Aprobado</div>
-                  <div class="text-sm text-gray-600">El pago fue procesado exitosamente</div>
-                </div>
-                <div v-if="selectedStatus === 'approved'" class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0
-                      01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1
-                      0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              </label>
-
-              <label class="relative flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-red-50"
-                     :class="selectedStatus === 'rejected' ? 'border-red-500 bg-red-50' : 'border-gray-200'">
-                <input type="radio" v-model="selectedStatus" value="rejected" class="sr-only" />
-                <XCircleIcon class="w-6 h-6 text-red-600 mr-3 flex-shrink-0" />
-                <div class="flex-1">
-                  <div class="font-semibold text-gray-900">❌ Pago Rechazado</div>
-                  <div class="text-sm text-gray-600">El pago fue rechazado por el procesador</div>
-                </div>
-                <div v-if="selectedStatus === 'rejected'" class="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0
-                      01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1
-                      0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              </label>
-
-              <label class="relative flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-yellow-50"
-                     :class="selectedStatus === 'pending' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'">
-                <input type="radio" v-model="selectedStatus" value="pending" class="sr-only" />
-                <ClockIcon class="w-6 h-6 text-yellow-600 mr-3 flex-shrink-0" />
-                <div class="flex-1">
-                  <div class="font-semibold text-gray-900">⏳ Pago Pendiente</div>
-                  <div class="text-sm text-gray-600">El pago está en proceso de validación</div>
-                </div>
-                <div v-if="selectedStatus === 'pending'" class="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0
-                      01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1
-                      0 011.414 0z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              </label>
-
-            </div>
-          </div>
-
-          <!-- Botón de acción -->
-          <div class="px-8 py-6 bg-gray-50">
-            <button 
-              @click="simulatePayment"
-              :disabled="processing"
-              :class="[
-                'w-full rounded-lg px-6 py-4 font-bold text-white transition-all text-lg',
-                processing 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-indigo-600 hover:bg-indigo-700 shadow-lg hover:shadow-xl transform hover:scale-105'
-              ]"
-            >
-              <span v-if="processing" class="flex items-center justify-center gap-2">
-                <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373
-                    0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3
-                    7.938l3-2.647z">
-                  </path>
-                </svg>
-                Procesando...
-              </span>
-              <span v-else>🚀 Simular Pago</span>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </AppLayout>
+    </AppLayout>
 </template>

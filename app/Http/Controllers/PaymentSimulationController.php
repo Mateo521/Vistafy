@@ -25,7 +25,7 @@ class PaymentSimulationController extends Controller
         abort(404);
     }
 
-    // 🔥 Asegúrate de cargar las relaciones Y castear correctamente
+    //  Asegúrate de cargar las relaciones Y castear correctamente
     $purchase->load('items.photo.event');
 
     return Inertia::render('Payment/Simulate', [
@@ -33,14 +33,14 @@ class PaymentSimulationController extends Controller
             'id' => $purchase->id,
             'buyer_email' => $purchase->buyer_email,
             'buyer_name' => $purchase->buyer_name,
-            'total_amount' => (float) $purchase->total_amount, // 🔥 Castear a float
+            'total_amount' => (float) $purchase->total_amount, //  Castear a float
             'currency' => $purchase->currency,
             'status' => $purchase->status,
             'created_at' => $purchase->created_at,
             'items' => $purchase->items->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'unit_price' => (float) $item->unit_price, // 🔥 Castear a float
+                    'unit_price' => (float) $item->unit_price, //  Castear a float
                     'photo' => [
                         'id' => $item->photo->id,
                         'unique_id' => $item->photo->unique_id,

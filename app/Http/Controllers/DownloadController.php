@@ -14,54 +14,57 @@ class DownloadController extends Controller
      */
     public function download(string $token)
     {
-        Log::info('📥 Descarga solicitada', ['token' => substr($token, 0, 20) . '...']);
+        Log::info(' Descarga solicitada', ['token' => substr($token, 0, 10) . '...']);
 
-        // 🔥 Buscar por order_token (no download_token)
+        // 1. Buscar la compra
         $purchase = Purchase::where('order_token', $token)
             ->with('items.photo')
             ->first();
 
         if (!$purchase) {
-            Log::warning('⚠️ Token inválido');
-            abort(404, 'Token de descarga inválido o expirado');
+            abort(404, 'Enlace expirado o inválido.');
         }
 
-        // Verificar estado (completed o approved según tu lógica)
-        if (!in_array($purchase->status, ['completed', 'approved'])) {
-            Log::warning('⚠️ Pago no completado', [
-                'purchase_id' => $purchase->id,
-                'status' => $purchase->status,
-            ]);
-
-            return Inertia::render('Download/Pending', [
-                'purchase' => $purchase,
-            ]);
+        // 2. Verificar estado del pago
+        if ($purchase->status !== 'approved') {
+            // Si intentan descargar algo no pagado, redirigir al checkout o estado
+            return to_route('payment.pending', ['purchase_id' => $purchase->id]);
         }
 
-        // 🔥 Obtener la primera foto (o iterar si hay múltiples)
+        // 3. Obtener la foto
         $item = $purchase->items->first();
-        
+
         if (!$item || !$item->photo) {
-            Log::error('❌ No hay fotos en esta compra');
-            abort(404, 'No se encontraron fotos en esta compra');
+            abort(404, 'Foto no encontrada en la orden.');
         }
 
         $photo = $item->photo;
 
-        if (!Storage::disk('public')->exists($photo->path)) {
-            Log::error('❌ Archivo no encontrado', ['path' => $photo->path]);
-            abort(404, 'Archivo no encontrado');
+        // CORRECCIÓN 1: Usar la columna correcta 'original_path'
+        $path = $photo->original_path;
+
+        // CORRECCIÓN 2: Manejar imágenes de prueba (Picsum/Externas)
+        if (str_starts_with($path, 'http')) {
+            Log::info(' Redirigiendo a imagen externa', ['url' => $path]);
+            return redirect()->away($path);
         }
 
-        Log::info('✅ Descarga iniciada', [
-            'purchase_id' => $purchase->id,
-            'photo_id' => $photo->id,
-        ]);
+        // CORRECCIÓN 3: Manejar imágenes locales reales
+        // Asumiendo que usaste 'public' disk al subir
+        if (Storage::disk('public')->exists($path)) {
+            Log::info(' Iniciando descarga local', ['path' => $path]);
 
-        $filePath = Storage::disk('public')->path($photo->path);
-        $fileName = 'vistafy-foto-' . $photo->unique_id . '.' . pathinfo($photo->path, PATHINFO_EXTENSION);
+            // Incrementar contador si quieres
+            // $purchase->increment('download_count');
 
-        return response()->download($filePath, $fileName);
+            return Storage::disk('public')->download(
+                $path,
+                "vistafy_{$photo->unique_id}.jpg"
+            );
+        }
+
+        Log::error(' Archivo físico no encontrado en disco', ['path' => $path]);
+        abort(404, 'El archivo no existe en el servidor.');
     }
 
     /**
@@ -69,7 +72,7 @@ class DownloadController extends Controller
      */
     public function show(string $token)
     {
-        Log::info('🖼️ Página de descarga solicitada', ['token' => substr($token, 0, 20) . '...']);
+        Log::info(' Página de descarga solicitada', ['token' => substr($token, 0, 20) . '...']);
 
         $purchase = Purchase::where('order_token', $token)
             ->with('items.photo.event')

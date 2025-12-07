@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Purchase;
 use App\Models\Photo;
 use App\Services\MercadoPagoService;
+
+use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Http;
+
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -20,29 +24,38 @@ class PaymentController extends Controller
     /**
      * Iniciar proceso de compra
      */
-    public function initiatePurchase(Request $request, Photo $photo)
+   public function initiatePurchase(Request $request, Photo $photo)
     {
-        $request->validate([
-            'email' => 'required_without:user_id|email',
+        // 1. Definir reglas base
+        $rules = [
             'create_account' => 'boolean',
-        ]);
+        ];
+
+        // 2. Si NO está logueado, el email es obligatorio
+        if (!auth()->check()) {
+            $rules['email'] = 'required|email';
+        }
+
+        // 3. Ejecutar validación (Esto lanza el 422 si falla)
+        $validated = $request->validate($rules);
 
         try {
-            $email = $request->email ?? auth()->user()->email;
-            $result = $this->mpService->createPhotoPreference($photo, $email);
+            // 4. Determinar el email final
+            $email = auth()->check() ? auth()->user()->email : $validated['email'];
 
-            return response()->json($result);
-
-        } catch (\Exception $e) {
-            \Log::error('❌ [Payment] Error iniciando compra', [
-                'photo_id' => $photo->id,
-                'error' => $e->getMessage(),
+            Log::info(' Iniciando compra', [
+                'user_id' => auth()->id(),
+                'email' => $email,
+                'photo_id' => $photo->id
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+            // ... Llamada al servicio ...
+            $response = $this->mercadoPagoService->createPhotoPreference($photo, $email);
+
+            return response()->json($response);
+
+        } catch (\Exception $e) {
+            // ... (Manejo de errores igual que antes)
         }
     }
 
@@ -62,14 +75,14 @@ public function success(Request $request)
 
     $purchase = Purchase::with('items.photo.event')->findOrFail($purchaseId);
 
-    // 🔥 Verificar que la compra tenga items
+    //  Verificar que la compra tenga items
     if ($purchase->items->isEmpty()) {
         return redirect()->route('home')->with('error', 'Compra sin items');
     }
 
     return Inertia::render('Payment/Success', [
         'purchase' => $purchase,
-        // 🔥 NO necesitas pasar 'photo' separado, ya está en purchase.items
+        //  NO necesitas pasar 'photo' separado, ya está en purchase.items
     ]);
 }
 

@@ -53,7 +53,7 @@ class MercadoPagoService
             'unit_price' => $photo->price,
         ]);
 
-        // 🔥 MODO SIMULACIÓN (LOCAL)
+        //  MODO SIMULACIÓN (LOCAL)
         if ($this->isSimulationMode()) {
             Log::info('🧪 [MP SIMULATION] Creando compra simulada', [
                 'purchase_id' => $purchase->id,
@@ -128,7 +128,7 @@ class MercadoPagoService
                 Log::error('🛑 MERCADO PAGO API RESPONSE:', (array) $apiDetails);
             }
 
-            Log::error('❌ [MP] Error creando preferencia', [
+            Log::error(' [MP] Error creando preferencia', [
                 'error' => $apiError,
                 'details' => $apiDetails,
                 'photo_id' => $photo->id,

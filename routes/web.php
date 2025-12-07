@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentSimulationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Auth\PhotographerRegistrationController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
@@ -60,7 +61,7 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
         ->name('initiate');
 
-    // 🔥 SIMULADOR (solo en local)
+    //  SIMULADOR (solo en local)
     if (app()->environment('local') && config('services.mercadopago.simulation_mode')) {
         Route::get('/simular/{purchase}', [PaymentSimulationController::class, 'show'])
             ->name('simulate');
@@ -117,6 +118,24 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+
+
+
+
+
+
+Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/agregar/{photo}', [CartController::class, 'add'])->name('add');
+    Route::delete('/eliminar/{photoId}', [CartController::class, 'remove'])->name('remove');
+    Route::delete('/vaciar', [CartController::class, 'clear'])->name('clear');
+    Route::get('/count', [CartController::class, 'count'])->name('count');
+});
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -262,7 +281,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::prefix('fotografos')->name('photographers.')->group(function () {
         Route::get('/', [PhotographerManagementController::class, 'index'])->name('index');
 
-        // ✅ Usar solo {photographer} - el modelo decidirá usar ID en admin
+        //  Usar solo {photographer} - el modelo decidirá usar ID en admin
         Route::get('/{photographer}', [PhotographerManagementController::class, 'show'])->name('show');
         Route::post('/{photographer}/aprobar', [PhotographerManagementController::class, 'approve'])->name('approve');
         Route::post('/{photographer}/rechazar', [PhotographerManagementController::class, 'reject'])->name('reject');
