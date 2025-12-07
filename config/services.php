@@ -47,6 +47,9 @@ return [
 
         // Webhook
         'notification_url' => env('APP_URL') . '/webhooks/mercadopago',
+
+        'simulation_mode' => env('MERCADOPAGO_SIMULATION_MODE', false),
+
     ],
 
 

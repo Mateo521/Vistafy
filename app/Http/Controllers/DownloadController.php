@@ -14,22 +14,21 @@ class DownloadController extends Controller
      */
     public function download(string $token)
     {
-        Log::info('📥 Descarga directa solicitada', [
-            'token' => substr($token, 0, 20) . '...',
-        ]);
+        Log::info('📥 Descarga solicitada', ['token' => substr($token, 0, 20) . '...']);
 
-        $purchase = Purchase::where('download_token', $token)
-            ->with('photo')
+        // 🔥 Buscar por order_token (no download_token)
+        $purchase = Purchase::where('order_token', $token)
+            ->with('items.photo')
             ->first();
 
         if (!$purchase) {
-            Log::warning(' Token inválido');
-            abort(404, 'Token de descarga inválido');
+            Log::warning('⚠️ Token inválido');
+            abort(404, 'Token de descarga inválido o expirado');
         }
 
-        //  CAMBIO: Verificar 'approved' en lugar de 'completed'
-        if ($purchase->status !== 'approved') {
-            Log::warning(' Pago no aprobado', [
+        // Verificar estado (completed o approved según tu lógica)
+        if (!in_array($purchase->status, ['completed', 'approved'])) {
+            Log::warning('⚠️ Pago no completado', [
                 'purchase_id' => $purchase->id,
                 'status' => $purchase->status,
             ]);
@@ -39,56 +38,48 @@ class DownloadController extends Controller
             ]);
         }
 
-        $photo = $purchase->photo;
+        // 🔥 Obtener la primera foto (o iterar si hay múltiples)
+        $item = $purchase->items->first();
+        
+        if (!$item || !$item->photo) {
+            Log::error('❌ No hay fotos en esta compra');
+            abort(404, 'No se encontraron fotos en esta compra');
+        }
 
-        if (!$photo || !Storage::disk('public')->exists($photo->path)) {
-            Log::error(' Archivo no encontrado', [
-                'photo_path' => $photo ? $photo->path : 'N/A',
-            ]);
+        $photo = $item->photo;
+
+        if (!Storage::disk('public')->exists($photo->path)) {
+            Log::error('❌ Archivo no encontrado', ['path' => $photo->path]);
             abort(404, 'Archivo no encontrado');
         }
 
-        // Incrementar contador
-        $purchase->increment('download_count');
-
-        Log::info(' Descarga iniciada', [
+        Log::info('✅ Descarga iniciada', [
             'purchase_id' => $purchase->id,
             'photo_id' => $photo->id,
-            'download_count' => $purchase->download_count,
         ]);
 
         $filePath = Storage::disk('public')->path($photo->path);
-        $fileName = 'foto-' . $photo->id . '.' . pathinfo($photo->path, PATHINFO_EXTENSION);
+        $fileName = 'vistafy-foto-' . $photo->unique_id . '.' . pathinfo($photo->path, PATHINFO_EXTENSION);
 
         return response()->download($filePath, $fileName);
     }
 
     /**
-     * Página de descarga con Inertia
+     * Página de descarga con interfaz
      */
     public function show(string $token)
     {
-        Log::info(' Página de descarga solicitada', [
-            'token' => substr($token, 0, 20) . '...',
-        ]);
+        Log::info('🖼️ Página de descarga solicitada', ['token' => substr($token, 0, 20) . '...']);
 
-        $purchase = Purchase::where('download_token', $token)
-            ->with('photo')
+        $purchase = Purchase::where('order_token', $token)
+            ->with('items.photo.event')
             ->first();
 
         if (!$purchase) {
-            Log::warning(' Token inválido');
             abort(404, 'Token de descarga inválido');
         }
 
-        Log::info(' Compra encontrada', [
-            'purchase_id' => $purchase->id,
-            'status' => $purchase->status,
-            'has_photo' => $purchase->photo ? 'SÍ' : 'NO',
-        ]);
-
-        //  CAMBIO: Verificar 'approved' en lugar de 'completed'
-        if ($purchase->status !== 'approved') {
+        if (!in_array($purchase->status, ['completed', 'approved'])) {
             return Inertia::render('Download/Pending', [
                 'purchase' => $purchase,
             ]);
@@ -96,7 +87,6 @@ class DownloadController extends Controller
 
         return Inertia::render('Download/Show', [
             'purchase' => $purchase,
-            'photo' => $purchase->photo,
         ]);
     }
 }

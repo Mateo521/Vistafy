@@ -7,7 +7,7 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\Admin\PhotographerManagementController;
-
+use App\Http\Controllers\PaymentSimulationController; 
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Auth\PhotographerRegistrationController;
 use App\Http\Controllers\WebhookController;
@@ -60,7 +60,17 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
         ->name('initiate');
 
+    // 🔥 SIMULADOR (solo en local)
+    if (app()->environment('local') && config('services.mercadopago.simulation_mode')) {
+        Route::get('/simular/{purchase}', [PaymentSimulationController::class, 'show'])
+            ->name('simulate');
+        
+        Route::post('/simular/{purchase}', [PaymentSimulationController::class, 'process'])
+            ->name('simulate.process');
+    }
+
     // Callbacks de Mercado Pago (español)
+    // ⚠️ IMPORTANTE: Ahora reciben 'purchase_id' como parámetro de query
     Route::get('/exito', [PaymentController::class, 'success'])->name('success');
     Route::get('/fallo', [PaymentController::class, 'failure'])->name('failure');
     Route::get('/pendiente', [PaymentController::class, 'pending'])->name('pending');
@@ -69,6 +79,7 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });
 
+
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
 Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
@@ -76,13 +87,12 @@ Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('pay
 Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'checkStatus'])
     ->name('purchases.check-status');
 
-// Descarga directa
-Route::get('/pago/descargar/{token}', [DownloadController::class, 'download'])
-    ->name('download.file');
+
+
 
 // Página de descarga (opcional, con botón)
-Route::get('/downloads/{token}', [DownloadController::class, 'show'])
-    ->name('download.show');
+    Route::get('/descargar/{token}', [DownloadController::class, 'download'])
+        ->name('download');  // ← Nombre: payment.download
 
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 

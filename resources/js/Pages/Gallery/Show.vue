@@ -65,15 +65,31 @@ const submitPurchase = async () => {
             alert('Error al iniciar el pago. Por favor intenta nuevamente.');
         }
     } catch (error) {
-        console.error('Error al iniciar compra:', error);
-        if (error.response?.data?.message) {
-            emailError.value = error.response.data.message;
-        } else {
-            alert('Error al procesar la compra. Por favor intenta nuevamente.');
+    console.error('❌ Error completo:', error);
+
+    // 1. Si el servidor respondió (Error 400, 500, etc.)
+    if (error.response) {
+        console.log('Datos del error:', error.response.data);
+        
+        // Mostrar el mensaje real que viene del Backend
+        alert(`Error del Servidor (${error.response.status}): ${error.response.data.message || error.response.statusText}`);
+        
+        // Si hay validaciones de campos específicas
+        if (error.response.data.errors) {
+            console.log('Errores de validación:', error.response.data.errors);
         }
-    } finally {
-        loading.value = false;
+    } 
+    // 2. Si no hubo respuesta (Error de red)
+    else if (error.request) {
+        alert('Error de conexión: No se recibió respuesta del servidor.');
+    } 
+    // 3. Error en la configuración de la petición
+    else {
+        alert('Error: ' + error.message);
     }
+} finally {
+    loading.value = false;
+}
 };
 
 const handleImageError = (e) => {
