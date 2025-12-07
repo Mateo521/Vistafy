@@ -2,49 +2,83 @@
 
 namespace App\Services;
 
-use App\Models\Photo;
-use App\Models\Purchase;
+use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Client\Payment\PaymentClient;
+use MercadoPago\MercadoPagoConfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use MercadoPago\Client\Preference\PreferenceClient;
-use MercadoPago\MercadoPagoConfig;
 
 class MercadoPagoService
 {
     protected $preferenceClient;
+    protected $paymentClient;
 
     public function __construct()
     {
-        // Solo configurar MP si NO estamos en modo simulación
-        if (!$this->isSimulationMode()) {
-            MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
-            $this->preferenceClient = new PreferenceClient();
+        $accessToken = config('services.mercadopago.access_token');
+
+        if (!$accessToken) {
+            throw new \Exception('Mercado Pago access token no configurado');
+        }
+
+        MercadoPagoConfig::setAccessToken($accessToken);
+        MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL);
+
+        $this->preferenceClient = new PreferenceClient();
+        $this->paymentClient = new PaymentClient(); //  Inicializar PaymentClient
+    }
+
+    /**
+     * 🔍 Obtener información de un pago
+     */
+    public function getPayment($paymentId)
+    {
+        try {
+            $payment = $this->paymentClient->get($paymentId);
+
+            Log::info(' Payment obtenido', [
+                'payment_id' => $paymentId,
+                'status' => $payment->status,
+                'external_reference' => $payment->external_reference,
+            ]);
+
+            return $payment;
+
+        } catch (\Exception $e) {
+            Log::error('❌ Error obteniendo payment', [
+                'payment_id' => $paymentId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
         }
     }
 
     /**
-     * Detectar si estamos en modo simulación (local sin túnel)
+     * 🧪 Verificar si está en modo simulación
      */
     protected function isSimulationMode(): bool
     {
-        return config('app.env') === 'local' && config('services.mercadopago.simulation_mode', false);
+        return config('app.env') === 'local' && 
+               config('services.mercadopago.simulation_mode', false);
     }
 
     /**
-     * Crear preferencia de pago para una foto
+     * 📸 Crear preferencia para foto individual
      */
-    public function createPhotoPreference(Photo $photo, string $email): array
+    public function createPhotoPreference($photo, string $email): array
     {
         $buyerName = auth()->check() ? auth()->user()->name : 'Invitado';
 
         // 1. Crear compra en BD
-        $purchase = Purchase::create([
+        $purchase = \App\Models\Purchase::create([
             'user_id' => auth()->id(),
             'buyer_email' => $email,
             'buyer_name' => $buyerName,
             'total_amount' => $photo->price,
             'currency' => 'ARS',
             'status' => 'pending',
+            'order_token' => Str::random(64),
         ]);
 
         // 2. Crear item
@@ -53,7 +87,7 @@ class MercadoPagoService
             'unit_price' => $photo->price,
         ]);
 
-        //  MODO SIMULACIÓN (LOCAL)
+        // 🧪 MODO SIMULACIÓN (LOCAL)
         if ($this->isSimulationMode()) {
             Log::info('🧪 [MP SIMULATION] Creando compra simulada', [
                 'purchase_id' => $purchase->id,
@@ -128,7 +162,7 @@ class MercadoPagoService
                 Log::error('🛑 MERCADO PAGO API RESPONSE:', (array) $apiDetails);
             }
 
-            Log::error(' [MP] Error creando preferencia', [
+            Log::error('❌ [MP] Error creando preferencia', [
                 'error' => $apiError,
                 'details' => $apiDetails,
                 'photo_id' => $photo->id,
@@ -141,40 +175,100 @@ class MercadoPagoService
     }
 
     /**
-     * Procesar pago simulado (solo en desarrollo)
+     * 🛒 Crear preferencia para múltiples fotos (carrito)
      */
-    public function processSimulatedPayment(Purchase $purchase, string $status = 'approved'): array
+    public function createCartPreference($photos, string $email, $purchase): array
     {
-        if (!$this->isSimulationMode()) {
-            throw new \Exception('La simulación solo está disponible en desarrollo local');
+        $buyerName = auth()->check() ? auth()->user()->name : 'Invitado';
+
+        // 🧪 MODO SIMULACIÓN (LOCAL)
+        if ($this->isSimulationMode()) {
+            Log::info('🧪 [MP SIMULATION] Creando compra de carrito simulada', [
+                'purchase_id' => $purchase->id,
+                'photo_count' => $photos->count(),
+                'email' => $email,
+                'amount' => $purchase->total_amount,
+            ]);
+
+            return [
+                'success' => true,
+                'purchase_id' => $purchase->id,
+                'simulation_mode' => true,
+                'sandbox_init_point' => route('payment.simulate', ['purchase' => $purchase->id]),
+            ];
         }
 
-        $statusMap = [
-            'approved' => 'completed',
-            'rejected' => 'failed',
-            'pending' => 'pending',
+        // 🌐 MODO REAL (PRODUCCIÓN / STAGING)
+        $appUrl = config('app.url');
+        $isLocal = app()->environment(['local', 'development']);
+
+        // Construir items del carrito
+        $items = [];
+        foreach ($photos as $photo) {
+            $pictureUrl = $photo->thumbnail_url;
+            if ($isLocal && (Str::contains($pictureUrl, 'localhost') || Str::contains($pictureUrl, '127.0.0.1'))) {
+                $pictureUrl = null;
+            }
+
+            $items[] = [
+                'id' => (string) $photo->id,
+                'title' => "Foto Digital #{$photo->unique_id}",
+                'description' => $photo->event ? "Evento: {$photo->event->name}" : "Fotografía Profesional",
+                'picture_url' => $pictureUrl,
+                'category_id' => 'digital_goods',
+                'quantity' => 1,
+                'currency_id' => 'ARS',
+                'unit_price' => (float) $photo->price,
+            ];
+        }
+
+        $preferenceData = [
+            'items' => $items,
+
+            'back_urls' => [
+                'success' => route('payment.success', ['purchase_id' => $purchase->id]),
+                'failure' => route('payment.failure', ['purchase_id' => $purchase->id]),
+                'pending' => route('payment.pending', ['purchase_id' => $purchase->id]),
+            ],
+
+            'auto_return' => 'approved',
+            'binary_mode' => true,
+            'external_reference' => (string) $purchase->id,
+            'notification_url' => $isLocal ? null : config('services.mercadopago.notification_url'),
+            'statement_descriptor' => 'VISTAFY FOTOS',
         ];
 
-        $newStatus = $statusMap[$status] ?? 'failed';
+        try {
+            $preference = $this->preferenceClient->create($preferenceData);
+            $purchase->update(['mp_preference_id' => $preference->id]);
 
-        $purchase->update([
-            'status' => $newStatus,
-            'mp_payment_id' => 'SIM-' . Str::random(10),
-            'payment_type' => 'simulated',
-            'payment_status' => $status,
-            'paid_at' => $status === 'approved' ? now() : null,
-        ]);
+            $isSandbox = config('services.mercadopago.test_mode');
 
-        Log::info('🧪 [MP SIMULATION] Pago procesado', [
-            'purchase_id' => $purchase->id,
-            'status' => $status,
-            'new_status' => $newStatus,
-        ]);
+            return [
+                'success' => true,
+                'purchase_id' => $purchase->id,
+                'simulation_mode' => false,
+                'sandbox_init_point' => $isSandbox ? $preference->sandbox_init_point : $preference->init_point,
+            ];
 
-        return [
-            'success' => true,
-            'status' => $status,
-            'purchase' => $purchase,
-        ];
+        } catch (\Exception $e) {
+            $apiError = $e->getMessage();
+            $apiDetails = [];
+
+            if (method_exists($e, 'getApiResponse') && $e->getApiResponse()) {
+                $apiDetails = $e->getApiResponse()->getContent();
+                Log::error('🛑 MERCADO PAGO API RESPONSE:', (array) $apiDetails);
+            }
+
+            Log::error('❌ [MP] Error creando preferencia de carrito', [
+                'error' => $apiError,
+                'details' => $apiDetails,
+                'photo_count' => $photos->count(),
+                'email' => $email,
+            ]);
+
+            $purchase->update(['status' => 'failed']);
+            throw new \Exception("Error al procesar la compra del carrito: " . $apiError);
+        }
     }
 }

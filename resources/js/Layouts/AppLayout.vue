@@ -1,7 +1,7 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { ShoppingCartIcon } from '@heroicons/vue/24/outline';
+import { ShoppingCartIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 
 const page = usePage();
@@ -9,6 +9,7 @@ const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
 const scrolled = ref(false);
 const cartCount = ref(0);
+const userMenuOpen = ref(false); // ✅ NUEVO: Estado del menú de usuario
 
 // Detectar ruta para aplicar estilos específicos
 const isHomePage = computed(() => page.url === '/');
@@ -50,24 +51,40 @@ onUnmounted(() => {
 // Lógica de redirección y texto según rol
 const dashboardInfo = computed(() => {
     if (!user.value) return null;
-    
+
     if (user.value.is_admin) {
-        return { route: route('admin.dashboard'), text: 'ADMINISTRACIÓN' };
+        return { 
+            route: route('admin.dashboard'), 
+            text: 'ADMINISTRACIÓN',
+            single: true // Solo un link
+        };
     }
     if (user.value.role === 'photographer') {
-        return { route: route('photographer.dashboard'), text: 'PANEL PROFESIONAL' };
+        return { 
+            route: route('photographer.dashboard'), 
+            text: 'PANEL PROFESIONAL',
+            single: true
+        };
     }
-    return { route: route('profile.edit'), text: 'MI CUENTA' };  
+    
+    // ✅ Usuario regular: menú desplegable
+    return {
+        single: false,
+        items: [
+            { route: route('purchases.index'), text: 'MIS COMPRAS', icon: 'shopping-bag' },
+            { route: route('profile.edit'), text: 'MI CUENTA', icon: 'user' },
+        ]
+    };
 });
 </script>
 
 <template>
     <div class="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
-        
+
         <nav :class="[
             'fixed top-0 w-full z-50 transition-all duration-500 ease-in-out border-b',
-            isHomePage && !scrolled 
-                ? 'bg-transparent border-transparent py-6' 
+            isHomePage && !scrolled
+                ? 'bg-transparent border-transparent py-6'
                 : 'bg-white/95 backdrop-blur-md border-gray-100 py-4 shadow-sm'
         ]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,20 +92,20 @@ const dashboardInfo = computed(() => {
 
                     <!-- Logo -->
                     <Link href="/" class="group z-50 relative">
-                        <div class="flex flex-col">
-                            <span :class="[
-                                'text-2xl font-serif font-bold tracking-tight transition-colors duration-300',
-                                isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
-                            ]">
-                                EMPRESA
-                            </span>
-                            <span :class="[
-                                'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
-                                isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
-                            ]">
-                                Photography
-                            </span>
-                        </div>
+                    <div class="flex flex-col">
+                        <span :class="[
+                            'text-2xl font-serif font-bold tracking-tight transition-colors duration-300',
+                            isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
+                        ]">
+                            EMPRESA
+                        </span>
+                        <span :class="[
+                            'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
+                            isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
+                        ]">
+                            Photography
+                        </span>
+                    </div>
                     </Link>
 
                     <!-- Desktop Menu -->
@@ -99,16 +116,13 @@ const dashboardInfo = computed(() => {
                                 { label: 'Eventos', route: route('events.index'), active: $page.url.startsWith('/eventos') },
                                 { label: 'Galería', route: route('gallery.index'), active: $page.url.startsWith('/galeria') },
                                 { label: 'Fotógrafos', route: route('photographers.index'), active: $page.url.startsWith('/fotografos') }
-                            ]" 
-                            :key="item.label"
-                            :href="item.route" 
-                            :class="[
+                            ]" :key="item.label" :href="item.route" :class="[
                                 'text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
-                                isHomePage && !scrolled 
+                                isHomePage && !scrolled
                                     ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
                                     : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
                             ]">
-                                {{ item.label }}
+                            {{ item.label }}
                             </Link>
                         </div>
 
@@ -116,18 +130,17 @@ const dashboardInfo = computed(() => {
 
                         <div class="flex items-center space-x-6">
                             <!-- 🛒 Carrito (solo para usuarios autenticados) -->
-                            <Link v-if="user" :href="route('cart.index')" 
-                                class="relative group">
+                            <Link v-if="user" :href="route('cart.index')" class="relative group">
                                 <ShoppingCartIcon :class="[
                                     'w-5 h-5 transition-colors duration-300',
                                     isHomePage && !scrolled ? 'text-white group-hover:text-white/80' : 'text-slate-900 group-hover:text-slate-600'
                                 ]" />
-                                
+
                                 <!-- Contador -->
                                 <span v-if="cartCount > 0" :class="[
                                     'absolute -top-2 -right-2 min-w-[1.25rem] h-5 flex items-center justify-center px-1 rounded-full text-[10px] font-bold transition-colors duration-300',
-                                    isHomePage && !scrolled 
-                                        ? 'bg-white text-slate-900' 
+                                    isHomePage && !scrolled
+                                        ? 'bg-white text-slate-900'
                                         : 'bg-slate-900 text-white'
                                 ]">
                                     {{ cartCount > 99 ? '99+' : cartCount }}
@@ -136,35 +149,97 @@ const dashboardInfo = computed(() => {
 
                             <!-- Guest: Login/Register -->
                             <template v-if="!user">
+                                <Link :href="route('photographer.register')" :class="[
+                                    'text-xs font-bold uppercase tracking-widest transition-colors',
+                                    isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
+                                ]">
+                                    Soy fotógrafo
+                                </Link>
+
                                 <Link :href="route('login')" :class="[
                                     'text-xs font-bold uppercase tracking-widest transition-colors',
                                     isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
                                 ]">
                                     Ingresar
                                 </Link>
+
                                 <Link :href="route('register')" :class="[
                                     'px-6 py-2 text-xs font-bold uppercase tracking-widest border transition-all duration-300',
-                                    isHomePage && !scrolled 
-                                        ? 'border-white text-white hover:bg-white hover:text-slate-900' 
+                                    isHomePage && !scrolled
+                                        ? 'border-white text-white hover:bg-white hover:text-slate-900'
                                         : 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
                                 ]">
                                     Registrarse
                                 </Link>
                             </template>
 
-                            <!-- Authenticated: Dashboard/Logout -->
+                            <!-- Authenticated: Dashboard/User Menu -->
                             <template v-else>
                                 <div class="flex items-center space-x-4">
-                                    <Link v-if="dashboardInfo" :href="dashboardInfo.route" :class="[
+                                    <!-- ✅ Admin/Photographer: Link directo -->
+                                    <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" :class="[
                                         'text-xs font-bold uppercase tracking-widest transition-colors',
                                         isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
                                     ]">
                                         {{ dashboardInfo.text }}
                                     </Link>
-                                    <Link :href="route('logout')" method="post" as="button" :class="[
-                                        'text-xs font-bold uppercase tracking-widest transition-colors',
-                                        isHomePage && !scrolled ? 'text-red-300 hover:text-red-100' : 'text-red-600 hover:text-red-800'
-                                    ]">
+
+                                    <!-- ✅ Usuario Regular: Dropdown -->
+                                    <div v-else class="relative">
+                                        <button @click="userMenuOpen = !userMenuOpen" :class="[
+                                            'flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors',
+                                            isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
+                                        ]">
+                                            {{ user.name }}
+                                            <ChevronDownIcon :class="[
+                                                'w-3 h-3 transition-transform duration-200',
+                                                userMenuOpen ? 'rotate-180' : ''
+                                            ]" />
+                                        </button>
+
+                                        <!-- Dropdown Menu -->
+                                        <transition
+                                            enter-active-class="transition duration-200 ease-out"
+                                            enter-from-class="opacity-0 scale-95"
+                                            enter-to-class="opacity-100 scale-100"
+                                            leave-active-class="transition duration-150 ease-in"
+                                            leave-from-class="opacity-100 scale-100"
+                                            leave-to-class="opacity-0 scale-95">
+                                            <div v-show="userMenuOpen" 
+                                                @click.away="userMenuOpen = false"
+                                                class="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-sm shadow-xl overflow-hidden">
+                                                
+                                                <!-- Email -->
+                                                <div class="px-4 py-3 text-xs text-slate-500 border-b border-gray-100 truncate">
+                                                    {{ user.email }}
+                                                </div>
+
+                                                <!-- Menu Items -->
+                                                <Link v-for="item in dashboardInfo.items" 
+                                                    :key="item.route"
+                                                    :href="item.route"
+                                                    class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
+                                                    {{ item.text }}
+                                                </Link>
+
+                                                <!-- Logout -->
+                                                <Link :href="route('logout')" method="post" as="button"
+                                                    class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                                    Cerrar Sesión
+                                                </Link>
+                                            </div>
+                                        </transition>
+                                    </div>
+
+                                    <!-- Logout button (solo si es link directo) -->
+                                    <Link v-if="dashboardInfo?.single" 
+                                        :href="route('logout')" 
+                                        method="post" 
+                                        as="button" 
+                                        :class="[
+                                            'text-xs font-bold uppercase tracking-widest transition-colors',
+                                            isHomePage && !scrolled ? 'text-red-300 hover:text-red-100' : 'text-red-600 hover:text-red-800'
+                                        ]">
                                         Salir
                                     </Link>
                                 </div>
@@ -184,46 +259,44 @@ const dashboardInfo = computed(() => {
             </div>
 
             <!-- Mobile Menu -->
-            <transition
-                enter-active-class="transition duration-300 ease-out"
-                enter-from-class="opacity-0 -translate-y-4"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition duration-200 ease-in"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-4"
-            >
-                <div v-show="mobileMenuOpen" class="absolute top-0 left-0 w-full bg-white shadow-xl pt-24 pb-10 px-6 border-b border-gray-100 md:hidden">
+            <transition enter-active-class="transition duration-300 ease-out"
+                enter-from-class="opacity-0 -translate-y-4" enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-4">
+                <div v-show="mobileMenuOpen"
+                    class="absolute top-0 left-0 w-full bg-white shadow-xl pt-24 pb-10 px-6 border-b border-gray-100 md:hidden">
                     <div class="flex flex-col space-y-6 text-center">
                         <!-- Navigation Links -->
-                        <Link :href="route('home')" 
+                        <Link :href="route('home')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
                             Inicio
                         </Link>
-                        <Link :href="route('events.index')" 
+                        <Link :href="route('events.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
                             Eventos
                         </Link>
-                        <Link :href="route('gallery.index')" 
+                        <Link :href="route('gallery.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
                             Galería
                         </Link>
-                        <Link :href="route('photographers.index')" 
+                        <Link :href="route('photographers.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
                             Fotógrafos
                         </Link>
 
                         <!-- 🛒 Carrito Mobile -->
-                        <Link v-if="user" :href="route('cart.index')" 
+                        <Link v-if="user" :href="route('cart.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 flex items-center justify-center gap-2">
                             <ShoppingCartIcon class="w-5 h-5" />
                             Carrito
-                            <span v-if="cartCount > 0" class="bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            <span v-if="cartCount > 0"
+                                class="bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                                 {{ cartCount }}
                             </span>
                         </Link>
 
                         <hr class="border-gray-100 w-1/3 mx-auto my-4">
-                        
+
                         <!-- Auth Links -->
                         <template v-if="!user">
                             <Link :href="route('login')" class="text-sm text-slate-600 hover:text-slate-900">
@@ -233,11 +306,24 @@ const dashboardInfo = computed(() => {
                                 Crear Cuenta
                             </Link>
                         </template>
+                        
                         <template v-else>
-                            <Link v-if="dashboardInfo" :href="dashboardInfo.route" 
+                            <!-- Admin/Photographer -->
+                            <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route"
                                 class="text-sm font-bold text-slate-900">
                                 {{ dashboardInfo.text }}
                             </Link>
+
+                            <!-- Usuario Regular -->
+                            <template v-else>
+                                <Link v-for="item in dashboardInfo.items" 
+                                    :key="item.route"
+                                    :href="item.route"
+                                    class="text-sm font-bold text-slate-900 hover:text-slate-600">
+                                    {{ item.text }}
+                                </Link>
+                            </template>
+
                             <Link :href="route('logout')" method="post" class="text-sm text-red-600">
                                 Cerrar Sesión
                             </Link>
@@ -254,7 +340,6 @@ const dashboardInfo = computed(() => {
         <footer class="bg-slate-900 text-white border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
-                    
                     <div class="text-center md:text-left">
                         <span class="text-xl font-serif font-bold tracking-wide block">EMPRESA</span>
                         <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional Photography</span>
@@ -276,6 +361,5 @@ const dashboardInfo = computed(() => {
                 </div>
             </div>
         </footer>
-
     </div>
 </template>

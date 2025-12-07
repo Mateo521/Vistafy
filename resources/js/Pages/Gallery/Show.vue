@@ -51,7 +51,7 @@ const addToCart = async () => {
         if (response.data.success) {
             alert('Foto agregada al carrito');
             
-            // 🔥 Disparar evento para actualizar el contador
+            //  Disparar evento para actualizar el contador
             window.dispatchEvent(new Event('cart-updated'));
         } else {
             alert(response.data.message || 'Esta foto ya está en tu carrito');

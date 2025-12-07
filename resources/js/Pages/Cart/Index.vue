@@ -6,7 +6,8 @@ import {
     ArrowLeftIcon, 
     XMarkIcon,
     TrashIcon,
-    ShoppingBagIcon
+    ShoppingBagIcon,
+    BeakerIcon // Para el ícono de simulación
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 
@@ -20,12 +21,12 @@ const removingItems = ref(new Set());
 
 const itemCount = computed(() => props.items?.length || 0);
 
+const formattedTotal = computed(() => {
+    return parseFloat(props.total || 0).toFixed(2);
+});
+
 const formatPrice = (amount) => {
-    return new Intl.NumberFormat('es-AR', {
-        style: 'currency',
-        currency: 'ARS',
-        minimumFractionDigits: 2
-    }).format(parseFloat(amount) || 0);
+    return parseFloat(amount || 0).toFixed(2);
 };
 
 const removeItem = async (photoId) => {
@@ -35,8 +36,6 @@ const removeItem = async (photoId) => {
 
     try {
         await axios.delete(route('cart.remove', photoId));
-        
-        // Recargar la página para actualizar el carrito
         router.reload({ only: ['items', 'total'] });
     } catch (error) {
         console.error('Error eliminando item:', error);
@@ -62,21 +61,28 @@ const clearCart = async () => {
     }
 };
 
-const checkout = async () => {
+// 🔥 Checkout con simulación
+const checkout = async (simulate = false) => {
     if (processing.value || itemCount.value === 0) return;
     
     processing.value = true;
 
     try {
-        // Enviar todos los IDs de fotos del carrito
         const photoIds = props.items.map(item => item.photo_id);
         
         const response = await axios.post(route('payment.initiate.cart'), {
-            photo_ids: photoIds
+            photo_ids: photoIds,
+            simulate_payment: simulate // 🔥 Flag de simulación
         });
 
         if (response.data.success) {
-            window.location.href = response.data.sandbox_init_point;
+            if (response.data.simulated) {
+                // Redirección a success en simulación
+                window.location.href = response.data.redirect_url;
+            } else {
+                // Redirección a Mercado Pago en producción
+                window.location.href = response.data.sandbox_init_point;
+            }
         }
     } catch (error) {
         console.error('Error en checkout:', error);
@@ -166,12 +172,6 @@ const handleImageError = (e) => {
                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale-[0.3] group-hover:grayscale-0"
                                         @error="handleImageError"
                                     />
-                                    <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" 
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
                                 </Link>
 
                                 <!-- Info -->
@@ -187,7 +187,6 @@ const handleImageError = (e) => {
                                             </p>
                                         </div>
 
-                                        <!-- Remove Button -->
                                         <button @click="removeItem(item.photo_id)" 
                                             :disabled="removingItems.has(item.photo_id)"
                                             class="text-slate-300 hover:text-red-600 transition-colors disabled:opacity-50">
@@ -195,7 +194,6 @@ const handleImageError = (e) => {
                                         </button>
                                     </div>
 
-                                    <!-- Details -->
                                     <div class="flex flex-wrap gap-2 mb-3">
                                         <span v-if="item.photo.event" 
                                             class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-1 rounded-sm">
@@ -206,11 +204,10 @@ const handleImageError = (e) => {
                                         </span>
                                     </div>
 
-                                    <!-- Price -->
                                     <div class="flex items-baseline justify-between">
                                         <span class="text-xs text-slate-500">Licencia Digital</span>
                                         <span class="text-xl font-serif font-bold text-slate-900">
-                                            ${{ item.price }}
+                                            ${{ formatPrice(item.price) }}
                                         </span>
                                     </div>
                                 </div>
@@ -226,14 +223,13 @@ const handleImageError = (e) => {
                                 Resumen de Compra
                             </h2>
 
-                            <!-- Items count -->
                             <div class="space-y-3 mb-6 pb-6 border-b border-gray-100">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-600">
                                         {{ itemCount }} {{ itemCount === 1 ? 'fotografía' : 'fotografías' }}
                                     </span>
                                     <span class="text-sm font-medium text-slate-900">
-                                        ${{ total }}
+                                        ${{ formattedTotal }}
                                     </span>
                                 </div>
                             </div>
@@ -243,17 +239,25 @@ const handleImageError = (e) => {
                                 <div class="flex justify-between items-baseline">
                                     <span class="text-sm font-semibold text-slate-900">Total</span>
                                     <span class="text-3xl font-serif font-bold text-slate-900">
-                                        ${{ total }}
+                                        ${{ formattedTotal }}
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Checkout Button -->
-                            <button @click="checkout" :disabled="processing || itemCount === 0"
-                                class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest py-4 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mb-4">
+                            <!-- 🔥 Botón Normal de Checkout -->
+                            <button @click="checkout(false)" :disabled="processing || itemCount === 0"
+                                class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest py-4 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mb-3">
                                 <span v-if="processing">Procesando...</span>
                                 <span v-else>Finalizar Compra</span>
                                 <span v-if="!processing" class="text-lg leading-none">→</span>
+                            </button>
+
+                            <!-- 🧪 Botón de Simulación (Solo en desarrollo) -->
+                            <button @click="checkout(true)" :disabled="processing || itemCount === 0"
+                                class="w-full bg-green-600 hover:bg-green-700 text-white text-xs font-bold uppercase tracking-widest py-3 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mb-4">
+                                <BeakerIcon class="w-4 h-4" />
+                                <span v-if="processing">Procesando...</span>
+                                <span v-else>Simular Pago (Dev)</span>
                             </button>
 
                             <!-- Info -->

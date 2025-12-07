@@ -14,7 +14,7 @@ import { Link } from '@inertiajs/vue3';
             </div>
         </div>
 
-        <div class="w-full sm:max-w-4xl px-6 py-4 z-10 relative">
+        <div class="w-full sm:max-w-7xl px-6 py-4 z-10 relative">
             
             <div class="flex justify-center mb-10">
                 <Link :href="route('home')" class="text-center group">

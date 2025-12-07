@@ -7,7 +7,8 @@ use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\Admin\PhotographerManagementController;
-use App\Http\Controllers\PaymentSimulationController; 
+use App\Http\Controllers\PurchaseHistoryController;
+use App\Http\Controllers\PaymentSimulationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Auth\PhotographerRegistrationController;
 use App\Http\Controllers\WebhookController;
@@ -61,14 +62,20 @@ Route::prefix('pago')->name('payment.')->group(function () {
     Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
         ->name('initiate');
 
+
+    Route::post('/carrito/comprar', [PaymentController::class, 'initiateCartPurchase'])
+        ->middleware('auth')
+        ->name('initiate.cart');
+
     //  SIMULADOR (solo en local)
     if (app()->environment('local') && config('services.mercadopago.simulation_mode')) {
         Route::get('/simular/{purchase}', [PaymentSimulationController::class, 'show'])
             ->name('simulate');
-        
+
         Route::post('/simular/{purchase}', [PaymentSimulationController::class, 'process'])
             ->name('simulate.process');
     }
+
 
     // Callbacks de Mercado Pago (español)
     // ⚠️ IMPORTANTE: Ahora reciben 'purchase_id' como parámetro de query
@@ -92,8 +99,8 @@ Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'ch
 
 
 // Página de descarga (opcional, con botón)
-    Route::get('/descargar/{token}', [DownloadController::class, 'download'])
-        ->name('download');  // ← Nombre: payment.download
+Route::get('/descargar/{token}', [DownloadController::class, 'download'])
+    ->name('download');  // ← Nombre: payment.download
 
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 
@@ -106,6 +113,16 @@ Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
     ->name('photo.download')
     ->middleware('auth');
+
+
+
+// 🛒 Compras del Usuario
+Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(function () {
+    Route::get('/', [PurchaseHistoryController::class, 'index'])->name('index');
+    Route::get('/{purchase}/descargar/{photo}', [PurchaseHistoryController::class, 'download'])->name('download');
+    Route::get('/{purchase}/descargar-todas', [PurchaseHistoryController::class, 'downloadAll'])->name('download.all');
+});
+
 
 /*
 |--------------------------------------------------------------------------
