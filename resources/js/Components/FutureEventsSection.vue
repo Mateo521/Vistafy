@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
-import { CalendarIcon, MapPinIcon, ClockIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
+import { Link } from '@inertiajs/vue3';
+import { CalendarIcon, MapPinIcon, ClockIcon, ArrowRightIcon, UserPlusIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 
 const props = defineProps({
@@ -9,14 +9,20 @@ const props = defineProps({
     userRole: String,
 });
 
-// --- ESTADO PARA SCROLL INFINITO ---
+// --- ESTADO ---
 const allEvents = ref([]);
 const isPhotographer = ref(false);
+const isUserAuthenticated = ref(false);
 const totalEvents = ref(0);
+const showingLimited = ref(false);
 const loading = ref(true);
 const loadingMore = ref(false);
 const currentPage = ref(1);
-const hasMorePages = ref(true);
+const hasMorePages = ref(false);
+
+//  DOBLE BLOQUEO: Variable de módulo + ref
+let isLoadingInProgress = false;
+const clickCount = ref(0); //  Contador de clics para debugging
 
 // --- CARGAR PRIMERA PÁGINA ---
 onMounted(async () => {
@@ -25,44 +31,102 @@ onMounted(async () => {
 
 // --- FUNCIÓN: Cargar eventos (página específica) ---
 const loadEvents = async (page = 1) => {
+    //  BLOQUEO ABSOLUTO
+    if (isLoadingInProgress) {
+        console.warn(' BLOQUEADO: Ya hay una carga en progreso');
+        return;
+    }
+
+    if (loadingMore.value) {
+        console.warn(' BLOQUEADO: loadingMore está activo');
+        return;
+    }
+
+    isLoadingInProgress = true;
+    loadingMore.value = true;
+
     try {
+
+
         const response = await axios.get('/api/future-events', {
             params: { page }
         });
 
         const data = response.data;
 
+
+
         if (page === 1) {
             // Primera carga: reemplazar
             allEvents.value = data.future_events;
         } else {
             // Scroll infinito: concatenar
+            const beforeCount = allEvents.value.length;
             allEvents.value = [...allEvents.value, ...data.future_events];
         }
 
+        // Actualizar estado
         isPhotographer.value = data.is_photographer;
+        isUserAuthenticated.value = data.is_authenticated;
         totalEvents.value = data.total_events;
+        showingLimited.value = data.showing_limited;
         currentPage.value = data.current_page || page;
         hasMorePages.value = data.has_more_pages || false;
 
+
+
     } catch (error) {
-        console.error('Error cargando eventos futuros:', error);
+        console.error(' Error cargando eventos futuros:', error);
     } finally {
-        loading.value = false;
-        loadingMore.value = false;
+        //  IMPORTANTE: Delay antes de liberar bloqueo
+        setTimeout(() => {
+            loading.value = false;
+            loadingMore.value = false;
+            isLoadingInProgress = false;
+            console.log(' Bloqueo liberado');
+        }, 300); // 300ms de cooldown
     }
 };
 
 // --- FUNCIÓN: Cargar más (siguiente página) ---
-const loadMore = async () => {
-    if (!hasMorePages.value || loadingMore.value) return;
+const loadMore = (event) => {
+    clickCount.value++;
 
-    loadingMore.value = true;
-    await loadEvents(currentPage.value + 1);
+
+
+    //  BLOQUEOS MÚLTIPLES
+    if (!hasMorePages.value) {
+        console.warn(' BLOQUEADO: No hay más páginas');
+        return;
+    }
+
+    if (loadingMore.value) {
+        console.warn(' BLOQUEADO: Ya está cargando (loadingMore)');
+        return;
+    }
+
+    if (isLoadingInProgress) {
+        console.warn(' BLOQUEADO: Ya está cargando (isLoadingInProgress)');
+        return;
+    }
+
+    if (!isPhotographer.value) {
+        console.warn(' BLOQUEADO: Solo fotógrafos pueden cargar más');
+        return;
+    }
+
+    //  Prevenir propagación del evento
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+
+    loadEvents(currentPage.value + 1);
 };
 
 /**
- * ✅ Formatear días hasta el evento
+ *  Formatear días hasta el evento
  */
 const getDaysText = (days) => {
     const roundedDays = Math.round(days);
@@ -80,7 +144,7 @@ const getDaysText = (days) => {
 };
 
 /**
- * ✅ Obtener color del badge según proximidad
+ *  Obtener color del badge según proximidad
  */
 const getDaysBadgeColor = (days) => {
     const roundedDays = Math.round(days);
@@ -124,13 +188,20 @@ const handleImageError = (e) => {
                 <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
                     Oportunidades exclusivas para fotógrafos profesionales
                 </p>
-                
+
                 <!-- Total Count -->
                 <div v-if="totalEvents > 0" class="mt-4">
-                    <span class="inline-block px-4 py-2 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest rounded-full">
-                        {{ totalEvents }} evento{{ totalEvents !== 1 ? 's' : '' }} disponible{{ totalEvents !== 1 ? 's' : '' }}
+                    <span
+                        class="inline-block px-4 py-2 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest rounded-full">
+                        {{ totalEvents }} evento{{ totalEvents !== 1 ? 's' : '' }} disponible{{ totalEvents !== 1 ? 's'
+                            : '' }}
                     </span>
                 </div>
+
+                <!--  DEBUG INFO (eliminar después) -->
+                <!--div v-if="!loading" class="mt-4 text-xs text-gray-400">
+                    Debug: {{ allEvents.length }} eventos mostrados | Página {{ currentPage }} | Clics: {{ clickCount }}
+                </div-->
             </div>
 
             <!-- Loading State (Primera Carga) -->
@@ -145,8 +216,14 @@ const handleImageError = (e) => {
             <!-- Events Grid -->
             <div v-else-if="allEvents.length > 0">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    <div v-for="event in allEvents" :key="event.id"
+                    <div v-for="(event, index) in allEvents" :key="`event-${event.id}-${index}`"
                         class="group bg-white border border-gray-200 rounded-sm overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+
+
+                        <!--div class="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
+                            #{{ index + 1 }} - ID: {{ event.id }}
+                        </div-->
+
                         <!-- Image -->
                         <div class="relative h-64 overflow-hidden bg-slate-900">
                             <img :src="event.cover_image" :alt="event.title"
@@ -159,7 +236,7 @@ const handleImageError = (e) => {
                             </div>
 
                             <!-- Days Badge -->
-                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-sm shadow-lg"> <!--  px-4 py-2 -->
+                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-sm shadow-lg">
                                 <span :class="[
                                     'inline-flex items-center px-3 py-1 text-xs font-semibold',
                                     getDaysBadgeColor(event.days_until)
@@ -199,11 +276,11 @@ const handleImageError = (e) => {
                             </div>
 
                             <!-- Action Button -->
-                            <button v-if="isPhotographer"
+                            <Link v-if="isPhotographer" :href="`/future-events/${event.id}`"
                                 class="w-full py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition flex items-center justify-center gap-2 group/btn">
                                 Ver Detalles
                                 <ArrowRightIcon class="w-4 h-4 group-hover/btn:translate-x-1 transition" />
-                            </button>
+                            </Link>
                             <div v-else class="text-center py-3 border-2 border-dashed border-gray-300 rounded-sm">
                                 <span class="text-xs text-slate-400 uppercase tracking-wide">Requiere cuenta de
                                     fotógrafo</span>
@@ -212,11 +289,13 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-                <!-- Load More Button -->
-                <div v-if="hasMorePages" class="text-center">
-                    <button @click="loadMore" :disabled="loadingMore"
+                <!--  BOTÓN CONDICIONAL CON PROTECCIONES EXTRA -->
+                <div class="text-center">
+                    <!-- CASO 1: Fotógrafo con más páginas → Botón "Cargar Más" -->
+                    <button v-if="isPhotographer && hasMorePages" @click.prevent.stop="loadMore"
+                        :disabled="loadingMore || isLoadingInProgress" type="button"
                         class="px-8 py-4 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed rounded-sm shadow-lg hover:shadow-xl">
-                        <span v-if="loadingMore" class="flex items-center gap-2">
+                        <span v-if="loadingMore" class="flex items-center gap-2 justify-center">
                             <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
@@ -229,6 +308,40 @@ const handleImageError = (e) => {
                         </span>
                         <span v-else>Cargar Más Eventos</span>
                     </button>
+
+                    <!-- CASO 2: Usuario limitado → CTA "Crear Cuenta" -->
+                    <div v-else-if="showingLimited && totalEvents > 6"
+                        class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-8">
+                        <UserPlusIcon class="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">
+                            ¿Querés ver más eventos?
+                        </h3>
+                        <p class="text-slate-600 mb-6 max-w-md mx-auto">
+                            Hay <strong>{{ totalEvents - 6 }} eventos más</strong> disponibles para fotógrafos
+                            profesionales
+                        </p>
+
+                        <div class="flex gap-4 justify-center flex-wrap">
+                            <!-- Si NO está autenticado -->
+                            <template v-if="!isUserAuthenticated">
+                                <Link :href="route('photographer.register')"
+                                    class="px-8 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition rounded-sm shadow-lg">
+                                    Registrarme como Fotógrafo
+                                </Link>
+                                <Link :href="route('login')"
+                                    class="px-8 py-3 border-2 border-slate-900 text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-900 hover:text-white transition rounded-sm">
+                                    Iniciar Sesión
+                                </Link>
+                            </template>
+
+                            <!-- Si está autenticado pero no es fotógrafo -->
+                            <div v-else
+                                class="text-slate-600 text-sm bg-yellow-50 border border-yellow-200 rounded-lg px-6 py-4">
+                                <p class="font-semibold mb-2">🔒 Acceso Restringido</p>
+                                <p>Contactá al administrador para cambiar tu rol a <strong>Fotógrafo</strong></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -236,34 +349,6 @@ const handleImageError = (e) => {
             <div v-else class="text-center py-16">
                 <CalendarIcon class="w-16 h-16 text-slate-300 mx-auto mb-4" />
                 <p class="text-slate-400 text-lg">No hay eventos futuros disponibles</p>
-            </div>
-
-            <!-- CTA for Non-Photographers -->
-            <div v-if="!isPhotographer && totalEvents > 3 && !loading"
-                class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-sm p-12 text-center mt-16">
-                <div class="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-5"></div>
-                <div class="relative z-10">
-                    <h3 class="text-3xl font-serif font-bold text-white mb-4">
-                        ¿Sos Fotógrafo?
-                    </h3>
-                    <p class="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">
-                        Accede a <strong>{{ totalEvents }}</strong> eventos futuros y genera nuevos ingresos con tu
-                        talento
-                    </p>
-                    <div class="flex gap-4 justify-center flex-wrap">
-                        <Link v-if="!isAuthenticated" :href="route('photographer.register')"
-                            class="px-8 py-4 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-xl">
-                        Registrarme como Fotógrafo
-                        </Link>
-                        <Link v-if="!isAuthenticated" :href="route('login')"
-                            class="px-8 py-4 border-2 border-white text-white font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-slate-900 transition rounded-sm">
-                        Iniciar Sesión
-                        </Link>
-                        <div v-else class="text-slate-300 text-sm">
-                            Contacta al administrador para cambiar tu rol a fotógrafo
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>

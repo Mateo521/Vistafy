@@ -26,7 +26,7 @@ defineProps({
         </template>
 
         <div class="py-12 bg-gray-50">
-            <div class="mx-auto max-w-4xl space-y-8 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl space-y-8 sm:px-6 lg:px-8">
                 
                 <UpdateProfileInformationForm
                     :must-verify-email="mustVerifyEmail"

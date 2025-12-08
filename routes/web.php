@@ -15,6 +15,7 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\Photographer\FutureEventManagementController;
 
 use App\Http\Controllers\FutureEventController;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +33,8 @@ Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
 Route::get('/api/future-events', [FutureEventController::class, 'index'])->name('api.future-events');
 Route::get('/future-events/{futureEvent}', [FutureEventController::class, 'show'])->name('future-events.show');
-
+Route::get('/future-events/{id}', [FutureEventController::class, 'show'])
+    ->name('future-events.show');
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
@@ -216,6 +218,25 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
         Route::delete('/foto-perfil', [PhotographerProfileController::class, 'deleteProfilePhoto'])->name('photo.delete');
         Route::delete('/banner', [PhotographerProfileController::class, 'deleteBannerPhoto'])->name('banner.delete');
     });
+
+
+
+
+
+
+    Route::prefix('oportunidades')->name('opportunities.')->group(function () {
+        Route::get('/', [FutureEventManagementController::class, 'index'])->name('index');
+        Route::get('/crear', [FutureEventManagementController::class, 'create'])->name('create');
+        Route::post('/', [FutureEventManagementController::class, 'store'])->name('store');
+        Route::get('/{id}/editar', [FutureEventManagementController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [FutureEventManagementController::class, 'update'])->name('update');
+        Route::delete('/{id}', [FutureEventManagementController::class, 'destroy'])->name('destroy');
+    });
+
+
+
+
+
 
     // Dashboard
     Route::get('/panel', function () {

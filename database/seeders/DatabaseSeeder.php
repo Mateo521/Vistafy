@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Photo;
 use App\Models\Photographer;
 use App\Models\User;
+use App\Models\FutureEvent;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -34,10 +35,10 @@ class DatabaseSeeder extends Seeder
             'business_name' => 'Mi Estudio Pro',
             'status' => 'approved',
             'is_verified' => true,
-            'region' => 'CABA', // Para probar mapas
+            'region' => 'CABA',
         ]);
 
-        // 3. Crear 20 Fotógrafos "Extra" (Tus colegas/competencia)
+        // 3. Crear 20 Fotógrafos "Extra"
         $otherPhotographers = User::factory(20)
             ->create(['role' => 'photographer'])
             ->map(function ($user) {
@@ -50,8 +51,7 @@ class DatabaseSeeder extends Seeder
         // ----------------------------------------------------------------
         // ESCENARIO A: MIS EVENTOS (Soy dueño, otros colaboran)
         // ----------------------------------------------------------------
-        
-        // Crear 5 eventos propios
+
         $myEvents = Event::factory(5)->create([
             'photographer_id' => $myPhotographer->id,
             'is_active' => true,
@@ -59,23 +59,19 @@ class DatabaseSeeder extends Seeder
         ]);
 
         foreach ($myEvents as $event) {
-            // Subir 10 fotos MÍAS
             Photo::factory(10)->create([
                 'event_id' => $event->id,
                 'photographer_id' => $myPhotographer->id,
             ]);
 
-            // Invitar a 2 fotógrafos random a colaborar en MI evento
             $collaborators = $otherPhotographers->random(2);
-            
+
             foreach ($collaborators as $collab) {
-                // 1. Crear la relación en la tabla pivote (Permiso)
                 $event->collaborators()->attach($collab->id);
 
-                // 2. Subir fotos a nombre de ELLOS en MI evento
                 Photo::factory(5)->create([
                     'event_id' => $event->id,
-                    'photographer_id' => $collab->id, // <--- Importante para el filtro
+                    'photographer_id' => $collab->id,
                 ]);
             }
         }
@@ -84,26 +80,22 @@ class DatabaseSeeder extends Seeder
         // ESCENARIO B: COLABORACIONES (Soy invitado, otros son dueños)
         // ----------------------------------------------------------------
 
-        // Tomar 3 fotógrafos random y hacer que creen un evento cada uno
         $hosts = $otherPhotographers->random(3);
 
         foreach ($hosts as $host) {
             $event = Event::factory()->create([
-                'photographer_id' => $host->id, // El dueño es otro
+                'photographer_id' => $host->id,
                 'name' => 'Evento de ' . $host->business_name,
                 'is_active' => true,
             ]);
 
-            // Me invitan a MÍ como colaborador
             $event->collaborators()->attach($myPhotographer->id);
 
-            // Subo fotos YO a SU evento
             Photo::factory(8)->create([
                 'event_id' => $event->id,
                 'photographer_id' => $myPhotographer->id,
             ]);
 
-            // El dueño también sube sus fotos
             Photo::factory(8)->create([
                 'event_id' => $event->id,
                 'photographer_id' => $host->id,
@@ -111,31 +103,83 @@ class DatabaseSeeder extends Seeder
         }
 
         // ----------------------------------------------------------------
-        // ESCENARIO C: RELLENO (Eventos random para poblar el sitio)
+        // ESCENARIO C: RELLENO (Eventos random)
         // ----------------------------------------------------------------
-        
+
         $otherPhotographers->each(function ($photographer) {
-            // Crear eventos normales donde solo ellos suben fotos
             Event::factory(2)
-                ->for($photographer) // Dueño
+                ->for($photographer)
                 ->has(
                     Photo::factory()->count(5)->state(['photographer_id' => $photographer->id])
                 )
                 ->create();
         });
 
+        // ================================================================
+        //  NUEVOS EVENTOS FUTUROS (Oportunidades para fotógrafos)
+        // ================================================================
+
+        // Mezclar todos los fotógrafos (incluyendo a ti)
+        $allPhotographers = $otherPhotographers->push($myPhotographer);
+
+        // 1️ Crear 10 eventos futuros TUYOS (publicaste oportunidades)
+        FutureEvent::factory(10)->create([
+            'photographer_id' => $myPhotographer->id,
+            'status' => 'upcoming',
+        ]);
+
+        // 2️ Crear 38 eventos futuros distribuidos entre otros fotógrafos
+        // (Para llegar a 48 total: 10 tuyos + 38 de otros = 48)
+        $allPhotographers->each(function ($photographer) {
+            // Cada fotógrafo crea 1-3 eventos futuros
+            $count = rand(1, 3);
+
+            FutureEvent::factory($count)->create([
+                'photographer_id' => $photographer->id,
+                'status' => 'upcoming',
+            ]);
+        });
+
+        // 3️ Crear algunos eventos "próximos" (en 3-7 días) para testing
+        FutureEvent::factory(5)
+            ->soon() // Usa el state 'soon' del factory
+            ->create([
+                'photographer_id' => $allPhotographers->random()->id,
+            ]);
+
+        //  Crear algunos eventos "lejanos" (más de 30 días)
+        FutureEvent::factory(5)
+            ->distant() // Usa el state 'distant' del factory
+            ->create([
+                'photographer_id' => $allPhotographers->random()->id,
+            ]);
+
+        // ================================================================
+        //  RESUMEN EN CONSOLA
+        // ================================================================
+
+        $totalEvents = Event::count();
+        $totalFutureEvents = FutureEvent::count();
+        $totalPhotos = Photo::count();
+        $totalPhotographers = Photographer::count();
+
         echo "\n=============================================\n";
-        echo " Base de datos poblada con éxito.\n";
+        echo "  Base de datos poblada con éxito.\n";
         echo "---------------------------------------------\n";
-        echo "👤 Admin:     admin@empresa.com / password\n";
-        echo " Fotógrafo: foto@empresa.com / password\n";
+        echo " Admin:      admin@empresa.com / password\n";
+        echo " Fotógrafo:  foto@empresa.com / password\n";
         echo "---------------------------------------------\n";
-        echo "PRUEBAS:\n";
-        echo "1. Entra al Dashboard > Mis Eventos: Verás tus 5 eventos.\n";
-        echo "   Entra a uno, verás fotos tuyas y de otros.\n";
-        echo "2. Entra al Dashboard > Colaboraciones: Verás 3 eventos de otros.\n";
-        echo "3. Entra a la Web Pública (/eventos) > Busca tus eventos.\n";
-        echo "   Usa el filtro de fotógrafo: Deberían aparecer Tú y los Colaboradores.\n";
+        echo " ESTADÍSTICAS:\n";
+        echo "   • Fotógrafos: {$totalPhotographers}\n";
+        echo "   • Eventos pasados: {$totalEvents}\n";
+        echo "   • Eventos futuros: {$totalFutureEvents}\n";
+        echo "   • Fotos: {$totalPhotos}\n";
+        echo "---------------------------------------------\n";
+        echo " PRUEBAS:\n";
+        echo "1. Dashboard > Mis Eventos: {$myEvents->count()} eventos\n";
+        echo "2. Dashboard > Colaboraciones: 3 eventos\n";
+        echo "3. Web Pública > Eventos Futuros: {$totalFutureEvents} oportunidades\n";
+        echo "   (Solo 6 visibles para no-fotógrafos)\n";
         echo "=============================================\n";
     }
 }

@@ -109,7 +109,7 @@ const auth = page.props.auth;
                     Fotografía Profesional
                 </span>
                 <h1
-                    class="text-4xl md:text-6xl lg:text-7xl font-serif font-medium text-white mb-6 drop-shadow-lg max-w-4xl leading-tight animate-fade-in">
+                    class="text-4xl md:text-6xl lg:text-7xl font-serif font-medium text-white mb-6 drop-shadow-lg max-w-7xl leading-tight animate-fade-in">
                     Preservando momentos <br /> <span class="italic text-gray-300">irrepetibles.</span>
                 </h1>
                 <p class="text-lg text-gray-300 mb-10 max-w-2xl font-light leading-relaxed animate-fade-in-delayed">

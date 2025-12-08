@@ -12,7 +12,7 @@ class PhotographerFactory extends Factory
         $region = $this->faker->randomElement(array_keys(\App\Models\Photographer::REGION_COORDINATES));
         return [
             'user_id' => User::factory(), // Crea un usuario automáticamente
-            'business_name' => $this->faker->company() . ' Photography',
+            'business_name' => $this->faker->company() . ' Lorem ipsum...',
             'phone' => $this->faker->phoneNumber(),
             'region' => $region,
             'bio' => $this->faker->paragraph(3),

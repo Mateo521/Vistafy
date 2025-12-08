@@ -65,7 +65,7 @@ const formatDate = (dateString) => {
                     <span class="text-xs font-bold tracking-[0.2em] text-white/60 uppercase mb-2 block">
                         {{ formatDate(event.event_date) }}
                     </span>
-                    <h1 class="text-4xl md:text-6xl font-serif font-bold text-white mb-4 max-w-4xl leading-tight">
+                    <h1 class="text-4xl md:text-6xl font-serif font-bold text-white mb-4 max-w-7xl leading-tight">
                         {{ event.name }}
                     </h1>
                     <div class="flex flex-wrap items-center gap-6 text-white/80 font-light text-sm">

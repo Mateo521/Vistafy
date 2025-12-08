@@ -140,7 +140,7 @@ const submit = () => {
                             type="text"
                             class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
                             v-model="form.business_name"
-                            placeholder="Ej: Visual Arts Photography"
+                            placeholder="Ej: Visual Arts Lorem ipsum..."
                             required
                         />
                         <InputError class="mt-2 text-red-300 text-xs" :message="form.errors.business_name" />

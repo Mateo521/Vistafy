@@ -32,7 +32,7 @@ class ConvertFutureEvents extends Command
             try {
                 //  VALIDAR que el fotógrafo existe
                 if (!$futureEvent->photographer_id) {
-                    $this->warn("⚠️  Evento sin fotógrafo asignado: {$futureEvent->title}");
+                    $this->warn("  Evento sin fotógrafo asignado: {$futureEvent->title}");
                     $errors++;
                     continue;
                 }
@@ -40,7 +40,7 @@ class ConvertFutureEvents extends Command
                 $photographer = Photographer::find($futureEvent->photographer_id);
                 
                 if (!$photographer) {
-                    $this->error("❌ Fotógrafo ID {$futureEvent->photographer_id} no existe para: {$futureEvent->title}");
+                    $this->error(" Fotógrafo ID {$futureEvent->photographer_id} no existe para: {$futureEvent->title}");
                     $this->line("   → Asignando a fotógrafo por defecto...");
                     
                     // Buscar un fotógrafo por defecto
@@ -91,9 +91,9 @@ class ConvertFutureEvents extends Command
                 ]);
 
             } catch (\Exception $e) {
-                $this->error("❌ Error convirtiendo {$futureEvent->title}: {$e->getMessage()}");
+                $this->error(" Error convirtiendo {$futureEvent->title}: {$e->getMessage()}");
                 
-                Log::error('❌ Error en conversión de evento futuro', [
+                Log::error(' Error en conversión de evento futuro', [
                     'future_event_id' => $futureEvent->id,
                     'photographer_id' => $futureEvent->photographer_id ?? 'NULL',
                     'error' => $e->getMessage(),
@@ -109,7 +109,7 @@ class ConvertFutureEvents extends Command
         $this->info("🎉 Total convertidos: {$converted}");
         
         if ($errors > 0) {
-            $this->warn("⚠️  Total con errores: {$errors}");
+            $this->warn("  Total con errores: {$errors}");
         }
         
         $this->info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

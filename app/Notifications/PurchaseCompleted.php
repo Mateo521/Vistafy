@@ -27,7 +27,7 @@ class PurchaseCompleted extends Notification implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(' ¡Tu compra ha sido completada! - EMPRESA Photography')
+            ->subject(' ¡Tu compra ha sido completada! - EMPRESA Lorem ipsum...')
             ->view('emails.purchase-completed', [
                 'purchase' => $this->purchase,
             ]);

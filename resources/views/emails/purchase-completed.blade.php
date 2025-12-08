@@ -137,10 +137,10 @@
                         <td
                             style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="color: #94a3b8; font-size: 12px; margin: 0 0 10px 0; line-height: 1.5;">
-                                Este email fue enviado porque completaste una compra en EMPRESA Photography.
+                                Este email fue enviado porque completaste una compra en EMPRESA Lorem ipsum....
                             </p>
                             <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
-                                © {{ date('Y') }} EMPRESA Photography. Todos los derechos reservados.
+                                © {{ date('Y') }} EMPRESA Lorem ipsum.... Todos los derechos reservados.
                             </p>
                         </td>
                     </tr>

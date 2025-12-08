@@ -103,7 +103,7 @@ const dashboardInfo = computed(() => {
                             'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
                             isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
                         ]">
-                            Photography
+                            Lorem ipsum...
                         </span>
                     </div>
                     </Link>
@@ -342,7 +342,7 @@ const dashboardInfo = computed(() => {
                 <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
                     <div class="text-center md:text-left">
                         <span class="text-xl font-serif font-bold tracking-wide block">EMPRESA</span>
-                        <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional Photography</span>
+                        <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional Lorem ipsum...</span>
                     </div>
 
                     <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-400">

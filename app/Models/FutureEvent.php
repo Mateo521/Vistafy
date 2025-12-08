@@ -28,6 +28,8 @@ class FutureEvent extends Model
         'expiry_date' => 'datetime',
     ];
 
+    protected $appends = ['cover_image_url', 'formatted_date', 'days_until'];
+
     // ============================================
     //  RELACIONES
     // ============================================
@@ -58,7 +60,7 @@ class FutureEvent extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('status', 'upcoming')
-                     ->where('event_date', '>', now());
+            ->where('event_date', '>', now());
     }
 
     /**
@@ -67,7 +69,7 @@ class FutureEvent extends Model
     public function scopeReadyToConvert($query)
     {
         return $query->where('status', 'upcoming')
-                     ->where('event_date', '<=', now());
+            ->where('event_date', '<=', now());
     }
 
     /**
@@ -95,31 +97,28 @@ class FutureEvent extends Model
      */
     public function getCoverImageUrlAttribute()
     {
-        if ($this->cover_image) {
-            // Si es URL completa
-            if (filter_var($this->cover_image, FILTER_VALIDATE_URL)) {
-                return $this->cover_image;
-            }
-            
-            // Si es path de storage
-            if (Str::startsWith($this->cover_image, 'future_events/')) {
-                return asset('storage/' . $this->cover_image);
-            }
-            
-            // Fallback
+        if (!$this->cover_image) {
+            // Placeholder si no hay imagen
+            return 'https://picsum.photos/1280/720?random=' . $this->id;
+        }
+
+        // Si ya es una URL completa, devolverla tal cual
+        if (filter_var($this->cover_image, FILTER_VALIDATE_URL)) {
             return $this->cover_image;
         }
-        
-        // Placeholder si no hay imagen
-        return 'https://picsum.photos/1280/720?random=' . $this->id;
+
+        // ✅ Construir URL con asset() - funciona para cualquier carpeta
+        return asset('storage/' . $this->cover_image);
     }
+
+
 
     /**
      * Accessor: Fecha formateada para humanos
      */
     public function getFormattedDateAttribute()
     {
-        return $this->event_date->locale('es')->isoFormat('D [de] MMMM [de] YYYY');
+        return $this->event_date->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY [a las] HH:mm');
     }
 
     /**
@@ -159,7 +158,7 @@ class FutureEvent extends Model
      */
     public function getStatusBadgeAttribute()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'upcoming' => ['text' => 'Próximamente', 'color' => 'blue'],
             'converted' => ['text' => 'Convertido', 'color' => 'green'],
             'cancelled' => ['text' => 'Cancelado', 'color' => 'red'],
@@ -179,7 +178,7 @@ class FutureEvent extends Model
     {
         $slug = Str::slug($title);
         $count = static::where('title', 'LIKE', "{$slug}%")->count();
-        
+
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
@@ -191,7 +190,7 @@ class FutureEvent extends Model
         if (!$this->expiry_date) {
             return false;
         }
-        
+
         return now()->isAfter($this->expiry_date);
     }
 
