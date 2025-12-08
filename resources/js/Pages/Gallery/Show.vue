@@ -29,7 +29,7 @@ const emailError = ref('');
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth?.user !== null);
 
-// 🛒 NUEVO: Lógica del carrito
+//  NUEVO: Lógica del carrito
 const handlePurchaseClick = () => {
     if (isAuthenticated.value) {
         // Usuario autenticado: agregar al carrito
@@ -101,7 +101,16 @@ const submitPurchase = async () => {
         }
     } catch (error) {
         console.error('Error en compra:', error);
-        if (error.response?.data?.errors) {
+        
+        if (error.response?.status === 422 && error.response?.data?.email_exists) {
+            //  Email ya existe
+            emailError.value = error.response.data.message;
+            
+            // Opcional: Ofrecer ir al login
+            if (confirm(error.response.data.message + '\n\n¿Deseas ir a iniciar sesión?')) {
+                window.location.href = route('login');
+            }
+        } else if (error.response?.data?.errors) {
             const errors = error.response.data.errors;
             emailError.value = errors.email ? errors.email[0] : 'Error en la solicitud';
         } else {
@@ -136,7 +145,7 @@ const handleImageError = (e) => {
                         <ArrowLeftIcon class="w-3 h-3" /> Volver a la galería
                     </Link>
 
-                    <!-- 🛒 Icono de carrito (solo para usuarios autenticados) -->
+                    <!--  Icono de carrito (solo para usuarios autenticados) -->
                     <Link v-if="isAuthenticated" :href="route('cart.index')" 
                         class="text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-2">
                         <ShoppingCartIcon class="w-5 h-5" />
@@ -184,7 +193,7 @@ const handleImageError = (e) => {
                                 <span class="text-4xl font-serif font-bold text-slate-900">${{ photo.price }}</span>
                             </div>
 
-                            <!-- 🛒 Botón actualizado -->
+                            <!--  Botón actualizado -->
                             <button @click="handlePurchaseClick" :disabled="loading || addingToCart"
                                 class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest py-4 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
                                 

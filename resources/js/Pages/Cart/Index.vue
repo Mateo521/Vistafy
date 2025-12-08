@@ -61,7 +61,7 @@ const clearCart = async () => {
     }
 };
 
-// 🔥 Checkout con simulación
+//  Checkout con simulación
 const checkout = async (simulate = false) => {
     if (processing.value || itemCount.value === 0) return;
     
@@ -72,7 +72,7 @@ const checkout = async (simulate = false) => {
         
         const response = await axios.post(route('payment.initiate.cart'), {
             photo_ids: photoIds,
-            simulate_payment: simulate // 🔥 Flag de simulación
+            simulate_payment: simulate //  Flag de simulación
         });
 
         if (response.data.success) {
@@ -244,7 +244,7 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
-                            <!-- 🔥 Botón Normal de Checkout -->
+                            <!--  Botón Normal de Checkout -->
                             <button @click="checkout(false)" :disabled="processing || itemCount === 0"
                                 class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest py-4 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mb-3">
                                 <span v-if="processing">Procesando...</span>

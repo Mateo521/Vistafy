@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
+use App\Models\User;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Services\MercadoPagoService;
 use App\Services\CartService;
+use App\Notifications\PurchaseCompleted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -25,7 +30,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * 🛒 Iniciar compra desde el carrito
+     *  Iniciar compra desde el carrito (usuarios autenticados)
      */
     public function initiateCartPurchase(Request $request)
     {
@@ -52,6 +57,8 @@ class PaymentController extends Controller
                 ], 400);
             }
 
+            DB::beginTransaction();
+
             // Crear la compra
             $purchase = Purchase::create([
                 'user_id' => $user->id,
@@ -72,7 +79,7 @@ class PaymentController extends Controller
                 ]);
             }
 
-            // 🔥 SIMULACIÓN: Aprobar compra automáticamente en desarrollo
+            //  SIMULACIÓN: Aprobar compra automáticamente en desarrollo
             if ($request->input('simulate_payment') && config('app.env') === 'local') {
                 $purchase->update([
                     'status' => 'approved',
@@ -88,6 +95,8 @@ class PaymentController extends Controller
                 // Vaciar el carrito
                 $this->cartService->clear();
 
+                DB::commit();
+
                 return response()->json([
                     'success' => true,
                     'simulated' => true,
@@ -96,7 +105,7 @@ class PaymentController extends Controller
                 ]);
             }
 
-            // 🌐 Crear preferencia en Mercado Pago usando el método del carrito
+            //  Crear preferencia en Mercado Pago
             $preferenceResult = $this->mpService->createCartPreference($photos, $user->email, $purchase);
 
             if (!$preferenceResult['success']) {
@@ -106,7 +115,9 @@ class PaymentController extends Controller
             // Vaciar el carrito después de crear la compra exitosamente
             $this->cartService->clear();
 
-            Log::info('🛒 Compra desde carrito iniciada', [
+            DB::commit();
+
+            Log::info(' Compra desde carrito iniciada', [
                 'purchase_id' => $purchase->id,
                 'photo_count' => $photos->count(),
                 'total' => $purchase->total_amount,
@@ -120,6 +131,8 @@ class PaymentController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             Log::error(' Error en compra desde carrito', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -133,30 +146,81 @@ class PaymentController extends Controller
     }
 
     /**
-     * 📸 Compra individual (usar el método existente del service)
+     *  Compra individual (para invitados o usuarios autenticados)
      */
     public function initiatePurchase(Request $request, Photo $photo)
     {
         $validated = $request->validate([
-            'email' => 'required|email',
+            'email' => 'nullable|required_without:user_id|email',
+            'create_account' => 'boolean',
         ]);
 
+        $user = Auth::user();
+        $guestEmail = $validated['email'] ?? null;
+
+        //  Validar si el email ya existe (solo para invitados)
+        if (!$user && $guestEmail) {
+            $existingUser = User::where('email', $guestEmail)->first();
+            
+            if ($existingUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este correo ya está registrado. Por favor inicia sesión para continuar.',
+                    'email_exists' => true,
+                    'login_url' => route('login'),
+                ], 422);
+            }
+        }
+
         try {
-            // 🔥 Usar el método existente del MercadoPagoService
-            $result = $this->mpService->createPhotoPreference($photo, $validated['email']);
+            DB::beginTransaction();
+
+            // Crear la compra
+            $purchase = Purchase::create([
+                'user_id' => $user ? $user->id : null,
+                'buyer_email' => $user ? $user->email : $guestEmail,
+                'buyer_name' => $user ? $user->name : null,
+                'guest_email' => $guestEmail,
+                'total_amount' => $photo->price,
+                'currency' => 'ARS',
+                'status' => 'pending',
+                'order_token' => Str::random(64),
+            ]);
+
+            // Crear item de la compra
+            PurchaseItem::create([
+                'purchase_id' => $purchase->id,
+                'photo_id' => $photo->id,
+                'unit_price' => $photo->price,
+            ]);
+
+            // 💾 Guardar info para crear cuenta después del pago
+            if (!$user && ($validated['create_account'] ?? false)) {
+                session([
+                    'pending_account' => [
+                        'email' => $guestEmail,
+                        'purchase_id' => $purchase->id,
+                    ]
+                ]);
+            }
+
+            //  Usar el método existente del MercadoPagoService
+            $result = $this->mpService->createPhotoPreference($photo, $guestEmail ?: $user->email);
 
             if (!$result['success']) {
                 throw new \Exception('Error al crear preferencia de pago');
             }
 
-            // Si es simulación, marcar como aprobada
+            // Si es simulación, aprobar automáticamente
             if ($result['simulation_mode'] ?? false) {
-                $purchase = Purchase::find($result['purchase_id']);
                 $purchase->update([
                     'status' => 'approved',
                     'mp_payment_id' => 'SIM-' . time(),
                     'mp_payment_status' => 'approved',
                 ]);
+
+                // Crear cuenta si es necesario
+                $this->handleAccountCreation($purchase);
 
                 Log::info(' Compra individual simulada aprobada', [
                     'purchase_id' => $purchase->id,
@@ -164,15 +228,19 @@ class PaymentController extends Controller
                 ]);
             }
 
-            Log::info('📸 Compra individual iniciada', [
-                'purchase_id' => $result['purchase_id'],
+            DB::commit();
+
+            Log::info(' Compra individual iniciada', [
+                'purchase_id' => $purchase->id,
                 'photo_id' => $photo->id,
-                'email' => $validated['email'],
+                'email' => $guestEmail ?: $user->email,
             ]);
 
             return response()->json($result);
 
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             Log::error(' Error en compra individual', [
                 'error' => $e->getMessage(),
                 'photo_id' => $photo->id,
@@ -186,7 +254,59 @@ class PaymentController extends Controller
     }
 
     /**
-     * Success page
+     *  Crear cuenta automática después del pago
+     */
+    public function handleAccountCreation($purchase)
+    {
+        $pendingAccount = session('pending_account');
+
+        if ($pendingAccount && $pendingAccount['purchase_id'] == $purchase->id) {
+            $email = $pendingAccount['email'];
+            
+            // Verificar nuevamente que no exista
+            if (!User::where('email', $email)->exists()) {
+                $temporaryPassword = Str::random(12);
+
+                $user = User::create([
+                    'name' => explode('@', $email)[0],
+                    'email' => $email,
+                    'password' => Hash::make($temporaryPassword),
+                    'role' => 'customer',
+                ]);
+
+                //  Vincular la compra al nuevo usuario
+                $purchase->update([
+                    'user_id' => $user->id,
+                    'buyer_name' => $user->name,
+                ]);
+
+                // Enviar email con contraseña
+                try {
+                    \Mail::send('emails.account-created', [
+                        'email' => $email,
+                        'password' => $temporaryPassword,
+                    ], function ($message) use ($email) {
+                        $message->to($email)
+                                ->subject('Tu cuenta ha sido creada - EMPRESA');
+                    });
+
+                    Log::info(' Cuenta creada y vinculada', [
+                        'user_id' => $user->id,
+                        'purchase_id' => $purchase->id,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error(' Error enviando email de cuenta creada', [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            session()->forget('pending_account');
+        }
+    }
+
+    /**
+     *  Success page
      */
     public function success(Request $request)
     {
@@ -206,7 +326,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Failure page
+     *  Failure page
      */
     public function failure(Request $request)
     {
@@ -219,7 +339,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Pending page
+     *  Pending page
      */
     public function pending(Request $request)
     {
@@ -232,17 +352,17 @@ class PaymentController extends Controller
     }
 
     /**
-     * Webhook de Mercado Pago
+     *  Webhook de Mercado Pago
      */
     public function webhook(Request $request)
     {
-        Log::info('🔔 Webhook recibido', $request->all());
+        Log::info(' Webhook recibido', $request->all());
 
         try {
             $paymentId = $request->input('data.id');
             
             if (!$paymentId) {
-                Log::warning('⚠️ Webhook sin payment ID');
+                Log::warning(' Webhook sin payment ID');
                 return response()->json(['status' => 'ok']);
             }
 
@@ -262,11 +382,30 @@ class PaymentController extends Controller
                 return response()->json(['status' => 'error']);
             }
 
+            // Actualizar estado
             $purchase->update([
                 'mp_payment_id' => $payment->id,
                 'mp_payment_status' => $payment->status,
                 'status' => $payment->status === 'approved' ? 'approved' : 'pending',
             ]);
+
+            // Si fue aprobado, crear cuenta si es necesario
+            if ($payment->status === 'approved') {
+                $this->handleAccountCreation($purchase);
+
+                // Enviar notificación
+                $email = $purchase->user ? $purchase->user->email : $purchase->guest_email;
+                
+                if ($email) {
+                    Notification::route('mail', $email)
+                        ->notify(new PurchaseCompleted($purchase));
+                }
+
+                // Limpiar carrito si es usuario autenticado
+                if ($purchase->user) {
+                    $purchase->user->cartItems()->delete();
+                }
+            }
 
             Log::info(' Purchase actualizada desde webhook', [
                 'purchase_id' => $purchase->id,
@@ -278,6 +417,7 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             Log::error(' Error en webhook', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json(['status' => 'error'], 500);

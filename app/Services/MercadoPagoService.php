@@ -7,7 +7,7 @@ use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\MercadoPagoConfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-
+use App\Models\Purchase;
 class MercadoPagoService
 {
     protected $preferenceClient;
@@ -45,7 +45,7 @@ class MercadoPagoService
             return $payment;
 
         } catch (\Exception $e) {
-            Log::error('❌ Error obteniendo payment', [
+            Log::error(' Error obteniendo payment', [
                 'payment_id' => $paymentId,
                 'error' => $e->getMessage(),
             ]);
@@ -59,12 +59,12 @@ class MercadoPagoService
      */
     protected function isSimulationMode(): bool
     {
-        return config('app.env') === 'local' && 
-               config('services.mercadopago.simulation_mode', false);
+        return config('app.env') === 'local' &&
+            config('services.mercadopago.simulation_mode', false);
     }
 
     /**
-     * 📸 Crear preferencia para foto individual
+     *  Crear preferencia para foto individual
      */
     public function createPhotoPreference($photo, string $email): array
     {
@@ -104,7 +104,7 @@ class MercadoPagoService
             ];
         }
 
-        // 🌐 MODO REAL (PRODUCCIÓN / STAGING)
+        //  MODO REAL (PRODUCCIÓN / STAGING)
         $appUrl = config('app.url');
         $isLocal = app()->environment(['local', 'development']);
 
@@ -162,7 +162,7 @@ class MercadoPagoService
                 Log::error('🛑 MERCADO PAGO API RESPONSE:', (array) $apiDetails);
             }
 
-            Log::error('❌ [MP] Error creando preferencia', [
+            Log::error(' [MP] Error creando preferencia', [
                 'error' => $apiError,
                 'details' => $apiDetails,
                 'photo_id' => $photo->id,
@@ -175,7 +175,7 @@ class MercadoPagoService
     }
 
     /**
-     * 🛒 Crear preferencia para múltiples fotos (carrito)
+     *  Crear preferencia para múltiples fotos (carrito)
      */
     public function createCartPreference($photos, string $email, $purchase): array
     {
@@ -198,7 +198,7 @@ class MercadoPagoService
             ];
         }
 
-        // 🌐 MODO REAL (PRODUCCIÓN / STAGING)
+        //  MODO REAL (PRODUCCIÓN / STAGING)
         $appUrl = config('app.url');
         $isLocal = app()->environment(['local', 'development']);
 
@@ -260,7 +260,7 @@ class MercadoPagoService
                 Log::error('🛑 MERCADO PAGO API RESPONSE:', (array) $apiDetails);
             }
 
-            Log::error('❌ [MP] Error creando preferencia de carrito', [
+            Log::error(' [MP] Error creando preferencia de carrito', [
                 'error' => $apiError,
                 'details' => $apiDetails,
                 'photo_count' => $photos->count(),
@@ -270,5 +270,18 @@ class MercadoPagoService
             $purchase->update(['status' => 'failed']);
             throw new \Exception("Error al procesar la compra del carrito: " . $apiError);
         }
+    }
+
+
+    public function processSimulatedPayment($orderToken)
+    {
+        $purchase = Purchase::where('order_token', $orderToken)->firstOrFail();
+
+        $purchase->update([
+            'status' => 'approved',
+            'payment_id' => 'SIM-' . time(),
+        ]);
+
+        return $purchase;
     }
 }

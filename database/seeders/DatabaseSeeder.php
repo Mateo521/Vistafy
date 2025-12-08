@@ -128,7 +128,7 @@ class DatabaseSeeder extends Seeder
         echo " Base de datos poblada con éxito.\n";
         echo "---------------------------------------------\n";
         echo "👤 Admin:     admin@empresa.com / password\n";
-        echo "📸 Fotógrafo: foto@empresa.com / password\n";
+        echo " Fotógrafo: foto@empresa.com / password\n";
         echo "---------------------------------------------\n";
         echo "PRUEBAS:\n";
         echo "1. Entra al Dashboard > Mis Eventos: Verás tus 5 eventos.\n";

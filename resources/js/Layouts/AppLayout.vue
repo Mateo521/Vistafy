@@ -19,7 +19,7 @@ const handleScroll = () => {
     scrolled.value = window.scrollY > 20;
 };
 
-// 🛒 Cargar contador del carrito
+//  Cargar contador del carrito
 const loadCartCount = async () => {
     if (!user.value) {
         cartCount.value = 0;
@@ -129,7 +129,7 @@ const dashboardInfo = computed(() => {
                         <div :class="['h-4 w-px', isHomePage && !scrolled ? 'bg-white/20' : 'bg-slate-200']"></div>
 
                         <div class="flex items-center space-x-6">
-                            <!-- 🛒 Carrito (solo para usuarios autenticados) -->
+                            <!--  Carrito (solo para usuarios autenticados) -->
                             <Link v-if="user" :href="route('cart.index')" class="relative group">
                                 <ShoppingCartIcon :class="[
                                     'w-5 h-5 transition-colors duration-300',
@@ -284,7 +284,7 @@ const dashboardInfo = computed(() => {
                             Fotógrafos
                         </Link>
 
-                        <!-- 🛒 Carrito Mobile -->
+                        <!--  Carrito Mobile -->
                         <Link v-if="user" :href="route('cart.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 flex items-center justify-center gap-2">
                             <ShoppingCartIcon class="w-5 h-5" />

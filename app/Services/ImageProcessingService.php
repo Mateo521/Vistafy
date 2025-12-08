@@ -109,7 +109,7 @@ class ImageProcessingService
         try {
             // Verificar si la marca de agua está habilitada
             if (!config('app.watermark_enabled', true)) {
-                \Log::info('⚠️ Marca de agua deshabilitada en .env');
+                \Log::info(' Marca de agua deshabilitada en .env');
                 return $image;
             }
 
@@ -119,7 +119,7 @@ class ImageProcessingService
 
             // Verificar que existe el logo
             if (!file_exists($logoFullPath)) {
-                \Log::warning('⚠️ Logo de marca de agua no encontrado', ['path' => $logoFullPath]);
+                \Log::warning(' Logo de marca de agua no encontrado', ['path' => $logoFullPath]);
                 return $image;
             }
 

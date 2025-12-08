@@ -15,6 +15,8 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
+
+use App\Http\Controllers\FutureEventController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,6 +27,12 @@ use Inertia\Inertia;
 */
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
+
+
+
+Route::get('/api/future-events', [FutureEventController::class, 'index'])->name('api.future-events');
+Route::get('/future-events/{futureEvent}', [FutureEventController::class, 'show'])->name('future-events.show');
+
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
@@ -78,7 +86,7 @@ Route::prefix('pago')->name('payment.')->group(function () {
 
 
     // Callbacks de Mercado Pago (español)
-    // ⚠️ IMPORTANTE: Ahora reciben 'purchase_id' como parámetro de query
+    //  IMPORTANTE: Ahora reciben 'purchase_id' como parámetro de query
     Route::get('/exito', [PaymentController::class, 'success'])->name('success');
     Route::get('/fallo', [PaymentController::class, 'failure'])->name('failure');
     Route::get('/pendiente', [PaymentController::class, 'pending'])->name('pending');
@@ -116,7 +124,7 @@ Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download']
 
 
 
-// 🛒 Compras del Usuario
+//  Compras del Usuario
 Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(function () {
     Route::get('/', [PurchaseHistoryController::class, 'index'])->name('index');
     Route::get('/{purchase}/descargar/{photo}', [PurchaseHistoryController::class, 'download'])->name('download');

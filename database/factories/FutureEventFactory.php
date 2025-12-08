@@ -1,0 +1,65 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Carbon\Carbon;
+
+class FutureEventFactory extends Factory
+{
+    public function definition(): array
+    {
+        $name = $this->faker->sentence(3);
+        
+        //  Dimensiones para portada (landscape, igual que eventos)
+        $width = 1280;
+        $height = 720;
+        
+        // Generar fecha futura aleatoria (entre 1 y 90 días)
+        $eventDate = Carbon::now()->addDays($this->faker->numberBetween(1, 90));
+        
+        return [
+            'title' => rtrim($name, '.'),
+            'description' => $this->faker->paragraph(3),
+            'location' => $this->faker->city() . ', ' . $this->faker->state(),
+            'event_date' => $eventDate,
+            'expiry_date' => $eventDate->copy()->addDays(7), // 7 días después del evento
+            
+            //  Thumbnail aleatorio (igual que EventFactory)
+            'cover_image' => "https://picsum.photos/{$width}/{$height}?random=" . mt_rand(1, 99999),
+            
+            'status' => 'upcoming',
+        ];
+    }
+
+    /**
+     * Estado: Evento próximo (en 3-7 días)
+     */
+    public function soon(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'event_date' => Carbon::now()->addDays($this->faker->numberBetween(3, 7)),
+        ]);
+    }
+
+    /**
+     * Estado: Evento lejano (más de 30 días)
+     */
+    public function distant(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'event_date' => Carbon::now()->addDays($this->faker->numberBetween(30, 90)),
+        ]);
+    }
+
+    /**
+     * Estado: Evento que ya pasó (para testing de conversión)
+     */
+    public function past(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'event_date' => Carbon::now()->subDays($this->faker->numberBetween(1, 5)),
+            'status' => 'upcoming', // Mantener como upcoming para que sea convertido
+        ]);
+    }
+}

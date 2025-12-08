@@ -86,6 +86,10 @@ class Photographer extends Model
     {
         return $this->status === 'approved';
     }
+    public function futureEvents()
+    {
+        return $this->hasMany(FutureEvent::class);
+    }
 
     public function isPending(): bool
     {
@@ -223,5 +227,21 @@ class Photographer extends Model
     public function getFormattedRegionAttribute()
     {
         return $this->region ?? 'Sin especificar';
+    }
+
+    /**
+     *  Obtener el conteo de eventos futuros activos
+     */
+    public function getActiveFutureEventsCountAttribute(): int
+    {
+        return $this->futureEvents()->where('status', 'upcoming')->count();
+    }
+
+    /**
+     *  Obtener el conteo total de eventos (normales + futuros)
+     */
+    public function getTotalEventsCountAttribute(): int
+    {
+        return $this->events()->count() + $this->futureEvents()->count();
     }
 }

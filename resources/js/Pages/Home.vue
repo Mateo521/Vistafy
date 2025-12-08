@@ -1,9 +1,10 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link , usePage} from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import RecentPhotosSection from '@/Components/RecentPhotosSection.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLongRightIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline'; // Agregamos iconos de flecha
+import { ArrowLongRightIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline'; 
+import FutureEventsSection from '@/Components/FutureEventsSection.vue';
 const prevButton = ref(null);
 const nextButton = ref(null);
 // --- SWIPER ---
@@ -17,8 +18,10 @@ const props = defineProps({
     canRegister: Boolean,
     recentEvents: { type: Array, default: () => [] },
     recentPhotos: { type: Array, default: () => [] },
-    stats: { type: Object, default: () => ({ total_photos: 0, total_events: 0, total_photographers: 0 }) }
+    stats: { type: Object, default: () => ({ total_photos: 0, total_events: 0, total_photographers: 0 }) },
+    videoList: { type: Array, default: () => [] }  
 });
+
 
 // --- Stats Animation ---
 const animatedPhotos = ref(0);
@@ -36,34 +39,34 @@ const animateCount = (target, refVar, duration = 2000) => {
     }, 16);
 };
 
-// --- Video Logic ---
-const videos = [
-    '/videos/promo-3.mp4',
-    '/videos/promo-4.mp4',
-    '/videos/promo-5.mp4',
-];
+const videos = ref(props.videoList || []);
 
-const currentIndex = ref(0);
-const currentVideo = ref(videos[currentIndex.value]);
+
+const currentVideo = ref(null);
 const promoVideo = ref(null);
 
-onMounted(() => {
-    setTimeout(() => {
-        animateCount(props.stats.total_photos || 0, animatedPhotos);
-        animateCount(props.stats.total_events || 0, animatedEvents);
-        animateCount(props.stats.total_photographers || 0, animatedPhotographers);
-    }, 500);
+function randomVideo() {
+    return videos.value[Math.floor(Math.random() * videos.value.length)];
+}
 
+onMounted(() => {
+    //  Iniciar animación de estadísticas
+    animateCount(props.stats.total_events || 0, animatedEvents);
+    animateCount(props.stats.total_photos || 0, animatedPhotos);
+    animateCount(props.stats.total_photographers || 0, animatedPhotographers);
+
+    // Video logic
+    if (videos.value.length === 0) return;
+    currentVideo.value = randomVideo();
     const videoEl = promoVideo.value;
-    if (videoEl) {
-        videoEl.addEventListener('ended', () => {
-            currentIndex.value = (currentIndex.value + 1) % videos.length;
-            currentVideo.value = videos[currentIndex.value];
-            videoEl.load();
-            videoEl.play();
-        });
-    }
+    if (!videoEl) return;
+    videoEl.addEventListener("ended", () => {
+        currentVideo.value = randomVideo();
+        videoEl.load();
+        videoEl.play();
+    });
 });
+
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -80,6 +83,12 @@ const handleImageError = (e) => {
         parent.appendChild(placeholder);
     }
 };
+
+
+const page = usePage();
+const auth = page.props.auth;
+
+
 </script>
 
 <template>
@@ -137,7 +146,7 @@ const handleImageError = (e) => {
                     <div class="p-8 md:p-10 bg-gray-50/50 relative">
                         <div v-if="recentEvents && recentEvents.length > 0">
 
-                            <div class="relative"> <!-- relative group -->  
+                            <div class="relative"> <!-- relative group -->
 
                                 <Swiper :modules="[Navigation, Autoplay]" :slides-per-view="1" :space-between="30"
                                     :navigation="{
@@ -261,6 +270,11 @@ const handleImageError = (e) => {
                 </div>
             </div>
         </div>
+
+            <FutureEventsSection 
+            :is-authenticated="!!auth?.user"
+            :user-role="auth?.user?.role"
+        />
 
         <div class="py-16">
             <RecentPhotosSection :photos="recentPhotos" title="Últimas Incorporaciones"

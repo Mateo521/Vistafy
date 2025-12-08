@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;    // ← Para Route::has()
-
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class PublicGalleryController extends Controller
@@ -24,7 +24,7 @@ class PublicGalleryController extends Controller
             ->where('is_active', true)
             ->where('is_private', false)
             ->orderBy('event_date', 'desc')
-            ->take(6)
+            ->take(15) //  Cambiado de 6 a 15 para el carrusel
             ->get()
             ->map(function ($event) {
                 return [
@@ -35,10 +35,11 @@ class PublicGalleryController extends Controller
                     'location' => $event->location,
                     'event_date' => $event->event_date->format('Y-m-d'),
                     'cover_image_url' => $event->cover_image_url,
-                    'photos_count' => $event->photos()->where('is_active', true)->count(), //  Solo fotos activas
-                    'is_private' => $event->is_private, //  Mantener para mostrar badge
-                    'photographer' => optional($event->photographer)->business_name ?? optional($event->photographer->user)->name ?? 'Anónimo',
-                    //  NO exponer private_token
+                    'photos_count' => $event->photos()->where('is_active', true)->count(),
+                    'is_private' => $event->is_private,
+                    'photographer' => optional($event->photographer)->business_name
+                        ?? optional($event->photographer->user)->name
+                        ?? 'Anónimo',
                 ];
             });
 
@@ -56,49 +57,51 @@ class PublicGalleryController extends Controller
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
-
-                    //  Usar los nombres CORRECTOS de los campos
                     'original_url' => $photo->original_path
                         ? Storage::url($photo->original_path)
                         : null,
                     'thumbnail_url' => $photo->thumbnail_path
                         ? Storage::url($photo->thumbnail_path)
                         : null,
-                    'watermarked_url' => $photo->watermarked_path  //  watermarked_path (no watermark_path)
+                    'watermarked_url' => $photo->watermarked_path
                         ? Storage::url($photo->watermarked_path)
                         : null,
-
                     'downloads' => $photo->downloads ?? 0,
                     'created_at' => $photo->created_at->toISOString(),
-
                     'event_name' => optional($photo->event)->name,
                     'event_slug' => optional($photo->event)->slug,
                     'event_is_private' => optional($photo->event)->is_private,
-
                     'photographer_name' => optional($photo->photographer)->business_name
                         ?? optional($photo->photographer->user)->name
                         ?? null,
                 ];
             });
 
-
-        // Estadísticas - Solo públicos
+        //  Estadísticas mejoradas (incluye eventos futuros para mostrar actividad)
         $stats = [
             'total_photos' => Photo::where('is_active', true)->count(),
-            'total_events' => Event::where('is_active', true)->count(),
+            'total_events' => Event::where('is_active', true)->count()
+                + \App\Models\FutureEvent::upcoming()->count(), //  Suma futuros
             'total_photographers' => Photographer::whereHas('user', function ($query) {
                 $query->where('is_active', true);
             })->count(),
         ];
 
+        $videoFiles = collect(File::files(public_path('videos')))
+            ->filter(fn($file) => preg_match('/\.(mp4|mov|webm|m4v)$/i', $file->getFilename()))
+            ->map(fn($file) => asset('videos/' . $file->getFilename()))
+            ->values();
+
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
             'stats' => $stats,
+            'videoList' => $videoFiles,
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
         ]);
     }
+
 
 
 
