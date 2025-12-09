@@ -142,7 +142,6 @@ class FutureEventManagementController extends Controller
             'remove_image' => 'boolean',
         ]);
 
-        // Combinar fecha + hora
         $eventDateTime = Carbon::parse($validated['event_date']);
         if (isset($validated['event_time'])) {
             $time = Carbon::parse($validated['event_time']);
@@ -151,15 +150,17 @@ class FutureEventManagementController extends Controller
 
         $expiryDate = $eventDateTime->copy()->addDays(7);
 
-        // Manejar imagen
         $coverImagePath = $opportunity->cover_image;
 
+        // Si marcó "eliminar imagen"
         if ($request->boolean('remove_image') && $coverImagePath) {
             Storage::disk('public')->delete($coverImagePath);
             $coverImagePath = null;
         }
 
+        // Si subió nueva imagen
         if ($request->hasFile('cover_image')) {
+            // Eliminar la anterior
             if ($coverImagePath) {
                 Storage::disk('public')->delete($coverImagePath);
             }
@@ -178,6 +179,7 @@ class FutureEventManagementController extends Controller
         return redirect()->route('photographer.opportunities.index')
             ->with('success', 'Oportunidad actualizada exitosamente');
     }
+
 
     /**
      *  Eliminar oportunidad

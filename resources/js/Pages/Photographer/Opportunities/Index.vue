@@ -61,7 +61,7 @@ const getDaysText = (days) => {
 
 
 
-                            
+
                         <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
                             <CalendarIcon class="w-12 h-12" />
                         </div>
