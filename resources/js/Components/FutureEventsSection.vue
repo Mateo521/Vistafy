@@ -337,7 +337,7 @@ const handleImageError = (e) => {
                             <!-- Si está autenticado pero no es fotógrafo -->
                             <div v-else
                                 class="text-slate-600 text-sm bg-yellow-50 border border-yellow-200 rounded-lg px-6 py-4">
-                                <p class="font-semibold mb-2">🔒 Acceso Restringido</p>
+                                <p class="font-semibold mb-2"> Acceso Restringido</p>
                                 <p>Contactá al administrador para cambiar tu rol a <strong>Fotógrafo</strong></p>
                             </div>
                         </div>
