@@ -111,7 +111,7 @@ const mobileNavLinkClasses = (active) => {
                         <Link href="/"
                             class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mr-8 transition-colors flex items-center gap-1">
                             <GlobeAltIcon class="w-4 h-4" />
-                            <span>Ver Sitio</span>
+                            <span>Volver al sitio</span>
                         </Link>
 
                         <div class="relative ml-3">
@@ -247,12 +247,12 @@ const mobileNavLinkClasses = (active) => {
 
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')"
                             class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Mi Perfil Público
+                            Mi Perfil Público 
                         </Link>
 
                         <Link href="/"
                             class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Ver Sitio Web
+                            Volver al sitio  
                         </Link>
 
                         <Link :href="route('logout')" method="post" as="button"

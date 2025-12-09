@@ -116,10 +116,10 @@ const auth = page.props.auth;
                     Acceda a su galería privada o explore nuestra cobertura de eventos recientes con la calidad que nos
                     distingue.
                 </p>
-                <Link :href="route('gallery.index')"
+                <!--Link :href="route('gallery.index')"
                     class="group relative px-8 py-3 overflow-hidden bg-white text-slate-900 text-sm font-bold uppercase tracking-widest hover:bg-gray-100 transition duration-300">
                 <span class="relative z-10">Buscar mis Fotos</span>
-                </Link>
+                </Link-->
             </div>
         </div>
 
