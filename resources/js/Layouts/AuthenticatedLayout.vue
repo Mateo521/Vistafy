@@ -2,11 +2,16 @@
 import { ref, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { UserCircleIcon, ArrowRightOnRectangleIcon, Cog6ToothIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
+import ToastContainer from '@/Components/ToastContainer.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+import CustomCursor from '@/Components/CustomCursor.vue';
+import { useConfirm } from '@/Composables/useConfirm';
 
 const showingNavigationDropdown = ref(false);
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const { confirmState, handleConfirm, handleCancel } = useConfirm();
 
 // Obtener foto de perfil
 const profilePhotoUrl = computed(() => {
@@ -53,6 +58,7 @@ const mobileNavLinkClasses = (active) => {
 </script>
 
 <template>
+    <CustomCursor />
     <div class="min-h-screen bg-white font-sans text-slate-900">
 
         <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -247,12 +253,12 @@ const mobileNavLinkClasses = (active) => {
 
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')"
                             class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Mi Perfil Público 
+                            Mi Perfil Público
                         </Link>
 
                         <Link href="/"
                             class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Volver al sitio  
+                            Volver al sitio
                         </Link>
 
                         <Link :href="route('logout')" method="post" as="button"
@@ -283,5 +289,11 @@ const mobileNavLinkClasses = (active) => {
                 </span>
             </div>
         </footer>
+        <ToastContainer />
+        <ConfirmDialog :show="confirmState.show" :title="confirmState.title" :message="confirmState.message"
+            :confirm-text="confirmState.confirmText" :cancel-text="confirmState.cancelText" :type="confirmState.type"
+            @confirm="handleConfirm" @cancel="handleCancel" @close="handleCancel" />
     </div>
+
+
 </template>

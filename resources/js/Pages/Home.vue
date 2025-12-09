@@ -1,10 +1,12 @@
 <script setup>
-import { Head, Link , usePage} from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import RecentPhotosSection from '@/Components/RecentPhotosSection.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLongRightIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline'; 
+import { ArrowLongRightIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
 import FutureEventsSection from '@/Components/FutureEventsSection.vue';
+import FutureEventsMap from '@/Components/FutureEventsMap.vue';
+
 const prevButton = ref(null);
 const nextButton = ref(null);
 // --- SWIPER ---
@@ -17,9 +19,13 @@ const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     recentEvents: { type: Array, default: () => [] },
+    futureEvents: {        //  AGREGAR ESTO
+        type: Array,
+        default: () => []
+    },
     recentPhotos: { type: Array, default: () => [] },
     stats: { type: Object, default: () => ({ total_photos: 0, total_events: 0, total_photographers: 0 }) },
-    videoList: { type: Array, default: () => [] }  
+    videoList: { type: Array, default: () => [] }
 });
 
 
@@ -48,6 +54,9 @@ const promoVideo = ref(null);
 function randomVideo() {
     return videos.value[Math.floor(Math.random() * videos.value.length)];
 }
+console.log('🔍 Props en Home.vue:', props);
+console.log('🔍 futureEvents recibidos:', props.futureEvents);
+console.log('🔍 Cantidad:', props.futureEvents?.length || 0);
 
 onMounted(() => {
     //  Iniciar animación de estadísticas
@@ -137,8 +146,8 @@ const auth = page.props.auth;
                         </div>
                         <Link :href="route('events.index')"
                             class="group flex items-center text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 transition">
-                        Ver todo el archivo
-                        <ArrowLongRightIcon class="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition" />
+                            Ver todo el archivo
+                            <ArrowLongRightIcon class="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition" />
                         </Link>
                     </div>
 
@@ -162,66 +171,66 @@ const auth = page.props.auth;
                                         <Link :href="route('events.show', event.slug)"
                                             class="group block bg-white rounded-sm shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 h-full flex flex-col">
 
-                                        <div class="relative h-60 overflow-hidden bg-gray-200 flex-shrink-0">
-                                            <img v-if="event.cover_image_url" :src="event.cover_image_url"
-                                                :alt="event.name"
-                                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter saturate-[0.8] group-hover:saturate-100"
-                                                @error="handleImageError" />
-                                            <div v-else
-                                                class="w-full h-full flex items-center justify-center bg-gray-100">
-                                                <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="1"
-                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-
-                                            <div
-                                                class="absolute top-0 right-0 bg-white/95 backdrop-blur px-4 py-2 shadow-sm border-b border-l border-gray-100">
-                                                <div
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-900">
-                                                    {{ formatDate(event.event_date) }}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="p-6 flex flex-col flex-1">
-                                            <h3
-                                                class="text-xl font-serif font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-blue-900 transition-colors">
-                                                {{ event.name }}
-                                            </h3>
-
-                                            <div class="flex flex-col space-y-2 mb-6 flex-1">
-                                                <div v-if="event.location"
-                                                    class="flex items-center text-xs text-slate-500 uppercase tracking-wide">
-                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
+                                            <div class="relative h-60 overflow-hidden bg-gray-200 flex-shrink-0">
+                                                <img v-if="event.cover_image_url" :src="event.cover_image_url"
+                                                    :alt="event.name"
+                                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter saturate-[0.8] group-hover:saturate-100"
+                                                    @error="handleImageError" />
+                                                <div v-else
+                                                    class="w-full h-full flex items-center justify-center bg-gray-100">
+                                                    <svg class="w-10 h-10 text-gray-300" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                    <span class="truncate">{{ event.location }}</span>
-                                                </div>
-                                                <div
-                                                    class="flex items-center text-xs text-slate-500 uppercase tracking-wide">
-                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
+                                                            stroke-width="1"
                                                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                     </svg>
-                                                    {{ event.photos_count || 0 }} Fotos
+                                                </div>
+
+                                                <div
+                                                    class="absolute top-0 right-0 bg-white/95 backdrop-blur px-4 py-2 shadow-sm border-b border-l border-gray-100">
+                                                    <div
+                                                        class="text-[10px] font-bold uppercase tracking-wider text-slate-900">
+                                                        {{ formatDate(event.event_date) }}
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div
-                                                class="w-full text-center py-3 border border-slate-900 text-slate-900 text-xs font-bold uppercase tracking-widest group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">
-                                                Ver Galería
+                                            <div class="p-6 flex flex-col flex-1">
+                                                <h3
+                                                    class="text-xl font-serif font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-blue-900 transition-colors">
+                                                    {{ event.name }}
+                                                </h3>
+
+                                                <div class="flex flex-col space-y-2 mb-6 flex-1">
+                                                    <div v-if="event.location"
+                                                        class="flex items-center text-xs text-slate-500 uppercase tracking-wide">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        </svg>
+                                                        <span class="truncate">{{ event.location }}</span>
+                                                    </div>
+                                                    <div
+                                                        class="flex items-center text-xs text-slate-500 uppercase tracking-wide">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                        {{ event.photos_count || 0 }} Fotos
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    class="w-full text-center py-3 border border-slate-900 text-slate-900 text-xs font-bold uppercase tracking-widest group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">
+                                                    Ver Galería
+                                                </div>
                                             </div>
-                                        </div>
                                         </Link>
                                     </SwiperSlide>
                                 </Swiper>
@@ -271,10 +280,12 @@ const auth = page.props.auth;
             </div>
         </div>
 
-            <FutureEventsSection 
-            :is-authenticated="!!auth?.user"
-            :user-role="auth?.user?.role"
-        />
+        <FutureEventsSection :is-authenticated="!!auth?.user" :user-role="auth?.user?.role" />
+
+        <div class="h-[500px] rounded-lg overflow-hidden shadow-lg">
+            <FutureEventsMap :events="futureEvents" />
+        </div>
+
 
         <div class="py-16">
             <RecentPhotosSection :photos="recentPhotos" title="Últimas Incorporaciones"

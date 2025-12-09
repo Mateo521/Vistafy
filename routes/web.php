@@ -29,12 +29,14 @@ use Inertia\Inertia;
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
+//  EVENTOS FUTUROS - SOLO EN ESPAÑOL
+Route::prefix('eventos-futuros')->name('future-events.')->group(function () {
+    // API para el mapa (JSON)
+    Route::get('/api', [FutureEventController::class, 'index'])->name('api');
 
-
-Route::get('/api/future-events', [FutureEventController::class, 'index'])->name('api.future-events');
-Route::get('/future-events/{futureEvent}', [FutureEventController::class, 'show'])->name('future-events.show');
-Route::get('/future-events/{id}', [FutureEventController::class, 'show'])
-    ->name('future-events.show');
+    // Detalle de evento futuro
+    Route::get('/{futureEvent}', [FutureEventController::class, 'show'])->name('show');
+});
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
@@ -43,6 +45,7 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
 });
 
+//  EVENTOS (pasados/realizados) - EN ESPAÑOL
 Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
@@ -50,6 +53,7 @@ Route::prefix('eventos')->name('events.')->group(function () {
 
 Route::get('/fotografos', [PhotographerController::class, 'index'])->name('photographers.index');
 Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name('photographers.show');
+
 
 /*
 |--------------------------------------------------------------------------

@@ -13,7 +13,7 @@ use Carbon\Carbon;
 class FutureEventManagementController extends Controller
 {
     /**
-     *  Listar oportunidades del fotógrafo
+     * 📋 Listar oportunidades del fotógrafo
      */
     public function index()
     {
@@ -28,6 +28,8 @@ class FutureEventManagementController extends Controller
                     'title' => $event->title,
                     'description' => $event->description,
                     'location' => $event->location,
+                    'latitude' => $event->latitude,          // 🆕
+                    'longitude' => $event->longitude,        // 🆕
                     'event_date' => $event->event_date,
                     'formatted_date' => $event->formatted_date,
                     'days_until' => $event->daysUntil(),
@@ -43,16 +45,33 @@ class FutureEventManagementController extends Controller
     }
 
     /**
-     *  Formulario para crear oportunidad
+     * 📝 Formulario para crear oportunidad (CON DATOS DEL FOTÓGRAFO)
      */
     public function create()
     {
-        return Inertia::render('Photographer/Opportunities/Create');
+        $photographer = Auth::user()->photographer;
+
+        //  Verificar que el fotógrafo existe
+        if (!$photographer) {
+            return redirect()->route('photographer.dashboard')
+                ->with('error', 'No se encontró el perfil de fotógrafo');
+        }
+
+        return Inertia::render('Photographer/Opportunities/Create', [
+            'photographer' => [
+                'id' => $photographer->id,
+                'latitude' => $photographer->latitude ?? -38.4161,
+                'longitude' => $photographer->longitude ?? -63.6167,
+                'region' => $photographer->region ?? 'Argentina',
+            ]
+        ]);
     }
 
-    /**
-     *  Guardar nueva oportunidad
-     */
+
+
+
+
+
     public function store(Request $request)
     {
         $photographer = Auth::user()->photographer;
@@ -61,9 +80,11 @@ class FutureEventManagementController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
             'location' => 'required|string|max:255',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
             'event_date' => 'required|date|after:today',
             'event_time' => 'nullable|date_format:H:i',
-            'cover_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120', // 5MB
+            'cover_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
         ]);
 
         // Combinar fecha + hora
@@ -79,14 +100,17 @@ class FutureEventManagementController extends Controller
         // Subir imagen
         $coverImagePath = null;
         if ($request->hasFile('cover_image')) {
-            $coverImagePath = $request->file('cover_image')->store('future-events', 'public');
+            $coverImagePath = $request->file('cover_image')->store('eventos-futuros', 'public');
         }
 
+        //  CONVERSIÓN EXPLÍCITA A FLOAT
         FutureEvent::create([
             'photographer_id' => $photographer->id,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'location' => $validated['location'],
+            'latitude' => (float) $validated['latitude'],      //  FORZAR FLOAT
+            'longitude' => (float) $validated['longitude'],    //  FORZAR FLOAT
             'event_date' => $eventDateTime,
             'expiry_date' => $expiryDate,
             'cover_image' => $coverImagePath,
@@ -97,8 +121,12 @@ class FutureEventManagementController extends Controller
             ->with('success', 'Oportunidad creada exitosamente');
     }
 
+
+
+
+
     /**
-     *  Formulario para editar oportunidad
+     *  Formulario para editar oportunidad (CON COORDENADAS)
      */
     public function edit($id)
     {
@@ -113,17 +141,18 @@ class FutureEventManagementController extends Controller
                 'title' => $opportunity->title,
                 'description' => $opportunity->description,
                 'location' => $opportunity->location,
+                'latitude' => $opportunity->latitude,            // 🆕
+                'longitude' => $opportunity->longitude,          // 🆕
                 'event_date' => $opportunity->event_date->format('Y-m-d'),
                 'event_time' => $opportunity->event_date->format('H:i'),
-                'cover_image' => $opportunity->cover_image_url, // ← Usar el accessor
+                'cover_image' => $opportunity->cover_image_url,
                 'status' => $opportunity->status,
             ],
         ]);
     }
 
-
     /**
-     *  Actualizar oportunidad
+     * 🔄 Actualizar oportunidad (CON COORDENADAS)
      */
     public function update(Request $request, $id)
     {
@@ -136,6 +165,8 @@ class FutureEventManagementController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
             'location' => 'required|string|max:255',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
             'event_date' => 'required|date',
             'event_time' => 'nullable|date_format:H:i',
             'cover_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
@@ -152,25 +183,25 @@ class FutureEventManagementController extends Controller
 
         $coverImagePath = $opportunity->cover_image;
 
-        // Si marcó "eliminar imagen"
         if ($request->boolean('remove_image') && $coverImagePath) {
             Storage::disk('public')->delete($coverImagePath);
             $coverImagePath = null;
         }
 
-        // Si subió nueva imagen
         if ($request->hasFile('cover_image')) {
-            // Eliminar la anterior
             if ($coverImagePath) {
                 Storage::disk('public')->delete($coverImagePath);
             }
-            $coverImagePath = $request->file('cover_image')->store('future-events', 'public');
+            $coverImagePath = $request->file('cover_image')->store('eventos-futuros', 'public');
         }
 
+        //  CONVERSIÓN EXPLÍCITA A FLOAT
         $opportunity->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'location' => $validated['location'],
+            'latitude' => (float) $validated['latitude'],      //  FORZAR FLOAT
+            'longitude' => (float) $validated['longitude'],    //  FORZAR FLOAT
             'event_date' => $eventDateTime,
             'expiry_date' => $expiryDate,
             'cover_image' => $coverImagePath,
@@ -180,9 +211,8 @@ class FutureEventManagementController extends Controller
             ->with('success', 'Oportunidad actualizada exitosamente');
     }
 
-
     /**
-     *  Eliminar oportunidad
+     * 🗑️ Eliminar oportunidad
      */
     public function destroy($id)
     {

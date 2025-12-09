@@ -2,6 +2,7 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import CustomCursor from '@/Components/CustomCursor.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -42,6 +43,7 @@ const submit = () => {
 </script>
 
 <template>
+    <CustomCursor/>
     <GuestLayout>
         <Head title="Solicitud Profesional" />
 

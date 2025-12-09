@@ -1,20 +1,71 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import MapPicker from '@/Components/MapPicker.vue';
+import { ArrowLeftIcon, PhotoIcon, XMarkIcon, MapPinIcon } from '@heroicons/vue/24/outline';
 
-import { ArrowLeftIcon, PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+const props = defineProps({
+    photographer: {
+        type: Object,
+        default: () => ({
+            latitude: -38.4161,
+            longitude: -63.6167,
+            region: 'Argentina'
+        })
+    }
+});
+
+//  FORZAR conversión a número con parseFloat
+const getNumericValue = (value, defaultVal) => {
+    const num = parseFloat(value);
+    return isNaN(num) ? defaultVal : num;
+};
+
+const initialLat = getNumericValue(props.photographer?.latitude, -38.4161);
+const initialLng = getNumericValue(props.photographer?.longitude, -63.6167);
+
+//  Inicializar coordinates como números puros
+const coordinates = ref({
+    lat: initialLat,
+    lng: initialLng
+});
 
 const form = useForm({
     title: '',
     description: '',
     location: '',
+    latitude: initialLat,
+    longitude: initialLng,
     event_date: '',
     event_time: '',
     cover_image: null,
 });
 
 const imagePreview = ref(null);
+
+//  Computed seguro para mostrar coordenadas
+const formattedCoordinates = computed(() => {
+    try {
+        const lat = parseFloat(coordinates.value.lat);
+        const lng = parseFloat(coordinates.value.lng);
+
+        if (isNaN(lat) || isNaN(lng)) {
+            return 'Coordenadas no válidas';
+        }
+
+        return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    } catch (error) {
+        console.error('Error formatting coordinates:', error);
+        return 'Error en coordenadas';
+    }
+});
+
+// Actualizar coordenadas en el form
+watch(coordinates, (newVal) => {
+    form.latitude = parseFloat(newVal.lat);
+    form.longitude = parseFloat(newVal.lng);
+}, { deep: true });
 
 const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -27,6 +78,10 @@ const handleImageUpload = (event) => {
 const removeImage = () => {
     form.cover_image = null;
     imagePreview.value = null;
+};
+
+const updateLocation = (address) => {
+    form.location = address;
 };
 
 const submit = () => {
@@ -90,16 +145,30 @@ const submit = () => {
                     </span>
                 </div>
 
-                <!-- Ubicación -->
+                <!-- 🆕 MAPA SELECTOR DE UBICACIÓN -->
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-900 mb-2">
-                        Ubicación *
+                    <label class="block text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+                        <MapPinIcon class="w-5 h-5" />
+                        Ubicación del Evento *
                     </label>
-                    <input v-model="form.location" type="text" placeholder="Ej: Buenos Aires, Argentina"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+
+                    <MapPicker v-model="coordinates"
+                        :initial-center="{ lat: photographer.latitude, lng: photographer.longitude }" :zoom="10"
+                        @update:location="updateLocation" />
+
+                    <input v-model="form.location" type="text" placeholder="La dirección se actualizará automáticamente"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent mt-4"
                         required />
-                    <span v-if="form.errors.location" class="text-xs text-red-600 mt-1">
+
+                    <p class="text-xs text-slate-500 mt-2">
+                         Coordenadas: {{ coordinates.lat.toFixed(6) }}, {{ coordinates.lng.toFixed(6) }}
+                    </p>
+
+                    <span v-if="form.errors.location" class="text-xs text-red-600 mt-1 block">
                         {{ form.errors.location }}
+                    </span>
+                    <span v-if="form.errors.latitude || form.errors.longitude" class="text-xs text-red-600 mt-1 block">
+                        Error en coordenadas
                     </span>
                 </div>
 

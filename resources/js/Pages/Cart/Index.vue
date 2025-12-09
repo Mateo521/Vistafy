@@ -2,19 +2,22 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, computed } from 'vue';
-import { 
-    ArrowLeftIcon, 
+import {
+    ArrowLeftIcon,
     XMarkIcon,
     TrashIcon,
     ShoppingBagIcon,
-    BeakerIcon // Para el ícono de simulación
+    BeakerIcon
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
+import { useToast } from '@/Composables/useToast';  
 
 const props = defineProps({
     items: Array,
     total: Number,
 });
+
+const { success, error } = useToast(); 
 
 const processing = ref(false);
 const removingItems = ref(new Set());
@@ -31,15 +34,16 @@ const formatPrice = (amount) => {
 
 const removeItem = async (photoId) => {
     if (removingItems.value.has(photoId)) return;
-    
+
     removingItems.value.add(photoId);
 
     try {
         await axios.delete(route('cart.remove', photoId));
+        success('Fotografía eliminada del carrito');  
         router.reload({ only: ['items', 'total'] });
-    } catch (error) {
-        console.error('Error eliminando item:', error);
-        alert('Error al eliminar el item');
+    } catch (err) {
+        console.error('Error eliminando item:', err);
+        error('Error al eliminar la fotografía');  
     } finally {
         removingItems.value.delete(photoId);
     }
@@ -47,46 +51,44 @@ const removeItem = async (photoId) => {
 
 const clearCart = async () => {
     if (!confirm('¿Estás seguro de vaciar el carrito?')) return;
-    
+
     processing.value = true;
 
     try {
         await axios.delete(route('cart.clear'));
+        success('Carrito vaciado correctamente'); //  Toast
         router.reload({ only: ['items', 'total'] });
-    } catch (error) {
-        console.error('Error vaciando carrito:', error);
-        alert('Error al vaciar el carrito');
+    } catch (err) {
+        console.error('Error vaciando carrito:', err);
+        error('Error al vaciar el carrito'); //  Toast
     } finally {
         processing.value = false;
     }
 };
 
-//  Checkout con simulación
 const checkout = async (simulate = false) => {
     if (processing.value || itemCount.value === 0) return;
-    
+
     processing.value = true;
 
     try {
         const photoIds = props.items.map(item => item.photo_id);
-        
+
         const response = await axios.post(route('payment.initiate.cart'), {
             photo_ids: photoIds,
-            simulate_payment: simulate //  Flag de simulación
+            simulate_payment: simulate
         });
 
         if (response.data.success) {
             if (response.data.simulated) {
-                // Redirección a success en simulación
                 window.location.href = response.data.redirect_url;
             } else {
-                // Redirección a Mercado Pago en producción
                 window.location.href = response.data.sandbox_init_point;
             }
         }
-    } catch (error) {
-        console.error('Error en checkout:', error);
-        alert(error.response?.data?.message || 'Error al procesar el pago');
+    } catch (err) {
+        console.error('Error en checkout:', err);
+        error(err.response?.data?.message || 'Error al procesar el pago');  
     } finally {
         processing.value = false;
     }
@@ -105,15 +107,16 @@ const handleImageError = (e) => {
 </script>
 
 <template>
+
     <Head title="Carrito de Compras" />
 
     <AppLayout>
         <div class="min-h-screen bg-white">
-            
+
             <!-- Header -->
             <div class="border-b border-gray-100 bg-white sticky top-0 z-30">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <Link :href="route('gallery.index')" 
+                    <Link :href="route('gallery.index')"
                         class="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 flex items-center gap-2 transition-colors">
                         <ArrowLeftIcon class="w-3 h-3" /> Seguir Comprando
                     </Link>
@@ -127,7 +130,7 @@ const handleImageError = (e) => {
 
             <!-- Content -->
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                
+
                 <!-- Title -->
                 <div class="mb-12">
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-2">
@@ -155,23 +158,21 @@ const handleImageError = (e) => {
 
                 <!-- Cart Items -->
                 <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    
+
                     <!-- Items List -->
                     <div class="lg:col-span-2 space-y-4">
-                        <div v-for="item in items" :key="item.id" 
+                        <div v-for="item in items" :key="item.id"
                             class="bg-white border border-gray-100 rounded-sm p-4 hover:border-gray-200 transition-colors group">
-                            
+
                             <div class="flex gap-6">
-                                
+
                                 <!-- Thumbnail -->
                                 <Link :href="route('gallery.show', item.photo.unique_id)"
                                     class="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-sm overflow-hidden">
-                                    <img v-if="item.photo.thumbnail_url"
-                                        :src="item.photo.thumbnail_url" 
+                                    <img v-if="item.photo.thumbnail_url" :src="item.photo.thumbnail_url"
                                         :alt="item.photo.title"
                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale-[0.3] group-hover:grayscale-0"
-                                        @error="handleImageError"
-                                    />
+                                        @error="handleImageError" />
                                 </Link>
 
                                 <!-- Info -->
@@ -187,7 +188,7 @@ const handleImageError = (e) => {
                                             </p>
                                         </div>
 
-                                        <button @click="removeItem(item.photo_id)" 
+                                        <button @click="removeItem(item.photo_id)"
                                             :disabled="removingItems.has(item.photo_id)"
                                             class="text-slate-300 hover:text-red-600 transition-colors disabled:opacity-50">
                                             <XMarkIcon class="w-5 h-5" />
@@ -195,11 +196,12 @@ const handleImageError = (e) => {
                                     </div>
 
                                     <div class="flex flex-wrap gap-2 mb-3">
-                                        <span v-if="item.photo.event" 
+                                        <span v-if="item.photo.event"
                                             class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-1 rounded-sm">
                                             {{ item.photo.event.name }}
                                         </span>
-                                        <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-1 rounded-sm">
+                                        <span
+                                            class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-1 rounded-sm">
                                             {{ item.photo.width }} x {{ item.photo.height }} px
                                         </span>
                                     </div>
@@ -218,8 +220,9 @@ const handleImageError = (e) => {
                     <!-- Summary Sidebar -->
                     <div class="lg:col-span-1">
                         <div class="bg-white border border-gray-200 rounded-sm p-8 sticky top-24">
-                            
-                            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-3">
+
+                            <h2
+                                class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-3">
                                 Resumen de Compra
                             </h2>
 
@@ -266,8 +269,9 @@ const handleImageError = (e) => {
                                     Pago seguro a través de Mercado Pago
                                 </p>
                                 <div class="flex items-center justify-center gap-2 pt-3 border-t border-gray-100">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                     </svg>
                                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600">

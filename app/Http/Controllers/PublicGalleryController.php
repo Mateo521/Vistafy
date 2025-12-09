@@ -24,7 +24,7 @@ class PublicGalleryController extends Controller
             ->where('is_active', true)
             ->where('is_private', false)
             ->orderBy('event_date', 'desc')
-            ->take(15) //  Cambiado de 6 a 15 para el carrusel
+            ->take(15)
             ->get()
             ->map(function ($event) {
                 return [
@@ -77,11 +77,43 @@ class PublicGalleryController extends Controller
                 ];
             });
 
-        //  Estadísticas mejoradas (incluye eventos futuros para mostrar actividad)
+        //  EVENTOS FUTUROS CON COORDENADAS PARA EL MAPA
+        $futureEvents = \App\Models\FutureEvent::with('photographer.user')
+            ->upcoming()
+            ->orderBy('event_date', 'asc')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'description' => $event->description,
+                    'location' => $event->location,
+                    'latitude' => $event->latitude ? (float) $event->latitude : null,
+                    'longitude' => $event->longitude ? (float) $event->longitude : null,
+                    'event_date' => $event->event_date,
+                    'formatted_date' => $event->formatted_date,
+                    'days_until' => $event->daysUntil(),
+                    'cover_image' => $event->cover_image_url,
+                    'status' => $event->status,
+                    'photographer' => [
+                        'id' => $event->photographer->id,
+                        'business_name' => $event->photographer->business_name,
+                        'name' => $event->photographer->user->name,
+                        'slug' => $event->photographer->slug,
+                    ],
+                ];
+            })
+            ->filter(function ($event) {
+                //  Filtrar solo eventos con coordenadas válidas
+                return $event['latitude'] !== null && $event['longitude'] !== null;
+            })
+            ->values(); // Reiniciar índices del array
+
+        // Estadísticas mejoradas (incluye eventos futuros para mostrar actividad)
         $stats = [
             'total_photos' => Photo::where('is_active', true)->count(),
             'total_events' => Event::where('is_active', true)->count()
-                + \App\Models\FutureEvent::upcoming()->count(), //  Suma futuros
+                + \App\Models\FutureEvent::upcoming()->count(),
             'total_photographers' => Photographer::whereHas('user', function ($query) {
                 $query->where('is_active', true);
             })->count(),
@@ -92,15 +124,23 @@ class PublicGalleryController extends Controller
             ->map(fn($file) => asset('videos/' . $file->getFilename()))
             ->values();
 
+        // 🔍 DEBUG: Ver qué se envía (puedes quitar esto después)
+        \Log::info('Home - Future Events:', [
+            'count' => $futureEvents->count(),
+            'events' => $futureEvents->toArray(),
+        ]);
+
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
+            'futureEvents' => $futureEvents,  //  AGREGAR ESTO
             'stats' => $stats,
             'videoList' => $videoFiles,
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
         ]);
     }
+
 
 
 

@@ -12,8 +12,8 @@ class FutureEventController extends Controller
 {
     /**
      *  Listar eventos futuros para el Home
-     * - Público: 3 eventos
-     * - Fotógrafos: Todos los eventos
+     * - Público: 6 eventos
+     * - Fotógrafos: Todos los eventos (paginados)
      */
     public function index(Request $request)
     {
@@ -22,12 +22,17 @@ class FutureEventController extends Controller
             $isPhotographer = $user && $user->role === 'photographer';
             $isAuthenticated = $user !== null;
 
-            // Total de eventos disponibles
-            $totalEvents = FutureEvent::upcoming()->count();
+            // Total de eventos disponibles CON COORDENADAS (para el mapa)
+            $totalEvents = FutureEvent::upcoming()
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->count();
 
-            // Query base
+            // Query base - SOLO EVENTOS CON COORDENADAS
             $baseQuery = FutureEvent::with('photographer.user')
                 ->upcoming()
+                ->whereNotNull('latitude')
+                ->whereNotNull('longitude')
                 ->orderBy('event_date', 'asc');
 
             // ============================================
@@ -55,7 +60,6 @@ class FutureEventController extends Controller
 
             // ============================================
             // CASO 2 y 3: NO FOTÓGRAFO → Solo 6 eventos
-            // (autenticado o no, da igual)
             // ============================================
             $futureEvents = $baseQuery->take(6)->get()->map(function ($event) {
                 return $this->mapEventData($event);
@@ -66,10 +70,10 @@ class FutureEventController extends Controller
                 'is_photographer' => false,
                 'is_authenticated' => $isAuthenticated,
                 'total_events' => $totalEvents,
-                'showing_limited' => true, //  Siempre limitado si no es fotógrafo
+                'showing_limited' => true,
                 'current_page' => 1,
                 'last_page' => 1,
-                'has_more_pages' => false, //  NUNCA hay más páginas para no-fotógrafos
+                'has_more_pages' => false,
                 'per_page' => 6,
             ]);
 
@@ -93,25 +97,33 @@ class FutureEventController extends Controller
     }
 
     /**
-     * Helper: Mapear datos de un evento
+     *  Helper: Mapear datos de un evento (INCLUYENDO COORDENADAS)
      */
     private function mapEventData($event)
     {
-        $photographer = $event->photographer;
-
         return [
             'id' => $event->id,
             'title' => $event->title,
             'description' => $event->description,
             'location' => $event->location,
+            'latitude' => $event->latitude ? (float) $event->latitude : null,
+            'longitude' => $event->longitude ? (float) $event->longitude : null,
             'event_date' => $event->event_date->format('Y-m-d H:i:s'),
             'formatted_date' => $event->formatted_date,
             'days_until' => $event->daysUntil(),
             'cover_image' => $event->cover_image_url,
+            'status' => $event->status,
             'photographer' => [
-                'id' => $photographer?->id ?? 0,
-                'business_name' => $photographer?->business_name ?? 'Fotógrafo no disponible',
-                'name' => $photographer?->user?->name ?? 'N/A',
+                'id' => $event->photographer->id,
+                'business_name' => $event->photographer->business_name,
+                'name' => $event->photographer->user->name,
+                'slug' => $event->photographer->slug,
+                'profile_photo' => $event->photographer->profile_photo_url,
+                'bio' => $event->photographer->bio,
+                'region' => $event->photographer->region,
+                'instagram' => $event->photographer->instagram,
+                'facebook' => $event->photographer->facebook,
+                'website' => $event->photographer->website,
             ],
         ];
     }
@@ -121,25 +133,27 @@ class FutureEventController extends Controller
      */
     public function show($id)
     {
-        try {
-            $user = Auth::user();
-            $isPhotographer = $user && $user->role === 'photographer';
-            $isAuthenticated = $user !== null;
+        $event = FutureEvent::with(['photographer.user'])
+            ->findOrFail($id);
 
-            // Buscar el evento con el fotógrafo organizador
-            $event = FutureEvent::with('photographer.user')
-                ->upcoming()
-                ->findOrFail($id);
+        // Si ya pasó el evento, redirigir al evento convertido
+        if ($event->converted_event_id) {
+            $convertedEvent = \App\Models\Event::find($event->converted_event_id);
+            if ($convertedEvent) {
+                return redirect()->route('events.show', $convertedEvent->slug);
+            }
+        }
 
-            // Mapear datos para la vista
-            $eventData = [
+        return Inertia::render('FutureEvents/Show', [
+            'event' => [
                 'id' => $event->id,
                 'title' => $event->title,
                 'description' => $event->description,
                 'location' => $event->location,
-                'event_date' => $event->event_date,
+                'latitude' => $event->latitude ? (float) $event->latitude : null,
+                'longitude' => $event->longitude ? (float) $event->longitude : null,
+                'event_date' => $event->event_date->format('Y-m-d H:i:s'),
                 'formatted_date' => $event->formatted_date,
-                'formatted_time' => $event->event_date->format('H:i'),
                 'days_until' => $event->daysUntil(),
                 'cover_image' => $event->cover_image_url,
                 'status' => $event->status,
@@ -147,24 +161,16 @@ class FutureEventController extends Controller
                     'id' => $event->photographer->id,
                     'business_name' => $event->photographer->business_name,
                     'name' => $event->photographer->user->name,
-                    'email' => $event->photographer->user->email,
+                    'slug' => $event->photographer->slug,
+                    'profile_photo' => $event->photographer->profile_photo_url,
+                    'bio' => $event->photographer->bio,
+                    'region' => $event->photographer->region,
+                    'instagram' => $event->photographer->instagram,
+                    'website' => $event->photographer->website,
                 ],
-            ];
-
-            return Inertia::render('FutureEvents/Show', [
-                'event' => $eventData,
-                'isPhotographer' => $isPhotographer,
-                'isAuthenticated' => $isAuthenticated,
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error al mostrar evento futuro', [
-                'id' => $id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return redirect()->route('home')
-                ->with('error', 'Evento no encontrado');
-        }
+            ],
+        ]);
     }
+
+
 }

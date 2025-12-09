@@ -45,7 +45,6 @@
             },
             callbacks: {
                 onReady: () => {
-                    console.log('Payment Brick listo');
                 },
                 onSubmit: async (formData) => {
                     try {

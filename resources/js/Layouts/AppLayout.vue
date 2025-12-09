@@ -3,13 +3,18 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { ShoppingCartIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
+import ToastContainer from '@/Components/ToastContainer.vue';
 import CustomCursor from '@/Components/CustomCursor.vue';
+import { useConfirm } from '@/Composables/useConfirm';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+
+const { confirmState, handleConfirm, handleCancel } = useConfirm();
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
 const scrolled = ref(false);
 const cartCount = ref(0);
-const userMenuOpen = ref(false); //  NUEVO: Estado del menú de usuario
+const userMenuOpen = ref(false);
 
 // Detectar ruta para aplicar estilos específicos
 const isHomePage = computed(() => page.url === '/');
@@ -361,6 +366,18 @@ const dashboardInfo = computed(() => {
                 </div>
             </div>
         </footer>
+        <ToastContainer />
+         <ConfirmDialog 
+            :show="confirmState.show" 
+            :title="confirmState.title" 
+            :message="confirmState.message"
+            :confirm-text="confirmState.confirmText" 
+            :cancel-text="confirmState.cancelText" 
+            :type="confirmState.type"
+            @confirm="handleConfirm"
+            @cancel="handleCancel" 
+            @close="handleCancel" 
+        />
     </div>
 </template>
 <style>

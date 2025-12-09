@@ -48,7 +48,7 @@ const loadEvents = async (page = 1) => {
     try {
 
 
-        const response = await axios.get('/api/future-events', {
+        const response = await axios.get('/eventos-futuros/api', {
             params: { page }
         });
 
@@ -276,7 +276,7 @@ const handleImageError = (e) => {
                             </div>
 
                             <!-- Action Button -->
-                            <Link v-if="isPhotographer" :href="`/future-events/${event.id}`"
+                            <Link v-if="isPhotographer" :href="`/eventos-futuros/${event.id}`"
                                 class="w-full py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition flex items-center justify-center gap-2 group/btn">
                                 Ver Detalles
                                 <ArrowRightIcon class="w-4 h-4 group-hover/btn:translate-x-1 transition" />

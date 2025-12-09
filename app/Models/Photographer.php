@@ -42,16 +42,44 @@ class Photographer extends Model
 
 
     const REGION_COORDINATES = [
-        'Buenos Aires' => ['lat' => -34.6037, 'lng' => -58.3816],
+        // --- AMBA y Provincia ---
+        // Ajustado: Apunta a La Plata (Plaza Moreno), capital de la provincia.
+        'Buenos Aires' => ['lat' => -34.9214, 'lng' => -57.9545],
+        // Correcto: Apunta al Obelisco/Microcentro.
         'CABA' => ['lat' => -34.6037, 'lng' => -58.3816],
+
+        // --- Región Centro ---
         'Córdoba' => ['lat' => -31.4201, 'lng' => -64.1888],
-        'Santa Fe' => ['lat' => -31.6107, 'lng' => -60.6973],
+        'Santa Fe' => ['lat' => -31.6107, 'lng' => -60.6973], // Santa Fe Capital
+        'Rosario' => ['lat' => -32.9442, 'lng' => -60.6505], // Ciudad clave (no capital)
+        'Entre Ríos' => ['lat' => -31.7413, 'lng' => -60.5115], // Paraná
+
+        // --- Cuyo ---
         'Mendoza' => ['lat' => -32.8895, 'lng' => -68.8458],
-        'Tucumán' => ['lat' => -26.8083, 'lng' => -65.2176],
-        'Rosario' => ['lat' => -32.9442, 'lng' => -60.6505],
+        'San Juan' => ['lat' => -31.5375, 'lng' => -68.5364],
+        'San Luis' => ['lat' => -33.3017, 'lng' => -66.3378],
+        'La Rioja' => ['lat' => -29.4131, 'lng' => -66.8558],
+
+        // --- NOA (Noroeste) ---
+        'Tucumán' => ['lat' => -26.8083, 'lng' => -65.2176], // S.M. de Tucumán
         'Salta' => ['lat' => -24.7821, 'lng' => -65.4232],
+        'Jujuy' => ['lat' => -24.1858, 'lng' => -65.2995], // S.S. de Jujuy
+        'Catamarca' => ['lat' => -28.4696, 'lng' => -65.7852], // S.F. del Valle de Catamarca
+        'Santiago del Estero' => ['lat' => -27.7951, 'lng' => -64.2615],
+
+        // --- NEA (Noreste) ---
+        'Chaco' => ['lat' => -27.4514, 'lng' => -58.9860], // Resistencia
+        'Corrientes' => ['lat' => -27.4692, 'lng' => -58.8306],
+        'Formosa' => ['lat' => -26.1849, 'lng' => -58.1731],
+        'Misiones' => ['lat' => -27.3621, 'lng' => -55.9009], // Posadas
+
+        // --- Patagonia ---
         'Neuquén' => ['lat' => -38.9516, 'lng' => -68.0591],
-        'Entre Ríos' => ['lat' => -31.7413, 'lng' => -60.5115],
+        'Río Negro' => ['lat' => -40.8135, 'lng' => -62.9967], // Viedma
+        'La Pampa' => ['lat' => -36.6167, 'lng' => -64.2833], // Santa Rosa (Ajuste menor de precisión)
+        'Chubut' => ['lat' => -43.3002, 'lng' => -65.1023], // Rawson
+        'Santa Cruz' => ['lat' => -51.6226, 'lng' => -69.2181], // Río Gallegos
+        'Tierra del Fuego' => ['lat' => -54.8019, 'lng' => -68.3030], // Ushuaia
     ];
 
     protected $casts = [

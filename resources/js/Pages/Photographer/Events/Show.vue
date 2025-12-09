@@ -2,6 +2,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { useConfirm } from '@/Composables/useConfirm';  
+import { useToast } from '@/Composables/useToast';  
 import { 
     CalendarIcon, 
     MapPinIcon, 
@@ -25,16 +27,21 @@ const props = defineProps({
     },
 });
 
+
+const { success } = useToast(); 
+
 // URLs seguras
 const privateUrl = computed(() => `${window.location.origin}/eventos/${props.event.slug}?token=${props.event.private_token}`);
 const publicUrl = computed(() => `${window.location.origin}/eventos/${props.event.slug}`);
 
 const copyFeedback = ref(false);
-const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-        copyFeedback.value = true;
-        setTimeout(() => copyFeedback.value = false, 2000);
-    });
+const copyToClipboard = async (text) => {
+    try {
+        await navigator.clipboard.writeText(text);
+        success('URL copiada al portapapeles'); //  Toast en vez de feedback
+    } catch (err) {
+        console.error('Error copiando:', err);
+    }
 };
 
 const showUploadModal = ref(false);
@@ -67,19 +74,51 @@ const uploadPhotos = () => {
             selectedFiles.value = [];
             previewUrls.value = [];
             uploadForm.reset('photos');
+            success('Fotos subidas correctamente'); //  Toast
         },
     });
 };
 
-const deletePhoto = (photoId) => {
-    if (confirm('¿Confirmar eliminación definitiva de esta foto?')) {
-        router.delete(route('photographer.photos.destroy', photoId), { preserveScroll: true });
+//  REEMPLAZAR estas funciones
+const deletePhoto = async (photoId) => {
+    const confirmed = await confirm({
+        title: 'Eliminar Fotografía',
+        message: '¿Confirmar eliminación definitiva de esta foto? Esta acción no se puede deshacer.',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'danger'
+    });
+
+    if (confirmed) {
+        router.delete(route('photographer.photos.destroy', photoId), { 
+            preserveScroll: true,
+            onSuccess: () => {
+                success('Fotografía eliminada correctamente');
+            }
+        });
     }
 };
 
-const updateCoverImage = (photoId) => {
-    if (confirm('¿Establecer como portada del evento?')) {
-        router.post(route('photographer.events.cover-image', props.event.id), { photo_id: photoId }, { preserveScroll: true });
+const updateCoverImage = async (photoId) => {
+    const confirmed = await confirm({
+        title: 'Cambiar Portada',
+        message: '¿Establecer esta foto como portada del evento?',
+        confirmText: 'Establecer',
+        cancelText: 'Cancelar',
+        type: 'info'
+    });
+
+    if (confirmed) {
+        router.post(
+            route('photographer.events.cover-image', props.event.id), 
+            { photo_id: photoId }, 
+            { 
+                preserveScroll: true,
+                onSuccess: () => {
+                    success('Portada actualizada correctamente');
+                }
+            }
+        );
     }
 };
 
@@ -88,6 +127,7 @@ const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 </script>
+
 
 <template>
     <Head :title="event.name" />

@@ -16,6 +16,8 @@ class FutureEvent extends Model
         'title',
         'description',
         'location',
+        'latitude',        // 
+        'longitude',       // 
         'event_date',
         'expiry_date',
         'cover_image',
@@ -26,6 +28,8 @@ class FutureEvent extends Model
     protected $casts = [
         'event_date' => 'datetime',
         'expiry_date' => 'datetime',
+        'latitude' => 'decimal:7',   // 🆕
+        'longitude' => 'decimal:7',  // 🆕
     ];
 
     protected $appends = ['cover_image_url', 'formatted_date', 'days_until'];
@@ -107,7 +111,7 @@ class FutureEvent extends Model
             return $this->cover_image;
         }
 
-        // ✅ Construir URL con asset() - funciona para cualquier carpeta
+        //  Construir URL con asset() - funciona para cualquier carpeta
         return asset('storage/' . $this->cover_image);
     }
 

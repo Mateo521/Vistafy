@@ -132,7 +132,6 @@ const checkStatus = async () => {
             onSuccess: (page) => {
                 // Si el estado cambió a completed, Inertia automáticamente
                 // renderizará Download/Show.vue en lugar de Pending.vue
-                console.log('Estado verificado:', page.props.purchase?.status);
             },
         });
     } catch (error) {
@@ -173,12 +172,10 @@ const stopPolling = () => {
 };
 
 onMounted(() => {
-    console.log('Iniciando polling automático');
     startPolling();
 });
 
 onUnmounted(() => {
-    console.log('Deteniendo polling');
     stopPolling();
 });
 </script>
