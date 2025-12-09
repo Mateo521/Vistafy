@@ -83,7 +83,7 @@ const loadEvents = async (page = 1) => {
             loading.value = false;
             loadingMore.value = false;
             isLoadingInProgress = false;
-            console.log(' Bloqueo liberado');
+     
         }, 300); // 300ms de cooldown
     }
 };

@@ -3,7 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { ShoppingCartIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
-
+import CustomCursor from '@/Components/CustomCursor.vue';
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
@@ -53,20 +53,20 @@ const dashboardInfo = computed(() => {
     if (!user.value) return null;
 
     if (user.value.is_admin) {
-        return { 
-            route: route('admin.dashboard'), 
+        return {
+            route: route('admin.dashboard'),
             text: 'ADMINISTRACIÓN',
             single: true // Solo un link
         };
     }
     if (user.value.role === 'photographer') {
-        return { 
-            route: route('photographer.dashboard'), 
+        return {
+            route: route('photographer.dashboard'),
             text: 'PANEL PROFESIONAL',
             single: true
         };
     }
-    
+
     //  Usuario regular: menú desplegable
     return {
         single: false,
@@ -79,6 +79,7 @@ const dashboardInfo = computed(() => {
 </script>
 
 <template>
+    <CustomCursor />
     <div class="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
 
         <nav :class="[
@@ -92,20 +93,20 @@ const dashboardInfo = computed(() => {
 
                     <!-- Logo -->
                     <Link href="/" class="group z-50 relative">
-                    <div class="flex flex-col">
-                        <span :class="[
-                            'text-2xl font-serif font-bold tracking-tight transition-colors duration-300',
-                            isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
-                        ]">
-                            EMPRESA
-                        </span>
-                        <span :class="[
-                            'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
-                            isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
-                        ]">
-                            Lorem ipsum...
-                        </span>
-                    </div>
+                        <div class="flex flex-col">
+                            <span :class="[
+                                'text-2xl font-serif font-bold tracking-tight transition-colors duration-300',
+                                isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
+                            ]">
+                                EMPRESA
+                            </span>
+                            <span :class="[
+                                'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
+                                isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
+                            ]">
+                                Lorem ipsum...
+                            </span>
+                        </div>
                     </Link>
 
                     <!-- Desktop Menu -->
@@ -122,7 +123,7 @@ const dashboardInfo = computed(() => {
                                     ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
                                     : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
                             ]">
-                            {{ item.label }}
+                                {{ item.label }}
                             </Link>
                         </div>
 
@@ -198,25 +199,22 @@ const dashboardInfo = computed(() => {
                                         </button>
 
                                         <!-- Dropdown Menu -->
-                                        <transition
-                                            enter-active-class="transition duration-200 ease-out"
-                                            enter-from-class="opacity-0 scale-95"
-                                            enter-to-class="opacity-100 scale-100"
+                                        <transition enter-active-class="transition duration-200 ease-out"
+                                            enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
                                             leave-active-class="transition duration-150 ease-in"
                                             leave-from-class="opacity-100 scale-100"
                                             leave-to-class="opacity-0 scale-95">
-                                            <div v-show="userMenuOpen" 
-                                                @click.away="userMenuOpen = false"
+                                            <div v-show="userMenuOpen" @click.away="userMenuOpen = false"
                                                 class="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-sm shadow-xl overflow-hidden">
-                                                
+
                                                 <!-- Email -->
-                                                <div class="px-4 py-3 text-xs text-slate-500 border-b border-gray-100 truncate">
+                                                <div
+                                                    class="px-4 py-3 text-xs text-slate-500 border-b border-gray-100 truncate">
                                                     {{ user.email }}
                                                 </div>
 
                                                 <!-- Menu Items -->
-                                                <Link v-for="item in dashboardInfo.items" 
-                                                    :key="item.route"
+                                                <Link v-for="item in dashboardInfo.items" :key="item.route"
                                                     :href="item.route"
                                                     class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
                                                     {{ item.text }}
@@ -232,10 +230,7 @@ const dashboardInfo = computed(() => {
                                     </div>
 
                                     <!-- Logout button (solo si es link directo) -->
-                                    <Link v-if="dashboardInfo?.single" 
-                                        :href="route('logout')" 
-                                        method="post" 
-                                        as="button" 
+                                    <Link v-if="dashboardInfo?.single" :href="route('logout')" method="post" as="button"
                                         :class="[
                                             'text-xs font-bold uppercase tracking-widest transition-colors',
                                             isHomePage && !scrolled ? 'text-red-300 hover:text-red-100' : 'text-red-600 hover:text-red-800'
@@ -250,9 +245,12 @@ const dashboardInfo = computed(() => {
                     <!-- Mobile Menu Button -->
                     <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none">
                         <div class="space-y-1.5">
-                            <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'rotate-45 translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
-                            <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'opacity-0' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
-                            <span :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? '-rotate-45 -translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                            <span
+                                :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'rotate-45 translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                            <span
+                                :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'opacity-0' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                            <span
+                                :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? '-rotate-45 -translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
                         </div>
                     </button>
                 </div>
@@ -306,7 +304,7 @@ const dashboardInfo = computed(() => {
                                 Crear Cuenta
                             </Link>
                         </template>
-                        
+
                         <template v-else>
                             <!-- Admin/Photographer -->
                             <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route"
@@ -316,9 +314,7 @@ const dashboardInfo = computed(() => {
 
                             <!-- Usuario Regular -->
                             <template v-else>
-                                <Link v-for="item in dashboardInfo.items" 
-                                    :key="item.route"
-                                    :href="item.route"
+                                <Link v-for="item in dashboardInfo.items" :key="item.route" :href="item.route"
                                     class="text-sm font-bold text-slate-900 hover:text-slate-600">
                                     {{ item.text }}
                                 </Link>
@@ -339,10 +335,13 @@ const dashboardInfo = computed(() => {
 
         <footer class="bg-slate-900 text-white border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
                     <div class="text-center md:text-left">
                         <span class="text-xl font-serif font-bold tracking-wide block">EMPRESA</span>
-                        <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional Lorem ipsum...</span>
+                        <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional
+                            Lorem
+                            ipsum...</span>
                     </div>
 
                     <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-400">
@@ -352,7 +351,8 @@ const dashboardInfo = computed(() => {
                     </div>
                 </div>
 
-                <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
+                <div
+                    class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
                     <p>© {{ new Date().getFullYear() }} Empresa S.A.</p>
                     <div class="flex space-x-6 mt-4 md:mt-0">
                         <a href="#" class="hover:text-slate-300 transition">Privacidad</a>
@@ -363,3 +363,16 @@ const dashboardInfo = computed(() => {
         </footer>
     </div>
 </template>
+<style>
+/* Opcional: Ocultar el cursor nativo solo en desktop */
+@media (min-width: 768px) {
+
+    body,
+    a,
+    button,
+    input {
+        cursor: none;
+        /* Oculta la flecha por defecto */
+    }
+}
+</style>
