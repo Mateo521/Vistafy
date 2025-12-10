@@ -22,11 +22,8 @@ class FutureEventController extends Controller
             $isPhotographer = $user && $user->role === 'photographer';
             $isAuthenticated = $user !== null;
 
-            // Total de eventos disponibles CON COORDENADAS (para el mapa)
-            $totalEvents = FutureEvent::upcoming()
-                ->whereNotNull('latitude')
-                ->whereNotNull('longitude')
-                ->count();
+            // Modo de uso de la API: 'default' (home/listado) o 'map'
+            $mode = $request->query('mode', 'default');
 
             // Query base - SOLO EVENTOS CON COORDENADAS
             $baseQuery = FutureEvent::with('photographer.user')
@@ -35,15 +32,30 @@ class FutureEventController extends Controller
                 ->whereNotNull('longitude')
                 ->orderBy('event_date', 'asc');
 
-            // ============================================
-            // CASO 1: FOTÓGRAFO → Paginación completa
-            // ============================================
-            if ($isPhotographer) {
-                $paginatedEvents = $baseQuery->paginate(12);
+            $totalEvents = $baseQuery->count();
 
-                $futureEvents = $paginatedEvents->map(function ($event) {
+            if ($mode === 'map') {
+                $events = $baseQuery->get()->map(function ($event) {
                     return $this->mapEventData($event);
                 });
+
+                return response()->json([
+                    'future_events' => $events,
+                    'is_photographer' => $isPhotographer,
+                    'is_authenticated' => $isAuthenticated,
+                    'total_events' => $totalEvents,
+                    'showing_limited' => false,
+                    'current_page' => 1,
+                    'last_page' => 1,
+                    'has_more_pages' => false,
+                    'per_page' => $totalEvents,
+                ]);
+            }
+
+            if ($isPhotographer) {
+                $paginatedEvents = $baseQuery->paginate(perPage: 12);
+
+                $futureEvents = $paginatedEvents->map(fn($event) => $this->mapEventData($event));
 
                 return response()->json([
                     'future_events' => $futureEvents,
@@ -58,12 +70,8 @@ class FutureEventController extends Controller
                 ]);
             }
 
-            // ============================================
-            // CASO 2 y 3: NO FOTÓGRAFO → Solo 6 eventos
-            // ============================================
-            $futureEvents = $baseQuery->take(6)->get()->map(function ($event) {
-                return $this->mapEventData($event);
-            });
+            // Usuario normal → solo 6 (para secciones tipo Home, grilla limitada)
+            $futureEvents = $baseQuery->take(6)->get()->map(fn($event) => $this->mapEventData($event));
 
             return response()->json([
                 'future_events' => $futureEvents,
@@ -96,9 +104,17 @@ class FutureEventController extends Controller
         }
     }
 
+
     /**
      *  Helper: Mapear datos de un evento (INCLUYENDO COORDENADAS)
      */
+
+    public function page()
+    {
+        return Inertia::render('FutureEvents/Index');
+    }
+
+
     private function mapEventData($event)
     {
         return [

@@ -98,10 +98,10 @@ class PaymentSimulationController extends Controller
 
             //  Si fue aprobado, procesar post-pago
             if ($simulatedStatus === 'approved') {
-                // 1️⃣ Crear cuenta si es necesario
+                //  Crear cuenta si es necesario
                 $this->handleAccountCreation($purchase);
 
-                // 2️⃣ Enviar notificación de compra completada
+                //  Enviar notificación de compra completada
                 $this->sendPurchaseNotification($purchase);
 
                 // 3️⃣ Limpiar carrito si es usuario autenticado

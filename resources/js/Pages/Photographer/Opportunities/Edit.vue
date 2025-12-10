@@ -1,22 +1,16 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { ArrowLeftIcon, PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline';
-
+import { ArrowLeftIcon, PhotoIcon, XMarkIcon, MapPinIcon } from '@heroicons/vue/24/outline';
+import MapPicker from '@/Components/MapPicker.vue';
 const props = defineProps({
-    opportunity: Object,
+    opportunity: {
+        type: Object,
+        required: true,
+    },
 });
 
-const form = useForm({
-    title: props.opportunity.title,
-    description: props.opportunity.description,
-    location: props.opportunity.location,
-    event_date: props.opportunity.event_date,
-    event_time: props.opportunity.event_time || '',
-    cover_image: null,
-    remove_image: false,
-});
 
 // Preview de imagen (usa la existente o nueva)
 const imagePreview = ref(props.opportunity.cover_image);
@@ -39,16 +33,75 @@ const removeImage = () => {
 const submit = () => {
     form.post(route('photographer.opportunities.update', props.opportunity.id), {
         preserveScroll: true,
-        forceFormData: true, // 🆕 Necesario para enviar archivos con POST simulando PUT
+        forceFormData: true, //  Necesario para enviar archivos con POST simulando PUT
         onSuccess: () => {
             // No reset porque es edición
         },
     });
 };
+
+
+// Helper para asegurar números
+const getNumericValue = (value, defaultVal) => {
+    const num = parseFloat(value);
+    return isNaN(num) ? defaultVal : num;
+};
+
+const initialLat = getNumericValue(props.opportunity.latitude, -34.6037);
+const initialLng = getNumericValue(props.opportunity.longitude, -58.3816);
+
+const form = useForm({
+    title: props.opportunity.title,
+    description: props.opportunity.description,
+    location: props.opportunity.location,
+    latitude: initialLat,           // ✅
+    longitude: initialLng,          // ✅
+    event_date: props.opportunity.event_date,
+    event_time: props.opportunity.event_time || '',
+    cover_image: null,
+    remove_image: false,
+});
+
+// Coordenadas reactivas para el mapa
+const coordinates = ref({
+    lat: initialLat,
+    lng: initialLng,
+});
+
+
+
+// Computed para mostrar coordenadas formateadas
+const formattedCoordinates = computed(() => {
+    const lat = parseFloat(coordinates.value.lat);
+    const lng = parseFloat(coordinates.value.lng);
+    if (isNaN(lat) || isNaN(lng)) return 'Coordenadas no válidas';
+    return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+});
+
+// Actualizar lat/long en el form cuando se mueve el marcador
+watch(coordinates, (newVal) => {
+    const lat = parseFloat(newVal.lat);
+    const lng = parseFloat(newVal.lng);
+    if (!isNaN(lat) && !isNaN(lng)) {
+        form.latitude = lat;
+        form.longitude = lng;
+    }
+}, { deep: true });
+
+
+
+
+// Cuando el mapa hace geocoding inverso, actualiza location
+const updateLocation = (address) => {
+    form.location = address;
+};
+
+
 </script>
 
 <template>
     <AuthenticatedLayout>
+
         <Head title="Editar Oportunidad" />
 
         <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -99,16 +152,28 @@ const submit = () => {
                     </span>
                 </div>
 
-                <!-- Ubicación -->
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-900 mb-2">
-                        Ubicación *
+                    <label class="block text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+                        <MapPinIcon class="w-5 h-5" />
+                        Ubicación del Evento *
                     </label>
-                    <input v-model="form.location" type="text" placeholder="Ej: Buenos Aires, Argentina"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+
+                    <MapPicker v-model="coordinates" :initial-center="{ lat: initialLat, lng: initialLng }" :zoom="12"
+                        @update:location="updateLocation" />
+
+                    <input v-model="form.location" type="text" placeholder="La dirección se actualizará automáticamente"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent mt-4"
                         required />
-                    <span v-if="form.errors.location" class="text-xs text-red-600 mt-1">
+
+                    <p class="text-xs text-slate-500 mt-2">
+                        Coordenadas: {{ formattedCoordinates }}
+                    </p>
+
+                    <span v-if="form.errors.location" class="text-xs text-red-600 mt-1 block">
                         {{ form.errors.location }}
+                    </span>
+                    <span v-if="form.errors.latitude || form.errors.longitude" class="text-xs text-red-600 mt-1 block">
+                        Error en coordenadas
                     </span>
                 </div>
 

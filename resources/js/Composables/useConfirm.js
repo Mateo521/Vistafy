@@ -7,7 +7,7 @@ const confirmState = ref({
     confirmText: 'Confirmar',
     cancelText: 'Cancelar',
     type: 'danger',
-    resolver: null, // 🆕 Cambio importante
+    resolver: null, //  Cambio importante
 });
 
 export function useConfirm() {
@@ -26,7 +26,7 @@ export function useConfirm() {
                 confirmText,
                 cancelText,
                 type,
-                resolver: resolve, // 🆕 Guardamos el resolver
+                resolver: resolve, //  Guardamos el resolver
             };
         });
     };

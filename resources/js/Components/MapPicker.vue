@@ -45,7 +45,7 @@ const initMap = () => {
         html: `<div style="
             width: 24px; 
             height: 24px; 
-            background-color: #ef4444; 
+            background-color: #141414; 
             border-radius: 50%; 
             border: 3px solid white; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -110,7 +110,7 @@ watch(() => props.modelValue, (newVal) => {
     <div class="relative">
         <div ref="mapContainer" class="w-full h-96 rounded-sm border-2 border-gray-300 overflow-hidden"></div>
         
-        <div class="absolute top-4 left-4 bg-white px-4 py-2 rounded-sm shadow-lg border border-gray-200 text-xs text-slate-600 z-[1000]">
+        <div class="absolute top-4 left-14 bg-white px-4 py-2 rounded-sm shadow-lg border border-gray-200 text-xs text-slate-600 z-[1000]">
             <strong class="block mb-1 text-slate-900"> Seleccioná la ubicación</strong>
             Click en el mapa o arrastrá el marcador
         </div>

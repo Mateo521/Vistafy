@@ -13,7 +13,7 @@ use Carbon\Carbon;
 class FutureEventManagementController extends Controller
 {
     /**
-     * 📋 Listar oportunidades del fotógrafo
+     *  Listar oportunidades del fotógrafo
      */
     public function index()
     {
@@ -28,8 +28,8 @@ class FutureEventManagementController extends Controller
                     'title' => $event->title,
                     'description' => $event->description,
                     'location' => $event->location,
-                    'latitude' => $event->latitude,          // 🆕
-                    'longitude' => $event->longitude,        // 🆕
+                    'latitude' => $event->latitude,          // 
+                    'longitude' => $event->longitude,        // 
                     'event_date' => $event->event_date,
                     'formatted_date' => $event->formatted_date,
                     'days_until' => $event->daysUntil(),
@@ -45,7 +45,7 @@ class FutureEventManagementController extends Controller
     }
 
     /**
-     * 📝 Formulario para crear oportunidad (CON DATOS DEL FOTÓGRAFO)
+     *  Formulario para crear oportunidad (CON DATOS DEL FOTÓGRAFO)
      */
     public function create()
     {
@@ -141,8 +141,8 @@ class FutureEventManagementController extends Controller
                 'title' => $opportunity->title,
                 'description' => $opportunity->description,
                 'location' => $opportunity->location,
-                'latitude' => $opportunity->latitude,            // 🆕
-                'longitude' => $opportunity->longitude,          // 🆕
+                'latitude' => $opportunity->latitude,            // 
+                'longitude' => $opportunity->longitude,          // 
                 'event_date' => $opportunity->event_date->format('Y-m-d'),
                 'event_time' => $opportunity->event_date->format('H:i'),
                 'cover_image' => $opportunity->cover_image_url,
@@ -152,7 +152,7 @@ class FutureEventManagementController extends Controller
     }
 
     /**
-     * 🔄 Actualizar oportunidad (CON COORDENADAS)
+     *  Actualizar oportunidad (CON COORDENADAS)
      */
     public function update(Request $request, $id)
     {
@@ -212,7 +212,7 @@ class FutureEventManagementController extends Controller
     }
 
     /**
-     * 🗑️ Eliminar oportunidad
+     *  Eliminar oportunidad
      */
     public function destroy($id)
     {

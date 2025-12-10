@@ -29,14 +29,28 @@ use Inertia\Inertia;
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
-//  EVENTOS FUTUROS - SOLO EN ESPAÑOL
+
 Route::prefix('eventos-futuros')->name('future-events.')->group(function () {
-    // API para el mapa (JSON)
+    // 1) API
     Route::get('/api', [FutureEventController::class, 'index'])->name('api');
 
-    // Detalle de evento futuro
+    // 2) Página de mapa (DEBE IR ANTES QUE {futureEvent})
+    Route::get('/mapa', function () {
+        return Inertia::render('FutureEvents/Map');
+    })->name('map');
+
+    // 3) Listado (cards)
+    Route::get('/', [FutureEventController::class, 'page'])->name('index');
+
+    // 4) Detalle (catch-all por ID)
     Route::get('/{futureEvent}', [FutureEventController::class, 'show'])->name('show');
 });
+
+
+
+
+
+
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');

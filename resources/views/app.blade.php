@@ -18,7 +18,7 @@
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
         
         <!-- Manifest para PWA (opcional) -->
-        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+        <!--link rel="manifest" href="{{ asset('site.webmanifest') }}"-->
         
         <!-- Meta tags para redes sociales (Open Graph) -->
         <meta property="og:image" content="{{ asset('images/logo.png') }}">

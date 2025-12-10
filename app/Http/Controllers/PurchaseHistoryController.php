@@ -11,7 +11,7 @@ use Inertia\Inertia;
 class PurchaseHistoryController extends Controller
 {
     /**
-     * 📋 Mostrar historial de compras
+     *  Mostrar historial de compras
      */
     public function index()
     {

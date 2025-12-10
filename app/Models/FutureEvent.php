@@ -28,8 +28,8 @@ class FutureEvent extends Model
     protected $casts = [
         'event_date' => 'datetime',
         'expiry_date' => 'datetime',
-        'latitude' => 'decimal:7',   // 🆕
-        'longitude' => 'decimal:7',  // 🆕
+        'latitude' => 'decimal:7',   // 
+        'longitude' => 'decimal:7',  // 
     ];
 
     protected $appends = ['cover_image_url', 'formatted_date', 'days_until'];

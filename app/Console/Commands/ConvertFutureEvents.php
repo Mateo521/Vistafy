@@ -16,7 +16,7 @@ class ConvertFutureEvents extends Command
 
     public function handle()
     {
-        $this->info('🔄 Buscando eventos futuros para convertir...');
+        $this->info(' Buscando eventos futuros para convertir...');
 
         $futureEvents = FutureEvent::readyToConvert()->get();
 

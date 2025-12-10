@@ -145,7 +145,7 @@ const submit = () => {
                     </span>
                 </div>
 
-                <!-- 🆕 MAPA SELECTOR DE UBICACIÓN -->
+                <!--  MAPA SELECTOR DE UBICACIÓN -->
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
                         <MapPinIcon class="w-5 h-5" />

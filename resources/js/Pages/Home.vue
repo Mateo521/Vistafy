@@ -54,9 +54,7 @@ const promoVideo = ref(null);
 function randomVideo() {
     return videos.value[Math.floor(Math.random() * videos.value.length)];
 }
-console.log('🔍 Props en Home.vue:', props);
-console.log('🔍 futureEvents recibidos:', props.futureEvents);
-console.log('🔍 Cantidad:', props.futureEvents?.length || 0);
+
 
 onMounted(() => {
     //  Iniciar animación de estadísticas
@@ -282,8 +280,21 @@ const auth = page.props.auth;
 
         <FutureEventsSection :is-authenticated="!!auth?.user" :user-role="auth?.user?.role" />
 
-        <div class="h-[500px] rounded-lg overflow-hidden shadow-lg">
+        <div class="h-[500px] overflow-hidden shadow-lg relative">
             <FutureEventsMap :events="futureEvents" />
+
+            <div class="absolute bottom-6 left-6 z-20">
+                <Link :href="route('future-events.map')"
+                    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-black/70 text-white text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg hover:bg-black/85 transition">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5" />
+                    </svg>
+
+                    <span>Ver en pantalla completa</span>
+                </Link>
+            </div>
         </div>
 
 

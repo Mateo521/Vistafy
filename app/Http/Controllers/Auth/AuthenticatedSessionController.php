@@ -58,12 +58,12 @@ class AuthenticatedSessionController extends Controller
     {
         $user = auth()->user();
 
-        // 1️⃣ Si es ADMIN → Panel de Admin
+        //  Si es ADMIN → Panel de Admin
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
 
-        // 2️⃣ Si es FOTÓGRAFO → Verificar estado
+        //  Si es FOTÓGRAFO → Verificar estado
         if ($user->role === 'photographer') {
             $photographer = $user->photographer;
 

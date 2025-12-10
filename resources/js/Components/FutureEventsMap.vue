@@ -40,7 +40,7 @@ const initMap = () => {
     // Inicializar mapa centrado en Argentina
     map = L.map(mapContainer.value, {
         scrollWheelZoom: true,
-        zoomControl: true,
+        zoomControl: false,
         attributionControl: false
     }).setView([-38.4161, -63.6167], 4);
 
@@ -82,7 +82,7 @@ const addMarkers = () => {
             const lng = parseFloat(event.longitude);
 
             if (isNaN(lat) || isNaN(lng)) {
-                console.error(`❌ Coordenadas inválidas para "${event.title}":`, { lat, lng });
+                console.error(` Coordenadas inválidas para "${event.title}":`, { lat, lng });
                 invalidEvents++;
                 return;
             }
@@ -93,7 +93,7 @@ const addMarkers = () => {
                 html: `<div style="
                     width: 16px; 
                     height: 16px; 
-                    background-color: #ef4444; 
+                    background-color: #141414; 
                     border-radius: 50%; 
                     border: 3px solid white; 
                     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
@@ -107,25 +107,33 @@ const addMarkers = () => {
                 const marker = L.marker([lat, lng], { icon: customIcon })
                     .addTo(map)
                     .bindPopup(`
-                        <div style="text-align: center; font-family: ui-serif, Georgia, serif; min-width: 180px;">
-                            <strong style="display:block; font-size: 14px; color: #0f172a; margin-bottom: 4px; line-height: 1.3;">
-                                ${event.title}
-                            </strong>
-                            <div style="font-size: 11px; color: #64748b; margin-bottom: 4px;">
-                                 ${event.location}
-                            </div>
-                            <div style="font-size: 10px; color: #64748b; margin-bottom: 6px;">
-                                 ${event.formatted_date}
-                            </div>
-                            <div style="font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
-                                por ${event.photographer.business_name}
-                            </div>
-                            <a href="/eventos-futuros/${event.id}" 
-                               style="display:block; font-size:10px; font-weight:bold; color:white; background: #ef4444; padding: 6px 12px; text-decoration:none; border-radius: 2px; transition: background 0.2s;">
-                               VER DETALLES
-                            </a>
-                        </div>
-                    `);
+        <div style="text-align: center; font-family: ui-serif, Georgia, serif; min-width: 220px; padding-top:3px; max-width:260px;">
+            <div style="margin-bottom: 8px; margin-top:5px; border-radius: 4px; overflow: hidden;">
+                <img 
+                    src="${event.cover_image || 'https://via.placeholder.com/400x250?text=Sin+Imagen'}"
+                    alt="${event.title}"
+                    style="width: 100%; height: 140px; object-fit: cover;"
+                    onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
+                />
+            </div>
+            <strong style="display:block; font-size: 14px; color: #0f172a; margin-bottom: 4px; line-height: 1.3;">
+                ${event.title}
+            </strong>
+            <div style="font-size: 11px; color: #64748b; margin-bottom: 4px;">
+                ${event.location}
+            </div>
+            <div style="font-size: 10px; color: #64748b; margin-bottom: 6px;">
+                ${event.formatted_date ?? ''}
+            </div>
+            <div style="font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                por ${event.photographer?.business_name ?? 'Fotógrafo'}
+            </div>
+            <a href="/eventos-futuros/${event.id}" 
+               style="display:block; font-size:10px; font-weight:bold; color:white; background: #141414; padding: 6px 12px; text-decoration:none; border-radius: 2px; transition: background 0.2s;">
+               VER DETALLES
+            </a>
+        </div>
+    `);
 
                 markers.push(marker);
             } catch (error) {

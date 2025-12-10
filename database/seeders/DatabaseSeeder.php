@@ -117,13 +117,13 @@ class DatabaseSeeder extends Seeder
         });
 
         // ================================================================
-        // 🗺️ EVENTOS FUTUROS CON COORDENADAS
+        //  EVENTOS FUTUROS CON COORDENADAS
         // ================================================================
 
         $allPhotographers = $otherPhotographers->push($myPhotographer);
 
         // ----------------------------------------------------------------
-        // 1️⃣ EVENTOS DESTACADOS EN CABA Y GBA
+        //  EVENTOS DESTACADOS EN CABA Y GBA
         // ----------------------------------------------------------------
         $specificFutureEvents = [
             [
@@ -193,7 +193,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // ----------------------------------------------------------------
-        // 2️⃣ EVENTOS POR PROVINCIA (2 eventos por provincia)
+        //  EVENTOS POR PROVINCIA (2 eventos por provincia)
         // ----------------------------------------------------------------
         $provinceEvents = [
             // BUENOS AIRES (GBA)
@@ -586,7 +586,7 @@ class DatabaseSeeder extends Seeder
             $dayOffset += rand(3, 7); // Espaciar eventos entre 3-7 días
         }
 
-        // 🧪 1 Evento de prueba que ya pasó
+        //  1 Evento de prueba que ya pasó
         FutureEvent::create([
             'photographer_id' => $myPhotographer->id,
             'title' => '🧪 EVENTO DE PRUEBA (Ya Pasó)',
@@ -601,7 +601,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ================================================================
-        // 📊 RESUMEN EN CONSOLA
+        //  RESUMEN EN CONSOLA
         // ================================================================
 
         $totalEvents = Event::count();
@@ -612,17 +612,17 @@ class DatabaseSeeder extends Seeder
         echo "\n=============================================\n";
         echo "   Base de datos poblada con éxito\n";
         echo "=============================================\n";
-        echo "🔐 CREDENCIALES:\n";
+        echo " CREDENCIALES:\n";
         echo "   Admin:      admin@empresa.com / password\n";
         echo "   Fotógrafo:  foto@empresa.com / password\n";
         echo "---------------------------------------------\n";
-        echo "📊 ESTADÍSTICAS:\n";
+        echo " ESTADÍSTICAS:\n";
         echo "   • Fotógrafos: {$totalPhotographers}\n";
         echo "   • Eventos pasados: {$totalEvents}\n";
         echo "   • Eventos futuros: {$totalFutureEvents}\n";
         echo "   • Fotos: {$totalPhotos}\n";
         echo "---------------------------------------------\n";
-        echo "🗺️ DISTRIBUCIÓN DE EVENTOS:\n";
+        echo " DISTRIBUCIÓN DE EVENTOS:\n";
         echo "   • 5 eventos destacados (CABA/GBA)\n";
         echo "   • " . count($provinceEvents) . " eventos por provincia\n";
         echo "   • 1 evento de prueba (pasado)\n";
@@ -636,7 +636,7 @@ class DatabaseSeeder extends Seeder
         echo "   Formosa, Santiago del Estero, La Rioja,\n";
         echo "   Catamarca, San Juan, San Luis, La Pampa\n";
         echo "---------------------------------------------\n";
-        echo "🧪 PRUEBAS:\n";
+        echo " PRUEBAS:\n";
         echo "1. Home > Mapa: Deberías ver {$totalFutureEvents} marcadores\n";
         echo "2. Dashboard > Mis Oportunidades\n";
         echo "3. php artisan events:convert-future\n";
