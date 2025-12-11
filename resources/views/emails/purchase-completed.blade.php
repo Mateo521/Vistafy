@@ -122,7 +122,7 @@
                             <div
                                 style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 30px 0 0 0; border-radius: 4px;">
                                 <p style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.5;">
-                                    <strong>💡 ¿Necesitas ayuda?</strong><br>
+                                    <strong> ¿Necesitas ayuda?</strong><br>
                                     Puedes descargar tus fotos ilimitadamente desde tu cuenta. Si tienes alguna
                                     pregunta, contáctanos en
                                     <a href="mailto:soporte@empresa.com"

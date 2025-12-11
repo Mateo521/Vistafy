@@ -5,6 +5,7 @@ use App\Http\Controllers\PublicGalleryController;
 use App\Http\Controllers\Photographer\EventController;
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\Photographer\PhotoController;
+use App\Http\Controllers\EventFaceSearchController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\Admin\PhotographerManagementController;
 use App\Http\Controllers\PurchaseHistoryController;
@@ -83,8 +84,23 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
 //  EVENTOS (pasados/realizados) - EN ESPAÑOL
 Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
-    Route::get('/{slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
+    Route::get('/{event:slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
+
+
+    Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'show'])
+        ->name('face-search.show');
+
+    Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'index'])
+        ->name('face-search');
+
+
+    Route::post('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'search'])
+        ->name('face-search.submit');
 });
+
+
+
+
 
 Route::get('/fotografos', [PhotographerController::class, 'index'])->name('photographers.index');
 Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name('photographers.show');

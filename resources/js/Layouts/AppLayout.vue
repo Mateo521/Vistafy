@@ -8,6 +8,9 @@ import CustomCursor from '@/Components/CustomCursor.vue';
 import { useConfirm } from '@/Composables/useConfirm';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
+import * as faceapi from 'face-api.js';
+import '@tensorflow/tfjs-backend-webgl';
+
 
 const { confirmState, handleConfirm, handleCancel } = useConfirm();
 const page = usePage();
@@ -42,14 +45,30 @@ const loadCartCount = async () => {
     }
 };
 
-onMounted(() => {
+onMounted(async () => {
     window.addEventListener('scroll', handleScroll);
     loadCartCount();
 
     // Escuchar eventos personalizados para actualizar el contador
     window.addEventListener('cart-updated', loadCartCount);
-});
 
+    //  Hacer faceapi disponible globalmente
+    if (typeof window !== 'undefined') {
+        window.faceapi = faceapi;
+        console.log(' face-api.js disponible globalmente desde npm');
+
+        // Inicializar backend de TensorFlow
+        try {
+            await faceapi.tf.setBackend('webgl');
+            await faceapi.tf.ready();
+            console.log(' TensorFlow backend:', faceapi.tf.getBackend());
+        } catch (err) {
+            console.warn(' WebGL no disponible, usando CPU');
+            await faceapi.tf.setBackend('cpu');
+            await faceapi.tf.ready();
+        }
+    }
+});
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
     window.removeEventListener('cart-updated', loadCartCount);
@@ -103,7 +122,7 @@ const navigationItems = [
 
 <template>
     <CustomCursor />
-  
+
     <div class="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
 
 

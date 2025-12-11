@@ -112,9 +112,9 @@ class PhotoController extends Controller
     }
 
 
-    /**
-     * Subir fotos (múltiples)
-     */
+
+
+
     /**
      * Subir fotos (múltiples)
      */
@@ -126,6 +126,7 @@ class PhotoController extends Controller
             'photos_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
             'event_id' => $request->event_id,
             'price' => $request->price,
+            'has_face_data' => $request->has('face_data'), //  NUEVO
             'photographer_id' => auth()->user()->photographer->id ?? 'NO_PHOTOGRAPHER',
         ]);
 
@@ -141,6 +142,7 @@ class PhotoController extends Controller
             'event_id' => 'nullable|exists:events,id',
             'price' => 'nullable|numeric|min:0.01|max:999999.99',
             'is_active' => 'nullable|boolean',
+            'face_data' => 'nullable|json', //  NUEVO: datos de reconocimiento facial
         ]);
 
         $photographer = auth()->user()->photographer;
@@ -151,6 +153,20 @@ class PhotoController extends Controller
             if (!$event || $event->photographer_id !== $photographer->id) {
                 \Log::error(' Evento no pertenece al fotógrafo');
                 return redirect()->back()->with('error', 'No tenés permiso para subir fotos a este evento');
+            }
+        }
+
+        //  NUEVO: Decodificar datos faciales
+        $faceData = [];
+        if ($request->face_data) {
+            try {
+                $faceData = json_decode($request->face_data, true);
+                \Log::info(' Datos faciales recibidos', [
+                    'fotos_con_rostros' => count(array_filter($faceData, fn($f) => $f['count'] > 0)),
+                    'total_rostros' => array_sum(array_column($faceData, 'count')),
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning(' Error decodificando face_data', ['error' => $e->getMessage()]);
             }
         }
 
@@ -173,29 +189,50 @@ class PhotoController extends Controller
                     \Log::info(" Foto procesada exitosamente", [
                         'unique_id' => $processed['unique_id'],
                         'event_id' => $request->event_id,
-                        'original_path' => $processed['original_path'], // ← VERIFICAR QUE EXISTE
+                        'original_path' => $processed['original_path'],
                     ]);
 
-                    //  CREAR REGISTRO EN BASE DE DATOS (INCLUIR ORIGINAL_PATH)
+                    //  NUEVO: Obtener datos faciales de esta foto específica
+                    $photoFaceData = $faceData[$index] ?? null;
+                    $hasFaces = $photoFaceData && $photoFaceData['count'] > 0;
+                    $faceEncodings = $hasFaces ? $photoFaceData['descriptors'] : null;
+
+                    if ($hasFaces) {
+                        \Log::info(" Foto con rostros detectados", [
+                            'index' => $index,
+                            'num_rostros' => $photoFaceData['count'],
+                            'num_descriptors' => count($photoFaceData['descriptors']),
+                        ]);
+                    }
+
+                    //  CREAR REGISTRO EN BASE DE DATOS
                     $photo = Photo::create([
                         'photographer_id' => $photographer->id,
                         'event_id' => $request->event_id,
                         'unique_id' => $processed['unique_id'],
-                        'original_path' => $processed['original_path'],         //  ESTA LÍNEA
+                        'original_path' => $processed['original_path'],
                         'watermarked_path' => $processed['watermarked_path'],
                         'thumbnail_path' => $processed['thumbnail_path'],
                         'original_name' => $processed['original_name'],
                         'file_size' => $processed['file_size'],
                         'width' => $processed['dimensions']['width'],
                         'height' => $processed['dimensions']['height'],
+                        'mime_type' => $file->getMimeType(),
                         'price' => $request->price ?? 5000,
                         'is_active' => $request->is_active ?? true,
+
+                        //  NUEVO: Campos de reconocimiento facial
+                        'face_encodings' => $faceEncodings,
+                        'has_faces' => $hasFaces,
+                        'faces_processed_at' => $hasFaces ? now() : null,
                     ]);
 
-                    \Log::info(" Foto guardada en BD", [
+                    \Log::info("💾 Foto guardada en BD", [
                         'photo_id' => $photo->id,
                         'event_id' => $photo->event_id,
-                        'original_path' => $photo->original_path, // ← VERIFICAR QUE SE GUARDÓ
+                        'original_path' => $photo->original_path,
+                        'has_faces' => $photo->has_faces,
+                        'num_faces' => $photo->has_faces ? count($photo->face_encodings) : 0,
                     ]);
 
                     $uploadedPhotos[] = $photo;
@@ -213,13 +250,26 @@ class PhotoController extends Controller
 
             DB::commit();
 
+            //  NUEVO: Estadísticas de reconocimiento facial
+            $photosWithFaces = collect($uploadedPhotos)->where('has_faces', true)->count();
+            $totalFaces = collect($uploadedPhotos)
+                ->where('has_faces', true)
+                ->sum(fn($p) => count($p->face_encodings ?? []));
+
             \Log::info("🎊 Proceso completado", [
                 'uploaded' => count($uploadedPhotos),
                 'errors' => count($errors),
                 'event_id' => $request->event_id,
+                'photos_with_faces' => $photosWithFaces,
+                'total_faces' => $totalFaces,
             ]);
 
             $message = count($uploadedPhotos) . ' foto(s) subida(s) exitosamente';
+
+            if ($photosWithFaces > 0) {
+                $message .= " ({$totalFaces} rostro(s) detectado(s) en {$photosWithFaces} foto(s))";
+            }
+
             if (count($errors) > 0) {
                 $message .= '. ' . count($errors) . ' foto(s) fallaron.';
             }
@@ -237,7 +287,7 @@ class PhotoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error(" Error general en subida", [
+            \Log::error("💥 Error general en subida", [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
@@ -246,7 +296,6 @@ class PhotoController extends Controller
             return redirect()->back()->with('error', 'Error al subir fotos: ' . $e->getMessage());
         }
     }
-
 
 
 

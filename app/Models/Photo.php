@@ -28,6 +28,9 @@ class Photo extends Model
         'is_active',
         'downloads',
         'views',
+        'face_encodings',
+        'has_faces',
+        'faces_processed_at',
     ];
 
     protected $casts = [
@@ -38,6 +41,9 @@ class Photo extends Model
         'height' => 'integer',
         'downloads' => 'integer',
         'views' => 'integer',
+        'face_encodings' => 'array',
+        'has_faces' => 'boolean',
+        'faces_processed_at' => 'datetime',
     ];
 
 

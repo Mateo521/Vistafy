@@ -22,8 +22,11 @@
     },
     "dependencies": {
         "@heroicons/vue": "^2.2.0",
+        "@tensorflow/tfjs": "^4.2.0",
+        "@tensorflow/tfjs-backend-webgl": "^4.2.0",
         "alpinejs": "^3.15.2",
         "dompurify": "^3.3.1",
+        "face-api.js": "^0.22.2",
         "leaflet": "^1.9.4",
         "swiper": "^12.0.3"
     }
