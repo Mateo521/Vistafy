@@ -45,6 +45,8 @@ class Photo extends Model
         'thumbnail_url',
         'watermarked_url',
         'original_url',
+        'view_url',
+        'thumbnail_view_url',
     ];
 
 
@@ -105,6 +107,60 @@ class Photo extends Model
     }
 
 
+    // ========================================
+    //  NUEVOS ACCESSORS PARA EL VISOR
+    // ========================================
 
+    /**
+     * URL para el visor de foto con marca de agua
+     * Formato: /foto/{photographer}/{year}/{month}/{day}/watermarked/{filename}
+     */
+    public function getViewUrlAttribute()
+    {
+        if (!$this->watermarked_path) {
+            return $this->watermarked_url; // Fallback a URL directa
+        }
+
+        // Extraer componentes de la ruta
+        // Formato esperado: photos/4/2025/12/11/watermarked/WRA8GL_watermarked.jpg
+        if (preg_match('/photos\/(\d+)\/(\d{4})\/(\d{2})\/(\d{2})\/(watermarked|thumbnails)\/(.+)$/', $this->watermarked_path, $matches)) {
+            return route('photo.view', [
+                'photographer' => $matches[1],
+                'year' => $matches[2],
+                'month' => $matches[3],
+                'day' => $matches[4],
+                'type' => 'watermarked',
+                'filename' => $matches[6],
+            ]);
+        }
+
+        // Si no coincide el patrón, usar URL de storage directa
+        return $this->watermarked_url;
+    }
+
+    /**
+     * URL para el visor de thumbnail
+     */
+    public function getThumbnailViewUrlAttribute()
+    {
+        if (!$this->thumbnail_path) {
+            return $this->thumbnail_url; // Fallback
+        }
+
+        // Extraer componentes de la ruta
+        if (preg_match('/photos\/(\d+)\/(\d{4})\/(\d{2})\/(\d{2})\/(thumbnails)\/(.+)$/', $this->thumbnail_path, $matches)) {
+            return route('photo.view', [
+                'photographer' => $matches[1],
+                'year' => $matches[2],
+                'month' => $matches[3],
+                'day' => $matches[4],
+                'type' => 'thumbnails',
+                'filename' => $matches[6],
+            ]);
+        }
+
+        // Fallback a URL directa
+        return $this->thumbnail_url;
+    }
 
 }

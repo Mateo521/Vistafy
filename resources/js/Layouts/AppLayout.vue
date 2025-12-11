@@ -8,12 +8,14 @@ import CustomCursor from '@/Components/CustomCursor.vue';
 import { useConfirm } from '@/Composables/useConfirm';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
+
 const { confirmState, handleConfirm, handleCancel } = useConfirm();
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
 const scrolled = ref(false);
 const cartCount = ref(0);
+const eventsMenuOpen = ref(false);
 const userMenuOpen = ref(false);
 
 // Detectar ruta para aplicar estilos específicos
@@ -81,11 +83,29 @@ const dashboardInfo = computed(() => {
         ]
     };
 });
+
+const navigationItems = [
+    { label: 'Inicio', route: '/', active: page.url === '/' },
+    {
+        label: 'Eventos',
+        hasDropdown: true,
+        active: page.url.startsWith('/eventos'),
+        items: [
+            { label: 'Eventos Vigentes', route: route('events.index') },
+            { label: 'Próximos Eventos', route: route('future-events.map') }
+        ]
+    },
+    { label: 'Galería', route: route('gallery.index'), active: page.url.startsWith('/galeria') },
+    { label: 'Fotógrafos', route: route('photographers.index'), active: page.url.startsWith('/fotografos') }
+];
+
 </script>
 
 <template>
     <CustomCursor />
+  
     <div class="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
+
 
         <nav :class="[
             'fixed top-0 w-full z-50 transition-all duration-500 ease-in-out border-b',
@@ -117,25 +137,55 @@ const dashboardInfo = computed(() => {
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex items-center space-x-12">
                         <div class="flex space-x-8">
-                            <Link v-for="item in [
-                                { label: 'Inicio', route: '/', active: $page.url === '/' },
-                                { label: 'Eventos', route: route('events.index'), active: $page.url.startsWith('/eventos') },
-                                { label: 'Galería', route: route('gallery.index'), active: $page.url.startsWith('/galeria') },
-                                { label: 'Fotógrafos', route: route('photographers.index'), active: $page.url.startsWith('/fotografos') }
-                            ]" :key="item.label" :href="item.route" :class="[
-                                'text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
-                                isHomePage && !scrolled
-                                    ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
-                                    : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
-                            ]">
-                                {{ item.label }}
-                            </Link>
+                            <!--  Items de navegación con dropdown -->
+                            <template v-for="item in navigationItems" :key="item.label">
+                                <!-- Con Dropdown -->
+                                <div v-if="item.hasDropdown" class="relative">
+                                    <button @click="eventsMenuOpen = !eventsMenuOpen" :class="[
+                                        'flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
+                                        isHomePage && !scrolled
+                                            ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
+                                            : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
+                                    ]">
+                                        {{ item.label }}
+                                        <ChevronDownIcon :class="[
+                                            'w-3 h-3 transition-transform duration-200',
+                                            eventsMenuOpen ? 'rotate-180' : ''
+                                        ]" />
+                                    </button>
+
+                                    <!-- Dropdown Menu -->
+                                    <transition enter-active-class="transition duration-200 ease-out"
+                                        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
+                                        leave-active-class="transition duration-150 ease-in"
+                                        leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+                                        <div v-show="eventsMenuOpen" @click.away="eventsMenuOpen = false"
+                                            class="absolute left-0 mt-3 w-52 bg-white border border-gray-200 rounded-sm shadow-xl overflow-hidden">
+                                            <Link v-for="subItem in item.items" :key="subItem.route"
+                                                :href="subItem.route" @click="eventsMenuOpen = false"
+                                                class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
+                                                {{ subItem.label }}
+                                            </Link>
+                                        </div>
+                                    </transition>
+                                </div>
+
+                                <!-- Sin Dropdown -->
+                                <Link v-else :href="item.route" :class="[
+                                    'text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
+                                    isHomePage && !scrolled
+                                        ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
+                                        : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
+                                ]">
+                                    {{ item.label }}
+                                </Link>
+                            </template>
                         </div>
 
                         <div :class="['h-4 w-px', isHomePage && !scrolled ? 'bg-white/20' : 'bg-slate-200']"></div>
 
                         <div class="flex items-center space-x-6">
-                            <!--  Carrito (solo para usuarios autenticados) -->
+                            <!-- Carrito (solo para usuarios autenticados) -->
                             <Link v-if="user" :href="route('cart.index')" class="relative group">
                                 <ShoppingCartIcon :class="[
                                     'w-5 h-5 transition-colors duration-300',
@@ -182,7 +232,7 @@ const dashboardInfo = computed(() => {
                             <!-- Authenticated: Dashboard/User Menu -->
                             <template v-else>
                                 <div class="flex items-center space-x-4">
-                                    <!--  Admin/Photographer: Link directo -->
+                                    <!-- Admin/Photographer: Link directo -->
                                     <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" :class="[
                                         'text-xs font-bold uppercase tracking-widest transition-colors',
                                         isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
@@ -190,7 +240,7 @@ const dashboardInfo = computed(() => {
                                         {{ dashboardInfo.text }}
                                     </Link>
 
-                                    <!--  Usuario Regular: Dropdown -->
+                                    <!-- Usuario Regular: Dropdown -->
                                     <div v-else class="relative">
                                         <button @click="userMenuOpen = !userMenuOpen" :class="[
                                             'flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors',
@@ -270,14 +320,26 @@ const dashboardInfo = computed(() => {
                     class="absolute top-0 left-0 w-full bg-white shadow-xl pt-24 pb-10 px-6 border-b border-gray-100 md:hidden">
                     <div class="flex flex-col space-y-6 text-center">
                         <!-- Navigation Links -->
-                        <Link :href="route('home')"
+                        <Link href="/"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
                             Inicio
                         </Link>
-                        <Link :href="route('events.index')"
-                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
-                            Eventos
-                        </Link>
+
+                        <!--  Eventos con dropdown mobile -->
+                        <div class="flex flex-col space-y-3">
+                            <span class="text-sm font-bold uppercase tracking-widest text-slate-900">
+                                Eventos
+                            </span>
+                            <Link :href="route('events.index')"
+                                class="text-xs text-slate-600 hover:text-slate-900 pl-4">
+                                → Eventos Vigentes
+                            </Link>
+                            <Link :href="route('future-events.map')"
+                                class="text-xs text-slate-600 hover:text-slate-900 pl-4">
+                                → Próximos Eventos
+                            </Link>
+                        </div>
+
                         <Link :href="route('gallery.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
                             Galería
@@ -287,7 +349,7 @@ const dashboardInfo = computed(() => {
                             Fotógrafos
                         </Link>
 
-                        <!--  Carrito Mobile -->
+                        <!-- Carrito Mobile -->
                         <Link v-if="user" :href="route('cart.index')"
                             class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 flex items-center justify-center gap-2">
                             <ShoppingCartIcon class="w-5 h-5" />
@@ -367,17 +429,9 @@ const dashboardInfo = computed(() => {
             </div>
         </footer>
         <ToastContainer />
-         <ConfirmDialog 
-            :show="confirmState.show" 
-            :title="confirmState.title" 
-            :message="confirmState.message"
-            :confirm-text="confirmState.confirmText" 
-            :cancel-text="confirmState.cancelText" 
-            :type="confirmState.type"
-            @confirm="handleConfirm"
-            @cancel="handleCancel" 
-            @close="handleCancel" 
-        />
+        <ConfirmDialog :show="confirmState.show" :title="confirmState.title" :message="confirmState.message"
+            :confirm-text="confirmState.confirmText" :cancel-text="confirmState.cancelText" :type="confirmState.type"
+            @confirm="handleConfirm" @cancel="handleCancel" @close="handleCancel" />
     </div>
 </template>
 <style>

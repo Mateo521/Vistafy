@@ -1,7 +1,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
-import MapLayout from '@/Layouts/MapLayout.vue';      // ✅ NUEVO LAYOUT
+import MapLayout from '@/Layouts/MapLayout.vue';      //  NUEVO LAYOUT
 import FutureEventsMap from '@/Components/FutureEventsMap.vue';
 import axios from 'axios';
 
@@ -32,7 +32,7 @@ onMounted(loadEvents);
 <template>
     <MapLayout>
 
-        <Head title="Mapa de Eventos Futuros" />
+        <Head title="Mapa de Próximos eventos" />
 
         <!-- El mapa ocupa toda el área del layout -->
         <div class="w-full h-full">

@@ -237,7 +237,7 @@ class PhotoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("💥 Error general en subida", [
+            \Log::error(" Error general en subida", [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),

@@ -16,7 +16,7 @@ class FutureEventSeeder extends Seeder
         $photographers = Photographer::where('status', 'approved')->get();
 
         if ($photographers->isEmpty()) {
-            $this->command->warn('⚠️  No hay fotógrafos aprobados. Creando fotógrafos de prueba...');
+            $this->command->warn('  No hay fotógrafos aprobados. Creando fotógrafos de prueba...');
             $photographers = Photographer::factory(5)->create(['status' => 'approved']);
         }
 

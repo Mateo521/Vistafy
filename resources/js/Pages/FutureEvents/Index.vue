@@ -14,7 +14,7 @@ const userRole = computed(() => props.auth?.user?.role || null);
 
 <template>
     <AppLayout>
-        <Head title="Eventos Futuros" />
+        <Head title="Próximos eventos" />
 
         <FutureEventsSection
             :is-authenticated="isAuthenticated"

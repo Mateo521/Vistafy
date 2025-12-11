@@ -54,8 +54,8 @@ const form = useForm({
     title: props.opportunity.title,
     description: props.opportunity.description,
     location: props.opportunity.location,
-    latitude: initialLat,           // ✅
-    longitude: initialLng,          // ✅
+    latitude: initialLat,           // 
+    longitude: initialLng,          // 
     event_date: props.opportunity.event_date,
     event_time: props.opportunity.event_time || '',
     cover_image: null,

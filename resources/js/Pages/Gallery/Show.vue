@@ -1,8 +1,9 @@
 <script setup>
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import { useToast } from '@/Composables/useToast';
+import ProtectedImage from '@/Components/ProtectedImage.vue';
 import {
     ArrowLeftIcon,
     ShoppingCartIcon,
@@ -30,6 +31,29 @@ const emailError = ref('');
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth?.user !== null);
+
+const handleKeydown = (e) => {
+    if (e.key === 'Escape') {
+        showFullImage.value = false;
+        showEmailModal.value = false;
+    }
+};
+
+watch([showFullImage, showEmailModal], ([fullImage, emailModal]) => {
+    if (fullImage || emailModal) {
+        document.addEventListener('keydown', handleKeydown);
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.removeEventListener('keydown', handleKeydown);
+        document.body.style.overflow = '';
+    }
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeydown);
+    document.body.style.overflow = '';
+});
+
 
 //  NUEVO: Lógica del carrito
 const handlePurchaseClick = () => {
@@ -165,7 +189,7 @@ const handleImageError = (e) => {
                     <div class="lg:col-span-8">
                         <div class="bg-gray-50 border border-gray-100 rounded-sm p-2 md:p-8 flex items-center justify-center shadow-inner relative group cursor-zoom-in"
                             @click="showFullImage = true">
-                            <img :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
+                            <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
                                 class="max-w-full max-h-[80vh] object-contain shadow-lg transition-transform duration-300"
                                 @error="handleImageError" />
                             <div
@@ -237,7 +261,7 @@ const handleImageError = (e) => {
                             </h3>
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
-                                    <img v-if="photo.photographer?.profile_photo_url"
+                                    <ProtectedImage v-if="photo.photographer?.profile_photo_url"
                                         :src="photo.photographer.profile_photo_url"
                                         class="w-full h-full object-cover" />
                                     <div v-else
@@ -267,7 +291,7 @@ const handleImageError = (e) => {
                         <Link v-for="related in relatedPhotos" :key="related.id"
                             :href="route('gallery.show', related.unique_id)" class="group block relative">
                             <div class="aspect-square bg-gray-100 overflow-hidden rounded-sm relative mb-2">
-                                <img :src="related.thumbnail_url"
+                                <ProtectedImage :src="related.thumbnail_url"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale-[0.3] group-hover:grayscale-0"
                                     @error="handleImageError" />
                             </div>
@@ -361,16 +385,33 @@ const handleImageError = (e) => {
             </div>
         </div>
 
-        <!-- Modal imagen completa (sin cambios) -->
-        <div v-if="showFullImage"
-            class="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center"
-            @click="showFullImage = false">
-            <button class="absolute top-6 right-6 text-white/50 hover:text-white transition z-10">
-                <XMarkIcon class="w-10 h-10" />
-            </button>
-            <img :src="photo.watermarked_url || photo.thumbnail_url"
-                class="max-h-[95vh] max-w-[95vw] object-contain shadow-2xl" @click.stop />
-        </div>
+        <!--  Modal imagen completa MEJORADO -->
+        <Transition enter-active-class="transition-opacity duration-200" enter-from-class="opacity-0"
+            enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200"
+            leave-from-class="opacity-100" leave-to-class="opacity-0">
+            <div v-if="showFullImage" class="fixed top-16 inset-0 z-50 bg-black/95 backdrop-blur-sm"
+                @click="showFullImage = false">
+                <!-- Botón cerrar -->
+                <button @click="showFullImage = false"
+                    class="absolute top-4 right-4 md:top-6 md:right-6 text-white/70 hover:text-white transition-colors z-10 p-2 hover:bg-white/10 rounded-full"
+                    aria-label="Cerrar">
+                    <XMarkIcon class="w-8 h-8 md:w-10 md:h-10" />
+                </button>
+
+                <!-- Contenedor centrado -->
+                <div class="w-full h-full  flex items-center justify-center p-4 md:p-8">
+                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
+                        class="max-h-[80vh] mx-auto max-w-[80vw] flex items-center h-full object-contain shadow-2xl" @click.stop />
+                </div>
+
+                <!-- Hint para cerrar -->
+                <div
+                    class="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 text-white/40 text-[10px] md:text-xs uppercase tracking-widest pointer-events-none">
+                    Presiona ESC o click fuera para cerrar
+                </div>
+            </div>
+        </Transition>
+
 
     </AppLayout>
 </template>

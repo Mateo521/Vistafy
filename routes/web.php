@@ -16,10 +16,27 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\Photographer\FutureEventManagementController;
+use App\Http\Controllers\PhotoViewController;
 
 use App\Http\Controllers\FutureEventController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+
+Route::get(
+    'foto/{photographer}/{year}/{month}/{day}/{type}/{filename}',
+    [PhotoViewController::class, 'show']
+)
+    ->name('photo.view')
+    ->where([
+        'photographer' => '[0-9]+',
+        'year' => '[0-9]{4}',
+        'month' => '[0-9]{2}',
+        'day' => '[0-9]{2}',
+        'type' => 'watermarked|thumbnails',
+        'filename' => '.*\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)'
+    ]);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +45,10 @@ use Inertia\Inertia;
 */
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
+
+
+
+
 
 
 Route::prefix('eventos-futuros')->name('future-events.')->group(function () {

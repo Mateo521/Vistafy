@@ -21,7 +21,7 @@ class ImageProcessingService
      */
     public function processPhoto($file, $photographerId)
     {
-        \Log::info('🖼️ Iniciando procesamiento de imagen');
+        \Log::info(' Iniciando procesamiento de imagen');
 
         // Generar nombres únicos
         $uniqueId = $this->generateUniqueId();
@@ -39,7 +39,7 @@ class ImageProcessingService
             $width = $image->width();
             $height = $image->height();
 
-            \Log::info('📐 Dimensiones originales', ['width' => $width, 'height' => $height]);
+            \Log::info(' Dimensiones originales', ['width' => $width, 'height' => $height]);
 
             // 1. Guardar ORIGINAL (sin marca de agua) - PRIVADO
             $originalFilename = "{$uniqueId}_original.jpg";
@@ -93,7 +93,7 @@ class ImageProcessingService
             ];
 
         } catch (\Exception $e) {
-            \Log::error('💥 Error en processPhoto', [
+            \Log::error(' Error en processPhoto', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -123,7 +123,7 @@ class ImageProcessingService
                 return $image;
             }
 
-            \Log::info('🎨 Aplicando marca de agua en patrón');
+            \Log::info(' Aplicando marca de agua en patrón');
 
             //  Cargar el logo manteniendo transparencia
             $watermark = $this->manager->read($logoFullPath);
@@ -154,7 +154,7 @@ class ImageProcessingService
             $cols = ceil($imageWidth / $tileSize) + 1;
             $rows = ceil($imageHeight / $tileSize) + 1;
 
-            \Log::info('📐 Patrón de marca de agua', [
+            \Log::info(' Patrón de marca de agua', [
                 'cols' => $cols,
                 'rows' => $rows,
                 'tile_size' => $tileSize,
@@ -183,7 +183,7 @@ class ImageProcessingService
             return $image;
 
         } catch (\Exception $e) {
-            \Log::error('💥 Error al aplicar marca de agua', [
+            \Log::error(' Error al aplicar marca de agua', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);

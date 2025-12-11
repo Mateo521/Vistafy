@@ -9,11 +9,14 @@ use App\Models\User;
 use App\Models\FutureEvent;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use App\Services\SeedImageService;
 
 class DatabaseSeeder extends Seeder
 {
+    protected $seedImageService;
     public function run(): void
     {
+        $this->seedImageService = app(SeedImageService::class);
         // 1. Crear Usuario ADMIN
         User::factory()->create([
             'name' => 'Admin User',
@@ -37,21 +40,30 @@ class DatabaseSeeder extends Seeder
             'status' => 'approved',
             'is_verified' => true,
             'region' => 'CABA',
+            'profile_photo' => $this->seedImageService->getPhotographerImage(1),
+            'banner_photo' => $this->seedImageService->getPhotographerBanner(1),
         ]);
 
-        // 3. Crear 20 Fotógrafos "Extra"
         $otherPhotographers = User::factory(20)
-            ->create(['role' => 'photographer'])
-            ->map(function ($user) {
+            ->create([
+                'role' => 'photographer',
+                'password' => bcrypt('password'),
+            ])
+            ->map(function ($user, $index) {
                 return Photographer::factory()->create([
                     'user_id' => $user->id,
                     'status' => 'approved',
+                    'profile_photo' => $this->seedImageService->getPhotographerImage($index + 2),
+                    'banner_photo' => $this->seedImageService->getPhotographerBanner($index + 2),
                 ]);
             });
 
+
         // ----------------------------------------------------------------
-        // ESCENARIO A: MIS EVENTOS (Soy dueño, otros colaboran)
-        // ----------------------------------------------------------------
+// ESCENARIO A: MIS EVENTOS (Soy dueño, otros colaboran)
+// ----------------------------------------------------------------
+
+        echo "\n ESCENARIO A: Creando mis eventos con fotos...\n";
 
         $myEvents = Event::factory(5)->create([
             'photographer_id' => $myPhotographer->id,
@@ -59,63 +71,275 @@ class DatabaseSeeder extends Seeder
             'is_private' => false,
         ]);
 
-        foreach ($myEvents as $event) {
-            Photo::factory(10)->create([
-                'event_id' => $event->id,
-                'photographer_id' => $myPhotographer->id,
-            ]);
+        foreach ($myEvents as $eventIndex => $event) {
+            echo "  Evento {$eventIndex}/{$myEvents->count()}: {$event->name}";
 
+            // Mis fotos (10 fotos con marca de agua)
+            for ($i = 0; $i < 10; $i++) {
+                try {
+                    $photoData = $this->seedImageService->processSeedPhoto($myPhotographer->id);
+
+                    Photo::create([
+                        'event_id' => $event->id,
+                        'photographer_id' => $myPhotographer->id,
+                        'unique_id' => $photoData['unique_id'],
+                        'original_path' => $photoData['original_path'],
+                        'watermarked_path' => $photoData['watermarked_path'],
+                        'thumbnail_path' => $photoData['thumbnail_path'],
+                        'original_name' => $photoData['original_name'],
+                        'file_size' => $photoData['file_size'],
+                        'width' => $photoData['dimensions']['width'],
+                        'height' => $photoData['dimensions']['height'],
+                        'is_private' => false,
+                        'is_active' => true,
+                    ]);
+
+                    echo ".";
+                } catch (\Exception $e) {
+                    echo "✗";
+                    \Log::error("Error creando foto: " . $e->getMessage());
+                }
+            }
+
+            // Colaboradores
             $collaborators = $otherPhotographers->random(2);
 
             foreach ($collaborators as $collab) {
                 $event->collaborators()->attach($collab->id);
 
-                Photo::factory(5)->create([
-                    'event_id' => $event->id,
-                    'photographer_id' => $collab->id,
-                ]);
+                // Fotos de colaboradores (5 fotos cada uno)
+                for ($i = 0; $i < 5; $i++) {
+                    try {
+                        $photoData = $this->seedImageService->processSeedPhoto($collab->id);
+
+                        Photo::create([
+                            'event_id' => $event->id,
+                            'photographer_id' => $collab->id,
+                            'unique_id' => $photoData['unique_id'],
+                            'original_path' => $photoData['original_path'],
+                            'watermarked_path' => $photoData['watermarked_path'],
+                            'thumbnail_path' => $photoData['thumbnail_path'],
+                            'original_name' => $photoData['original_name'],
+                            'file_size' => $photoData['file_size'],
+                            'width' => $photoData['dimensions']['width'],
+                            'height' => $photoData['dimensions']['height'],
+                            'is_private' => false,
+                            'is_active' => true,
+                        ]);
+
+                        echo ".";
+                    } catch (\Exception $e) {
+                        echo "✗";
+                    }
+                }
             }
+
+            echo " \n";
         }
 
         // ----------------------------------------------------------------
-        // ESCENARIO B: COLABORACIONES (Soy invitado, otros son dueños)
-        // ----------------------------------------------------------------
+// ESCENARIO B: COLABORACIONES (Soy invitado, otros son dueños)
+// ----------------------------------------------------------------
+
+        echo "\n ESCENARIO B: Eventos donde soy colaborador...\n";
 
         $hosts = $otherPhotographers->random(3);
 
-        foreach ($hosts as $host) {
+        foreach ($hosts as $hostIndex => $host) {
             $event = Event::factory()->create([
                 'photographer_id' => $host->id,
                 'name' => 'Evento de ' . $host->business_name,
                 'is_active' => true,
             ]);
 
+            echo "  Evento {$hostIndex}/3: {$event->name}";
+
             $event->collaborators()->attach($myPhotographer->id);
 
-            Photo::factory(8)->create([
-                'event_id' => $event->id,
-                'photographer_id' => $myPhotographer->id,
-            ]);
+            // Mis fotos (8 fotos)
+            for ($i = 0; $i < 8; $i++) {
+                try {
+                    $photoData = $this->seedImageService->processSeedPhoto($myPhotographer->id);
 
-            Photo::factory(8)->create([
-                'event_id' => $event->id,
-                'photographer_id' => $host->id,
-            ]);
+                    Photo::create([
+                        'event_id' => $event->id,
+                        'photographer_id' => $myPhotographer->id,
+                        'unique_id' => $photoData['unique_id'],
+                        'original_path' => $photoData['original_path'],
+                        'watermarked_path' => $photoData['watermarked_path'],
+                        'thumbnail_path' => $photoData['thumbnail_path'],
+                        'original_name' => $photoData['original_name'],
+                        'file_size' => $photoData['file_size'],
+                        'width' => $photoData['dimensions']['width'],
+                        'height' => $photoData['dimensions']['height'],
+                        'is_private' => false,
+                        'is_active' => true,
+                    ]);
+
+                    echo ".";
+                } catch (\Exception $e) {
+                    echo "✗";
+                }
+            }
+
+            // Fotos del anfitrión (8 fotos)
+            for ($i = 0; $i < 8; $i++) {
+                try {
+                    $photoData = $this->seedImageService->processSeedPhoto($host->id);
+
+                    Photo::create([
+                        'event_id' => $event->id,
+                        'photographer_id' => $host->id,
+                        'unique_id' => $photoData['unique_id'],
+                        'original_path' => $photoData['original_path'],
+                        'watermarked_path' => $photoData['watermarked_path'],
+                        'thumbnail_path' => $photoData['thumbnail_path'],
+                        'original_name' => $photoData['original_name'],
+                        'file_size' => $photoData['file_size'],
+                        'width' => $photoData['dimensions']['width'],
+                        'height' => $photoData['dimensions']['height'],
+                        'is_private' => false,
+                        'is_active' => true,
+                    ]);
+
+                    echo ".";
+                } catch (\Exception $e) {
+                    echo "✗";
+                }
+            }
+
+            echo " \n";
         }
 
         // ----------------------------------------------------------------
-        // ESCENARIO C: RELLENO (Eventos random)
-        // ----------------------------------------------------------------
+// ESCENARIO C: RELLENO (Eventos random)
+// ----------------------------------------------------------------
 
-        $otherPhotographers->each(function ($photographer) {
-            Event::factory(2)
-                ->for($photographer)
-                ->has(
-                    Photo::factory()->count(5)->state(['photographer_id' => $photographer->id])
-                )
-                ->create();
-        });
+        echo "\n ESCENARIO C: Eventos de relleno (otros fotógrafos)...\n";
 
+        $total = $otherPhotographers->count();
+        $current = 0;
+
+        foreach ($otherPhotographers as $photographer) {
+            $current++;
+
+            if (!$photographer || !$photographer->id) {
+                echo "    Fotógrafo inválido detectado, saltando...\n";
+                continue;
+            }
+
+            echo "  Fotógrafo {$current}/{$total}: {$photographer->business_name}";
+
+            try {
+                // 2 eventos por fotógrafo
+                for ($e = 0; $e < 2; $e++) {
+
+                    $event = null;
+
+                    try {
+                        $event = Event::factory()->create([
+                            'photographer_id' => $photographer->id,
+                        ]);
+                    } catch (\Throwable $eventError) {
+                        echo " [E-ERR]";
+                        \Log::error("Error creando evento", [
+                            'photographer_id' => $photographer->id,
+                            'error' => $eventError->getMessage(),
+                            'file' => $eventError->getFile(),
+                            'line' => $eventError->getLine(),
+                        ]);
+                        continue; // Saltar este evento y continuar con el siguiente
+                    }
+
+                    if (!$event || !$event->id) {
+                        echo " [E-NULL]";
+                        continue;
+                    }
+
+                    // 5 fotos por evento
+                    for ($i = 0; $i < 5; $i++) {
+                        $attempts = 0;
+                        $maxAttempts = 3;
+                        $photoCreated = false;
+
+                        while ($attempts < $maxAttempts && !$photoCreated) {
+                            try {
+                                $photoData = $this->seedImageService->processSeedPhoto($photographer->id);
+
+                                if (!$photoData || !isset($photoData['unique_id'])) {
+                                    throw new \Exception("Datos de foto inválidos");
+                                }
+
+                                Photo::create([
+                                    'event_id' => $event->id,
+                                    'photographer_id' => $photographer->id,
+                                    'unique_id' => $photoData['unique_id'],
+                                    'original_path' => $photoData['original_path'],
+                                    'watermarked_path' => $photoData['watermarked_path'],
+                                    'thumbnail_path' => $photoData['thumbnail_path'],
+                                    'original_name' => $photoData['original_name'],
+                                    'file_size' => $photoData['file_size'],
+                                    'width' => $photoData['dimensions']['width'],
+                                    'height' => $photoData['dimensions']['height'],
+                                    'is_private' => false,
+                                    'is_active' => true,
+                                ]);
+
+                                echo ".";
+                                $photoCreated = true;
+
+                            } catch (\Throwable $photoError) {
+                                $attempts++;
+
+                                if ($attempts >= $maxAttempts) {
+                                    echo "✗";
+                                    \Log::warning("Foto omitida tras {$maxAttempts} intentos", [
+                                        'event_id' => $event->id ?? 'unknown',
+                                        'photographer_id' => $photographer->id,
+                                        'error' => $photoError->getMessage(),
+                                    ]);
+                                } else {
+                                    echo "↻";
+                                    sleep(1);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                echo " \n";
+
+            } catch (\Throwable $criticalError) {
+                echo "  CRÍTICO\n";
+                \Log::error("Error crítico en fotógrafo", [
+                    'photographer_id' => $photographer->id ?? 'unknown',
+                    'business_name' => $photographer->business_name ?? 'unknown',
+                    'error' => $criticalError->getMessage(),
+                    'file' => $criticalError->getFile(),
+                    'line' => $criticalError->getLine(),
+                    'trace' => $criticalError->getTraceAsString(),
+                ]);
+
+                // NO re-lanzar, solo continuar con el siguiente fotógrafo
+                continue;
+            }
+        }
+
+        echo "\n";
+
+
+
+
+
+        
+
+        $eventImageMap = [
+            'Tech Summit Argentina 2025' => 'tech2025',
+            'Festival Lollapalooza Argentina' => 'lolla2025',
+            'Feria del Libro Buenos Aires' => 'feria2025',
+            'Maratón de Buenos Aires' => 'maraton2025',
+            'Comic Con Argentina' => 'comic2025',
+        ];
         // ================================================================
         //  EVENTOS FUTUROS CON COORDENADAS
         // ================================================================
@@ -189,8 +413,22 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($specificFutureEvents as $eventData) {
-            FutureEvent::create($eventData);
+            $imageName = $eventImageMap[$eventData['title']] ?? 'test';
+
+            FutureEvent::create([
+                'photographer_id' => $eventData['photographer_id'],
+                'title' => $eventData['title'],
+                'description' => $eventData['description'],
+                'location' => $eventData['location'],
+                'latitude' => $eventData['latitude'],
+                'longitude' => $eventData['longitude'],
+                'event_date' => $eventData['event_date'],
+                'expiry_date' => $eventData['expiry_date'],
+                'cover_image' => $this->seedImageService->getFutureEventImage($imageName), // Usar servicio para obtener imagen
+                'status' => $eventData['status'],
+            ]);
         }
+
 
         // ----------------------------------------------------------------
         //  EVENTOS POR PROVINCIA (2 eventos por provincia)
@@ -565,11 +803,66 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+
+
+        // Mapeo de eventos por provincia a imágenes locales
+        $provinceEventsImages = [
+            'Fiesta de la Cerveza Artesanal' => 'cerveza',
+            'Feria de Diseño y Arte' => 'arte',
+            'Festival de Jazz Córdoba' => 'jazz',
+            'Rally de las Sierras' => 'rally',
+            'Festival Internacional de Cine' => 'cine',
+            'Feria del Libro Regional' => 'feria2025',
+            'Fiesta Nacional de la Vendimia' => 'vendimia',
+            'Maratón de Alta Montaña' => 'montana',
+            'Festival Folclórico del Norte' => 'folclore',
+            'Feria de Artesanías Andinas' => 'artesanias',
+            'Festival Nacional del Folclore' => 'folclore',
+            'Fiesta del Limón' => 'vendimia',
+            'Festival de Música Electrónica Patagónico' => 'electronica',
+            'Fiesta Nacional del Pehuen' => 'pachamama',
+            'Festival de Cine de la Patagonia' => 'cine',
+            'Fiesta Nacional de la Manzana' => 'vendimia',
+            'Festival del Pingüino' => 'pinguino',
+            'Festival Nacional del Salmón' => 'montana',
+            'Maratón Glaciar Perito Moreno' => 'glaciar',
+            'Festival de Tango Austral' => 'tango',
+            'Festival del Fin del Mundo' => 'ushuaia',
+            'Maratón de los Andes Fueguinos' => 'montana',
+            'Fiesta de la Pachamama' => 'pachamama',
+            'Carnaval Jujeño' => 'carnaval',
+            'Festival de la Música Misionera' => 'chamame',
+            'Fiesta Nacional del Inmigrante' => 'carnaval',
+            'Carnaval de Corrientes' => 'carnaval',
+            'Festival del Chamamé' => 'chamame',
+            'Festival de Jineteada y Folclore' => 'gaucho',
+            'Fiesta Nacional del Asado con Cuero' => 'gaucho',
+            'Fiesta Nacional del Algodón' => 'algodon',
+            'Festival de Esculturas en Madera' => 'artesanias',
+            'Fiesta Nacional del Pomelo' => 'vendimia',
+            'Festival Folclórico del Litoral' => 'folclore',
+            'Festival Nacional de la Chacarera' => 'folclore',
+            'Fiesta del Caballo' => 'gaucho',
+            'Festival del Poncho' => 'artesanias',
+            'Fiesta Nacional de la Chaya' => 'carnaval',
+            'Fiesta Nacional del Poncho' => 'artesanias',
+            'Festival de la Virgen del Valle' => 'pachamama',
+            'Festival Nacional del Sol' => 'folclore',
+            'Vuelta Ciclística Internacional' => 'rally',
+            'Festival Internacional de Tango' => 'tango',
+            'Rally de las Sierras Puntanas' => 'rally',
+            'Fiesta Nacional del Ternero' => 'gaucho',
+            'Festival Folclórico Pampeano' => 'folclore',
+        ];
+
+
         // Crear eventos distribuidos por provincia
-        $dayOffset = 10; // Empezar desde 10 días en adelante
+        $dayOffset = 10;
         foreach ($provinceEvents as $eventData) {
             $eventDate = Carbon::now()->addDays($dayOffset)->setTime(rand(9, 20), 0);
-            
+
+            $imageName = $provinceEventsImages[$eventData['title']] ?? 'test'; // 
+
             FutureEvent::create([
                 'photographer_id' => $allPhotographers->random()->id,
                 'title' => $eventData['title'],
@@ -579,11 +872,11 @@ class DatabaseSeeder extends Seeder
                 'longitude' => $eventData['longitude'],
                 'event_date' => $eventDate,
                 'expiry_date' => $eventDate->copy()->addDays(7),
-                'cover_image' => 'https://picsum.photos/seed/' . md5($eventData['title']) . '/1280/720',
+                'cover_image' => $this->seedImageService->getFutureEventImage($imageName), // 
                 'status' => 'upcoming',
             ]);
 
-            $dayOffset += rand(3, 7); // Espaciar eventos entre 3-7 días
+            $dayOffset += rand(3, 7);
         }
 
         //  1 Evento de prueba que ya pasó
@@ -596,7 +889,7 @@ class DatabaseSeeder extends Seeder
             'longitude' => -58.3816,
             'event_date' => Carbon::now()->subDays(2),
             'expiry_date' => Carbon::now()->addDays(5),
-            'cover_image' => 'https://picsum.photos/seed/test/1280/720',
+            'cover_image' => $this->seedImageService->getFutureEventImage('test'), // 
             'status' => 'upcoming',
         ]);
 

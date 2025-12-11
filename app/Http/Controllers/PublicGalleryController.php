@@ -240,24 +240,31 @@ class PublicGalleryController extends Controller
     }
 
 
-    /**
-     * Mostrar foto individual con detalles
-     */
     public function show($uniqueId)
     {
         $photo = Photo::where('unique_id', strtoupper($uniqueId))
             ->where('is_active', true)
             ->with([
                 'photographer' => function ($query) {
-                    // 1. AGREGAR 'slug' AQUÍ
                     $query->select('id', 'user_id', 'business_name', 'slug', 'region', 'bio', 'phone', 'profile_photo');
                 },
                 'photographer.user:id,email',
-                'event:id,name,slug,event_date,location' // Agregué location también por si acaso
+                'event:id,name,slug,event_date,location'
             ])
             ->firstOrFail();
 
-        // Fotos relacionadas
+        // 🔍 DEBUG: Ver todas las URLs
+        \Log::info('Photo URLs Debug', [
+            'unique_id' => $photo->unique_id,
+            'watermarked_path' => $photo->watermarked_path,
+            'thumbnail_path' => $photo->thumbnail_path,
+            'view_url' => $photo->view_url,
+            'thumbnail_view_url' => $photo->thumbnail_view_url,
+            'watermarked_url (original)' => $photo->watermarked_url,
+            'thumbnail_url (original)' => $photo->thumbnail_url,
+        ]);
+
+        // Fotos relacionadas...
         $relatedPhotos = Photo::where('is_active', true)
             ->where('id', '!=', $photo->id)
             ->where(function ($q) use ($photo) {
@@ -269,11 +276,11 @@ class PublicGalleryController extends Controller
             ->with('photographer:id,business_name')
             ->take(8)
             ->get()
-            ->map(function ($p) { // Mapear las relacionadas para asegurar URLs correctas
+            ->map(function ($p) {
                 return [
                     'id' => $p->id,
                     'unique_id' => $p->unique_id,
-                    'thumbnail_url' => $p->thumbnail_url,
+                    'thumbnail_url' => $p->thumbnail_view_url ?? $p->thumbnail_url,
                     'price' => $p->price
                 ];
             });
@@ -285,24 +292,24 @@ class PublicGalleryController extends Controller
                 'title' => $photo->title,
                 'description' => $photo->description,
                 'price' => $photo->price,
-                // Usar accessors del modelo para URLs correctas
-                'watermarked_url' => $photo->watermarked_url,
-                'thumbnail_url' => $photo->thumbnail_url,
+
+                'watermarked_url' => $photo->view_url ?? $photo->watermarked_url,
+                'thumbnail_url' => $photo->thumbnail_view_url ?? $photo->thumbnail_url,
+
                 'downloads' => $photo->downloads,
-                'width' => $photo->width,   // Datos técnicos
-                'height' => $photo->height, // Datos técnicos
+                'width' => $photo->width,
+                'height' => $photo->height,
 
                 'photographer' => [
                     'id' => $photo->photographer->id,
                     'business_name' => $photo->photographer->business_name,
-                    // 2. AGREGAR 'slug' AQUÍ PARA EL ENLACE
                     'slug' => $photo->photographer->slug,
                     'region' => $photo->photographer->region,
                     'bio' => $photo->photographer->bio,
                     'phone' => $photo->photographer->phone,
                     'email' => $photo->photographer->user->email ?? null,
                     'profile_photo_url' => $photo->photographer->profile_photo_url,
-                    'website' => $photo->photographer->website ?? null, // Si tienes estos campos
+                    'website' => $photo->photographer->website ?? null,
                     'instagram' => $photo->photographer->instagram ?? null,
                 ],
                 'event' => $photo->event ? [
@@ -316,6 +323,8 @@ class PublicGalleryController extends Controller
             'relatedPhotos' => $relatedPhotos,
         ]);
     }
+
+
 
     /**
      * Búsqueda rápida por ID único
