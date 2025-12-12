@@ -296,7 +296,7 @@ onMounted(async () => {
                             <!-- Tips -->
                             <div class="mt-6 bg-gray-50 rounded-lg p-4">
                                 <p class="text-xs font-bold uppercase tracking-wide text-slate-700 mb-2">
-                                    💡 Consejos
+                                     Consejos
                                 </p>
                                 <ul class="text-xs text-slate-600 space-y-1">
                                     <li>✓ Usa una foto clara de tu rostro</li>

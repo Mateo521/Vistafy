@@ -127,16 +127,17 @@ const formatDate = (dateString) => {
                                         {{ photographer.business_name || photographer.user.name }}
                                         <span
                                             class="text-[10px] text-slate-400 bg-white border border-gray-200 px-1.5 rounded-sm">{{
-                                            photographer.photos_count }}</span>
+                                                photographer.photos_count }}</span>
                                     </span>
                                 </label>
                             </div>
                         </div>
-                        <Link :href="route('events.face-search.show', event.slug)"
+                        <Link :href="route('events.face-search', event.slug)"
                             class="inline-flex items-center gap-2 bg-gray-600 text-center hover:bg-gray-700 text-white font-medium px-6 py-3 rounded transition-colors shadow-md hover:shadow-lg">
                             <MagnifyingGlassIcon class="w-5 h-5" />
                             <span>Buscar por Rostro</span>
                         </Link>
+
                     </div>
                 </div>
 
