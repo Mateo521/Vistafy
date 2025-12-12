@@ -394,5 +394,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 
+Route::fallback(function () {
+    return Inertia::render('Errors/404');
+});
 
 require __DIR__ . '/auth.php';
