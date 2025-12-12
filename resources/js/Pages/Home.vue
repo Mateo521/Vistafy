@@ -120,7 +120,7 @@ const auth = page.props.auth;
                     Preservando momentos <br /> <span class="italic text-gray-300">irrepetibles.</span>
                 </h1>
                 <p class="text-lg text-gray-300 mb-10 max-w-2xl font-light leading-relaxed animate-fade-in-delayed">
-                    Acceda a su galería privada o explore nuestra cobertura de eventos recientes con la calidad que nos
+                    Accedé a tu galería privada o explore nuestra cobertura de eventos recientes con la calidad que nos
                     distingue.
                 </p>
                 <!--Link :href="route('gallery.index')"

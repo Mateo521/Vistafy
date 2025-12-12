@@ -49,7 +49,9 @@ Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
 
 
-
+Route::get('/nosotros', function () {
+    return Inertia::render('About');
+})->name('about');
 
 
 Route::prefix('eventos-futuros')->name('future-events.')->group(function () {

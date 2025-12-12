@@ -42,7 +42,7 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
                     Mapa
                 </p>
                 <h1 class="text-base sm:text-lg md:text-xl font-serif font-bold">
-                    Eventos Futuros
+                    Próximos eventos
                 </h1>
             </div>
         </header>
