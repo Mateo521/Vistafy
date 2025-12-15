@@ -208,7 +208,7 @@ const clearSelection = () => {
                                 class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                             <SparklesIcon v-if="!isSearching" class="w-5 h-5" />
                             <div v-else class="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
-                            <span>{{ isSearching ? 'Buscando...' : 'Buscar Mis Fotos' }}</span>
+                            <span>{{ isSearching ? 'Buscando...' : 'Buscar mis fotos' }}</span>
                         </button>
                     </div>
 

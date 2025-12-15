@@ -206,7 +206,7 @@ onMounted(async () => {
                         Búsqueda por Reconocimiento Facial
                     </h1>
                     <p class="text-slate-600">
-                        Subí una foto de tu rostro y encontraremos todas las fotos donde apareces en 
+                        Subí una foto de tu rostro y vamos a encontrar todas las fotos donde apareces en 
                         <strong>{{ event.name }}</strong>
                     </p>
                 </div>

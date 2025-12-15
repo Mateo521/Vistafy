@@ -372,92 +372,113 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
-                            <!-- Búsqueda facial -->
-                            <div
-                                class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6">
-                                <div class="flex items-start gap-3 mb-4">
-                                    <div
-                                        class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <SparklesIcon class="w-5 h-5 text-white" />
+
+                            <div class="bg-white border border-zinc-200 p-8 shadow-sm ">
+                                <div class="flex flex-col gap-2 mb-8 border-b border-zinc-100 pb-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="p-2 border border-zinc-200 inline-flex">
+                                            <SparklesIcon class="w-5 h-5 text-black stroke-1" />
+                                        </div>
+                                        <span
+                                            class="text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 border border-zinc-200 px-2 py-1">
+                                            AI Beta v1.0
+                                        </span>
                                     </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-slate-900 mb-1 flex items-center gap-2">
-                                            Búsqueda por cara
-                                            <span
-                                                class="text-[10px] bg-purple-600 text-white px-2 py-0.5 rounded-full">NUEVO</span>
+                                    <div>
+                                        <h3 class="font-serif text-2xl text-black mt-4 mb-2">
+                                            Reconocimiento Facial
                                         </h3>
-                                        <p class="text-sm text-slate-600">
-                                            Subí una foto tuya y encontraremos automáticamente todas las imágenes donde
-                                            apareces
+                                        <p class="text-xs font-light text-zinc-500 leading-relaxed">
+                                            Algoritmo de detección biométrica. Subí una referencia visual para indexar y
+                                            localizar coincidencias en la base de datos.
                                         </p>
                                     </div>
                                 </div>
 
-                                <!-- Loading de modelos -->
-                                <div v-if="isLoadingModels" class="text-center py-8">
+                                <div v-if="isLoadingModels" class="py-12 flex flex-col items-center justify-center">
                                     <div
-                                        class="animate-spin w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full mx-auto mb-3">
+                                        class="w-6 h-6 border-2 border-zinc-200 border-t-black rounded-full animate-spin mb-4">
                                     </div>
-                                    <p class="text-sm text-slate-600">{{ progressMessage }}</p>
+                                    <p class="text-xs font-bold tracking-widest text-zinc-500 uppercase animate-pulse">
+                                        {{ progressMessage }}
+                                    </p>
                                 </div>
 
-                                <!-- Interface de búsqueda -->
                                 <div v-else>
-                                    <!-- Sin foto seleccionada -->
                                     <div v-if="!previewUrl"
-                                        class="border-2 border-dashed border-purple-300 rounded-lg p-8 text-center hover:border-purple-400 transition cursor-pointer bg-white"
+                                        class="group relative border border-dashed border-zinc-300 hover:border-black transition-colors duration-300 cursor-pointer bg-zinc-50/50 hover:bg-white p-10 text-center"
                                         @click="$refs.faceFileInput.click()">
-                                        <FaceSmileIcon class="w-12 h-12 text-purple-400 mx-auto mb-3" />
-                                        <p class="text-sm font-semibold text-slate-900 mb-1">Selecciona tu foto</p>
-                                        <p class="text-xs text-slate-500 mb-3">JPG, PNG o WEBP - Máx. 10MB</p>
+
+                                        <div
+                                            class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <span class="text-[10px] text-zinc-400 uppercase">Click to upload</span>
+                                        </div>
+
+                                        <FaceSmileIcon
+                                            class="w-10 h-10 text-zinc-300 group-hover:text-black transition-colors stroke-1 mx-auto mb-4" />
+
+                                        <p class="font-serif text-lg text-black mb-1">
+                                            Seleccionar Referencia
+                                        </p>
+                                        <p class="text-[10px] uppercase tracking-widest text-zinc-400">
+                                            JPG, PNG • Alta Resolución
+                                        </p>
+
                                         <input ref="faceFileInput" type="file" accept="image/*" class="hidden"
                                             @change="handleFileSelect">
-                                        <button type="button" @click.stop="$refs.faceFileInput.click()"
-                                            class="bg-purple-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-purple-700 transition">
-                                            Elegir Foto
-                                        </button>
                                     </div>
 
-                                    <!-- Con foto seleccionada -->
-                                    <div v-else class="space-y-3">
-                                        <div class="relative">
+                                    <div v-else class="space-y-6">
+                                        <div class="relative group">
+                                            <div class="absolute -inset-1 border border-zinc-100 bg-zinc-50"></div>
                                             <img :src="previewUrl" alt="Preview"
-                                                class="w-full max-h-48 object-contain rounded-lg border-2 border-purple-200 bg-white">
+                                                class="relative w-full h-64 object-contain bg-zinc-50 border border-zinc-200 p-2 grayscale hover:grayscale-0 transition-all duration-500">
+
                                             <button type="button"
                                                 @click="selectedFile = null; previewUrl = null; errorMessage = ''"
-                                                class="absolute top-2 right-2 bg-white/95 backdrop-blur-sm p-1.5 rounded-lg hover:bg-white transition shadow-lg">
-                                                <XMarkIcon class="w-4 h-4 text-slate-600" />
+                                                class="absolute top-4 right-4 bg-white border border-zinc-200 p-2 hover:bg-black hover:text-white hover:border-black transition-colors z-10">
+                                                <XMarkIcon class="w-4 h-4 stroke-1" />
                                             </button>
                                         </div>
 
                                         <button type="button" @click="performFaceSearch" :disabled="isSearching"
-                                            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                                            class="w-full bg-black text-white py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-black flex items-center justify-center gap-3">
                                             <div v-if="isSearching"
-                                                class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full">
+                                                class="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin">
                                             </div>
-                                            <SparklesIcon v-else class="w-5 h-5" />
-                                            <span>{{ isSearching ? 'Buscando...' : 'Buscar Mis Fotos' }}</span>
+                                            <SparklesIcon v-else class="w-4 h-4 stroke-1" />
+                                            <span>{{ isSearching ? 'Analizando...' : 'Iniciar Escaneo' }}</span>
                                         </button>
                                     </div>
 
-                                    <!-- Mensaje de progreso -->
-                                    <div v-if="progressMessage" class="mt-3 text-center">
-                                        <p class="text-sm text-purple-600 animate-pulse">{{ progressMessage }}</p>
+                                    <div v-if="progressMessage" class="mt-4 text-center border-t border-zinc-100 pt-4">
+                                        <p class="text-xs font-mono text-zinc-500">{{ progressMessage }}</p>
                                     </div>
 
-                                    <!-- Error -->
                                     <div v-if="errorMessage"
-                                        class="mt-3 bg-red-50 border border-red-200 rounded-lg p-3">
-                                        <p class="text-sm text-red-800">{{ errorMessage }}</p>
+                                        class="mt-4 p-4 bg-zinc-50 border border-red-900/20 text-center">
+                                        <p class="text-xs text-red-900 font-medium">{{ errorMessage }}</p>
                                     </div>
 
-                                    <!-- Tips -->
-                                    <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                        <p class="text-xs font-semibold text-blue-900 mb-2"> Consejos:</p>
-                                        <ul class="text-xs text-blue-800 space-y-1 ml-4 list-disc">
-                                            <li>Usa una foto clara y bien iluminada</li>
-                                            <li>Tu rostro debe estar visible de frente</li>
-                                            <li>Evita lentes de sol o sombreros</li>
+                                    <div class="mt-8 pt-6 border-t border-zinc-200">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <div class="w-1 h-1 bg-black rounded-full"></div>
+                                            <p class="text-[10px] font-bold tracking-widest uppercase text-zinc-900">
+                                                Parámetros de Entrada</p>
+                                        </div>
+                                        <ul class="grid grid-cols-2 gap-2">
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-center gap-2">
+                                                <CheckIcon class="w-3 h-3 text-zinc-300" /> Iluminación frontal
+                                            </li>
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-center gap-2">
+                                                <CheckIcon class="w-3 h-3 text-zinc-300" /> Sin accesorios
+                                            </li>
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-center gap-2">
+                                                <CheckIcon class="w-3 h-3 text-zinc-300" /> Rostro descubierto
+                                            </li>
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-center gap-2">
+                                                <CheckIcon class="w-3 h-3 text-zinc-300" /> Foco nítido
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -511,8 +532,16 @@ const handleImageError = (e) => {
 
                                 <!-- Badge de similitud -->
                                 <div v-if="showingFaceResults && photo.similarity"
-                                    class="absolute top-2 left-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 text-[10px] font-bold rounded shadow-lg">
-                                    {{ Math.round(photo.similarity * 100) }}% Match
+                                    class="absolute top-0 left-0 bg-black/90 backdrop-blur-sm border-r border-b border-white/20 px-3 py-2 z-10">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+
+                                        <span class="font-mono text-xs text-white tracking-[0.1em]">
+                                            {{ Math.round(photo.similarity * 100) }}%
+                                            <span
+                                                class="text-zinc-500 ml-1 font-sans text-[9px] font-bold tracking-widest uppercase">COINCIDENCIA</span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
