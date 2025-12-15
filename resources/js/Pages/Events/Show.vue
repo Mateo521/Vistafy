@@ -2,7 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLeftIcon, FunnelIcon, UserIcon } from '@heroicons/vue/24/outline';
+import { ArrowLeftIcon, FunnelIcon, UserIcon , MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     event: Object,
@@ -133,9 +133,9 @@ const formatDate = (dateString) => {
                             </div>
                         </div>
                         <Link :href="route('events.face-search', event.slug)"
-                            class="inline-flex items-center gap-2 bg-gray-600 text-center hover:bg-gray-700 text-white font-medium px-6 py-3 rounded transition-colors shadow-md hover:shadow-lg">
-                            <MagnifyingGlassIcon class="w-5 h-5" />
-                            <span>Buscar por Rostro</span>
+                            class="inline-flex items-center gap-2 bg-gray-600 text-center hover:bg-gray-700 text-white font-medium px-6 py-3  transition-colors shadow-md hover:shadow-lg">
+                            <MagnifyingGlassIcon class="w-5 h-5 text-white" />
+                            <span>Buscar por rostro</span>
                         </Link>
 
                     </div>

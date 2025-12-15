@@ -80,6 +80,8 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
     Route::get('/{uniqueId}', [PublicGalleryController::class, 'show'])->name('show');
     Route::post('/buscar', [PublicGalleryController::class, 'search'])->name('search');
+    Route::post('/buscar-rostro', [PublicGalleryController::class, 'faceSearch'])
+        ->name('face-search');
     Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
 });
 

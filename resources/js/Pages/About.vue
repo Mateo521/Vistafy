@@ -24,7 +24,7 @@ import {
                     </p>
                     <h1 class="text-5xl md:text-7xl font-serif font-medium mb-8 leading-[1.1] text-black">
                         No busques tu foto.<br>
-                        <span class="italic text-zinc-500">Deja que ella te encuentre a ti.</span>
+                        <span class="italic text-zinc-500">Lorem ipsum dolor sit amet consectetur, adipisicing elit..</span>
                     </h1>
                     <p class="text-xl text-zinc-600 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
                         Transformamos el caos de miles de imágenes en una experiencia personal. Conectamos fotógrafos profesionales con asistentes a eventos a través de tecnología invisible.
@@ -33,7 +33,7 @@ import {
             </div>
         </section>
 
-        <section class="py-24 bg-zinc-50">
+        <!--section class="py-24 bg-zinc-50">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-16 items-center">
                     <div>
@@ -63,7 +63,7 @@ import {
                     </div>
                 </div>
             </div>
-        </section>
+        </section-->
 
         <section class="py-24 bg-white border-t border-zinc-100">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -87,7 +87,7 @@ import {
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Búsqueda Instantánea</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Olvídate del scroll infinito. Sube una selfie y nuestra IA escaneará miles de fotos para encontrar tu rostro en menos de 3 segundos.
+                                        Olvídate del scroll infinito. Subí una selfie y nuestra IA escaneará miles de fotos para encontrar tu rostro en menos de 3 segundos.
                                     </p>
                                 </div>
                             </li>

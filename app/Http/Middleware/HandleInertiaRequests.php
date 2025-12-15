@@ -37,7 +37,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'role' => $request->user()->role,
                     'is_admin' => $request->user()->is_admin,
-                  
+
                     'photographer' => $request->user()->role === 'photographer'
                         ? $request->user()->photographer
                         : null,
@@ -48,6 +48,8 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn() => $request->session()->get('error'),
                 'message' => fn() => $request->session()->get('message'),
             ],
+
+            'regions' => config('regions.list'),
         ]);
     }
 }

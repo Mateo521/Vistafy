@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, router, useForm , usePage } from '@inertiajs/vue3';
+import { ref , computed } from 'vue';
 import {
     UserCircleIcon,
     PhotoIcon,
@@ -34,11 +34,8 @@ const form = useForm({
 
 const profilePhotoPreview = ref(null);
 const bannerPhotoPreview = ref(null);
-
-const regions = [
-    'Buenos Aires', 'CABA', 'Córdoba', 'Santa Fe', 'Mendoza', 
-    'Tucumán', 'Rosario', 'Salta', 'Neuquén', 'Entre Ríos',
-];
+const page = usePage();
+const regions = computed(() => page.props.regions);
 
 const handleProfilePhotoChange = (event) => {
     const file = event.target.files[0];
