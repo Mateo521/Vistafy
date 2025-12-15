@@ -257,6 +257,8 @@ Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(f
 
 Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name('photographer.')->group(function () {
 
+    Route::post('/fotos/assign-to-event', [PhotoController::class, 'assignToEvent'])
+        ->name('photos.assign-to-event');
 
     // --- PERFIL PROFESIONAL ---
     // El prefijo 'perfil' se suma a 'fotografo' -> /fotografo/perfil
@@ -335,6 +337,10 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::delete('/perfil/banner', [App\Http\Controllers\Photographer\ProfileController::class, 'deleteBannerPhoto'])->name('profile.banner.delete');
 
     // Fotos
+
+
+
+
     Route::get('/fotos', [PhotoController::class, 'index'])->name('photos.index');
     Route::get('/fotos/crear', [PhotoController::class, 'create'])->name('photos.create');
     Route::post('/fotos', [PhotoController::class, 'store'])->name('photos.store');

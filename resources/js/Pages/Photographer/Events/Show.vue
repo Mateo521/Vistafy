@@ -27,6 +27,7 @@ const props = defineProps({
         type: Object,
         default: () => ({ total_photos: 0, active_photos: 0, total_downloads: 0 })
     },
+    unassignedPhotos: { type: Array, default: () => [] },
 });
 
 const { confirm } = useConfirm();
@@ -35,6 +36,48 @@ const { success } = useToast();
 const modelsLoaded = ref(false);
 const processingFaces = ref(false);
 const faceDetectionResults = ref([]);
+
+const uploadMode = ref('upload'); // 'upload' o 'existing'
+const selectedExistingPhotos = ref([]);
+
+// ✅ NUEVA FUNCIÓN: Alternar selección de fotos existentes
+const togglePhotoSelection = (photoId) => {
+    const index = selectedExistingPhotos.value.indexOf(photoId);
+    if (index > -1) {
+        selectedExistingPhotos.value.splice(index, 1);
+    } else {
+        selectedExistingPhotos.value.push(photoId);
+    }
+};
+
+// ✅ NUEVA FUNCIÓN: Asignar fotos existentes
+const assignExistingPhotos = () => {
+    if (selectedExistingPhotos.value.length === 0) return;
+
+    router.post(route('photographer.photos.assign-to-event'), {
+        photo_ids: selectedExistingPhotos.value,
+        event_id: props.event.id,
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showUploadModal.value = false;
+            selectedExistingPhotos.value = [];
+            success('Fotos asignadas al evento');
+        },
+    });
+};
+
+// ✅ MODIFICAR: Reset al cerrar modal
+const closeModal = () => {
+    showUploadModal.value = false;
+    uploadMode.value = 'upload';
+    selectedFiles.value = [];
+    previewUrls.value = [];
+    faceDetectionResults.value = [];
+    selectedExistingPhotos.value = [];
+    uploadForm.reset('photos', 'face_data');
+};
+
 
 onMounted(async () => {
     try {
@@ -238,6 +281,37 @@ const formatDate = (dateString) => {
 
 const privateUrl = computed(() => `${window.location.origin}/eventos/${props.event.slug}?token=${props.event.private_token}`);
 const publicUrl = computed(() => `${window.location.origin}/eventos/${props.event.slug}`);
+
+
+const paginationPages = computed(() => {
+    const current = props.photos.current_page;
+    const last = props.photos.last_page;
+    const delta = 2;
+    const pages = [];
+
+    pages.push(1);
+
+    const rangeStart = Math.max(2, current - delta);
+    const rangeEnd = Math.min(last - 1, current + delta);
+
+    if (rangeStart > 2) {
+        pages.push('...');
+    }
+
+    for (let i = rangeStart; i <= rangeEnd; i++) {
+        pages.push(i);
+    }
+
+    if (rangeEnd < last - 1) {
+        pages.push('...');
+    }
+
+    if (last > 1) {
+        pages.push(last);
+    }
+
+    return pages;
+});
 
 const copyToClipboard = async (text) => {
     try {
@@ -486,11 +560,54 @@ const copyToClipboard = async (text) => {
                             </div>
 
                             <div v-if="photos.last_page > 1"
-                                class="flex justify-center gap-1 pt-6 border-t border-gray-200">
-                                <Link v-for="(link, index) in photos.links" :key="index" :href="link.url || '#'"
-                                    v-html="link.label"
-                                    :class="['h-8 min-w-[2rem] px-2 flex items-center justify-center text-xs font-medium rounded-sm border transition-colors', link.active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-gray-200 hover:border-slate-400']" />
+                                class="flex items-center justify-center gap-2 pt-6 border-t border-gray-200">
+
+                                <!-- Botón Anterior -->
+                                <Link v-if="photos.prev_page_url" :href="photos.prev_page_url"
+                                    class="h-8 px-3 flex items-center justify-center text-xs font-bold uppercase tracking-wider rounded-sm transition-colors bg-white text-slate-600 hover:bg-slate-900 hover:text-white border border-gray-200">
+                                    ←
+                                </Link>
+                                <span v-else
+                                    class="h-8 px-3 flex items-center justify-center text-xs text-gray-300 cursor-not-allowed">
+                                    ←
+                                </span>
+
+                                <!-- Páginas con Ellipsis -->
+                                <div class="flex items-center gap-2">
+                                    <template v-for="(page, index) in paginationPages" :key="index">
+                                        <!-- Página actual -->
+                                        <span v-if="page === photos.current_page"
+                                            class="h-8 w-8 flex items-center justify-center text-xs font-bold rounded-sm bg-slate-900 text-white">
+                                            {{ page }}
+                                        </span>
+
+                                        <!-- Ellipsis -->
+                                        <span v-else-if="page === '...'"
+                                            class="h-8 w-8 flex items-center justify-center text-slate-400 font-bold">
+                                            ···
+                                        </span>
+
+                                        <!-- Página clickeable -->
+                                        <Link v-else :href="photos.path + '?page=' + page"
+                                            class="h-8 w-8 flex items-center justify-center text-xs font-medium rounded-sm transition-colors bg-white text-slate-600 hover:bg-gray-100 border border-gray-200 hover:border-slate-300">
+                                            {{ page }}
+                                        </Link>
+                                    </template>
+                                </div>
+
+                                <!-- Botón Siguiente -->
+                                <Link v-if="photos.next_page_url" :href="photos.next_page_url"
+                                    class="h-8 px-3 flex items-center justify-center text-xs font-bold uppercase tracking-wider rounded-sm transition-colors bg-white text-slate-600 hover:bg-slate-900 hover:text-white border border-gray-200">
+                                    →
+                                </Link>
+                                <span v-else
+                                    class="h-8 px-3 flex items-center justify-center text-xs text-gray-300 cursor-not-allowed">
+                                    →
+                                </span>
                             </div>
+
+
+
                         </div>
                     </div>
                 </div>
@@ -498,121 +615,206 @@ const copyToClipboard = async (text) => {
             </div>
         </div>
 
-        <!--  MODAL MODIFICADO -->
         <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" @click="showUploadModal = false"></div>
+            <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" @click="closeModal"></div>
             <div
-                class="relative bg-white rounded-sm shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+                class="relative bg-white rounded-sm shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
 
-                <!-- Header con indicador de IA -->
-                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
-                    <div>
-                        <h3 class="text-lg font-serif font-bold text-slate-900">Cargar Material</h3>
-                        <!--  NUEVO: Indicador de estado de IA -->
-                        <p v-if="modelsLoaded" class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                <!-- Header con Tabs -->
+                <div class="border-b border-gray-200 bg-white">
+                    <div class="p-6 pb-0">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-serif font-bold text-slate-900">Agregar Fotos</h3>
+                            <button @click="closeModal" class="text-slate-400 hover:text-slate-900">
+                                <XMarkIcon class="w-6 h-6" />
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ✅ TABS -->
+                    <div class="flex border-b border-gray-200 px-6">
+                        <button @click="uploadMode = 'upload'" :class="[
+                            'px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2',
+                            uploadMode === 'upload'
+                                ? 'border-slate-900 text-slate-900'
+                                : 'border-transparent text-slate-400 hover:text-slate-600'
+                        ]">
+                            <CloudArrowUpIcon class="w-4 h-4 inline mr-2" />
+                            Subir desde PC
+                        </button>
+                        <button @click="uploadMode = 'existing'" :class="[
+                            'px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2',
+                            uploadMode === 'existing'
+                                ? 'border-slate-900 text-slate-900'
+                                : 'border-transparent text-slate-400 hover:text-slate-600'
+                        ]">
+                            <PhotoIcon class="w-4 h-4 inline mr-2" />
+                            Mis Fotos ({{ unassignedPhotos.length }})
+                        </button>
+                    </div>
+
+                    <!-- Indicador de IA (solo en modo upload) -->
+                    <div v-if="uploadMode === 'upload'" class="px-6 py-2 bg-gray-50">
+                        <p v-if="modelsLoaded" class="text-xs text-green-600 flex items-center gap-1">
                             <CheckIcon class="w-3 h-3" />
                             Reconocimiento facial activo
                         </p>
-                        <p v-else class="text-xs text-gray-400 mt-1">
+                        <p v-else class="text-xs text-gray-400">
                             Reconocimiento facial no disponible
                         </p>
                     </div>
-                    <button @click="showUploadModal = false" class="text-slate-400 hover:text-slate-900">
-                        <XMarkIcon class="w-6 h-6" />
-                    </button>
                 </div>
 
                 <!-- Body -->
                 <div class="p-6 overflow-y-auto flex-1">
-                    <!--  NUEVO: Banner de procesamiento -->
-                    <div v-if="processingFaces" class="bg-blue-50 border border-blue-200 rounded-sm p-4 mb-4">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent">
+
+                    <!-- ✅ TAB 1: SUBIR DESDE PC -->
+                    <div v-if="uploadMode === 'upload'">
+                        <!-- Banner de procesamiento -->
+                        <div v-if="processingFaces" class="bg-blue-50 border border-blue-200 rounded-sm p-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent">
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-900">Detectando rostros...</p>
+                                    <p class="text-xs text-blue-700 mt-0.5">Esto puede tardar unos segundos</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-blue-900">Detectando rostros...</p>
-                                <p class="text-xs text-blue-700 mt-0.5">Esto puede tardar unos segundos</p>
+                        </div>
+
+                        <!-- Zona de carga -->
+                        <div v-if="selectedFiles.length === 0"
+                            class="border-2 border-dashed border-gray-300 rounded-sm p-12 text-center hover:border-slate-400 transition-colors bg-gray-50">
+                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="hidden"
+                                id="file-upload">
+                            <label for="file-upload" class="cursor-pointer block h-full">
+                                <CloudArrowUpIcon class="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                                <span class="text-xs font-bold uppercase tracking-widest text-slate-900 block mb-2">
+                                    Seleccionar Archivos
+                                </span>
+                                <span class="text-xs text-slate-500 font-light">JPG, PNG • Máx 10MB</span>
+                            </label>
+                        </div>
+
+                        <!-- Previews -->
+                        <div v-else>
+                            <div class="grid grid-cols-4 sm:grid-cols-5 gap-3 mb-6">
+                                <div v-for="(url, index) in previewUrls" :key="index"
+                                    class="relative aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200 group">
+                                    <img :src="url" class="w-full h-full object-cover" />
+                                    <div v-if="faceDetectionResults[index]"
+                                        class="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold shadow-lg"
+                                        :class="faceDetectionResults[index].count > 0 ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'">
+                                        <span v-if="faceDetectionResults[index].count > 0">
+                                            {{ faceDetectionResults[index].count }} 👤
+                                        </span>
+                                        <span v-else>—</span>
+                                    </div>
+                                    <div v-else-if="processingFaces"
+                                        class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                        <div
+                                            class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right space-y-1">
+                                <p class="text-xs text-slate-500">{{ selectedFiles.length }} archivo(s) seleccionado(s)
+                                </p>
+                                <p v-if="faceDetectionResults.length > 0 && !processingFaces"
+                                    class="text-xs font-medium"
+                                    :class="faceDetectionResults.filter(r => r.count > 0).length > 0 ? 'text-green-600' : 'text-gray-500'">
+                                    <CheckIcon class="w-3 h-3 inline" />
+                                    {{faceDetectionResults.filter(r => r.count > 0).length}} foto(s) con rostros
+                                    detectados
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Zona de carga -->
-                    <div v-if="selectedFiles.length === 0"
-                        class="border-2 border-dashed border-gray-300 rounded-sm p-12 text-center hover:border-slate-400 transition-colors bg-gray-50">
-                        <input type="file" multiple accept="image/*" @change="handleFileSelect" class="hidden"
-                            id="file-upload">
-                        <label for="file-upload" class="cursor-pointer block h-full">
-                            <CloudArrowUpIcon class="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                            <span
-                                class="text-xs font-bold uppercase tracking-widest text-slate-900 block mb-2">Seleccionar
-                                Archivos</span>
-                            <span class="text-xs text-slate-500 font-light">JPG, PNG • Máx 10MB</span>
-                        </label>
-                    </div>
+                    <!-- ✅ TAB 2: FOTOS EXISTENTES -->
+                    <div v-else-if="uploadMode === 'existing'">
+                        <div v-if="unassignedPhotos.length === 0"
+                            class="text-center py-12 border border-dashed border-gray-300 rounded-sm bg-gray-50">
+                            <PhotoIcon class="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                            <p class="text-sm text-slate-600 font-medium mb-1">Sin fotos disponibles</p>
+                            <p class="text-xs text-slate-400">Todas tus fotos ya están asignadas a eventos.</p>
+                        </div>
 
-                    <!-- Previews con badges de rostros -->
-                    <div v-else>
-                        <div class="grid grid-cols-4 sm:grid-cols-5 gap-3 mb-6">
-                            <div v-for="(url, index) in previewUrls" :key="index"
-                                class="relative aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200 group">
-                                <img :src="url" class="w-full h-full object-cover" />
+                        <div v-else>
+                            <p class="text-xs text-slate-500 mb-4">
+                                Seleccioná las fotos que querés agregar a este evento ({{ selectedExistingPhotos.length
+                                }}
+                                seleccionadas)
+                            </p>
+                            <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                                <div v-for="photo in unassignedPhotos" :key="photo.id"
+                                    @click="togglePhotoSelection(photo.id)"
+                                    class="relative aspect-square bg-gray-100 rounded-sm overflow-hidden border-2 cursor-pointer transition-all"
+                                    :class="selectedExistingPhotos.includes(photo.id)
+                                        ? 'border-slate-900 ring-2 ring-slate-900 ring-offset-2'
+                                        : 'border-gray-200 hover:border-slate-400'">
 
-                                <!--  NUEVO: Badge con número de rostros -->
-                                <div v-if="faceDetectionResults[index]"
-                                    class="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold shadow-lg"
-                                    :class="faceDetectionResults[index].count > 0
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-400 text-white'">
-                                    <span v-if="faceDetectionResults[index].count > 0">
-                                        {{ faceDetectionResults[index].count }} 
-                                    </span>
-                                    <span v-else>—</span>
-                                </div>
+                                    <img :src="photo.thumbnail_url" :alt="photo.unique_id"
+                                        class="w-full h-full object-cover" />
 
-                                <!--  NUEVO: Loading spinner mientras procesa -->
-                                <div v-else-if="processingFaces"
-                                    class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                    <!-- Checkmark -->
+                                    <div v-if="selectedExistingPhotos.includes(photo.id)"
+                                        class="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
+                                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                                            <CheckIcon class="w-5 h-5 text-slate-900" />
+                                        </div>
+                                    </div>
+
+                                    <!-- ID -->
                                     <div
-                                        class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent">
+                                        class="absolute bottom-1 left-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-sm font-mono">
+                                        #{{ photo.unique_id }}
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!--  NUEVO: Resumen de detección -->
-                        <div class="text-right space-y-1">
-                            <p class="text-xs text-slate-500">
-                                {{ selectedFiles.length }} archivo(s) seleccionado(s)
-                            </p>
-                            <p v-if="faceDetectionResults.length > 0 && !processingFaces" class="text-xs font-medium"
-                                :class="faceDetectionResults.filter(r => r.count > 0).length > 0
-                                    ? 'text-green-600'
-                                    : 'text-gray-500'">
-                                <CheckIcon class="w-3 h-3 inline" />
-                                {{faceDetectionResults.filter(r => r.count > 0).length}} foto(s) con rostros
-                                detectados
-                            </p>
-                        </div>
                     </div>
+
                 </div>
 
                 <!-- Footer -->
-                <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                    <button @click="showUploadModal = false"
-                        class="px-6 py-3 border border-gray-300 text-slate-600 text-xs font-bold uppercase tracking-widest hover:bg-white transition rounded-sm">
-                        Cancelar
-                    </button>
-                    <button @click="uploadPhotos"
-                        :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces"
-                        class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span v-if="processingFaces">Procesando rostros...</span>
-                        <span v-else-if="uploadForm.processing">Subiendo...</span>
-                        <span v-else>Iniciar Carga</span>
-                    </button>
+                <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <div class="text-xs text-slate-500">
+                        <span v-if="uploadMode === 'upload'">
+                            {{ selectedFiles.length }} archivo(s) para subir
+                        </span>
+                        <span v-else>
+                            {{ selectedExistingPhotos.length }} foto(s) seleccionada(s)
+                        </span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button @click="closeModal"
+                            class="px-6 py-3 border border-gray-300 text-slate-600 text-xs font-bold uppercase tracking-widest hover:bg-white transition rounded-sm">
+                            Cancelar
+                        </button>
+
+                        <!-- Botón para SUBIR -->
+                        <button v-if="uploadMode === 'upload'" @click="uploadPhotos"
+                            :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces"
+                            class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span v-if="processingFaces">Procesando...</span>
+                            <span v-else-if="uploadForm.processing">Subiendo...</span>
+                            <span v-else>Subir Fotos</span>
+                        </button>
+
+                        <!-- Botón para ASIGNAR -->
+                        <button v-else @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0"
+                            class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            Asignar al Evento
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
+
 
     </AuthenticatedLayout>
 </template>

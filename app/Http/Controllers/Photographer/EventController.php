@@ -135,37 +135,52 @@ class EventController extends Controller
     /**
      * Mostrar evento específico
      */
-public function show($id)
+    /**
+     * Mostrar evento específico
+     */
+    public function show($id)
     {
         $photographer = auth()->user()->photographer;
 
-        // 1. Cargar evento con relaciones necesarias (Dueño y Colaboradores)
         $event = Event::with(['photographer', 'collaborators'])
             ->findOrFail($id);
 
-        // 2. VERIFICACIÓN DE PERMISOS (Dueño O Colaborador)
         $isOwner = $event->photographer_id === $photographer->id;
-        // Verificamos si el ID del fotógrafo actual está en la colección de colaboradores
         $isCollaborator = $event->collaborators->contains($photographer->id);
 
         if (!$isOwner && !$isCollaborator) {
             abort(403, 'No tenés permiso para gestionar este evento.');
         }
 
-        // 3. Cargar fotos
         $photos = $event->photos()
             ->latest()
             ->paginate(24)
             ->withQueryString();
 
-        // 4. Estadísticas
         $stats = [
             'total_photos' => $event->photos()->count(),
             'active_photos' => $event->photos()->where('is_active', true)->count(),
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
-        // 5. Retornar a la vista con datos enriquecidos
+
+
+        //  NUEVO: Obtener fotos sin evento asignado del fotógrafo
+        $unassignedPhotos = Photo::where('photographer_id', $photographer->id)
+            ->whereNull('event_id')
+            ->latest()
+            ->get(['id', 'unique_id', 'thumbnail_path', 'watermarked_path', 'original_name']) //  Columnas reales
+            ->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'unique_id' => $photo->unique_id,
+                    'thumbnail_url' => $photo->thumbnail_url, //  Accessor calculado aquí
+                    'original_name' => $photo->original_name,
+                ];
+            });
+
+
+
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
                 'id' => $event->id,
@@ -181,29 +196,26 @@ public function show($id)
                 'is_active' => (bool) $event->is_active,
                 'private_token' => $event->private_token,
                 'photographer_id' => $event->photographer_id,
-                
-                // --- NUEVOS DATOS PARA LA VISTA ---
-                'is_owner' => $isOwner, // Útil para ocultar botones de editar/borrar en el front
-                
-                'photographer' => [ // Datos del Dueño para la tarjeta "Equipo"
+                'is_owner' => $isOwner,
+                'photographer' => [
                     'id' => $event->photographer->id,
                     'business_name' => $event->photographer->business_name,
                     'profile_photo_url' => $event->photographer->profile_photo_url,
                 ],
-                
-                'collaborators' => $event->collaborators->map(function($collab) { // Lista de colaboradores
+                'collaborators' => $event->collaborators->map(function ($collab) {
                     return [
                         'id' => $collab->id,
                         'business_name' => $collab->business_name,
                         'profile_photo_url' => $collab->profile_photo_url,
                     ];
                 }),
-                // ----------------------------------
             ],
             'photos' => $photos,
             'stats' => $stats,
+            'unassignedPhotos' => $unassignedPhotos, //  NUEVO
         ]);
     }
+
 
 
     /**

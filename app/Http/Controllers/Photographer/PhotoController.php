@@ -534,4 +534,44 @@ class PhotoController extends Controller
             ], 500);
         }
     }
+
+
+
+
+    /**
+     * Asignar fotos existentes a un evento
+     */
+    public function assignToEvent(Request $request)
+    {
+        $request->validate([
+            'photo_ids' => 'required|array|min:1',
+            'photo_ids.*' => 'required|exists:photos,id',
+            'event_id' => 'required|exists:events,id',
+        ]);
+
+        $photographer = auth()->user()->photographer;
+
+        // Verificar que las fotos pertenecen al fotógrafo
+        $photos = Photo::whereIn('id', $request->photo_ids)
+            ->where('photographer_id', $photographer->id)
+            ->whereNull('event_id') // Solo fotos sin evento
+            ->get();
+
+        if ($photos->count() !== count($request->photo_ids)) {
+            return back()->withErrors([
+                'photos' => 'Algunas fotos no están disponibles para asignar.'
+            ]);
+        }
+
+        // Asignar evento a todas las fotos
+        Photo::whereIn('id', $request->photo_ids)
+            ->update(['event_id' => $request->event_id]);
+
+        return back()->with('message', [
+            'type' => 'success',
+            'text' => count($request->photo_ids) . ' foto(s) asignada(s) al evento.'
+        ]);
+    }
+
+
 }
