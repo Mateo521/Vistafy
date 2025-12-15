@@ -5,7 +5,9 @@ import { ref, computed, onMounted } from 'vue';
 import { useConfirm } from '@/Composables/useConfirm';
 import { useToast } from '@/Composables/useToast';
 import * as faceapi from 'face-api.js';
-import '@tensorflow/tfjs-backend-webgl';
+import '@tensorflow/tfjs-backend-webgl'
+import Tesseract from 'tesseract.js';
+
 import {
     CalendarIcon,
     MapPinIcon,
@@ -37,10 +39,36 @@ const modelsLoaded = ref(false);
 const processingFaces = ref(false);
 const faceDetectionResults = ref([]);
 
+
+const processingBibs = ref(false);
+const bibDetectionResults = ref([]);
+
+
 const uploadMode = ref('upload'); // 'upload' o 'existing'
 const selectedExistingPhotos = ref([]);
 
-// ✅ NUEVA FUNCIÓN: Alternar selección de fotos existentes
+
+
+//  Estadísticas computadas
+const totalFacesDetected = computed(() => {
+    return faceDetectionResults.value.reduce((sum, result) => sum + result.count, 0);
+});
+
+const totalBibsDetected = computed(() => {
+    return bibDetectionResults.value.reduce((sum, result) => sum + result.numbers.length, 0);
+});
+
+const photosWithFaces = computed(() => {
+    return faceDetectionResults.value.filter(r => r.count > 0).length;
+});
+
+const photosWithBibs = computed(() => {
+    return bibDetectionResults.value.filter(r => r.numbers.length > 0).length;
+});
+
+
+
+//  NUEVA FUNCIÓN: Alternar selección de fotos existentes
 const togglePhotoSelection = (photoId) => {
     const index = selectedExistingPhotos.value.indexOf(photoId);
     if (index > -1) {
@@ -50,7 +78,7 @@ const togglePhotoSelection = (photoId) => {
     }
 };
 
-// ✅ NUEVA FUNCIÓN: Asignar fotos existentes
+//  NUEVA FUNCIÓN: Asignar fotos existentes
 const assignExistingPhotos = () => {
     if (selectedExistingPhotos.value.length === 0) return;
 
@@ -67,21 +95,23 @@ const assignExistingPhotos = () => {
     });
 };
 
-// ✅ MODIFICAR: Reset al cerrar modal
+// MODIFICAR: Reset al cerrar modal
 const closeModal = () => {
     showUploadModal.value = false;
     uploadMode.value = 'upload';
     selectedFiles.value = [];
     previewUrls.value = [];
     faceDetectionResults.value = [];
+    bibDetectionResults.value = [];
     selectedExistingPhotos.value = [];
     uploadForm.reset('photos', 'face_data');
 };
 
 
+
 onMounted(async () => {
     try {
-        console.log(' Cargando modelos de reconocimiento facial...');
+
 
         //  Verificar que faceapi existe
         if (!faceapi) {
@@ -90,7 +120,7 @@ onMounted(async () => {
 
         await faceapi.tf.setBackend('webgl');
         await faceapi.tf.ready();
-        console.log(' Backend:', faceapi.tf.getBackend());
+
 
         const MODEL_URL = '/models';
 
@@ -101,11 +131,11 @@ onMounted(async () => {
         ]);
 
         modelsLoaded.value = true;
-        console.log(' Modelos cargados correctamente');
+
     } catch (err) {
         console.error(' Error:', err);
         try {
-            console.log(' Intentando con CPU...');
+
             await faceapi.tf.setBackend('cpu');
             await faceapi.tf.ready();
 
@@ -117,7 +147,7 @@ onMounted(async () => {
             ]);
 
             modelsLoaded.value = true;
-            console.log(' Modelos cargados con CPU');
+
         } catch (cpuErr) {
             console.error(' Error con CPU también:', cpuErr);
         }
@@ -138,8 +168,13 @@ const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
     selectedFiles.value = files;
     uploadForm.photos = files;
-    previewUrls.value = [];
 
+    // Limpieza de estados anteriores
+    previewUrls.value = [];
+    faceDetectionResults.value = [];
+    bibDetectionResults.value = [];
+
+    // Generación de previsualizaciones
     const previews = await Promise.all(
         files.map(file => {
             return new Promise(resolve => {
@@ -152,9 +187,279 @@ const handleFileSelect = async (e) => {
 
     previewUrls.value = previews;
 
+    // Lógica secuencial de detección
     if (modelsLoaded.value) {
-        detectFacesInImages();
+        try {
+            // PASO 1: Detectar rostros y obtener coordenadas (x, y, w, h)
+            processingFaces.value = true;
+            await detectFacesInImages();
+            processingFaces.value = false;
+
+            // PASO 2: Usar las coordenadas de los rostros para buscar dorsales
+            // Pasamos los resultados obtenidos en el paso 1
+            processingBibs.value = true;
+            await detectBibNumbers(faceDetectionResults.value);
+            processingBibs.value = false;
+
+        } catch (error) {
+            console.error("Error en el proceso de detección:", error);
+            processingFaces.value = false;
+            processingBibs.value = false;
+        }
     }
+};
+
+
+// ============================================
+// 🛠️ UTILITIES
+// ============================================
+
+// Función para ver qué está pasando (SOLO PARA DEBUG)
+const appendDebugImage = (dataUrl, label) => {
+    const debugContainer = document.getElementById('ocr-debug-container') || document.createElement('div');
+    debugContainer.id = 'ocr-debug-container';
+    debugContainer.style.cssText = 'position: fixed; bottom: 0; left: 0; background: rgba(0,0,0,0.8); color: white; z-index: 9999; max-height: 200px; overflow: auto; width: 100%; display: flex; gap: 10px; padding: 10px;';
+
+    if (!document.body.contains(debugContainer)) {
+        document.body.appendChild(debugContainer);
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `<p style="font-size: 10px; margin:0;">${label}</p>`;
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.style.height = '100px';
+    img.style.border = '2px solid red';
+
+    wrapper.appendChild(img);
+    debugContainer.appendChild(wrapper);
+};
+
+
+
+const cropTorsoFromFace = async (imageUrl, faceBox) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let roiX, roiY, roiW, roiH;
+
+            if (faceBox) {
+                // AJUSTE: Recorte más estrecho y centrado para evitar árboles/brazos
+                roiW = faceBox.width * 2.2; // Antes 3.2 (demasiado ancho)
+                roiH = faceBox.height * 2.5; // Antes 3.5 (demasiado alto)
+
+                roiX = faceBox.x - (roiW - faceBox.width) / 2;
+                roiY = faceBox.y + (faceBox.height * 1.1); // Bajamos un poco más del mentón
+            } else {
+                roiW = img.width * 0.5;
+                roiH = img.height * 0.4;
+                roiX = (img.width - roiW) / 2;
+                roiY = img.height * 0.35;
+            }
+
+            // Validar límites
+            roiX = Math.max(0, roiX);
+            roiY = Math.max(0, roiY);
+            roiW = Math.min(roiW, img.width - roiX);
+            roiH = Math.min(roiH, img.height - roiY);
+
+            // UPSCALING: Hacemos el canvas 2 veces más grande que el recorte
+            // Tesseract lee mejor si las letras son grandes.
+            const scaleFactor = 2;
+            canvas.width = roiW * scaleFactor;
+            canvas.height = roiH * scaleFactor;
+
+            // Dibujamos escalado
+            ctx.drawImage(img, roiX, roiY, roiW, roiH, 0, 0, canvas.width, canvas.height);
+
+            resolve(canvas.toDataURL());
+        };
+        img.src = imageUrl;
+    });
+};
+
+
+
+const preprocessForOCR = async (imageUrl) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 1. PADDING (Margen blanco para que Tesseract respire)
+            const padding = 20;
+            canvas.width = img.width + (padding * 2);
+            canvas.height = img.height + (padding * 2);
+            
+            ctx.fillStyle = "#FFFFFF"; // Fondo base blanco
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujamos la imagen centrada
+            ctx.drawImage(img, padding, padding);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            // 2. MAGIA DEL CANAL VERDE
+            // Recorremos pixel por pixel
+            for (let i = 0; i < data.length; i += 4) {
+                // data[i] es Rojo
+                const g = data[i + 1]; // data[i+1] es VERDE <--- ESTE ES LA CLAVE
+                // data[i+2] es Azul
+
+                // En lugar de calcular promedios, miramos SOLO el verde.
+                // El papel blanco tiene verde alto (200-255).
+                // El dorsal rosa tiene verde bajo (0-100).
+                
+                // Si el verde es bajo (es rosa/rojo), lo forzamos a NEGRO ABSOLUTO.
+                // Si el verde es alto (es blanco), lo forzamos a BLANCO ABSOLUTO.
+                
+                // UMBRAL: Ajustable. 130 suele separar bien tinta de color vs papel blanco.
+                const threshold = 130; 
+
+                // Lógica inversa: Si tiene mucho verde (papel), es blanco (255). Si no, negro (0).
+                const val = g > threshold ? 255 : 0;
+
+                data[i] = val;     // R
+                data[i + 1] = val; // G
+                data[i + 2] = val; // B
+                // data[i+3] es Alpha, no lo tocamos
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL());
+        };
+        img.src = imageUrl;
+    });
+};
+
+
+const pickBestBib = (candidates) => {
+    if (!candidates || candidates.length === 0) return null;
+
+    // Normalizar y filtrar
+    const validCandidates = candidates
+        .map(n => String(parseInt(n, 10))) // Elimina ceros a la izq y caracteres raros
+        .filter(n => {
+            const val = parseInt(n, 10);
+            const len = n.length;
+            // Regla: Dorsales suelen tener entre 1 y 5 dígitos
+            return !isNaN(val) && len >= 1 && len <= 5;
+        });
+
+    if (validCandidates.length === 0) return null;
+
+    // Ordenar: Preferimos números más largos (menos probabilidad de ruido)
+    // Ejemplo: Preferir "120" sobre "20"
+    validCandidates.sort((a, b) => b.length - a.length);
+
+    return validCandidates[0];
+};
+
+
+
+
+
+const detectBibNumbers = async (facesData) => {
+    bibDetectionResults.value = [];
+    processingBibs.value = true;
+
+    // Limpiar debug previo
+    const debugContainer = document.getElementById('ocr-debug-container');
+    if (debugContainer) debugContainer.innerHTML = '';
+
+    console.log("🚀 Iniciando Worker de Tesseract...");
+
+    const worker = await Tesseract.createWorker('eng');
+    
+    await worker.setParameters({
+        tessedit_char_whitelist: '0123456789',
+        // PSM 11 (Sparse Text): Ignora "basura" alrededor y busca números en cualquier parte
+        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT, 
+    });
+
+    for (let i = 0; i < previewUrls.value.length; i++) {
+        try {
+            // 1. DEFINICIÓN DE FACEBOX (Aquí estaba el error antes)
+            // Buscamos si hay una cara detectada para esta foto específica (i)
+            const faceInfo = facesData.find(f => f.index === i);
+            const faceBox = (faceInfo && faceInfo.box) ? faceInfo.box : null;
+
+            // --- DEBUG VISUAL: DIBUJAR CAJA EN LA FOTO ORIGINAL ---
+            if (faceBox) {
+                const imgElement = document.createElement('img');
+                imgElement.src = previewUrls.value[i];
+                imgElement.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = imgElement.width;
+                    canvas.height = imgElement.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(imgElement, 0,0);
+                    
+                    // Recalcular coordenadas IGUAL que en cropTorsoFromFace
+                    const roiW = faceBox.width * 2.2; 
+                    const roiH = faceBox.height * 2.0; 
+                    const roiX = faceBox.x - (roiW - faceBox.width) / 2;
+                    // AJUSTE CLAVE: 1.8 para bajar hasta el pecho y evitar la barbilla
+                    const roiY = faceBox.y + (faceBox.height * 1.8); 
+
+                    // Dibujar rectángulo ROJO
+                    ctx.strokeStyle = "red";
+                    ctx.lineWidth = 5;
+                    ctx.strokeRect(roiX, roiY, roiW, roiH);
+
+                //    appendDebugImage(canvas.toDataURL(), `Foto ${i+1}: Zona Roja`);
+                };
+            }
+            // -------------------------------------------------------
+
+            // 2. RECORTE (Pasamos el faceBox ya definido)
+            // Asegúrate de que tu función cropTorsoFromFace también tenga el roiY * 1.8
+            const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], faceBox);
+            
+            // 3. PREPROCESO (Tu función de canal verde que funcionó bien)
+            const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
+            
+        //      appendDebugImage(cleanedDataUrl, `Foto ${i+1}: Input Final Tesseract`);
+
+            // 4. RECONOCIMIENTO
+            const result = await worker.recognize(cleanedDataUrl);
+            const text = result.data.text;
+            
+            console.log(` Resultado Raw Foto ${i+1}: "${text}"`);
+
+            // 5. EXTRACCIÓN INTELIGENTE
+            // Buscamos cualquier grupo de dígitos
+            const numbers = text.match(/\d+/g);
+            
+            let selected = null;
+            if (numbers && numbers.length > 0) {
+                // Ordenamos por longitud: preferimos "120" antes que "1" o "20"
+                selected = numbers.sort((a, b) => b.length - a.length)[0];
+                console.log(`Se detectó: ${selected}`);
+            } else {
+                console.log(` No se hallaron números.`);
+            }
+
+            bibDetectionResults.value.push({
+                index: i,
+                numbers: selected ? [selected] : [],
+                raw_text: text,
+            });
+
+        } catch (error) {
+            console.error(`Error en foto ${i+1}:`, error);
+        }
+    }
+
+    await worker.terminate();
+    processingBibs.value = false;
 };
 
 //  VERSIÓN CORREGIDA
@@ -193,11 +498,12 @@ const detectFacesInImages = async () => {
                 .withFaceDescriptors();
 
             const descriptors = detections.map(d => Array.from(d.descriptor));
-
+            const primaryFaceBox = detections.length > 0 ? detections[0].detection.box : null;
             faceDetectionResults.value.push({
                 index: i,
                 count: detections.length,
                 descriptors: descriptors,
+                box: primaryFaceBox
             });
 
             console.log(`  ✓ Foto ${i + 1}: ${detections.length} rostro(s)`);
@@ -219,9 +525,13 @@ const detectFacesInImages = async () => {
 };
 
 const uploadPhotos = () => {
-    if (faceDetectionResults.value.length > 0) {
-        uploadForm.face_data = JSON.stringify(faceDetectionResults.value);
-    }
+    //  Combinar datos de rostros Y dorsales
+    const combinedData = {
+        faces: faceDetectionResults.value,
+        bibs: bibDetectionResults.value, //  NUEVO
+    };
+
+    uploadForm.face_data = JSON.stringify(combinedData);
 
     uploadForm.post(route('photographer.photos.store'), {
         forceFormData: true,
@@ -231,8 +541,9 @@ const uploadPhotos = () => {
             selectedFiles.value = [];
             previewUrls.value = [];
             faceDetectionResults.value = [];
+            bibDetectionResults.value = []; //  Limpiar
             uploadForm.reset('photos', 'face_data');
-            success('Fotos subidas correctamente');
+            success('Fotos subidas correctamente con detección de rostros y dorsales');
         },
     });
 };
@@ -321,6 +632,18 @@ const copyToClipboard = async (text) => {
         console.error('Error copiando:', err);
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 
@@ -631,7 +954,7 @@ const copyToClipboard = async (text) => {
                         </div>
                     </div>
 
-                    <!-- ✅ TABS -->
+                    <!--  TABS -->
                     <div class="flex border-b border-gray-200 px-6">
                         <button @click="uploadMode = 'upload'" :class="[
                             'px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2',
@@ -668,17 +991,35 @@ const copyToClipboard = async (text) => {
                 <!-- Body -->
                 <div class="p-6 overflow-y-auto flex-1">
 
-                    <!-- ✅ TAB 1: SUBIR DESDE PC -->
+                    <!--  TAB 1: SUBIR DESDE PC -->
                     <div v-if="uploadMode === 'upload'">
-                        <!-- Banner de procesamiento -->
-                        <div v-if="processingFaces" class="bg-blue-50 border border-blue-200 rounded-sm p-4 mb-4">
-                            <div class="flex items-center gap-3">
+                        <!--  Banner de procesamiento DUAL -->
+                        <div v-if="processingFaces || processingBibs"
+                            class="bg-blue-50 border border-blue-200 rounded-sm p-4 mb-4 space-y-3">
+
+                            <!-- Rostros -->
+                            <div v-if="processingFaces" class="flex items-center gap-3">
                                 <div
                                     class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent">
                                 </div>
                                 <div>
-                                    <p class="text-sm font-medium text-blue-900">Detectando rostros...</p>
-                                    <p class="text-xs text-blue-700 mt-0.5">Esto puede tardar unos segundos</p>
+                                    <p class="text-sm font-medium text-blue-900"> Detectando rostros...</p>
+                                    <p class="text-xs text-blue-700 mt-0.5">
+                                        {{ faceDetectionResults.length }}/{{ previewUrls.length }} procesadas
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!--  Dorsales -->
+                            <div v-if="processingBibs" class="flex items-center gap-3">
+                                <div
+                                    class="animate-spin rounded-full h-5 w-5 border-2 border-purple-600 border-t-transparent">
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-purple-900"> Detectando dorsales...</p>
+                                    <p class="text-xs text-purple-700 mt-0.5">
+                                        {{ bibDetectionResults.length }}/{{ previewUrls.length }} procesadas
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -702,38 +1043,70 @@ const copyToClipboard = async (text) => {
                             <div class="grid grid-cols-4 sm:grid-cols-5 gap-3 mb-6">
                                 <div v-for="(url, index) in previewUrls" :key="index"
                                     class="relative aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200 group">
+
                                     <img :src="url" class="w-full h-full object-cover" />
+
+                                    <!--  Badge de rostros (arriba derecha) -->
                                     <div v-if="faceDetectionResults[index]"
-                                        class="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold shadow-lg"
-                                        :class="faceDetectionResults[index].count > 0 ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'">
+                                        class="absolute top-2 right-2 px-2 py-1  text-[10px] font-bold shadow-lg"
+                                        :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black' : 'bg-gray-400 text-white'">
                                         <span v-if="faceDetectionResults[index].count > 0">
-                                            {{ faceDetectionResults[index].count }} 👤
+                                            {{ faceDetectionResults[index].count }} Cara(s)
                                         </span>
                                         <span v-else>—</span>
                                     </div>
-                                    <div v-else-if="processingFaces"
-                                        class="absolute inset-0 bg-black/30 flex items-center justify-center">
+
+                                    <!--  NUEVO: Badge de dorsales (abajo derecha) -->
+                                    <div v-if="bibDetectionResults[index]"
+                                        class="absolute bottom-2 right-2 px-2 py-1  text-[10px] font-bold shadow-lg"
+                                        :class="bibDetectionResults[index].numbers.length > 0 ? 'bg-black text-white' : 'bg-gray-400 text-white'">
+                                        <span v-if="bibDetectionResults[index].numbers.length > 0">
+                                            Dorsal {{ bibDetectionResults[index].numbers.join(',') }}
+                                        </span>
+                                        <span v-else>—</span>
+                                    </div>
+
+                                    <!-- Loading overlay -->
+                                    <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center">
                                         <div
                                             class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-right space-y-1">
-                                <p class="text-xs text-slate-500">{{ selectedFiles.length }} archivo(s) seleccionado(s)
+
+                            <!--  Estadísticas finales -->
+                            <div class="border-t border-gray-200 pt-4 space-y-2">
+                                <p class="text-xs text-slate-500 text-right">
+                                    {{ selectedFiles.length }} archivo(s) seleccionado(s)
                                 </p>
-                                <p v-if="faceDetectionResults.length > 0 && !processingFaces"
-                                    class="text-xs font-medium"
-                                    :class="faceDetectionResults.filter(r => r.count > 0).length > 0 ? 'text-green-600' : 'text-gray-500'">
-                                    <CheckIcon class="w-3 h-3 inline" />
-                                    {{faceDetectionResults.filter(r => r.count > 0).length}} foto(s) con rostros
-                                    detectados
-                                </p>
+
+                                <!-- Rostros -->
+                                <div v-if="faceDetectionResults.length > 0 && !processingFaces"
+                                    class="flex items-center justify-end gap-2">
+                                    <CheckIcon class="w-3 h-3 text-green-600" />
+                                    <p class="text-xs font-medium"
+                                        :class="photosWithFaces > 0 ? 'text-green-600' : 'text-gray-500'">
+                                        {{ totalFacesDetected }} rostro(s) en {{ photosWithFaces }} foto(s)
+                                    </p>
+                                </div>
+
+                                <!--  Dorsales -->
+                                <div v-if="bibDetectionResults.length > 0 && !processingBibs"
+                                    class="flex items-center justify-end gap-2">
+                                    <CheckIcon class="w-3 h-3 text-purple-600" />
+                                    <p class="text-xs font-medium"
+                                        :class="photosWithBibs > 0 ? 'text-purple-600' : 'text-gray-500'">
+                                        {{ totalBibsDetected }} dorsal(es) en {{ photosWithBibs }} foto(s)
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ✅ TAB 2: FOTOS EXISTENTES -->
+
+                    <!--  TAB 2: FOTOS EXISTENTES -->
                     <div v-else-if="uploadMode === 'existing'">
                         <div v-if="unassignedPhotos.length === 0"
                             class="text-center py-12 border border-dashed border-gray-300 rounded-sm bg-gray-50">
@@ -813,8 +1186,5 @@ const copyToClipboard = async (text) => {
                 </div>
             </div>
         </div>
-
-
-
     </AuthenticatedLayout>
 </template>

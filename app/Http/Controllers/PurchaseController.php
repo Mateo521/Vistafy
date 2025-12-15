@@ -37,7 +37,7 @@ class PurchaseController extends Controller
 
                 //  OPCIÓN 1: Buscar por preference_id si existe
                 if ($purchase->mp_preference_id) {
-                    Log::info('🔎 Buscando por preference_id', [
+                    Log::info(' Buscando por preference_id', [
                         'preference_id' => $purchase->mp_preference_id,
                     ]);
 
@@ -120,7 +120,7 @@ class PurchaseController extends Controller
                     'criteria' => 'desc',
                 ];
 
-                Log::info('🔎 Buscando por external_reference (fallback)', [
+                Log::info(' Buscando por external_reference (fallback)', [
                     'params' => $params,
                 ]);
 

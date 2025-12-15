@@ -31,6 +31,9 @@ class Photo extends Model
         'face_encodings',
         'has_faces',
         'faces_processed_at',
+        'bib_numbers',        //  NUEVO
+        'bib_processed',      //  NUEVO
+        'bib_processed_at',   //  NUEVO
     ];
 
     protected $casts = [
@@ -44,6 +47,9 @@ class Photo extends Model
         'face_encodings' => 'array',
         'has_faces' => 'boolean',
         'faces_processed_at' => 'datetime',
+        'bib_numbers' => 'array',           //  NUEVO
+        'bib_processed' => 'boolean',       //  NUEVO
+        'bib_processed_at' => 'datetime',   //  NUEVO
     ];
 
 
