@@ -76,7 +76,7 @@ const form = useForm({
                             as="button"
                             class="underline text-amber-900 font-bold hover:text-slate-900 rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 ml-1"
                         >
-                            Haga clic aquí para reenviar el correo de verificación.
+                            Haga clic acá para reenviar el correo de verificación.
                         </Link>
                     </p>
                 </div>

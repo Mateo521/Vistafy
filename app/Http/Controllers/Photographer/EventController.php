@@ -174,7 +174,7 @@ class EventController extends Controller
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
-                    'thumbnail_url' => $photo->thumbnail_url, //  Accessor calculado aquí
+                    'thumbnail_url' => $photo->thumbnail_url, //  Accessor calculado acá
                     'original_name' => $photo->original_name,
                 ];
             });

@@ -228,7 +228,7 @@ const formatDate = (date) => {
                             <div v-if="selectedFiles.length === 0" class="flex flex-col items-center">
                                 <CloudArrowUpIcon class="w-12 h-12 text-slate-300 mb-4 stroke-1" />
                                 <h3 class="text-lg font-serif font-medium text-slate-900 mb-2">
-                                    Arrastre sus archivos aquí
+                                    Arrastre sus archivos acá
                                 </h3>
                                 <p class="text-sm text-slate-500 mb-6 font-light">
                                     o haga clic para explorar su dispositivo

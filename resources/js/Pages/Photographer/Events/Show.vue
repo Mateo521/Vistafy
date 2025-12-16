@@ -90,7 +90,7 @@ const addBibTag = (index, event) => {
 
     // Limpiar input temporal
     event.target.value = '';
-    // Opcional: limpiar variable reactiva si la usaras, aquí usamos el evento directo
+    // Opcional: limpiar variable reactiva si la usaras, acá usamos el evento directo
 };
 
 // Eliminar un dorsal específico
@@ -414,7 +414,7 @@ const detectBibNumbers = async (facesData) => {
     const debugContainer = document.getElementById('ocr-debug-container');
     if (debugContainer) debugContainer.innerHTML = '';
 
-    console.log("🚀 Iniciando Worker de Tesseract...");
+ 
 
     const worker = await Tesseract.createWorker('eng');
 
@@ -436,7 +436,7 @@ const detectBibNumbers = async (facesData) => {
 
             // SI HAY ROSTROS: Procesamos cada uno
             if (boxes.length > 0) {
-                console.log(`📸 Foto ${i + 1}: Procesando ${boxes.length} personas...`);
+              
 
                 for (const faceBox of boxes) {
                     // 1. Recorte por cada persona
@@ -459,7 +459,7 @@ const detectBibNumbers = async (facesData) => {
                 }
             } else {
                 // SI NO HAY ROSTROS: Intentamos escaneo general (fallback)
-                console.log(`📸 Foto ${i + 1}: Sin rostros, escaneo general...`);
+             
                 const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], null); // null usa recorte central
                 const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
                 const result = await worker.recognize(cleanedDataUrl);
@@ -475,7 +475,7 @@ const detectBibNumbers = async (facesData) => {
 
             // Convertimos el Set a Array
             const finalNumbers = Array.from(uniqueNumbers);
-            console.log(` Foto ${i + 1} Resultados: ${finalNumbers.join(', ')}`);
+           
 
             bibDetectionResults.value.push({
                 index: i,
@@ -518,7 +518,7 @@ const detectFacesInImages = async () => {
     processingFaces.value = true;
     faceDetectionResults.value = [];
 
-    console.log('🔍 Detectando rostros en las imágenes...');
+  
 
     if (!faceapi || !faceapi.detectAllFaces) {
         console.error(' faceapi no está disponible');
@@ -537,7 +537,7 @@ const detectFacesInImages = async () => {
                 setTimeout(() => reject(new Error('Timeout')), 10000);
             });
 
-            console.log(`  Procesando foto ${i + 1}...`);
+           
 
             const detections = await faceapi
                 .detectAllFaces(img, new faceapi.SsdMobilenetv1Options({
@@ -558,7 +558,7 @@ const detectFacesInImages = async () => {
                 boxes: allBoxes // <--- Aquí guardamos todas las ubicaciones
             });
 
-            console.log(`  ✓ Foto ${i + 1}: ${detections.length} rostro(s)`);
+          
 
         } catch (error) {
             console.error(` Error en foto ${i + 1}:`, error);

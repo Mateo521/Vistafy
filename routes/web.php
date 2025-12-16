@@ -18,9 +18,11 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\Photographer\FutureEventManagementController;
 use App\Http\Controllers\PhotoViewController;
-
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\FutureEventController;
 use Illuminate\Support\Facades\Route;
+use App\Models\ContactMessage; 
 use Inertia\Inertia;
 
 
@@ -47,7 +49,8 @@ Route::get(
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
-
+Route::get('/contacto', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contacto', [ContactController::class, 'store'])->name('contact.store');
 
 Route::get('/nosotros', function () {
     return Inertia::render('About');
@@ -398,12 +401,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
             'total_events' => \App\Models\Event::count(),
             'total_photos' => \App\Models\Photo::count(),
             'total_users' => \App\Models\User::count(),
+            'unread_messages' => ContactMessage::unread()->count(),
         ];
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,
         ]);
     })->name('dashboard');
+
+
+
+    Route::get('/mensajes', [ContactMessageController::class, 'index'])->name('messages.index');
+    Route::get('/mensajes/{message}', [ContactMessageController::class, 'show'])->name('messages.show');
+    Route::patch('/mensajes/{message}/toggle-read', [ContactMessageController::class, 'toggleRead'])->name('messages.toggle-read');
+    Route::delete('/mensajes/{message}', [ContactMessageController::class, 'destroy'])->name('messages.destroy');
+
+
 
     //  Gestión de fotógrafos
     Route::prefix('fotografos')->name('photographers.')->group(function () {

@@ -78,7 +78,7 @@ class PhotographerManagementController extends Controller
   public function approve(Photographer $photographer)
 {
     //  Log 1: Verificar que llega al método
-    \Log::info('🔵 APPROVE: Método llamado', [
+    \Log::info(' APPROVE: Método llamado', [
         'photographer_id' => $photographer->id,
         'photographer_slug' => $photographer->slug,
         'status_actual' => $photographer->status,
@@ -86,13 +86,13 @@ class PhotographerManagementController extends Controller
     ]);
 
     if ($photographer->status === 'approved') {
-        \Log::info('🟡 APPROVE: Ya está aprobado');
+        \Log::info(' APPROVE: Ya está aprobado');
         return back()->with('error', 'Este fotógrafo ya está aprobado.');
     }
 
     DB::beginTransaction();
     try {
-        \Log::info('🟢 APPROVE: Antes de actualizar', [
+        \Log::info(' APPROVE: Antes de actualizar', [
             'data' => [
                 'status' => 'approved',
                 'approved_at' => now(),
@@ -111,7 +111,7 @@ class PhotographerManagementController extends Controller
             'rejection_reason' => null,
         ]);
 
-        \Log::info('🟢 APPROVE: Después de actualizar', [
+        \Log::info(' APPROVE: Después de actualizar', [
             'status_nuevo' => $photographer->fresh()->status,
             'is_active' => $photographer->fresh()->is_active,
             'is_verified' => $photographer->fresh()->is_verified,

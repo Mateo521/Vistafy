@@ -179,7 +179,7 @@ const clearSelection = () => {
                          @click="$refs.fileInput.click()">
                         <MagnifyingGlassIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <p class="text-slate-900 font-semibold mb-1">Subí tu foto</p>
-                        <p class="text-sm text-slate-500 mb-4">Click aquí o arrastra una imagen</p>
+                        <p class="text-sm text-slate-500 mb-4">Click acá o arrastra una imagen</p>
                         <input ref="fileInput"
                                type="file"
                                accept="image/*"

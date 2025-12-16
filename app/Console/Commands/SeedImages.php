@@ -164,7 +164,7 @@ class SeedImages extends Command
             'https://images.unsplash.com/photo-1445264718223-106271a51cab?w=1200&h=800&fit=crop',
         ];
 
-        // No procesamos fotos aquí, lo haremos en el seeder con photographerId real
+        // No procesamos fotos acá, lo haremos en el seeder con photographerId real
         $this->info("     Las fotos se procesarán durante el seeding con marcas de agua personalizadas");
 
         // Guardar las URLs en un archivo JSON para el seeder
