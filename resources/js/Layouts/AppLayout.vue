@@ -55,13 +55,13 @@ onMounted(async () => {
     //  Hacer faceapi disponible globalmente
     if (typeof window !== 'undefined') {
         window.faceapi = faceapi;
-        console.log(' face-api.js disponible globalmente desde npm');
+  
 
         // Inicializar backend de TensorFlow
         try {
             await faceapi.tf.setBackend('webgl');
             await faceapi.tf.ready();
-            console.log(' TensorFlow backend:', faceapi.tf.getBackend());
+   
         } catch (err) {
             console.warn(' WebGL no disponible, usando CPU');
             await faceapi.tf.setBackend('cpu');
@@ -433,7 +433,7 @@ const navigationItems = [
                     <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-400">
                         <Link :href="route('events.index')" class="hover:text-white transition">Eventos</Link>
                         <Link :href="route('about')" class="hover:text-white transition">Nosotros</Link>
-                        <Link href="#" class="hover:text-white transition">Soporte</Link>
+                        <Link :href="route('contact.index')"  class="hover:text-white transition">Soporte</Link>
                     </div>
                 </div>
 
