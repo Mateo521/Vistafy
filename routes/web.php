@@ -82,6 +82,12 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::post('/buscar', [PublicGalleryController::class, 'search'])->name('search');
     Route::post('/buscar-rostro', [PublicGalleryController::class, 'faceSearch'])
         ->name('face-search');
+
+    // Búsqueda por dorsal en galería global
+    Route::post('/buscar-dorsal', [PublicGalleryController::class, 'bibSearch'])
+        ->name('bib-search');
+
+
     Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
 });
 
@@ -100,6 +106,17 @@ Route::prefix('eventos')->name('events.')->group(function () {
 
     Route::post('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'search'])
         ->name('face-search.submit');
+
+
+
+    Route::get('/{event:slug}/buscar-dorsal', [EventController::class, 'bibSearch'])
+        ->name('bib-search'); //
+
+    Route::post('/{event:slug}/buscar-dorsal', [EventController::class, 'searchByBib'])
+        ->name('search-bib'); //  
+
+
+
 });
 
 

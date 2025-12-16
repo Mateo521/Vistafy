@@ -369,4 +369,66 @@ class EventController extends Controller
             return back()->with('error', 'Error al subir la imagen: ' . $e->getMessage());
         }
     }
+
+
+
+
+
+    /**
+     * Mostrar formulario de búsqueda por dorsal
+     */
+    public function bibSearch(Event $event)
+    {
+        return inertia('Events/BibSearch', [
+            'event' => $event->load('photographer'),
+        ]);
+    }
+
+    /**
+     * Buscar fotos por número de dorsal
+     */
+    public function searchByBib(Request $request, Event $event)
+    {
+        $request->validate([
+            'bib_number' => 'required|string|max:10',
+        ]);
+
+        $bibNumber = trim($request->bib_number);
+
+        \Log::info(' Búsqueda por dorsal', [
+            'event_id' => $event->id,
+            'bib_number' => $bibNumber,
+        ]);
+
+        // Buscar fotos que contengan ese dorsal en el array bib_numbers
+        $photos = Photo::where('event_id', $event->id)
+            ->where('is_active', true)
+            ->where('bib_processed', true)
+            ->whereNotNull('bib_numbers')
+            ->whereRaw('JSON_CONTAINS(bib_numbers, ?)', [json_encode($bibNumber)])
+            ->with(['photographer.user'])
+            ->paginate(20)
+            ->through(fn($photo) => [
+                'id' => $photo->id,
+                'unique_id' => $photo->unique_id,
+                'thumbnail_url' => $photo->thumbnail_url,
+                'watermarked_url' => $photo->watermarked_url,
+                'photographer_name' => $photo->photographer->business_name ?? $photo->photographer->user->name,
+                'bib_numbers' => $photo->bib_numbers,
+            ]);
+
+        \Log::info(' Resultados de búsqueda por dorsal', [
+            'bib_number' => $bibNumber,
+            'total_found' => $photos->total(),
+        ]);
+
+        return inertia('Events/BibSearch', [
+            'event' => $event->load('photographer'),
+            'photos' => $photos,
+            'searchedBib' => $bibNumber,
+        ]);
+    }
+
+
+
 }

@@ -17,6 +17,7 @@ import {
     UserGroupIcon,
     TrashIcon,
     CloudArrowUpIcon,
+    HashtagIcon,
     ClipboardDocumentIcon,
     CheckIcon,
     XMarkIcon
@@ -291,15 +292,15 @@ const preprocessForOCR = async (imageUrl) => {
         img.onload = () => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            
+
             // 1. PADDING (Margen blanco para que Tesseract respire)
             const padding = 20;
             canvas.width = img.width + (padding * 2);
             canvas.height = img.height + (padding * 2);
-            
+
             ctx.fillStyle = "#FFFFFF"; // Fondo base blanco
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             // Dibujamos la imagen centrada
             ctx.drawImage(img, padding, padding);
 
@@ -316,12 +317,12 @@ const preprocessForOCR = async (imageUrl) => {
                 // En lugar de calcular promedios, miramos SOLO el verde.
                 // El papel blanco tiene verde alto (200-255).
                 // El dorsal rosa tiene verde bajo (0-100).
-                
+
                 // Si el verde es bajo (es rosa/rojo), lo forzamos a NEGRO ABSOLUTO.
                 // Si el verde es alto (es blanco), lo forzamos a BLANCO ABSOLUTO.
-                
+
                 // UMBRAL: Ajustable. 130 suele separar bien tinta de color vs papel blanco.
-                const threshold = 130; 
+                const threshold = 130;
 
                 // Lógica inversa: Si tiene mucho verde (papel), es blanco (255). Si no, negro (0).
                 const val = g > threshold ? 255 : 0;
@@ -377,11 +378,11 @@ const detectBibNumbers = async (facesData) => {
     console.log("🚀 Iniciando Worker de Tesseract...");
 
     const worker = await Tesseract.createWorker('eng');
-    
+
     await worker.setParameters({
         tessedit_char_whitelist: '0123456789',
         // PSM 11 (Sparse Text): Ignora "basura" alrededor y busca números en cualquier parte
-        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT, 
+        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT,
     });
 
     for (let i = 0; i < previewUrls.value.length; i++) {
@@ -400,21 +401,21 @@ const detectBibNumbers = async (facesData) => {
                     canvas.width = imgElement.width;
                     canvas.height = imgElement.height;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(imgElement, 0,0);
-                    
+                    ctx.drawImage(imgElement, 0, 0);
+
                     // Recalcular coordenadas IGUAL que en cropTorsoFromFace
-                    const roiW = faceBox.width * 2.2; 
-                    const roiH = faceBox.height * 2.0; 
+                    const roiW = faceBox.width * 2.2;
+                    const roiH = faceBox.height * 2.0;
                     const roiX = faceBox.x - (roiW - faceBox.width) / 2;
                     // AJUSTE CLAVE: 1.8 para bajar hasta el pecho y evitar la barbilla
-                    const roiY = faceBox.y + (faceBox.height * 1.8); 
+                    const roiY = faceBox.y + (faceBox.height * 1.8);
 
                     // Dibujar rectángulo ROJO
                     ctx.strokeStyle = "red";
                     ctx.lineWidth = 5;
                     ctx.strokeRect(roiX, roiY, roiW, roiH);
 
-                //    appendDebugImage(canvas.toDataURL(), `Foto ${i+1}: Zona Roja`);
+                    //    appendDebugImage(canvas.toDataURL(), `Foto ${i+1}: Zona Roja`);
                 };
             }
             // -------------------------------------------------------
@@ -422,22 +423,22 @@ const detectBibNumbers = async (facesData) => {
             // 2. RECORTE (Pasamos el faceBox ya definido)
             // Asegúrate de que tu función cropTorsoFromFace también tenga el roiY * 1.8
             const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], faceBox);
-            
+
             // 3. PREPROCESO (Tu función de canal verde que funcionó bien)
             const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
-            
-        //      appendDebugImage(cleanedDataUrl, `Foto ${i+1}: Input Final Tesseract`);
+
+            //      appendDebugImage(cleanedDataUrl, `Foto ${i+1}: Input Final Tesseract`);
 
             // 4. RECONOCIMIENTO
             const result = await worker.recognize(cleanedDataUrl);
             const text = result.data.text;
-            
-            console.log(` Resultado Raw Foto ${i+1}: "${text}"`);
+
+            console.log(` Resultado Raw Foto ${i + 1}: "${text}"`);
 
             // 5. EXTRACCIÓN INTELIGENTE
             // Buscamos cualquier grupo de dígitos
             const numbers = text.match(/\d+/g);
-            
+
             let selected = null;
             if (numbers && numbers.length > 0) {
                 // Ordenamos por longitud: preferimos "120" antes que "1" o "20"
@@ -454,7 +455,7 @@ const detectBibNumbers = async (facesData) => {
             });
 
         } catch (error) {
-            console.error(`Error en foto ${i+1}:`, error);
+            console.error(`Error en foto ${i + 1}:`, error);
         }
     }
 
@@ -525,13 +526,13 @@ const detectFacesInImages = async () => {
 };
 
 const uploadPhotos = () => {
-    //  Combinar datos de rostros Y dorsales
     const combinedData = {
         faces: faceDetectionResults.value,
-        bibs: bibDetectionResults.value, //  NUEVO
+        bibs: bibDetectionResults.value,
     };
 
     uploadForm.face_data = JSON.stringify(combinedData);
+
 
     uploadForm.post(route('photographer.photos.store'), {
         forceFormData: true,
@@ -541,12 +542,13 @@ const uploadPhotos = () => {
             selectedFiles.value = [];
             previewUrls.value = [];
             faceDetectionResults.value = [];
-            bibDetectionResults.value = []; //  Limpiar
+            bibDetectionResults.value = [];
             uploadForm.reset('photos', 'face_data');
             success('Fotos subidas correctamente con detección de rostros y dorsales');
         },
     });
 };
+
 
 const deletePhoto = async (photoId) => {
     const confirmed = await confirm({
@@ -632,16 +634,6 @@ const copyToClipboard = async (text) => {
         console.error('Error copiando:', err);
     }
 };
-
-
-
-
-
-
-
-
-
-
 
 
 </script>

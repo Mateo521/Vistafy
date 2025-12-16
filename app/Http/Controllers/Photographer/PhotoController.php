@@ -126,7 +126,7 @@ class PhotoController extends Controller
             'photos_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
             'event_id' => $request->event_id,
             'price' => $request->price,
-            'has_face_data' => $request->has('face_data'), //  NUEVO
+            'has_face_data' => $request->has('face_data'),
             'photographer_id' => auth()->user()->photographer->id ?? 'NO_PHOTOGRAPHER',
         ]);
 
@@ -142,7 +142,7 @@ class PhotoController extends Controller
             'event_id' => 'nullable|exists:events,id',
             'price' => 'nullable|numeric|min:0.01|max:999999.99',
             'is_active' => 'nullable|boolean',
-            'face_data' => 'nullable|json', //  NUEVO: datos de reconocimiento facial
+            'face_data' => 'nullable|json',
         ]);
 
         $photographer = auth()->user()->photographer;
@@ -156,14 +156,23 @@ class PhotoController extends Controller
             }
         }
 
-        //  NUEVO: Decodificar datos faciales
-        $faceData = [];
+        //  NUEVO: Decodificar datos faciales Y de dorsales
+        $facesData = [];
+        $bibsData = [];
+
         if ($request->face_data) {
             try {
-                $faceData = json_decode($request->face_data, true);
-                \Log::info(' Datos faciales recibidos', [
-                    'fotos_con_rostros' => count(array_filter($faceData, fn($f) => $f['count'] > 0)),
-                    'total_rostros' => array_sum(array_column($faceData, 'count')),
+                $decodedData = json_decode($request->face_data, true);
+
+                //  Extraer rostros y dorsales por separado
+                $facesData = $decodedData['faces'] ?? [];
+                $bibsData = $decodedData['bibs'] ?? [];
+
+                \Log::info('🔍 Datos de detección recibidos', [
+                    'fotos_con_rostros' => count(array_filter($facesData, fn($f) => $f['count'] > 0)),
+                    'total_rostros' => array_sum(array_column($facesData, 'count')),
+                    'fotos_con_dorsales' => count(array_filter($bibsData, fn($b) => !empty($b['numbers']))),
+                    'total_dorsales' => array_sum(array_map(fn($b) => count($b['numbers'] ?? []), $bibsData)),
                 ]);
             } catch (\Exception $e) {
                 \Log::warning(' Error decodificando face_data', ['error' => $e->getMessage()]);
@@ -178,7 +187,7 @@ class PhotoController extends Controller
         try {
             foreach ($request->file('photos') as $index => $file) {
                 try {
-                    \Log::info(" Procesando foto {$index}", [
+                    \Log::info("📷 Procesando foto {$index}", [
                         'filename' => $file->getClientOriginalName(),
                         'size' => $file->getSize(),
                     ]);
@@ -192,20 +201,34 @@ class PhotoController extends Controller
                         'original_path' => $processed['original_path'],
                     ]);
 
-                    //  NUEVO: Obtener datos faciales de esta foto específica
-                    $photoFaceData = $faceData[$index] ?? null;
+                    //  Obtener datos faciales de esta foto específica
+                    $photoFaceData = $facesData[$index] ?? null;
                     $hasFaces = $photoFaceData && $photoFaceData['count'] > 0;
                     $faceEncodings = $hasFaces ? $photoFaceData['descriptors'] : null;
 
+                    //  NUEVO: Obtener datos de dorsales de esta foto específica
+                    $photoBibData = $bibsData[$index] ?? null;
+                    $hasBibs = $photoBibData && !empty($photoBibData['numbers']);
+                    $bibNumbers = $hasBibs ? $photoBibData['numbers'] : null;
+
                     if ($hasFaces) {
-                        \Log::info(" Foto con rostros detectados", [
+                        \Log::info("👤 Foto con rostros detectados", [
                             'index' => $index,
                             'num_rostros' => $photoFaceData['count'],
                             'num_descriptors' => count($photoFaceData['descriptors']),
                         ]);
                     }
 
-                    //  CREAR REGISTRO EN BASE DE DATOS
+                    //  NUEVO: Log de dorsales detectados
+                    if ($hasBibs) {
+                        \Log::info(" Foto con dorsales detectados", [
+                            'index' => $index,
+                            'dorsales' => implode(', ', $photoBibData['numbers']),
+                            'raw_text' => $photoBibData['raw_text'] ?? '',
+                        ]);
+                    }
+
+                    //  CREAR REGISTRO EN BASE DE DATOS CON DORSALES
                     $photo = Photo::create([
                         'photographer_id' => $photographer->id,
                         'event_id' => $request->event_id,
@@ -221,18 +244,25 @@ class PhotoController extends Controller
                         'price' => $request->price ?? 5000,
                         'is_active' => $request->is_active ?? true,
 
-                        //  NUEVO: Campos de reconocimiento facial
+                        // Campos de reconocimiento facial
                         'face_encodings' => $faceEncodings,
                         'has_faces' => $hasFaces,
                         'faces_processed_at' => $hasFaces ? now() : null,
+
+                        //  NUEVO: Campos de detección de dorsales
+                        'bib_numbers' => $bibNumbers,
+                        'bib_processed' => $hasBibs,
+                        'bib_processed_at' => $hasBibs ? now() : null,
                     ]);
 
-                    \Log::info("💾 Foto guardada en BD", [
+                    \Log::info(" Foto guardada en BD", [
                         'photo_id' => $photo->id,
                         'event_id' => $photo->event_id,
                         'original_path' => $photo->original_path,
                         'has_faces' => $photo->has_faces,
                         'num_faces' => $photo->has_faces ? count($photo->face_encodings) : 0,
+                        'bib_numbers' => $photo->bib_numbers, //  NUEVO
+                        'bib_processed' => $photo->bib_processed, //  NUEVO
                     ]);
 
                     $uploadedPhotos[] = $photo;
@@ -250,24 +280,41 @@ class PhotoController extends Controller
 
             DB::commit();
 
-            //  NUEVO: Estadísticas de reconocimiento facial
+            //  ACTUALIZADO: Estadísticas con rostros Y dorsales
             $photosWithFaces = collect($uploadedPhotos)->where('has_faces', true)->count();
             $totalFaces = collect($uploadedPhotos)
                 ->where('has_faces', true)
                 ->sum(fn($p) => count($p->face_encodings ?? []));
 
-            \Log::info("🎊 Proceso completado", [
+            //  NUEVO: Contar dorsales detectados
+            $photosWithBibs = collect($uploadedPhotos)->where('bib_processed', true)->count();
+            $totalBibs = collect($uploadedPhotos)
+                ->where('bib_processed', true)
+                ->sum(fn($p) => count($p->bib_numbers ?? []));
+
+            \Log::info(" Proceso completado", [
                 'uploaded' => count($uploadedPhotos),
                 'errors' => count($errors),
                 'event_id' => $request->event_id,
                 'photos_with_faces' => $photosWithFaces,
                 'total_faces' => $totalFaces,
+                'photos_with_bibs' => $photosWithBibs, //  NUEVO
+                'total_bibs' => $totalBibs, //  NUEVO
             ]);
 
+            //  ACTUALIZADO: Mensaje con rostros y dorsales
             $message = count($uploadedPhotos) . ' foto(s) subida(s) exitosamente';
 
+            $detectionInfo = [];
             if ($photosWithFaces > 0) {
-                $message .= " ({$totalFaces} rostro(s) detectado(s) en {$photosWithFaces} foto(s))";
+                $detectionInfo[] = "{$totalFaces} rostro(s) en {$photosWithFaces} foto(s)";
+            }
+            if ($photosWithBibs > 0) {
+                $detectionInfo[] = "{$totalBibs} dorsal(es) en {$photosWithBibs} foto(s)";
+            }
+
+            if (!empty($detectionInfo)) {
+                $message .= ' (' . implode(', ', $detectionInfo) . ')';
             }
 
             if (count($errors) > 0) {
@@ -287,7 +334,7 @@ class PhotoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("💥 Error general en subida", [
+            \Log::error(" Error general en subida", [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),

@@ -237,6 +237,69 @@ class PublicGalleryController extends Controller
         ]);
     }
 
+    /**
+     * Buscar fotos por dorsal en toda la galería
+     */
+    public function bibSearch(Request $request)
+    {
+        $request->validate([
+            'bib_number' => 'required|string|max:10',
+        ]);
+
+        $bibNumber = trim($request->bib_number);
+
+        \Log::info('🔍 Búsqueda global por dorsal', [
+            'bib_number' => $bibNumber,
+        ]);
+
+        // Buscar en todas las fotos activas
+        $photos = Photo::where('is_active', true)
+            ->where('bib_processed', true)
+            ->whereNotNull('bib_numbers')
+            ->whereRaw('JSON_CONTAINS(bib_numbers, ?)', [json_encode($bibNumber)])
+            ->with(['photographer.user', 'event'])
+            ->get()
+            ->map(function ($photo) {
+                // RETORNAR LA ESTRUCTURA COMPLETA COMO LOS OTROS ENDPOINTS
+                return [
+                    'id' => $photo->id,
+                    'unique_id' => $photo->unique_id,
+                    'title' => $photo->title,
+                    'description' => $photo->description,
+                    'thumbnail_url' => $photo->thumbnail_url,
+                    'watermarked_url' => $photo->watermarked_url,
+                    'original_url' => $photo->original_url,
+                    'price' => $photo->price,
+                    'width' => $photo->width,
+                    'height' => $photo->height,
+                    'file_size' => $photo->file_size,
+                    'mime_type' => $photo->mime_type,
+                    'downloads' => $photo->downloads,
+                    'views' => $photo->views,
+                    'is_active' => $photo->is_active,
+                    'created_at' => $photo->created_at,
+                    'photographer' => $photo->photographer->business_name ?? $photo->photographer->user->name,
+                    'photographer_id' => $photo->photographer_id,
+                    'event_id' => $photo->event_id,
+                    'event_name' => $photo->event?->name,
+                    'bib_numbers' => $photo->bib_numbers, 
+                ];
+            });
+
+        \Log::info(' Resultados de búsqueda global por dorsal', [
+            'bib_number' => $bibNumber,
+            'total_found' => $photos->count(),
+            'photo_ids' => $photos->pluck('id')->toArray(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'count' => $photos->count(),
+            'results' => $photos,
+        ]);
+    }
+
+
 
     public function faceSearch(Request $request)
     {

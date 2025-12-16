@@ -1,13 +1,15 @@
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted ,nextTick } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {
     MagnifyingGlassIcon,
     AdjustmentsHorizontalIcon,
     XMarkIcon,
     SparklesIcon,
-    FaceSmileIcon
+    FaceSmileIcon,
+    HashtagIcon,
+    CheckIcon
 } from '@heroicons/vue/24/outline';
 import * as faceapi from 'face-api.js';
 
@@ -31,6 +33,15 @@ const selectedFile = ref(null);
 const previewUrl = ref(null);
 const errorMessage = ref('');
 const progressMessage = ref('Cargando modelos de IA...');
+
+
+const showingBibResults = ref(false);
+const bibSearchResults = ref(null);
+const isSearchingBib = ref(false);
+const bibNumber = ref('');
+const bibErrorMessage = ref('');
+
+const gridKey = ref(Date.now());
 
 // Cargar modelos de Face-API al montar el componente
 onMounted(async () => {
@@ -111,14 +122,23 @@ const performFaceSearch = async () => {
             threshold: 0.6
         });
 
-        if (response.data.success) {
-            faceSearchResults.value = response.data;
-            showingFaceResults.value = true;
-            allPhotos.value = response.data.results;
-            nextUrl.value = null;
 
-            // Cerrar filtros después de buscar
+        if (response.data.success) {
+            clearFaceSearch();
+
+            bibSearchResults.value = response.data;
+            showingBibResults.value = true;
+            allPhotos.value = [...response.data.results];
+            gridKey.value = Date.now();
+            nextUrl.value = null;
             showFilters.value = false;
+
+            // ⭐ DEBUG
+            console.log('🎯 Estado final:');
+            console.log('  - gridKey:', gridKey.value);
+            console.log('  - allPhotos.length:', allPhotos.value.length);
+            console.log('  - showingBibResults:', showingBibResults.value);
+            console.log('  - Primera foto unique_id:', allPhotos.value[0]?.unique_id);
         }
 
     } catch (error) {
@@ -138,8 +158,68 @@ const clearFaceSearch = () => {
     previewUrl.value = null;
     errorMessage.value = '';
 
-    allPhotos.value = props.photos.data;
+    allPhotos.value = [...props.photos.data];
     nextUrl.value = props.photos.next_page_url;
+    gridKey.value = Date.now(); // ⭐ Forzar re-render
+};
+const performBibSearch = async () => {
+    if (!bibNumber.value.trim()) {
+        bibErrorMessage.value = 'Por favor ingresa un número de dorsal';
+        return;
+    }
+
+    isSearchingBib.value = true;
+    bibErrorMessage.value = '';
+
+    try {
+        const response = await axios.post(route('gallery.bib-search'), {
+            bib_number: bibNumber.value.trim()
+        });
+
+        console.log('🔍 Respuesta completa:', response.data);
+
+             if (response.data.success) {
+            clearFaceSearch();
+            
+            bibSearchResults.value = response.data;
+            showingBibResults.value = true;
+            
+            // ⭐ LIMPIAR PRIMERO
+            allPhotos.value = [];
+            
+            // ⭐ ESPERAR UN TICK
+            await nextTick();
+            
+            // ⭐ AHORA SÍ ACTUALIZAR
+            allPhotos.value = [...response.data.results];
+            gridKey.value = Date.now();
+            
+            nextUrl.value = null;
+            showFilters.value = false;
+
+            console.log('✅ Grid actualizado:', allPhotos.value.length, 'fotos');
+        }
+
+    } catch (error) {
+        console.error('❌ Error en búsqueda por dorsal:', error);
+        bibErrorMessage.value = error.response?.data?.message || 'Error al buscar. Intenta nuevamente.';
+    } finally {
+        isSearchingBib.value = false;
+    }
+};
+
+
+const clearBibSearch = () => {
+    showingBibResults.value = false;
+    bibSearchResults.value = null;
+    bibNumber.value = '';
+    bibErrorMessage.value = '';
+
+    if (!showingFaceResults.value) {
+        allPhotos.value = [...props.photos.data];
+        nextUrl.value = props.photos.next_page_url;
+        gridKey.value = Date.now(); // ⭐ Forzar re-render
+    }
 };
 
 // --- PAGINACIÓN ---
@@ -174,10 +254,14 @@ const filterForm = useForm({
 
 const showFilters = ref(false);
 
+
 const applyFilters = () => {
-    // Si hay búsqueda facial activa, limpiarla primero
+    // Si hay búsqueda facial o de dorsales activa, limpiarlas primero
     if (showingFaceResults.value) {
         clearFaceSearch();
+    }
+    if (showingBibResults.value) {
+        clearBibSearch();
     }
 
     filterForm.get(route('gallery.index'), {
@@ -197,9 +281,12 @@ const clearFilters = () => {
     filterForm.event = '';
     filterForm.search = '';
 
-    // También limpiar búsqueda facial si está activa
+    // También limpiar búsqueda facial y de dorsales si están activas
     if (showingFaceResults.value) {
         clearFaceSearch();
+    }
+    if (showingBibResults.value) {
+        clearBibSearch();
     }
 
     applyFilters();
@@ -254,12 +341,16 @@ const handleImageError = (e) => {
 
                     <div class="text-right hidden md:block">
                         <span class="text-3xl font-serif font-bold text-slate-900 block leading-none">
-                            {{ showingFaceResults ? faceSearchResults.count : photos.total }}
+                            {{ showingFaceResults ? faceSearchResults.count : (showingBibResults ?
+                                bibSearchResults.count : photos.total) }}
                         </span>
                         <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            {{ showingFaceResults ? 'Coincidencias Encontradas' : 'Fotografías Disponibles' }}
+                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias Encontradas' : 'Fotografías Disponibles' }}
                         </span>
                     </div>
+
+
+
                 </div>
             </div>
         </div>
@@ -291,6 +382,35 @@ const handleImageError = (e) => {
                             </div>
                         </div>
                         <button @click="clearFaceSearch" class="p-2 hover:bg-white rounded-lg transition">
+                            <XMarkIcon class="w-5 h-5 text-slate-500" />
+                        </button>
+                    </div>
+                </div>
+
+
+                <div v-if="showingBibResults"
+                    class="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-lg p-6 mb-8">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <HashtagIcon class="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 mb-1">
+                                    Resultados de Búsqueda por Dorsal
+                                </h3>
+                                <p class="text-sm text-slate-600 mb-3">
+                                    Encontramos <strong>{{ bibSearchResults.count }}</strong> fotos con el dorsal
+                                    <strong class="font-mono text-blue-600">#{{ bibNumber }}</strong>
+                                </p>
+                                <button @click="clearBibSearch"
+                                    class="text-sm font-semibold text-blue-600 hover:text-blue-800 underline">
+                                    ← Volver a la galería completa
+                                </button>
+                            </div>
+                        </div>
+                        <button @click="clearBibSearch" class="p-2 hover:bg-white rounded-lg transition">
                             <XMarkIcon class="w-5 h-5 text-slate-500" />
                         </button>
                     </div>
@@ -484,6 +604,90 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
+
+
+                            <!-- ⭐ NUEVO: Búsqueda por DORSAL -->
+                            <div class="bg-white border border-blue-200 p-8 shadow-sm">
+                                <div class="flex flex-col gap-2 mb-8 border-b border-blue-100 pb-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="p-2 border border-blue-200 inline-flex bg-blue-50">
+                                            <HashtagIcon class="w-5 h-5 text-blue-600 stroke-1" />
+                                        </div>
+                                        <span
+                                            class="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-400 border border-blue-200 px-2 py-1 bg-blue-50">
+                                            OCR v2.0
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-serif text-2xl text-black mt-4 mb-2">
+                                            Búsqueda por Dorsal
+                                        </h3>
+                                        <p class="text-xs font-light text-zinc-500 leading-relaxed">
+                                            Sistema de reconocimiento óptico. Ingresá tu número de competidor para
+                                            localizar todas tus fotografías del evento.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold uppercase tracking-widest text-zinc-900 mb-3">
+                                            Número de Dorsal
+                                        </label>
+                                        <input v-model="bibNumber" type="text" placeholder="Ej: 529, 1234..."
+                                            class="w-full px-4 py-4 border-2 border-zinc-200 focus:border-blue-500 focus:ring-0 text-lg font-mono text-center bg-zinc-50"
+                                            @keyup.enter="performBibSearch" />
+                                        <p class="mt-2 text-[10px] text-zinc-400 uppercase tracking-widest text-center">
+                                            Solo números, sin letras
+                                        </p>
+                                    </div>
+
+                                    <button type="button" @click="performBibSearch"
+                                        :disabled="isSearchingBib || !bibNumber.trim()"
+                                        class="w-full bg-blue-600 text-white py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-blue-600 flex items-center justify-center gap-3">
+                                        <div v-if="isSearchingBib"
+                                            class="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin">
+                                        </div>
+                                        <HashtagIcon v-else class="w-4 h-4 stroke-1" />
+                                        <span>{{ isSearchingBib ? 'Buscando...' : 'Buscar Dorsal' }}</span>
+                                    </button>
+
+                                    <div v-if="bibErrorMessage" class="p-4 bg-red-50 border border-red-200 text-center">
+                                        <p class="text-xs text-red-900 font-medium">{{ bibErrorMessage }}</p>
+                                    </div>
+
+                                    <div class="pt-6 border-t border-blue-200">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <div class="w-1 h-1 bg-blue-600 rounded-full"></div>
+                                            <p class="text-[10px] font-bold tracking-widest uppercase text-zinc-900">
+                                                Recomendaciones
+                                            </p>
+                                        </div>
+                                        <ul class="space-y-2">
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-start gap-2">
+                                                <CheckIcon class="w-3 h-3 text-blue-300 flex-shrink-0 mt-0.5" />
+                                                Ingresa el número exacto que usaste
+                                            </li>
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-start gap-2">
+                                                <CheckIcon class="w-3 h-3 text-blue-300 flex-shrink-0 mt-0.5" />
+                                                Sin ceros a la izquierda (529, no 0529)
+                                            </li>
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-start gap-2">
+                                                <CheckIcon class="w-3 h-3 text-blue-300 flex-shrink-0 mt-0.5" />
+                                                Verifica que esté bien visible en las fotos
+                                            </li>
+                                            <li class="text-[10px] text-zinc-500 font-light flex items-start gap-2">
+                                                <CheckIcon class="w-3 h-3 text-blue-300 flex-shrink-0 mt-0.5" />
+                                                Solo números detectados por IA
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
                             <!-- Botón limpiar filtros -->
                             <div class="flex justify-end">
                                 <button type="button" @click="clearFilters"
@@ -496,10 +700,13 @@ const handleImageError = (e) => {
                     </form>
                 </div>
 
+
+
                 <!-- Ordenamiento -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-gray-200 pb-2">
                     <div class="text-sm text-slate-500 mb-4 md:mb-0 md:hidden">
-                        {{ showingFaceResults ? faceSearchResults.count : photos.total }} resultados
+                        {{ showingFaceResults ? faceSearchResults.count : (showingBibResults ? bibSearchResults.count :
+                            photos.total) }} resultados
                     </div>
                     <div class="flex gap-6 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
                         <button v-for="option in sortOptions" :key="option.value" @click="changeSort(option.value)"
@@ -515,7 +722,7 @@ const handleImageError = (e) => {
                 </div>
 
                 <!-- Grid de fotos -->
-                <div v-if="allPhotos.length > 0">
+                <div v-if="allPhotos.length > 0" :key="gridKey">
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-12">
                         <Link v-for="photo in allPhotos" :key="photo.id" :href="route('gallery.show', photo.unique_id)"
                             class="group bg-white border border-gray-100 hover:border-gray-300 transition-all duration-300 hover:shadow-lg rounded-sm overflow-hidden flex flex-col">
@@ -543,6 +750,18 @@ const handleImageError = (e) => {
                                         </span>
                                     </div>
                                 </div>
+
+
+                                <div v-if="showingBibResults && photo.bib_numbers"
+                                    class="absolute top-0 left-0 bg-gradient-to-br from-blue-600 to-cyan-600 backdrop-blur-sm border-r border-b border-white/20 px-3 py-2 z-10">
+                                    <div class="flex items-center gap-2">
+                                        <HashtagIcon class="w-3 h-3 text-white stroke-2" />
+                                        <span class="font-mono text-xs text-white tracking-[0.1em] font-bold">
+                                            {{ photo.bib_numbers.join(', ') }}
+                                        </span>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="p-4 bg-white border-t border-gray-50 flex flex-col items-start">

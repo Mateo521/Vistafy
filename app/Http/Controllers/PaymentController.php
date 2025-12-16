@@ -194,7 +194,7 @@ class PaymentController extends Controller
                 'unit_price' => $photo->price,
             ]);
 
-            // 💾 Guardar info para crear cuenta después del pago
+            //  Guardar info para crear cuenta después del pago
             if (!$user && ($validated['create_account'] ?? false)) {
                 session([
                     'pending_account' => [
