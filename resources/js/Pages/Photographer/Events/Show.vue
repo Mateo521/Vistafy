@@ -69,6 +69,46 @@ const photosWithBibs = computed(() => {
 
 
 
+
+// Variable temporal para lo que el usuario está escribiendo en el input nuevo
+const tempBibInput = ref({});
+
+// Agregar dorsal al presionar Enter
+const addBibTag = (index, event) => {
+    const val = event.target.value.trim();
+    if (!val) return;
+
+    // Inicializar si no existe
+    if (!bibDetectionResults.value[index]) {
+        bibDetectionResults.value[index] = { index: index, numbers: [], raw_text: '' };
+    }
+
+    // Evitar duplicados
+    if (!bibDetectionResults.value[index].numbers.includes(val)) {
+        bibDetectionResults.value[index].numbers.push(val);
+    }
+
+    // Limpiar input temporal
+    event.target.value = '';
+    // Opcional: limpiar variable reactiva si la usaras, aquí usamos el evento directo
+};
+
+// Eliminar un dorsal específico
+const removeBibTag = (index, numberToRemove) => {
+    if (bibDetectionResults.value[index]) {
+        bibDetectionResults.value[index].numbers = bibDetectionResults.value[index].numbers.filter(n => n !== numberToRemove);
+    }
+};
+
+// Eliminar el último con Backspace si el input está vacío
+const handleBackspace = (index, event) => {
+    if (event.target.value === '' && bibDetectionResults.value[index]?.numbers?.length > 0) {
+        bibDetectionResults.value[index].numbers.pop();
+    }
+};
+
+
+
 //  NUEVA FUNCIÓN: Alternar selección de fotos existentes
 const togglePhotoSelection = (photoId) => {
     const index = selectedExistingPhotos.value.indexOf(photoId);
@@ -212,7 +252,7 @@ const handleFileSelect = async (e) => {
 
 
 // ============================================
-// 🛠️ UTILITIES
+//  UTILITIES
 // ============================================
 
 // Función para ver qué está pasando (SOLO PARA DEBUG)
@@ -371,7 +411,6 @@ const detectBibNumbers = async (facesData) => {
     bibDetectionResults.value = [];
     processingBibs.value = true;
 
-    // Limpiar debug previo
     const debugContainer = document.getElementById('ocr-debug-container');
     if (debugContainer) debugContainer.innerHTML = '';
 
@@ -381,86 +420,97 @@ const detectBibNumbers = async (facesData) => {
 
     await worker.setParameters({
         tessedit_char_whitelist: '0123456789',
-        // PSM 11 (Sparse Text): Ignora "basura" alrededor y busca números en cualquier parte
         tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT,
     });
 
     for (let i = 0; i < previewUrls.value.length; i++) {
         try {
-            // 1. DEFINICIÓN DE FACEBOX (Aquí estaba el error antes)
-            // Buscamos si hay una cara detectada para esta foto específica (i)
+            // Obtenemos los datos de rostros de esta foto
             const faceInfo = facesData.find(f => f.index === i);
-            const faceBox = (faceInfo && faceInfo.box) ? faceInfo.box : null;
+            // Obtenemos TODAS las cajas (si no hay, array vacío)
+            const boxes = (faceInfo && faceInfo.boxes) ? faceInfo.boxes : [];
 
-            // --- DEBUG VISUAL: DIBUJAR CAJA EN LA FOTO ORIGINAL ---
-            if (faceBox) {
-                const imgElement = document.createElement('img');
-                imgElement.src = previewUrls.value[i];
-                imgElement.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = imgElement.width;
-                    canvas.height = imgElement.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(imgElement, 0, 0);
+            // Set para evitar números duplicados en la misma foto
+            let uniqueNumbers = new Set();
+            let accumulatedText = "";
 
-                    // Recalcular coordenadas IGUAL que en cropTorsoFromFace
-                    const roiW = faceBox.width * 2.2;
-                    const roiH = faceBox.height * 2.0;
-                    const roiX = faceBox.x - (roiW - faceBox.width) / 2;
-                    // AJUSTE CLAVE: 1.8 para bajar hasta el pecho y evitar la barbilla
-                    const roiY = faceBox.y + (faceBox.height * 1.8);
+            // SI HAY ROSTROS: Procesamos cada uno
+            if (boxes.length > 0) {
+                console.log(`📸 Foto ${i + 1}: Procesando ${boxes.length} personas...`);
 
-                    // Dibujar rectángulo ROJO
-                    ctx.strokeStyle = "red";
-                    ctx.lineWidth = 5;
-                    ctx.strokeRect(roiX, roiY, roiW, roiH);
+                for (const faceBox of boxes) {
+                    // 1. Recorte por cada persona
+                    const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], faceBox);
+                    // 2. Preproceso
+                    const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
+                    // 3. Reconocimiento
+                    const result = await worker.recognize(cleanedDataUrl);
+                    const text = result.data.text;
+                    accumulatedText += text + " ";
 
-                    //    appendDebugImage(canvas.toDataURL(), `Foto ${i+1}: Zona Roja`);
-                };
-            }
-            // -------------------------------------------------------
-
-            // 2. RECORTE (Pasamos el faceBox ya definido)
-            // Asegúrate de que tu función cropTorsoFromFace también tenga el roiY * 1.8
-            const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], faceBox);
-
-            // 3. PREPROCESO (Tu función de canal verde que funcionó bien)
-            const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
-
-            //      appendDebugImage(cleanedDataUrl, `Foto ${i+1}: Input Final Tesseract`);
-
-            // 4. RECONOCIMIENTO
-            const result = await worker.recognize(cleanedDataUrl);
-            const text = result.data.text;
-
-            console.log(` Resultado Raw Foto ${i + 1}: "${text}"`);
-
-            // 5. EXTRACCIÓN INTELIGENTE
-            // Buscamos cualquier grupo de dígitos
-            const numbers = text.match(/\d+/g);
-
-            let selected = null;
-            if (numbers && numbers.length > 0) {
-                // Ordenamos por longitud: preferimos "120" antes que "1" o "20"
-                selected = numbers.sort((a, b) => b.length - a.length)[0];
-                console.log(`Se detectó: ${selected}`);
+                    // 4. Extracción
+                    const found = text.match(/\d+/g);
+                    if (found) {
+                        // Filtramos números muy cortos (ruido)
+                        found.forEach(num => {
+                            if (num.length >= 2) uniqueNumbers.add(num);
+                        });
+                    }
+                }
             } else {
-                console.log(` No se hallaron números.`);
+                // SI NO HAY ROSTROS: Intentamos escaneo general (fallback)
+                console.log(`📸 Foto ${i + 1}: Sin rostros, escaneo general...`);
+                const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], null); // null usa recorte central
+                const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
+                const result = await worker.recognize(cleanedDataUrl);
+                const text = result.data.text;
+                accumulatedText = text;
+                const found = text.match(/\d+/g);
+                if (found) {
+                    found.forEach(num => {
+                        if (num.length >= 2) uniqueNumbers.add(num);
+                    });
+                }
             }
+
+            // Convertimos el Set a Array
+            const finalNumbers = Array.from(uniqueNumbers);
+            console.log(` Foto ${i + 1} Resultados: ${finalNumbers.join(', ')}`);
 
             bibDetectionResults.value.push({
                 index: i,
-                numbers: selected ? [selected] : [],
-                raw_text: text,
+                numbers: finalNumbers, // Ahora es un array con todos los encontrados
+                raw_text: accumulatedText,
             });
 
         } catch (error) {
             console.error(`Error en foto ${i + 1}:`, error);
+            bibDetectionResults.value.push({
+                index: i,
+                numbers: [],
+                raw_text: '',
+            });
         }
     }
 
     await worker.terminate();
     processingBibs.value = false;
+};
+
+
+// Función para actualizar los números cuando el usuario escribe manualmente
+const updateBibsManually = (index, event) => {
+    const text = event.target.value;
+    // Separamos por comas o espacios y filtramos vacíos
+    // Ejemplo: "120, 55" -> ["120", "55"]
+    const newNumbers = text.split(/[\s,]+/).filter(n => n.trim().length > 0);
+
+    // Aseguramos que existe el objeto antes de asignar
+    if (!bibDetectionResults.value[index]) {
+        bibDetectionResults.value[index] = { index: index, numbers: [], raw_text: '' };
+    }
+
+    bibDetectionResults.value[index].numbers = newNumbers;
 };
 
 //  VERSIÓN CORREGIDA
@@ -470,7 +520,6 @@ const detectFacesInImages = async () => {
 
     console.log('🔍 Detectando rostros en las imágenes...');
 
-    //  Verificar que faceapi está disponible
     if (!faceapi || !faceapi.detectAllFaces) {
         console.error(' faceapi no está disponible');
         processingFaces.value = false;
@@ -490,7 +539,6 @@ const detectFacesInImages = async () => {
 
             console.log(`  Procesando foto ${i + 1}...`);
 
-            //  Usar faceapi directamente (ya importado arriba)
             const detections = await faceapi
                 .detectAllFaces(img, new faceapi.SsdMobilenetv1Options({
                     minConfidence: 0.5
@@ -499,12 +547,15 @@ const detectFacesInImages = async () => {
                 .withFaceDescriptors();
 
             const descriptors = detections.map(d => Array.from(d.descriptor));
-            const primaryFaceBox = detections.length > 0 ? detections[0].detection.box : null;
+
+            // CAMBIO: Guardamos TODAS las cajas, no solo la primera
+            const allBoxes = detections.map(d => d.detection.box);
+
             faceDetectionResults.value.push({
                 index: i,
                 count: detections.length,
                 descriptors: descriptors,
-                box: primaryFaceBox
+                boxes: allBoxes // <--- Aquí guardamos todas las ubicaciones
             });
 
             console.log(`  ✓ Foto ${i + 1}: ${detections.length} rostro(s)`);
@@ -515,14 +566,12 @@ const detectFacesInImages = async () => {
                 index: i,
                 count: 0,
                 descriptors: [],
+                boxes: []
             });
         }
     }
 
     processingFaces.value = false;
-
-    const totalFaces = faceDetectionResults.value.reduce((sum, r) => sum + r.count, 0);
-    console.log(` ${totalFaces} rostros detectados`);
 };
 
 const uploadPhotos = () => {
@@ -704,17 +753,17 @@ const copyToClipboard = async (text) => {
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-500">Total Archivos</span>
                                     <span class="text-xl font-serif font-bold text-slate-900">{{ stats.total_photos
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-500">Públicas</span>
                                     <span class="text-xl font-serif font-bold text-emerald-600">{{ stats.active_photos
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-500">Descargas</span>
                                     <span class="text-xl font-serif font-bold text-slate-900">{{ stats.total_downloads
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
                         </div>
@@ -1033,6 +1082,7 @@ const copyToClipboard = async (text) => {
                         <!-- Previews -->
                         <div v-else>
                             <div class="grid grid-cols-4 sm:grid-cols-5 gap-3 mb-6">
+
                                 <div v-for="(url, index) in previewUrls" :key="index"
                                     class="relative aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200 group">
 
@@ -1048,15 +1098,39 @@ const copyToClipboard = async (text) => {
                                         <span v-else>—</span>
                                     </div>
 
-                                    <!--  NUEVO: Badge de dorsales (abajo derecha) -->
-                                    <div v-if="bibDetectionResults[index]"
-                                        class="absolute bottom-2 right-2 px-2 py-1  text-[10px] font-bold shadow-lg"
-                                        :class="bibDetectionResults[index].numbers.length > 0 ? 'bg-black text-white' : 'bg-gray-400 text-white'">
-                                        <span v-if="bibDetectionResults[index].numbers.length > 0">
-                                            Dorsal {{ bibDetectionResults[index].numbers.join(',') }}
-                                        </span>
-                                        <span v-else>—</span>
+
+
+
+                                    <div
+                                        class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent transition-all duration-300 hover:bg-slate-900/95 z-20 group/edit">
+
+                                        <div class="flex flex-wrap gap-1 items-center">
+
+                                            <HashtagIcon class="w-3 h-3 text-white/40 shrink-0" />
+
+                                            <template v-if="bibDetectionResults[index]?.numbers?.length">
+                                                <div v-for="number in bibDetectionResults[index].numbers" :key="number"
+                                                    class="bg-white/10 hover:bg-white/20 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-sm flex items-center gap-1 border border-white/10 backdrop-blur-sm">
+                                                    <span>{{ number }}</span>
+                                                    <button @click.stop="removeBibTag(index, number)"
+                                                        class="text-white/50 hover:text-red-400 focus:outline-none">
+                                                        <XMarkIcon class="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            </template>
+
+                                            <input type="text" placeholder="+"
+                                                @keydown.enter.prevent="addBibTag(index, $event)"
+                                                @keydown.backspace="handleBackspace(index, $event)"
+                                                class="flex-1 min-w-[30px] bg-transparent border-none text-white text-[11px] font-bold p-0 focus:ring-0 placeholder-white/30 focus:placeholder-white/50 outline-none h-5" />
+                                        </div>
+
+                                        <div
+                                            class="hidden group-hover/edit:block w-full text-[9px] text-white/30 text-center mt-1 border-t border-white/10 pt-1">
+                                            Enter para agregar • Backspace para borrar
+                                        </div>
                                     </div>
+
 
                                     <!-- Loading overlay -->
                                     <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
@@ -1066,6 +1140,9 @@ const copyToClipboard = async (text) => {
                                         </div>
                                     </div>
                                 </div>
+
+
+
                             </div>
 
                             <!--  Estadísticas finales -->

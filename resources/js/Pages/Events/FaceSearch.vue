@@ -33,7 +33,7 @@ async function loadModels() {
     modelsLoading.value = true;
     
     try {
-        console.log(' Cargando modelos de reconocimiento facial...');
+      
         
         // Verificar que faceapi esté disponible
         if (typeof window.faceapi === 'undefined') {
@@ -49,7 +49,7 @@ async function loadModels() {
         ]);
 
         modelsLoaded.value = true;
-        console.log(' Modelos cargados correctamente');
+    
     } catch (err) {
         console.error(' Error cargando modelos:', err);
         faceError.value = 'Error cargando modelos de IA: ' + err.message;
@@ -105,15 +105,14 @@ async function searchByFace() {
             throw new Error('La imagen no se cargó correctamente');
         }
 
-        console.log('🔍 Detectando rostros...');
+   
 
         const detections = await window.faceapi
             .detectAllFaces(img, new window.faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
             .withFaceLandmarks()
             .withFaceDescriptors();
 
-        console.log(` Detectados ${detections.length} rostro(s)`);
-
+     
         if (detections.length === 0) {
             faceError.value = 'No se detectó ningún rostro en la imagen';
             alert('No se detectó ningún rostro. Intenta con otra foto más clara.');
@@ -129,7 +128,7 @@ async function searchByFace() {
         faceDescriptor.value = Array.from(detections[0].descriptor);
         processingStage.value = 'searching';
 
-        console.log('📡 Buscando coincidencias en el servidor...');
+     
 
         const response = await axios.post(
             route('events.face-search.submit', props.event.slug),
@@ -142,7 +141,7 @@ async function searchByFace() {
         results.value = response.data.results || [];
         processingStage.value = 'done';
 
-        console.log(` Encontradas ${results.value.length} coincidencias`);
+   
 
         if (results.value.length === 0) {
             faceError.value = 'No se encontraron coincidencias';
@@ -182,7 +181,7 @@ onMounted(async () => {
         return;
     }
 
-    console.log(' face-api.js disponible, cargando modelos...');
+   
     await loadModels();
 });
 </script>

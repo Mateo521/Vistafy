@@ -133,12 +133,7 @@ const performFaceSearch = async () => {
             nextUrl.value = null;
             showFilters.value = false;
 
-            // ⭐ DEBUG
-            console.log('🎯 Estado final:');
-            console.log('  - gridKey:', gridKey.value);
-            console.log('  - allPhotos.length:', allPhotos.value.length);
-            console.log('  - showingBibResults:', showingBibResults.value);
-            console.log('  - Primera foto unique_id:', allPhotos.value[0]?.unique_id);
+           
         }
 
     } catch (error) {
@@ -160,7 +155,7 @@ const clearFaceSearch = () => {
 
     allPhotos.value = [...props.photos.data];
     nextUrl.value = props.photos.next_page_url;
-    gridKey.value = Date.now(); // ⭐ Forzar re-render
+    gridKey.value = Date.now(); //  Forzar re-render
 };
 const performBibSearch = async () => {
     if (!bibNumber.value.trim()) {
@@ -184,20 +179,20 @@ const performBibSearch = async () => {
             bibSearchResults.value = response.data;
             showingBibResults.value = true;
             
-            // ⭐ LIMPIAR PRIMERO
+            //  LIMPIAR PRIMERO
             allPhotos.value = [];
             
-            // ⭐ ESPERAR UN TICK
+            //  ESPERAR UN TICK
             await nextTick();
             
-            // ⭐ AHORA SÍ ACTUALIZAR
+            //  AHORA SÍ ACTUALIZAR
             allPhotos.value = [...response.data.results];
             gridKey.value = Date.now();
             
             nextUrl.value = null;
             showFilters.value = false;
 
-            console.log('✅ Grid actualizado:', allPhotos.value.length, 'fotos');
+            console.log(' Grid actualizado:', allPhotos.value.length, 'fotos');
         }
 
     } catch (error) {
@@ -218,7 +213,7 @@ const clearBibSearch = () => {
     if (!showingFaceResults.value) {
         allPhotos.value = [...props.photos.data];
         nextUrl.value = props.photos.next_page_url;
-        gridKey.value = Date.now(); // ⭐ Forzar re-render
+        gridKey.value = Date.now(); //  Forzar re-render
     }
 };
 
@@ -606,7 +601,7 @@ const handleImageError = (e) => {
 
 
 
-                            <!-- ⭐ NUEVO: Búsqueda por DORSAL -->
+                            <!--  NUEVO: Búsqueda por DORSAL -->
                             <div class="bg-white border border-blue-200 p-8 shadow-sm">
                                 <div class="flex flex-col gap-2 mb-8 border-b border-blue-100 pb-6">
                                     <div class="flex items-center justify-between">
