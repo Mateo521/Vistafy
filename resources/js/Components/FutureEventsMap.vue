@@ -15,7 +15,7 @@ const isMapReady = ref(false);
 let map = null;
 let markers = [];
 
-// 🔍 DEBUG 1: Ver qué eventos llegan
+//  DEBUG 1: Ver qué eventos llegan
 watch(() => props.events, (newEvents) => {
 
 

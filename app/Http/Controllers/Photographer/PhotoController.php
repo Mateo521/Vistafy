@@ -168,7 +168,7 @@ class PhotoController extends Controller
                 $facesData = $decodedData['faces'] ?? [];
                 $bibsData = $decodedData['bibs'] ?? [];
 
-                \Log::info('🔍 Datos de detección recibidos', [
+                \Log::info(' Datos de detección recibidos', [
                     'fotos_con_rostros' => count(array_filter($facesData, fn($f) => $f['count'] > 0)),
                     'total_rostros' => array_sum(array_column($facesData, 'count')),
                     'fotos_con_dorsales' => count(array_filter($bibsData, fn($b) => !empty($b['numbers']))),

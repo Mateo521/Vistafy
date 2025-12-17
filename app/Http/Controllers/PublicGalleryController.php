@@ -43,12 +43,18 @@ class PublicGalleryController extends Controller
                 ];
             });
 
-        // OBTENER ÚLTIMAS FOTOS - Solo de eventos públicos
+
+        // OBTENER ÚLTIMAS FOTOS - Incluir fotos sin evento Y de eventos públicos
         $recentPhotos = Photo::with(['event', 'photographer.user'])
             ->where('is_active', true)
-            ->whereHas('event', function ($query) {
-                $query->where('is_active', true)
-                    ->where('is_private', false);
+            ->where(function ($query) {
+                //  Fotos SIN evento
+                $query->whereNull('event_id')
+                    //  O con evento público y activo
+                    ->orWhereHas('event', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('is_private', false);
+                });
             })
             ->latest('created_at')
             ->take(20)
@@ -76,6 +82,7 @@ class PublicGalleryController extends Controller
                         ?? null,
                 ];
             });
+
 
         //  EVENTOS FUTUROS CON COORDENADAS PARA EL MAPA
         $futureEvents = \App\Models\FutureEvent::with('photographer.user')
@@ -124,7 +131,7 @@ class PublicGalleryController extends Controller
             ->map(fn($file) => asset('videos/' . $file->getFilename()))
             ->values();
 
-        // 🔍 DEBUG: Ver qué se envía (puedes quitar esto después)
+        //  DEBUG: Ver qué se envía (puedes quitar esto después)
         \Log::info('Home - Future Events:', [
             'count' => $futureEvents->count(),
             'events' => $futureEvents->toArray(),
@@ -146,16 +153,19 @@ class PublicGalleryController extends Controller
 
 
 
-    /**
-     * Galería completa con filtros
-     */
     public function gallery(Request $request)
     {
+        //  Incluir fotos sin evento Y de eventos públicos
         $query = Photo::with(['photographer', 'event'])
             ->where('is_active', true)
-            ->whereHas('event', function ($q) {
-                $q->where('is_active', true)
-                    ->where('is_private', false);
+            ->where(function ($q) {
+                // Fotos SIN evento
+                $q->whereNull('event_id')
+                    // O con evento público y activo
+                    ->orWhereHas('event', function ($eventQuery) {
+                    $eventQuery->where('is_active', true)
+                        ->where('is_private', false);
+                });
             });
 
         // Filtros
@@ -175,6 +185,7 @@ class PublicGalleryController extends Controller
             });
         }
 
+        //  IMPORTANTE: Solo filtrar por evento si se especifica uno
         if ($request->filled('event')) {
             $query->where('event_id', $request->event);
         }
@@ -196,16 +207,25 @@ class PublicGalleryController extends Controller
 
         $photos = $query->paginate(perPage: 25)->withQueryString();
 
-        //  CORRECCIÓN: Transformar las fotos correctamente
+        // Transformar las fotos correctamente
         $photos->getCollection()->transform(function ($photo) {
             return [
                 'id' => $photo->id,
                 'unique_id' => $photo->unique_id,
                 'title' => $photo->title,
-                'price' => number_format($photo->price, 2), //  Formato correcto
+                'price' => number_format($photo->price, 2),
                 'thumbnail_url' => $photo->thumbnail_url,
                 'watermarked_url' => $photo->watermarked_url,
-                'photographer' => $photo->photographer->business_name, //  SOLO el nombre
+                'photographer' => $photo->photographer->business_name,
+
+                //  AGREGAR DATOS DE IA
+                'has_faces' => $photo->has_faces,
+                'bib_numbers' => $photo->bib_numbers
+                    ? (is_string($photo->bib_numbers)
+                        ? json_decode($photo->bib_numbers, true)
+                        : $photo->bib_numbers
+                    )
+                    : null,
             ];
         });
 
@@ -217,7 +237,7 @@ class PublicGalleryController extends Controller
             ->values()
             ->toArray();
 
-        // Obtener eventos activos
+        // Obtener eventos activos (para el filtro)
         $events = Event::where('is_active', true)
             ->where('is_private', false)
             ->select('id', 'name')
@@ -248,7 +268,7 @@ class PublicGalleryController extends Controller
 
         $bibNumber = trim($request->bib_number);
 
-        \Log::info('🔍 Búsqueda global por dorsal', [
+        \Log::info(' Búsqueda global por dorsal', [
             'bib_number' => $bibNumber,
         ]);
 
@@ -282,7 +302,7 @@ class PublicGalleryController extends Controller
                     'photographer_id' => $photo->photographer_id,
                     'event_id' => $photo->event_id,
                     'event_name' => $photo->event?->name,
-                    'bib_numbers' => $photo->bib_numbers, 
+                    'bib_numbers' => $photo->bib_numbers,
                 ];
             });
 
@@ -401,7 +421,7 @@ class PublicGalleryController extends Controller
             ])
             ->firstOrFail();
 
-        // 🔍 DEBUG: Ver todas las URLs
+        //  DEBUG: Ver todas las URLs
         \Log::info('Photo URLs Debug', [
             'unique_id' => $photo->unique_id,
             'watermarked_path' => $photo->watermarked_path,

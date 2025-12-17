@@ -1,9 +1,20 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { CloudArrowUpIcon, XMarkIcon, PhotoIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
+import { ref, onMounted } from 'vue';
+import {
+    CloudArrowUpIcon,
+    XMarkIcon,
+    PhotoIcon,
+    InformationCircleIcon,
+    HashtagIcon // Importante para el editor de dorsales
+} from '@heroicons/vue/24/outline';
 import { useToast } from '@/Composables/useToast';
+
+// --- IMPORTS DE IA ---
+import * as faceapi from 'face-api.js';
+import '@tensorflow/tfjs-backend-webgl';
+import Tesseract from 'tesseract.js';
 
 const props = defineProps({
     events: Array,
@@ -15,20 +26,57 @@ const form = useForm({
     price: 5.00,
     event_id: null,
     is_active: true,
+    face_data: null, // Campo para enviar los metadatos
 });
+
 const { success, error } = useToast();
 
+// Estado de Archivos
 const selectedFiles = ref([]);
 const dragOver = ref(false);
 const uploading = ref(false);
-const uploadProgress = ref({
-    current: 0,
-    total: 0,
-    percentage: 0,
-});
-
+const uploadProgress = ref({ current: 0, total: 0, percentage: 0 });
 const fileInput = ref(null);
 
+// Estado de IA
+const modelsLoaded = ref(false);
+const processingFaces = ref(false);
+const processingBibs = ref(false);
+const faceDetectionResults = ref([]);
+const bibDetectionResults = ref([]);
+
+// ----------------------------------------------------------------------
+// 1. CARGA DE MODELOS (Igual que antes)
+// ----------------------------------------------------------------------
+onMounted(async () => {
+    try {
+        if (!faceapi) throw new Error('face-api.js no disponible');
+
+        await faceapi.tf.setBackend('webgl');
+        await faceapi.tf.ready();
+
+        const MODEL_URL = '/models';
+        await Promise.all([
+            faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        ]);
+
+        modelsLoaded.value = true;
+    } catch (err) {
+        console.error('Error cargando modelos:', err);
+        // Fallback a CPU si falla WebGL
+        try {
+            await faceapi.tf.setBackend('cpu');
+            await faceapi.tf.ready();
+            modelsLoaded.value = true;
+        } catch (e) { console.error('Error fatal IA:', e); }
+    }
+});
+
+// ----------------------------------------------------------------------
+// 2. MANEJO DE ARCHIVOS (Modificado para soportar Async/Await)
+// ----------------------------------------------------------------------
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     addFiles(files);
@@ -40,17 +88,17 @@ const handleDrop = (event) => {
     addFiles(files);
 };
 
-const addFiles = (files) => {
+const addFiles = async (files) => {
+    // Validaciones
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         const maxSize = 10 * 1024 * 1024; // 10MB
-
         if (!validTypes.includes(file.type)) {
             error(`${file.name} no es un formato válido.`);
             return false;
         }
         if (file.size > maxSize) {
-            error(`${file.name} excede el límite de 10MB.`);
+            error(`${file.name} excede el límite.`);
             return false;
         }
         return true;
@@ -60,31 +108,224 @@ const addFiles = (files) => {
     const filesToAdd = validFiles.slice(0, remainingSlots);
 
     if (validFiles.length > remainingSlots) {
-        error(`Límite de 50 fotos por carga. Se agregaron ${remainingSlots}.`);
+        error(`Límite de 50 fotos. Se agregaron ${remainingSlots}.`);
     }
 
-    filesToAdd.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            selectedFiles.value.push({
-                file: file,
-                name: file.name,
-                preview: e.target.result,
-            });
-        };
-        reader.readAsDataURL(file);
+    // Convertir a Promesas para esperar a que todas se lean
+    const readingPromises = filesToAdd.map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                resolve({
+                    file: file,
+                    name: file.name,
+                    preview: e.target.result,
+                });
+            };
+            reader.readAsDataURL(file);
+        });
     });
+
+    // Esperar a que se generen las previews
+    const newFileObjects = await Promise.all(readingPromises);
+    selectedFiles.value.push(...newFileObjects);
+
+    // DISPARAR DETECCIÓN DE IA AUTOMÁTICAMENTE
+    if (modelsLoaded.value) {
+        runAIDetection();
+    }
 };
 
 const removeFile = (index) => {
     selectedFiles.value.splice(index, 1);
+    // Sincronizar arrays de IA eliminando el índice correspondiente
+    // Nota: Esto es simple, en producción idealmente recalcularíamos por ID único
+    if (faceDetectionResults.value[index]) faceDetectionResults.value.splice(index, 1);
+    if (bibDetectionResults.value[index]) bibDetectionResults.value.splice(index, 1);
 };
 
 const clearFiles = () => {
     selectedFiles.value = [];
+    faceDetectionResults.value = [];
+    bibDetectionResults.value = [];
     if (fileInput.value) fileInput.value.value = '';
 };
 
+// ----------------------------------------------------------------------
+// 3. LÓGICA DE DETECCIÓN (Copiada y adaptada a selectedFiles)
+// ----------------------------------------------------------------------
+
+const runAIDetection = async () => {
+    // Limpiamos resultados previos para re-procesar todo (o podríamos procesar solo nuevos)
+    // Para simplificar, reprocesamos el array actual que coincida con selectedFiles
+    processingFaces.value = true;
+    await detectFacesInImages();
+    processingFaces.value = false;
+
+    processingBibs.value = true;
+    await detectBibNumbers(faceDetectionResults.value);
+    processingBibs.value = false;
+};
+
+// --- DETECCIÓN DE ROSTROS ---
+const detectFacesInImages = async () => {
+    faceDetectionResults.value = []; // Reset o merge logic needed if appending
+
+    for (let i = 0; i < selectedFiles.value.length; i++) {
+        try {
+            const img = document.createElement('img');
+            img.src = selectedFiles.value[i].preview;
+
+            await new Promise(r => { img.onload = r; });
+
+            const detections = await faceapi
+                .detectAllFaces(img, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+                .withFaceLandmarks()
+                .withFaceDescriptors();
+
+            const descriptors = detections.map(d => Array.from(d.descriptor));
+            const allBoxes = detections.map(d => d.detection.box);
+
+            faceDetectionResults.value.push({
+                index: i,
+                count: detections.length,
+                descriptors: descriptors,
+                boxes: allBoxes
+            });
+        } catch (error) {
+            console.error(`Error IA foto ${i}:`, error);
+            faceDetectionResults.value.push({ index: i, count: 0, descriptors: [], boxes: [] });
+        }
+    }
+};
+
+// --- DETECCIÓN DE DORSALES (OCR) ---
+const detectBibNumbers = async (facesData) => {
+    bibDetectionResults.value = [];
+
+    const worker = await Tesseract.createWorker('eng');
+    await worker.setParameters({
+        tessedit_char_whitelist: '0123456789',
+        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT,
+    });
+
+    for (let i = 0; i < selectedFiles.value.length; i++) {
+        try {
+            const faceInfo = facesData.find(f => f.index === i);
+            const boxes = (faceInfo && faceInfo.boxes) ? faceInfo.boxes : [];
+            let uniqueNumbers = new Set();
+
+            if (boxes.length > 0) {
+                // Procesar cada persona detectada
+                for (const faceBox of boxes) {
+                    const roiDataUrl = await cropTorsoFromFace(selectedFiles.value[i].preview, faceBox);
+                    const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
+                    const result = await worker.recognize(cleanedDataUrl);
+                    const found = result.data.text.match(/\d+/g);
+                    if (found) found.forEach(num => { if (num.length >= 2) uniqueNumbers.add(num); });
+                }
+            } else {
+                // Fallback sin rostros
+                const roiDataUrl = await cropTorsoFromFace(selectedFiles.value[i].preview, null);
+                const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
+                const result = await worker.recognize(cleanedDataUrl);
+                const found = result.data.text.match(/\d+/g);
+                if (found) found.forEach(num => { if (num.length >= 2) uniqueNumbers.add(num); });
+            }
+
+            bibDetectionResults.value.push({
+                index: i,
+                numbers: Array.from(uniqueNumbers),
+                raw_text: '',
+            });
+
+        } catch (error) {
+            console.error(`Error OCR foto ${i}:`, error);
+            bibDetectionResults.value.push({ index: i, numbers: [], raw_text: '' });
+        }
+    }
+    await worker.terminate();
+};
+
+// --- UTILIDADES DE IMAGEN (Iguales) ---
+const cropTorsoFromFace = async (imageUrl, faceBox) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let rx, ry, rw, rh;
+
+            if (faceBox) {
+                rw = faceBox.width * 2.2;
+                rh = faceBox.height * 2.0;
+                rx = faceBox.x - (rw - faceBox.width) / 2;
+                ry = faceBox.y + (faceBox.height * 1.8);
+            } else {
+                rw = img.width * 0.5; rh = img.height * 0.4;
+                rx = (img.width - rw) / 2; ry = img.height * 0.35;
+            }
+
+            rx = Math.max(0, rx); ry = Math.max(0, ry);
+            rw = Math.min(rw, img.width - rx); rh = Math.min(rh, img.height - ry);
+
+            canvas.width = rw * 2; canvas.height = rh * 2; // Upscale
+            ctx.drawImage(img, rx, ry, rw, rh, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL());
+        };
+        img.src = imageUrl;
+    });
+};
+
+const preprocessForOCR = async (imageUrl) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width + 40; canvas.height = img.height + 40;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 20, 20);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            // Canal Verde
+            for (let i = 0; i < data.length; i += 4) {
+                const g = data[i + 1];
+                const val = g > 130 ? 255 : 0;
+                data[i] = data[i + 1] = data[i + 2] = val;
+            }
+            ctx.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL());
+        };
+        img.src = imageUrl;
+    });
+};
+
+// --- EDICIÓN MANUAL DE DORSALES ---
+const addBibTag = (index, event) => {
+    const val = event.target.value.trim();
+    if (!val) return;
+    if (!bibDetectionResults.value[index]) bibDetectionResults.value[index] = { index, numbers: [] };
+    if (!bibDetectionResults.value[index].numbers.includes(val)) bibDetectionResults.value[index].numbers.push(val);
+    event.target.value = '';
+};
+
+const removeBibTag = (index, numberToRemove) => {
+    if (bibDetectionResults.value[index]) {
+        bibDetectionResults.value[index].numbers = bibDetectionResults.value[index].numbers.filter(n => n !== numberToRemove);
+    }
+};
+
+const handleBackspace = (index, event) => {
+    if (event.target.value === '' && bibDetectionResults.value[index]?.numbers?.length > 0) {
+        bibDetectionResults.value[index].numbers.pop();
+    }
+};
+
+// ----------------------------------------------------------------------
+// 4. SUBMIT (Unificación de datos)
+// ----------------------------------------------------------------------
 const submitPhotos = () => {
     if (selectedFiles.value.length === 0) return error('Seleccione al menos una foto.');
     if (!form.price || form.price <= 0) return error('Establezca un precio válido.');
@@ -92,14 +333,53 @@ const submitPhotos = () => {
     uploading.value = true;
     uploadProgress.value = { current: 0, total: selectedFiles.value.length, percentage: 0 };
 
+    //  PREPARAR DATOS DE ROSTROS
+    const facesData = selectedFiles.value.map((_, index) => {
+        const faceResult = faceDetectionResults.value[index];
+        return {
+            index: index,
+            count: faceResult ? faceResult.count : 0,
+            descriptors: faceResult ? faceResult.descriptors : [],
+            boxes: faceResult ? faceResult.boxes : [],
+        };
+    });
+
+    //  PREPARAR DATOS DE DORSALES
+    const bibsData = selectedFiles.value.map((_, index) => {
+        const bibResult = bibDetectionResults.value[index];
+        return {
+            index: index,
+            numbers: bibResult ? bibResult.numbers : [],
+            raw_text: bibResult ? bibResult.raw_text : '',
+        };
+    });
+
     const formData = new FormData();
+
+    // Agregar archivos
     selectedFiles.value.forEach((item, index) => {
         formData.append(`photos[${index}]`, item.file);
     });
 
+    // Agregar parámetros básicos
     formData.append('price', form.price);
     formData.append('is_active', form.is_active ? 1 : 0);
     if (form.event_id) formData.append('event_id', form.event_id);
+
+    //  ADJUNTAR JSON CON LA ESTRUCTURA CORRECTA
+    formData.append('face_data', JSON.stringify({
+        faces: facesData,
+        bibs: bibsData
+    }));
+
+    // Debug: Ver qué se está enviando
+    console.log('📤 Enviando datos:', {
+        fotos: selectedFiles.value.length,
+        event_id: form.event_id,
+        price: form.price,
+        faces_detectadas: facesData.filter(f => f.count > 0).length,
+        dorsales_detectados: bibsData.filter(b => b.numbers.length > 0).length,
+    });
 
     router.post(route('photographer.photos.store'), formData, {
         forceFormData: true,
@@ -110,10 +390,12 @@ const submitPhotos = () => {
         onSuccess: () => {
             uploading.value = false;
             clearFiles();
+            success('Material cargado exitosamente.');
         },
-        onError: (errors) => {
+        onError: (err) => {
             uploading.value = false;
-            console.error(errors);
+            console.error('❌ Error en carga:', err);
+            error('Hubo un error en la carga.');
         },
     });
 };
@@ -257,24 +539,70 @@ const formatDate = (date) => {
                                     </div>
                                 </div>
 
-                                <div
-                                    class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                                    <div v-for="(file, index) in selectedFiles" :key="index"
-                                        class="relative group aspect-square bg-gray-100 border border-gray-200">
-                                        <img :src="file.preview"
-                                            class="w-full h-full object-cover filter grayscale-[0.2] group-hover:grayscale-0 transition duration-300">
+                                <div v-if="processingFaces || processingBibs"
+                                    class="mb-4 bg-blue-50 border border-blue-200 p-3 rounded-sm flex items-center gap-3">
+                                    <div
+                                        class="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent">
+                                    </div>
+                                    <span class="text-xs text-blue-700 font-medium">
+                                        Analizando imágenes ({{ selectedFiles.length }} archivos)...
+                                    </span>
+                                </div>
 
-                                        <div
-                                            class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors flex items-center justify-center">
-                                            <button type="button" @click="removeFile(index)"
-                                                class="opacity-0 group-hover:opacity-100 text-white hover:text-red-200 transition-opacity p-2">
-                                                <XMarkIcon class="w-6 h-6" />
-                                            </button>
+                                <div
+                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div v-for="(file, index) in selectedFiles" :key="index"
+                                        class="relative group aspect-square bg-gray-100 border border-gray-200 overflow-hidden">
+
+                                        <img :src="file.preview"
+                                            class="w-full h-full object-cover filter grayscale-[0.1] group-hover:grayscale-0 transition duration-300">
+
+                                        <div v-if="faceDetectionResults[index]"
+                                            class="absolute top-2 right-2 px-2 py-1 text-[10px] font-bold shadow-lg z-10 transition-opacity"
+                                            :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black' : 'bg-gray-400 text-white'">
+                                            <span v-if="faceDetectionResults[index].count > 0">
+                                                {{ faceDetectionResults[index].count }} Cara(s)
+                                            </span>
+                                            <span v-else>—</span>
                                         </div>
 
                                         <div
-                                            class="absolute bottom-0 left-0 w-full bg-white/90 backdrop-blur px-2 py-1 text-[9px] truncate text-slate-600 font-mono border-t border-gray-100">
-                                            {{ (file.file.size / 1024 / 1024).toFixed(1) }} MB
+                                            class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent transition-all duration-300 hover:bg-slate-900/95 z-20 group/edit">
+                                            <div class="flex flex-wrap gap-1 items-center">
+                                                <HashtagIcon class="w-3 h-3 text-white/40 shrink-0" />
+
+                                                <template v-if="bibDetectionResults[index]?.numbers?.length">
+                                                    <div v-for="number in bibDetectionResults[index].numbers"
+                                                        :key="number"
+                                                        class="bg-white/10 hover:bg-white/20 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-sm flex items-center gap-1 border border-white/10 backdrop-blur-sm">
+                                                        <span>{{ number }}</span>
+                                                        <button type="button" @click.stop="removeBibTag(index, number)"
+                                                            class="text-white/50 hover:text-red-400 focus:outline-none">
+                                                            <XMarkIcon class="w-3 h-3" />
+                                                        </button>
+                                                    </div>
+                                                </template>
+
+                                                <input type="text" placeholder="+"
+                                                    @keydown.enter.prevent="addBibTag(index, $event)"
+                                                    @keydown.backspace="handleBackspace(index, $event)"
+                                                    class="flex-1 min-w-[30px] bg-transparent border-none text-white text-[11px] font-bold p-0 focus:ring-0 placeholder-white/30 focus:placeholder-white/50 outline-none h-5" />
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors flex items-center justify-center pointer-events-none">
+                                            <button type="button" @click="removeFile(index)"
+                                                class="opacity-0 group-hover:opacity-100 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-all pointer-events-auto shadow-lg transform scale-90 hover:scale-100">
+                                                <XMarkIcon class="w-5 h-5" />
+                                            </button>
+                                        </div>
+
+                                        <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
+                                            class="absolute inset-0 bg-black/20 flex items-center justify-center z-30">
+                                            <div
+                                                class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

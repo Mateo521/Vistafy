@@ -29,7 +29,7 @@ class ProcessEventFaces extends Command
             return 0;
         }
 
-        $this->info("🔍 Fotos sin procesar: " . $photos->count());
+        $this->info(" Fotos sin procesar: " . $photos->count());
 
         $bar = $this->output->createProgressBar($photos->count());
         $bar->start();

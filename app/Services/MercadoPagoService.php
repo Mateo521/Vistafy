@@ -29,7 +29,7 @@ class MercadoPagoService
     }
 
     /**
-     * 🔍 Obtener información de un pago
+     *  Obtener información de un pago
      */
     public function getPayment($paymentId)
     {
