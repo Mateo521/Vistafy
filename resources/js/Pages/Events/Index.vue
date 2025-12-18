@@ -79,7 +79,7 @@ const handleImageError = (e) => {
                     <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                         Galería Oficial
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-6">
+                    <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900 mb-6">
                         Archivo de Eventos
                     </h1>
                     <p class="text-lg text-slate-500 font-light leading-relaxed">
@@ -177,7 +177,7 @@ const handleImageError = (e) => {
                     <div class="w-16 h-16 text-gray-300 mb-4">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                     </div>
-                    <h3 class="text-xl font-serif font-medium text-slate-900 mb-2">Sin resultados</h3>
+                    <h3 class="text-xl font-sans font-medium text-slate-900 mb-2">Sin resultados</h3>
                     <p class="text-slate-500 mb-8 font-light max-w-md text-center">No encontramos eventos que coincidan con sus criterios de búsqueda.</p>
                     <button @click="clearFilters"
                         class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-1 hover:text-slate-600 hover:border-slate-600 transition">
@@ -211,7 +211,7 @@ const handleImageError = (e) => {
                         </div>
 
                         <div class="p-6 flex-1 flex flex-col">
-                            <h3 class="text-xl font-serif font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors">
+                            <h3 class="text-xl font-sans font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors">
                                 {{ event.name }}
                             </h3>
 

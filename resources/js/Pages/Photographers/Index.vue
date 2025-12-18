@@ -64,7 +64,7 @@ const getInitials = (name) => {
                     <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                         Staff Oficial
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-6">
+                    <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900 mb-6">
                         Fotógrafos Profesionales
                     </h1>
                     <p class="text-lg text-slate-500 font-light leading-relaxed">
@@ -201,7 +201,7 @@ const getInitials = (name) => {
                                         class="w-full h-full object-cover rounded-sm filter grayscale group-hover:grayscale-0 transition duration-300" />
                                     <div v-else
                                         class="w-full h-full bg-slate-100 flex items-center justify-center rounded-sm">
-                                        <span class="text-xl font-serif font-bold text-slate-400">
+                                        <span class="text-xl font-sans font-bold text-slate-400">
                                             {{ getInitials(photographer.business_name) }}
                                         </span>
                                     </div>
@@ -210,7 +210,7 @@ const getInitials = (name) => {
 
                             <div class="mb-4">
                                 <h3
-                                    class="text-xl font-serif font-bold text-slate-900 group-hover:text-blue-900 transition-colors truncate">
+                                    class="text-xl font-sans font-bold text-slate-900 group-hover:text-blue-900 transition-colors truncate">
                                     {{ photographer.business_name }}
                                 </h3>
                                 <div v-if="photographer.region"
@@ -227,12 +227,12 @@ const getInitials = (name) => {
 
                             <div class="mt-auto pt-4 border-t border-gray-100 grid grid-cols-2 gap-4">
                                 <div>
-                                    <span class="block text-lg font-serif font-bold text-slate-900 leading-none">{{
+                                    <span class="block text-lg font-sans font-bold text-slate-900 leading-none">{{
                                         photographer.events_count }}</span>
                                     <span class="text-[10px] uppercase tracking-widest text-slate-400">Eventos</span>
                                 </div>
                                 <div>
-                                    <span class="block text-lg font-serif font-bold text-slate-900 leading-none">{{
+                                    <span class="block text-lg font-sans font-bold text-slate-900 leading-none">{{
                                         photographer.photos_count }}</span>
                                     <span class="text-[10px] uppercase tracking-widest text-slate-400">Fotos</span>
                                 </div>
@@ -256,7 +256,7 @@ const getInitials = (name) => {
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-serif text-slate-900 mb-2">Sin resultados</h3>
+                    <h3 class="text-xl font-sans text-slate-900 mb-2">Sin resultados</h3>
                     <p class="text-slate-500 font-light mb-8">No encontramos profesionales que coincidan con sus
                         criterios.</p>
                     <button @click="clearFilters"

@@ -204,7 +204,7 @@ const handleImageError = (e) => {
                         <div>
                             <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-1 block">ID: #{{
                                 photo.unique_id }}</span>
-                            <h1 class="text-3xl font-serif font-bold text-slate-900 mb-4 leading-tight">
+                            <h1 class="text-3xl font-sans font-bold text-slate-900 mb-4 leading-tight">
                                 {{ photo.title || 'Fotografía Artística' }}
                             </h1>
 
@@ -222,7 +222,7 @@ const handleImageError = (e) => {
                             <div
                                 class="border-t border-b border-gray-100 py-6 mb-6 flex items-baseline justify-between">
                                 <span class="text-sm text-slate-500">Licencia Digital</span>
-                                <span class="text-4xl font-serif font-bold text-slate-900">${{ photo.price }}</span>
+                                <span class="text-4xl font-sans font-bold text-slate-900">${{ photo.price }}</span>
                             </div>
 
                             <!--  Botón actualizado -->
@@ -265,7 +265,7 @@ const handleImageError = (e) => {
                                         :src="photo.photographer.profile_photo_url"
                                         class="w-full h-full object-cover" />
                                     <div v-else
-                                        class="w-full h-full flex items-center justify-center text-slate-400 font-serif font-bold">
+                                        class="w-full h-full flex items-center justify-center text-slate-400 font-sans font-bold">
                                         {{ photo.photographer?.business_name?.charAt(0) || 'A' }}
                                     </div>
                                 </div>
@@ -286,7 +286,7 @@ const handleImageError = (e) => {
 
                 <!-- Fotos relacionadas (sin cambios) -->
                 <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-24 border-t border-gray-100 pt-12">
-                    <h2 class="text-xl font-serif font-bold text-slate-900 mb-8">También podría interesarte</h2>
+                    <h2 class="text-xl font-sans font-bold text-slate-900 mb-8">También podría interesarte</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         <Link v-for="related in relatedPhotos" :key="related.id"
                             :href="route('gallery.show', related.unique_id)" class="group block relative">
@@ -320,7 +320,7 @@ const handleImageError = (e) => {
                         <div>
                             <span
                                 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 block mb-2">Checkout</span>
-                            <h3 class="text-2xl font-serif font-bold text-slate-900">Datos de Entrega</h3>
+                            <h3 class="text-2xl font-sans font-bold text-slate-900">Datos de Entrega</h3>
                         </div>
                         <button @click="showEmailModal = false" class="text-slate-400 hover:text-slate-900 transition">
                             <XMarkIcon class="w-6 h-6" />

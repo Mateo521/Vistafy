@@ -80,7 +80,7 @@ const formatDate = (dateString) => {
                             :alt="photographer.business_name"
                             class="w-full h-full object-cover rounded-sm" />
                         <div v-else class="w-full h-full bg-slate-900 flex items-center justify-center rounded-sm">
-                            <span class="text-3xl font-serif font-bold text-white tracking-widest">
+                            <span class="text-3xl font-sans font-bold text-white tracking-widest">
                                 {{ getInitials(photographer.business_name) }}
                             </span>
                         </div>
@@ -90,7 +90,7 @@ const formatDate = (dateString) => {
                         <div class="flex flex-col lg:flex-row justify-between items-start gap-8">
                             
                             <div class="flex-1">
-                                <h1 class="text-4xl font-serif font-bold text-slate-900 mb-2">
+                                <h1 class="text-4xl font-sans font-bold text-slate-900 mb-2">
                                     {{ photographer.business_name }}
                                 </h1>
                                 
@@ -143,11 +143,11 @@ const formatDate = (dateString) => {
 
                             <div class="flex lg:flex-col gap-8 lg:border-l lg:border-gray-200 lg:pl-12 lg:min-w-[150px]">
                                 <div>
-                                    <span class="block text-3xl font-serif font-bold text-slate-900">{{ stats.total_events }}</span>
+                                    <span class="block text-3xl font-sans font-bold text-slate-900">{{ stats.total_events }}</span>
                                     <span class="text-[10px] uppercase tracking-widest text-slate-400">Eventos</span>
                                 </div>
                                 <div>
-                                    <span class="block text-3xl font-serif font-bold text-slate-900">{{ stats.total_photos }}</span>
+                                    <span class="block text-3xl font-sans font-bold text-slate-900">{{ stats.total_photos }}</span>
                                     <span class="text-[10px] uppercase tracking-widest text-slate-400">Fotos</span>
                                 </div>
                             </div>
@@ -191,7 +191,7 @@ const formatDate = (dateString) => {
                                     <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1 block">
                                         {{ formatDate(event.event_date) }}
                                     </span>
-                                    <h3 class="text-xl font-serif font-bold text-slate-900 group-hover:text-slate-600 transition mb-2">
+                                    <h3 class="text-xl font-sans font-bold text-slate-900 group-hover:text-slate-600 transition mb-2">
                                         {{ event.name }}
                                     </h3>
                                     <p v-if="event.location" class="text-xs text-slate-500 flex items-center gap-1 mb-3">

@@ -34,7 +34,7 @@ const getDaysText = (days) => {
             <!-- Header -->
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h1 class="text-3xl font-serif font-bold text-slate-900">
+                    <h1 class="text-3xl font-sans font-bold text-slate-900">
                         Mis Oportunidades
                     </h1>
                     <p class="text-slate-600 mt-2">
@@ -76,7 +76,7 @@ const getDaysText = (days) => {
 
                     <!-- Contenido -->
                     <div class="p-4">
-                        <h3 class="font-serif font-bold text-lg text-slate-900 mb-2 line-clamp-2">
+                        <h3 class="font-sans font-bold text-lg text-slate-900 mb-2 line-clamp-2">
                             {{ opportunity.title }}
                         </h3>
 
@@ -114,7 +114,7 @@ const getDaysText = (days) => {
             <!-- Empty State -->
             <div v-else class="text-center py-16 bg-white border-2 border-dashed border-gray-300 rounded-lg">
                 <CalendarIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 class="text-xl font-serif font-bold text-slate-900 mb-2">
+                <h3 class="text-xl font-sans font-bold text-slate-900 mb-2">
                     No tenés oportunidades creadas
                 </h3>
                 <p class="text-slate-600 mb-6">

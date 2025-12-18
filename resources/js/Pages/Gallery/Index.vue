@@ -171,7 +171,7 @@ const performBibSearch = async () => {
             bib_number: bibNumber.value.trim()
         });
 
-        console.log('🔍 Respuesta completa:', response.data);
+
 
              if (response.data.success) {
             clearFaceSearch();
@@ -192,11 +192,11 @@ const performBibSearch = async () => {
             nextUrl.value = null;
             showFilters.value = false;
 
-            console.log(' Grid actualizado:', allPhotos.value.length, 'fotos');
+           
         }
 
     } catch (error) {
-        console.error('❌ Error en búsqueda por dorsal:', error);
+        console.error('Error en búsqueda por dorsal:', error);
         bibErrorMessage.value = error.response?.data?.message || 'Error al buscar. Intenta nuevamente.';
     } finally {
         isSearchingBib.value = false;
@@ -329,13 +329,13 @@ const handleImageError = (e) => {
                         <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                             Catálogo Completo
                         </span>
-                        <h1 class="text-4xl md:text-5xl font-serif font-bold text-slate-900">
+                        <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900">
                             Galería de Fotos
                         </h1>
                     </div>
 
                     <div class="text-right hidden md:block">
-                        <span class="text-3xl font-serif font-bold text-slate-900 block leading-none">
+                        <span class="text-3xl font-sans font-bold text-slate-900 block leading-none">
                             {{ showingFaceResults ? faceSearchResults.count : (showingBibResults ?
                                 bibSearchResults.count : photos.total) }}
                         </span>
@@ -500,7 +500,7 @@ const handleImageError = (e) => {
                                         </span>
                                     </div>
                                     <div>
-                                        <h3 class="font-serif text-2xl text-black mt-4 mb-2">
+                                        <h3 class="font-sans text-2xl text-black mt-4 mb-2">
                                             Reconocimiento Facial
                                         </h3>
                                         <p class="text-xs font-light text-zinc-500 leading-relaxed">
@@ -532,7 +532,7 @@ const handleImageError = (e) => {
                                         <FaceSmileIcon
                                             class="w-10 h-10 text-zinc-300 group-hover:text-black transition-colors stroke-1 mx-auto mb-4" />
 
-                                        <p class="font-serif text-lg text-black mb-1">
+                                        <p class="font-sans text-lg text-black mb-1">
                                             Seleccionar Referencia
                                         </p>
                                         <p class="text-[10px] uppercase tracking-widest text-zinc-400">
@@ -614,7 +614,7 @@ const handleImageError = (e) => {
                                         </span>
                                     </div>
                                     <div>
-                                        <h3 class="font-serif text-2xl text-black mt-4 mb-2">
+                                        <h3 class="font-sans text-2xl text-black mt-4 mb-2">
                                             Búsqueda por Dorsal
                                         </h3>
                                         <p class="text-xs font-light text-zinc-500 leading-relaxed">
@@ -765,7 +765,7 @@ const handleImageError = (e) => {
                                     {{ photo.unique_id }}
                                 </span>
                                 <span
-                                    class="text-xs font-serif font-bold text-slate-900 truncate w-full mt-1 group-hover:text-blue-900 transition-colors">
+                                    class="text-xs font-sans font-bold text-slate-900 truncate w-full mt-1 group-hover:text-blue-900 transition-colors">
                                     {{ photo.photographer }}
                                 </span>
                             </div>
@@ -800,7 +800,7 @@ const handleImageError = (e) => {
                                 d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-serif text-slate-900 mb-2">Sin resultados</h3>
+                    <h3 class="text-xl font-sans text-slate-900 mb-2">Sin resultados</h3>
                     <p class="text-slate-500 font-light mb-8 max-w-md mx-auto">
                         No hemos encontrado fotografías que coincidan con sus criterios de búsqueda actuales.
                     </p>

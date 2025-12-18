@@ -98,7 +98,7 @@ const paginationPages = computed(() => {
                         <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                             Gestión de Activos
                         </span>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Archivo Fotográfico
                         </h1>
                     </div>
@@ -122,7 +122,7 @@ const paginationPages = computed(() => {
                                 Archivos</span>
                             <PhotoIcon class="h-5 w-5 text-slate-300" />
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.total }}</span>
                     </div>
 
                     <div
@@ -131,7 +131,7 @@ const paginationPages = computed(() => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Visibles</span>
                             <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.active }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.active }}</span>
                     </div>
 
                     <div
@@ -140,7 +140,7 @@ const paginationPages = computed(() => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ocultas</span>
                             <div class="h-2 w-2 rounded-full bg-slate-300"></div>
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.inactive }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.inactive }}</span>
                     </div>
 
                     <div
@@ -150,7 +150,7 @@ const paginationPages = computed(() => {
                                 class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Descargas</span>
                             <ArrowDownTrayIcon class="h-5 w-5 text-slate-300" />
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_downloads }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.total_downloads }}</span>
                     </div>
                 </div>
 
@@ -158,7 +158,7 @@ const paginationPages = computed(() => {
                     <div v-if="!photos.data || photos.data.length === 0"
                         class="text-center py-24 border border-dashed border-gray-300 rounded-sm bg-gray-50">
                         <PhotoIcon class="h-16 w-16 mx-auto text-gray-300 mb-4 stroke-1" />
-                        <h4 class="text-lg font-serif font-medium text-slate-900 mb-2">Archivo vacío</h4>
+                        <h4 class="text-lg font-sans font-medium text-slate-900 mb-2">Archivo vacío</h4>
                         <p class="text-sm text-slate-500 font-light mb-8 max-w-sm mx-auto">No hay fotografías cargadas
                             en el sistema actualmente.</p>
                         <Link :href="route('photographer.photos.create')"
@@ -205,7 +205,7 @@ const paginationPages = computed(() => {
                                             #{{ photo.unique_id }}
                                         </div>
                                         <div v-if="photo.event"
-                                            class="text-sm font-serif font-bold text-slate-900 truncate"
+                                            class="text-sm font-sans font-bold text-slate-900 truncate"
                                             :title="photo.event.name">
                                             {{ photo.event.name }}
                                         </div>

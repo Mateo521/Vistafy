@@ -84,7 +84,7 @@ const buttonColors = {
                                 </div>
 
                                 <div class="flex-1 pt-1">
-                                    <h3 class="text-lg font-serif font-bold text-slate-900 mb-2">
+                                    <h3 class="text-lg font-sans font-bold text-slate-900 mb-2">
                                         {{ title }}
                                     </h3>
                                     <p v-html="sanitizedMessage" class="text-sm text-gray-600"></p>

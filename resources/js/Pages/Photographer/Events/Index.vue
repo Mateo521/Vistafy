@@ -57,7 +57,7 @@ const handleImageError = (e) => {
                         <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                             Portafolio
                         </span>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Cartera de Eventos
                         </h1>
                     </div>
@@ -76,7 +76,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Eventos Totales</span>
                             <CalendarIcon class="h-5 w-5 text-slate-300" />
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_events }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.total_events }}</span>
                     </div>
 
                     <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
@@ -84,7 +84,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Publicados</span>
                             <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.active_events }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.active_events }}</span>
                     </div>
 
                     <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
@@ -92,7 +92,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Material Corgado</span>
                             <PhotoIcon class="h-5 w-5 text-slate-300" />
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_photos }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.total_photos }}</span>
                     </div>
 
                     <div class="bg-white p-6 border border-gray-200 rounded-sm flex flex-col justify-between group hover:border-slate-300 transition-colors">
@@ -100,14 +100,14 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ventas</span>
                             <CurrencyDollarIcon class="h-5 w-5 text-slate-300" />
                         </div>
-                        <span class="text-3xl font-serif font-medium text-slate-900">{{ stats.total_sales || 0 }}</span>
+                        <span class="text-3xl font-sans font-medium text-slate-900">{{ stats.total_sales || 0 }}</span>
                     </div>
                 </div>
 
                 <div>
                     <div v-if="!events.data || events.data.length === 0" class="text-center py-24 border border-dashed border-gray-300 rounded-sm bg-gray-50">
                         <CalendarIcon class="h-16 w-16 mx-auto text-gray-300 mb-4 stroke-1" />
-                        <h4 class="text-lg font-serif font-medium text-slate-900 mb-2">Sin eventos registrados</h4>
+                        <h4 class="text-lg font-sans font-medium text-slate-900 mb-2">Sin eventos registrados</h4>
                         <p class="text-sm text-slate-500 font-light mb-8 max-w-sm mx-auto">Comience creando un evento para organizar sus sesiones fotográficas.</p>
                         <Link :href="route('photographer.events.create')"
                             class="inline-block border-b border-slate-900 text-slate-900 text-xs font-bold uppercase tracking-widest pb-1 hover:text-slate-600 hover:border-slate-600 transition">
@@ -152,7 +152,7 @@ const handleImageError = (e) => {
 
                             <div class="p-6 flex-1 flex flex-col">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-serif font-bold text-slate-900 line-clamp-1 group-hover:text-slate-600 transition-colors">
+                                    <h3 class="text-xl font-sans font-bold text-slate-900 line-clamp-1 group-hover:text-slate-600 transition-colors">
                                         {{ event.name }}
                                     </h3>
                                 </div>

@@ -63,7 +63,7 @@ const formatDate = (dateString) => {
                     <span class="text-xs font-bold tracking-[0.2em] text-white/60 uppercase mb-2 block">
                         {{ formatDate(event.event_date) }}
                     </span>
-                    <h1 class="text-4xl md:text-6xl font-serif font-bold text-white mb-4 max-w-7xl leading-tight">
+                    <h1 class="text-4xl md:text-6xl font-sans font-bold text-white mb-4 max-w-7xl leading-tight">
                         {{ event.name }}
                     </h1>
                     <div class="flex flex-wrap items-center gap-6 text-white/80 font-light text-sm">
@@ -188,7 +188,7 @@ const formatDate = (dateString) => {
                 </div>
 
                 <div v-else class="text-center py-32 border border-dashed border-gray-200 bg-gray-50 rounded-sm">
-                    <p class="text-slate-400 font-serif text-lg">No hay fotografías disponibles con los filtros
+                    <p class="text-slate-400 font-sans text-lg">No hay fotografías disponibles con los filtros
                         seleccionados.</p>
                     <button v-if="selectedPhotographer !== 'all'"
                         @click="selectedPhotographer = 'all'; filterByPhotographer()"

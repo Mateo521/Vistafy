@@ -48,7 +48,7 @@ const submit = () => {
                         <Link :href="route('photographer.events.index')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors">
                             ← Volver a Eventos
                         </Link>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Crear Nuevo Evento
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1">Configure los detalles y la visibilidad de su nueva galería.</p>

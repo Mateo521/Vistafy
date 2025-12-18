@@ -22,7 +22,7 @@ defineProps({
                     <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                         Administración
                     </span>
-                    <h1 class="text-3xl font-serif font-bold text-slate-900">
+                    <h1 class="text-3xl font-sans font-bold text-slate-900">
                         Panel de Control
                     </h1>
                     <p class="text-sm text-slate-500 mt-2 font-light max-w-2xl">
@@ -41,7 +41,7 @@ defineProps({
                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_photographers
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_photographers
                         }}</span>
                     </div>
 
@@ -54,7 +54,7 @@ defineProps({
                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_events }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_events }}</span>
                     </div>
 
                     <div
@@ -67,7 +67,7 @@ defineProps({
                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_photos }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_photos }}</span>
                     </div>
 
                     <div
@@ -79,7 +79,7 @@ defineProps({
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_users }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_users }}</span>
                     </div>
 
                     <div
@@ -92,7 +92,7 @@ defineProps({
                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.unread_messages }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.unread_messages }}</span>
                     </div>
 
 
@@ -122,7 +122,7 @@ defineProps({
                                                 d="M9 5l7 7-7 7" />
                                         </svg>
                                     </div>
-                                    <p class="text-3xl font-serif text-slate-900">{{ stats.pending_photographers }}</p>
+                                    <p class="text-3xl font-sans text-slate-900">{{ stats.pending_photographers }}</p>
                                     <p class="text-[10px] text-slate-400 mt-1">Requieren revisión</p>
                                 </Link>
 
@@ -140,7 +140,7 @@ defineProps({
                                                 d="M9 5l7 7-7 7" />
                                         </svg>
                                     </div>
-                                    <p class="text-3xl font-serif text-slate-900">{{ stats.approved_photographers }}</p>
+                                    <p class="text-3xl font-sans text-slate-900">{{ stats.approved_photographers }}</p>
                                     <p class="text-[10px] text-slate-400 mt-1">Operando normalmente</p>
                                 </Link>
 
@@ -158,7 +158,7 @@ defineProps({
                                                 d="M9 5l7 7-7 7" />
                                         </svg>
                                     </div>
-                                    <p class="text-3xl font-serif text-slate-900">{{ stats.rejected_photographers }}</p>
+                                    <p class="text-3xl font-sans text-slate-900">{{ stats.rejected_photographers }}</p>
                                     <p class="text-[10px] text-slate-400 mt-1">Histórico</p>
                                 </Link>
 
@@ -176,7 +176,7 @@ defineProps({
                                                 d="M9 5l7 7-7 7" />
                                         </svg>
                                     </div>
-                                    <p class="text-3xl font-serif text-slate-900">{{ stats.suspended_photographers }}
+                                    <p class="text-3xl font-sans text-slate-900">{{ stats.suspended_photographers }}
                                     </p>
                                     <p class="text-[10px] text-slate-400 mt-1">Acceso revocado</p>
                                 </Link>

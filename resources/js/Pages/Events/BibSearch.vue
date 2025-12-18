@@ -43,7 +43,7 @@ const searchBib = () => {
             <div class="absolute bottom-0 left-0 w-full p-8">
                 <div class="max-w-4xl mx-auto text-center">
                     <HashtagIcon class="w-12 h-12 text-white/60 mx-auto mb-4" />
-                    <h1 class="text-3xl md:text-5xl font-serif font-bold text-white mb-2">
+                    <h1 class="text-3xl md:text-5xl font-sans font-bold text-white mb-2">
                         Buscar por Dorsal
                     </h1>
                     <p class="text-white/70 text-sm">{{ event.name }}</p>
@@ -131,7 +131,7 @@ const searchBib = () => {
                 <!-- Sin resultados -->
                 <div v-else-if="searchedBib" class="text-center py-32 border border-dashed border-gray-200 bg-gray-50 rounded-sm">
                     <HashtagIcon class="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                    <p class="text-slate-400 font-serif text-lg mb-2">
+                    <p class="text-slate-400 font-sans text-lg mb-2">
                         No se encontraron fotos con el dorsal <strong class="text-slate-600 font-mono">#{{ searchedBib }}</strong>
                     </p>
                     <p class="text-slate-400 text-sm">
@@ -142,7 +142,7 @@ const searchBib = () => {
                 <!-- Estado inicial -->
                 <div v-else class="text-center py-32">
                     <HashtagIcon class="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                    <p class="text-slate-400 font-serif text-lg">
+                    <p class="text-slate-400 font-sans text-lg">
                         Ingresá tu número de dorsal para buscar tus fotos
                     </p>
                 </div>

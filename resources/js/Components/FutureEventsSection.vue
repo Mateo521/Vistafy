@@ -182,7 +182,7 @@ const handleImageError = (e) => {
                 <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 block mb-4">
                     Próximos Eventos
                 </span>
-                <h2 class="text-5xl font-serif font-bold text-slate-900 mb-6">
+                <h2 class="text-5xl font-sans font-bold text-slate-900 mb-6">
                     Eventos Futuros
                 </h2>
                 <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -250,7 +250,7 @@ const handleImageError = (e) => {
                         <!-- Content -->
                         <div class="p-6">
                             <h3
-                                class="text-xl font-serif font-bold text-slate-900 mb-3 group-hover:text-slate-700 transition line-clamp-2">
+                                class="text-xl font-sans font-bold text-slate-900 mb-3 group-hover:text-slate-700 transition line-clamp-2">
                                 {{ event.title }}
                             </h3>
 

@@ -34,7 +34,7 @@ defineProps({
                         </div>
                     </div>
 
-                    <h1 class="text-3xl font-serif font-bold text-slate-900 mb-4">
+                    <h1 class="text-3xl font-sans font-bold text-slate-900 mb-4">
                         Solicitud No Aprobada
                     </h1>
                     <p class="text-slate-500 font-light text-sm leading-relaxed max-w-lg mx-auto mb-10">

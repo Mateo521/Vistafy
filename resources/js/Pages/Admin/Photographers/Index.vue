@@ -156,7 +156,7 @@ const getStatusConfig = (status) => {
                         <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                             Administración
                         </span>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Gestión de Fotógrafos
                         </h1>
                     </div>
@@ -182,7 +182,7 @@ const getStatusConfig = (status) => {
                     ]">
                         <span class="text-[10px] font-bold uppercase tracking-widest opacity-80">{{ stat.label }}</span>
                         <span
-                            :class="['text-3xl font-serif font-medium', searchForm.status === key ? 'text-white' : 'text-slate-900']">
+                            :class="['text-3xl font-sans font-medium', searchForm.status === key ? 'text-white' : 'text-slate-900']">
                             {{ stat.count }}
                         </span>
                     </button>
@@ -231,7 +231,7 @@ const getStatusConfig = (status) => {
                             <tbody class="bg-white divide-y divide-gray-100">
                                 <tr v-if="photographers.data.length === 0">
                                     <td colspan="6" class="px-6 py-12 text-center text-slate-500">
-                                        <p class="font-serif italic">No se encontraron registros que coincidan con la
+                                        <p class="font-sans italic">No se encontraron registros que coincidan con la
                                             búsqueda.</p>
                                     </td>
                                 </tr>
@@ -241,11 +241,11 @@ const getStatusConfig = (status) => {
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div
-                                                class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 font-serif font-bold text-lg border border-gray-200">
+                                                class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 font-sans font-bold text-lg border border-gray-200">
                                                 {{ photographer.business_name.charAt(0) }}
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-bold text-slate-900 font-serif">{{
+                                                <div class="text-sm font-bold text-slate-900 font-sans">{{
                                                     photographer.business_name }}</div>
                                                 <div class="text-xs text-slate-500 font-mono">{{ photographer.user.email
                                                     }}</div>
@@ -353,7 +353,7 @@ const getStatusConfig = (status) => {
                                 <XCircleIcon class="h-6 w-6 text-red-600" />
                             </div>
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-serif font-bold text-slate-900">
+                                <h3 class="text-lg leading-6 font-sans font-bold text-slate-900">
                                     Rechazar Solicitud
                                 </h3>
                                 <div class="mt-2">
@@ -404,7 +404,7 @@ const getStatusConfig = (status) => {
                                 <NoSymbolIcon class="h-6 w-6 text-amber-600" />
                             </div>
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-serif font-bold text-slate-900">
+                                <h3 class="text-lg leading-6 font-sans font-bold text-slate-900">
                                     Suspender Cuenta
                                 </h3>
                                 <div class="mt-2">

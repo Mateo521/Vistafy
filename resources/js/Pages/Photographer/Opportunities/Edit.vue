@@ -114,7 +114,7 @@ const updateLocation = (address) => {
                     Volver a Oportunidades
                 </Link>
 
-                <h1 class="text-3xl font-serif font-bold text-slate-900">
+                <h1 class="text-3xl font-sans font-bold text-slate-900">
                     Editar Oportunidad
                 </h1>
                 <p class="text-slate-600 mt-2">

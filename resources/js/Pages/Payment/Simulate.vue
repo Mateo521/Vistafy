@@ -54,7 +54,7 @@ const formatPrice = (amount) => {
                     <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                         Entorno de Desarrollo
                     </span>
-                    <h1 class="text-3xl font-serif font-bold text-slate-900 mb-2">
+                    <h1 class="text-3xl font-sans font-bold text-slate-900 mb-2">
                         Simulador de Pagos
                     </h1>
                     <p class="text-sm text-slate-500 font-light max-w-sm mx-auto">
@@ -88,7 +88,7 @@ const formatPrice = (amount) => {
 
                             <div class="pt-4 border-t border-gray-200 flex justify-between items-center">
                                 <span class="text-sm font-bold text-slate-900">Total a Pagar</span>
-                                <span class="text-xl font-serif font-bold text-slate-900">
+                                <span class="text-xl font-sans font-bold text-slate-900">
                                     {{ formatPrice(purchase.total_amount) }}
                                 </span>
                             </div>

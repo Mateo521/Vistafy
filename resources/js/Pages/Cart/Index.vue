@@ -136,7 +136,7 @@ const handleImageError = (e) => {
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-2">
                         {{ itemCount }} {{ itemCount === 1 ? 'Item' : 'Items' }}
                     </span>
-                    <h1 class="text-4xl font-serif font-bold text-slate-900">Carrito de Compras</h1>
+                    <h1 class="text-4xl font-sans font-bold text-slate-900">Carrito de Compras</h1>
                 </div>
 
                 <!-- Empty State -->
@@ -144,7 +144,7 @@ const handleImageError = (e) => {
                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
                         <ShoppingBagIcon class="w-10 h-10 text-slate-300" />
                     </div>
-                    <h2 class="text-2xl font-serif font-bold text-slate-900 mb-3">
+                    <h2 class="text-2xl font-sans font-bold text-slate-900 mb-3">
                         Tu carrito está vacío
                     </h2>
                     <p class="text-slate-500 mb-8 max-w-md mx-auto">
@@ -208,7 +208,7 @@ const handleImageError = (e) => {
 
                                     <div class="flex items-baseline justify-between">
                                         <span class="text-xs text-slate-500">Licencia Digital</span>
-                                        <span class="text-xl font-serif font-bold text-slate-900">
+                                        <span class="text-xl font-sans font-bold text-slate-900">
                                             ${{ formatPrice(item.price) }}
                                         </span>
                                     </div>
@@ -241,7 +241,7 @@ const handleImageError = (e) => {
                             <div class="mb-8 pb-8 border-b border-gray-200">
                                 <div class="flex justify-between items-baseline">
                                     <span class="text-sm font-semibold text-slate-900">Total</span>
-                                    <span class="text-3xl font-serif font-bold text-slate-900">
+                                    <span class="text-3xl font-sans font-bold text-slate-900">
                                         ${{ formattedTotal }}
                                     </span>
                                 </div>

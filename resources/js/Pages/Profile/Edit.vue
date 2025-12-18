@@ -20,7 +20,7 @@ defineProps({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-serif font-bold text-2xl text-slate-900 leading-tight">
+            <h2 class="font-sans font-bold text-2xl text-slate-900 leading-tight">
                 Configuración de Cuenta
             </h2>
         </template>

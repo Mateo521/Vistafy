@@ -93,7 +93,7 @@ const formatPrice = (amount) => {
                             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-500 border-2 border-white/30 mb-4 shadow-lg animate-pulse">
                                 <ClockIcon class="h-8 w-8 text-white" />
                             </div>
-                            <h2 class="text-3xl font-serif font-bold text-white mb-2">Pago en Proceso</h2>
+                            <h2 class="text-3xl font-sans font-bold text-white mb-2">Pago en Proceso</h2>
                             <p class="text-amber-50 text-sm font-light tracking-wide">Estamos verificando su transacción.</p>
                         </div>
                     </div>

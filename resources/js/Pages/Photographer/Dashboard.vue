@@ -70,7 +70,7 @@ const handleImageError = (e) => {
                         <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                             Área Profesional
                         </span>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             {{ photographer.business_name || photographer.user.name }}
                         </h1>
                     </div>
@@ -92,7 +92,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Total Archivo</span>
                             <PhotoIcon class="w-5 h-5 text-slate-300" />
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_photos }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_photos }}</span>
                     </div>
 
                     <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
@@ -100,7 +100,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Públicas</span>
                             <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.active_photos }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.active_photos }}</span>
                     </div>
 
                     <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
@@ -108,7 +108,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Descargas</span>
                             <ArrowDownTrayIcon class="w-5 h-5 text-slate-300" />
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_downloads }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_downloads }}</span>
                     </div>
 
                     <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
@@ -116,7 +116,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Eventos</span>
                             <CalendarIcon class="w-5 h-5 text-slate-300" />
                         </div>
-                        <span class="text-4xl font-serif font-medium text-slate-900">{{ stats.total_events }}</span>
+                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_events }}</span>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@ const handleImageError = (e) => {
                     
                     <div class="lg:col-span-2">
                         <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-                            <h3 class="text-lg font-serif font-bold text-slate-900">Eventos Recientes</h3>
+                            <h3 class="text-lg font-sans font-bold text-slate-900">Eventos Recientes</h3>
                             <Link :href="route('photographer.events.index')" 
                                 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1">
                                 Ver Todo
@@ -160,7 +160,7 @@ const handleImageError = (e) => {
                                 <div class="p-6 flex flex-col justify-between flex-1">
                                     <div>
                                         <div class="flex justify-between items-start mb-2">
-                                            <h4 class="text-xl font-serif font-bold text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-1">
+                                            <h4 class="text-xl font-sans font-bold text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-1">
                                                 {{ event.name }}
                                             </h4>
                                             <span class="text-xs font-mono text-slate-400 whitespace-nowrap ml-2">
@@ -190,7 +190,7 @@ const handleImageError = (e) => {
                         </div>
 
                         <div v-else class="text-center py-16 border border-dashed border-gray-300 rounded-sm bg-white">
-                            <p class="text-slate-400 font-serif mb-4">No hay eventos activos.</p>
+                            <p class="text-slate-400 font-sans mb-4">No hay eventos activos.</p>
                             <Link :href="route('photographer.events.create')" 
                                 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-1 hover:text-slate-600 hover:border-slate-600 transition">
                                 Crear primer evento
@@ -200,7 +200,7 @@ const handleImageError = (e) => {
 
                     <div>
                         <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-                            <h3 class="text-lg font-serif font-bold text-slate-900">Últimas Cargas</h3>
+                            <h3 class="text-lg font-sans font-bold text-slate-900">Últimas Cargas</h3>
                             <Link :href="route('photographer.photos.index')" 
                                 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1">
                                 Ver Todo

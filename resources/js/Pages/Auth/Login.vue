@@ -39,7 +39,7 @@ const submit = () => {
             <span class="text-xs font-bold tracking-[0.2em] text-white/60 uppercase mb-3 block">
                 Portal de Usuarios
             </span>
-            <h1 class="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
+            <h1 class="text-3xl md:text-4xl font-sans font-bold text-white mb-4">
                 Credenciales de Acceso
             </h1>
             <p class="text-white/60 text-sm font-light max-w-xs mx-auto leading-relaxed">

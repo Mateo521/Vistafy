@@ -69,7 +69,7 @@ const deleteEvent = () => {
                         <Link :href="route('photographer.events.index')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors flex items-center gap-1">
                             <ArrowLeftIcon class="w-3 h-3" /> Volver
                         </Link>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Editar Evento
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1">Modifique los detalles, visibilidad o elimine la galería.</p>

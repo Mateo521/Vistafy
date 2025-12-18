@@ -70,7 +70,7 @@ const mobileNavLinkClasses = (active) => {
                             <Link :href="dashboardRoute" class="group">
                                 <div class="flex flex-col">
                                     <span
-                                        class="font-serif font-bold text-xl tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">EMPRESA</span>
+                                        class="font-sans font-bold text-xl tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">EMPRESA</span>
                                     <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400">
                                         {{ user.role === 'admin' ? 'Administration' : (user.role === 'photographer' ?
                                             'Professional' : 'Client Area') }}
@@ -136,7 +136,7 @@ const mobileNavLinkClasses = (active) => {
                                         <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
                                             class="h-full w-full object-cover" />
                                         <div v-else
-                                            class="h-full w-full flex items-center justify-center bg-slate-900 text-white font-serif">
+                                            class="h-full w-full flex items-center justify-center bg-slate-900 text-white font-sans">
                                             {{ userInitials }}
                                         </div>
                                     </div>
@@ -235,7 +235,7 @@ const mobileNavLinkClasses = (active) => {
                     <div class="flex items-center px-4 mb-3">
                         <div class="shrink-0">
                             <div
-                                class="h-10 w-10 rounded-sm bg-slate-900 flex items-center justify-center text-white font-serif text-lg">
+                                class="h-10 w-10 rounded-sm bg-slate-900 flex items-center justify-center text-white font-sans text-lg">
                                 {{ userInitials }}
                             </div>
                         </div>

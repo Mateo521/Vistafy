@@ -76,7 +76,7 @@ const formatDate = (date) => {
                         <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                             Centro de Mensajes
                         </span>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Mensajes de Contacto
                         </h1>
                     </div>
@@ -93,7 +93,7 @@ const formatDate = (date) => {
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Total</p>
-                                <p class="text-3xl font-serif text-slate-900">{{ stats.total }}</p>
+                                <p class="text-3xl font-sans text-slate-900">{{ stats.total }}</p>
                             </div>
                             <EnvelopeIcon class="w-10 h-10 text-slate-300" />
                         </div>
@@ -103,7 +103,7 @@ const formatDate = (date) => {
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">No Leídos</p>
-                                <p class="text-3xl font-serif text-blue-900">{{ stats.unread }}</p>
+                                <p class="text-3xl font-sans text-blue-900">{{ stats.unread }}</p>
                             </div>
                             <EnvelopeIcon class="w-10 h-10 text-blue-300" />
                         </div>
@@ -113,7 +113,7 @@ const formatDate = (date) => {
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Leídos</p>
-                                <p class="text-3xl font-serif text-slate-900">{{ stats.read }}</p>
+                                <p class="text-3xl font-sans text-slate-900">{{ stats.read }}</p>
                             </div>
                             <EnvelopeOpenIcon class="w-10 h-10 text-slate-300" />
                         </div>

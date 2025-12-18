@@ -96,7 +96,7 @@ const submit = () => {
                     <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                         Configuración
                     </span>
-                    <h1 class="text-3xl font-serif font-bold text-slate-900">
+                    <h1 class="text-3xl font-sans font-bold text-slate-900">
                         Perfil Público
                     </h1>
                     <p class="text-sm text-slate-500 font-light mt-1">Gestione su identidad visual y datos de contacto.</p>

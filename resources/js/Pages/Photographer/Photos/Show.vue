@@ -69,7 +69,7 @@ const formatDate = (dateString) => {
                             class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors flex items-center gap-1">
                             <ArrowLeftIcon class="w-3 h-3" /> Volver al Archivo
                         </Link>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Detalle de Activo
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1 font-mono">ID: {{ photo.unique_id }}</p>
@@ -117,7 +117,7 @@ const formatDate = (dateString) => {
                                     <label
                                         class="block text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Precio
                                         Unitario</label>
-                                    <p class="text-2xl font-serif font-bold text-slate-900">${{ photo.price }}</p>
+                                    <p class="text-2xl font-sans font-bold text-slate-900">${{ photo.price }}</p>
                                 </div>
 
                                 <div>
@@ -251,7 +251,7 @@ const formatDate = (dateString) => {
                             </div>
                             <div class="p-6 flex items-center justify-between">
                                 <span class="text-sm text-slate-600">Descargas Totales</span>
-                                <span class="text-xl font-serif font-bold text-slate-900">{{ photo.downloads }}</span>
+                                <span class="text-xl font-sans font-bold text-slate-900">{{ photo.downloads }}</span>
                             </div>
                         </div>
 

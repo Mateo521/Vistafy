@@ -35,7 +35,7 @@ const submit = () => {
                     <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                         Estamos acá para ayudarte
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-serif font-bold text-slate-900">
+                    <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900">
                         Contacto
                     </h1>
                     <p class="text-lg text-slate-600 mt-4 font-light">
@@ -127,7 +127,7 @@ const submit = () => {
                     <!-- Formulario -->
                     <div class="lg:col-span-2">
                         <div class="bg-white border border-gray-200 p-8 md:p-12 rounded-sm shadow-sm">
-                            <h2 class="text-2xl font-serif font-bold text-slate-900 mb-8">
+                            <h2 class="text-2xl font-sans font-bold text-slate-900 mb-8">
                                 Envíanos un mensaje
                             </h2>
 
@@ -253,3 +253,5 @@ const submit = () => {
     animation: fadeInDown 0.3s ease-out;
 }
 </style>
+
+

@@ -139,7 +139,7 @@ const navigationItems = [
                     <Link href="/" class="group z-50 relative">
                         <div class="flex flex-col">
                             <span :class="[
-                                'text-2xl font-serif font-bold tracking-tight transition-colors duration-300',
+                                'text-2xl font-sans font-bold tracking-tight transition-colors duration-300',
                                 isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
                             ]">
                                 EMPRESA
@@ -424,7 +424,7 @@ const navigationItems = [
                 <div
                     class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
                     <div class="text-center md:text-left">
-                        <span class="text-xl font-serif font-bold tracking-wide block">EMPRESA</span>
+                        <span class="text-xl font-sans font-bold tracking-wide block">EMPRESA</span>
                         <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional
                             Lorem
                             ipsum...</span>

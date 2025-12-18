@@ -201,7 +201,7 @@ onMounted(async () => {
                     >
                         ← Volver al evento
                     </Link>
-                    <h1 class="text-4xl font-serif font-bold text-slate-900 mb-2">
+                    <h1 class="text-4xl font-sans font-bold text-slate-900 mb-2">
                         Búsqueda por Reconocimiento Facial
                     </h1>
                     <p class="text-slate-600">

@@ -421,7 +421,7 @@ const formatDate = (date) => {
                             class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors">
                             ← Volver al Archivo
                         </Link>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Carga de Material
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1">Gestión de activos digitales y asignación de
@@ -509,7 +509,7 @@ const formatDate = (date) => {
 
                             <div v-if="selectedFiles.length === 0" class="flex flex-col items-center">
                                 <CloudArrowUpIcon class="w-12 h-12 text-slate-300 mb-4 stroke-1" />
-                                <h3 class="text-lg font-serif font-medium text-slate-900 mb-2">
+                                <h3 class="text-lg font-sans font-medium text-slate-900 mb-2">
                                     Arrastre sus archivos acá
                                 </h3>
                                 <p class="text-sm text-slate-500 mb-6 font-light">

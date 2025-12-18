@@ -60,7 +60,7 @@ const formatDate = (date) => {
                             <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
                                 Mensaje de Contacto
                             </span>
-                            <h1 class="text-3xl font-serif font-bold text-slate-900">
+                            <h1 class="text-3xl font-sans font-bold text-slate-900">
                                 {{ message.subject }}
                             </h1>
                         </div>

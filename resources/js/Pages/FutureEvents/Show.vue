@@ -108,7 +108,7 @@ const handleImageError = (e) => {
 
                         <!-- Título -->
                         <h1
-                            class="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 max-w-7xl leading-tight">
+                            class="text-4xl md:text-6xl lg:text-7xl font-sans font-bold text-white mb-6 max-w-7xl leading-tight">
                             {{ event.title }}
                         </h1>
 
@@ -147,7 +147,7 @@ const handleImageError = (e) => {
 
                         <!-- CTA para Fotógrafos -->
                         <div v-if="isPhotographer" class="mt-12 p-8 bg-slate-900 text-white rounded-sm">
-                            <h3 class="text-2xl font-serif font-bold mb-4">
+                            <h3 class="text-2xl font-sans font-bold mb-4">
                                 ¿Querés ser parte de este evento?
                             </h3>
                             <p class="text-slate-300 mb-6">
@@ -163,7 +163,7 @@ const handleImageError = (e) => {
                         <!-- CTA para No Fotógrafos -->
                         <div v-else
                             class="mt-12 p-8 border-2 border-dashed border-gray-300 bg-gray-50 rounded-sm text-center">
-                            <h3 class="text-xl font-serif font-bold text-slate-900 mb-3">
+                            <h3 class="text-xl font-sans font-bold text-slate-900 mb-3">
                                 ¿Sos Fotógrafo?
                             </h3>
                             <p class="text-slate-600 mb-6">
@@ -263,7 +263,7 @@ const handleImageError = (e) => {
         <!--  CTA Final -->
         <section v-if="isPhotographer" class="bg-gradient-to-r from-slate-900 to-slate-800 py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-white mb-4">
+                <h2 class="text-3xl md:text-4xl font-sans font-bold text-white mb-4">
                     No te pierdas esta oportunidad
                 </h2>
                 <p class="text-slate-300 text-lg mb-8">

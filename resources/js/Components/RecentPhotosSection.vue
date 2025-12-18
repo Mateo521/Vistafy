@@ -71,7 +71,7 @@ const getImageUrl = (photo) => {
             
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                 <div class="max-w-2xl">
-                    <h2 class="text-3xl md:text-4xl font-serif font-bold text-slate-900 mb-3">
+                    <h2 class="text-3xl md:text-4xl font-sans font-bold text-slate-900 mb-3">
                         {{ title }}
                     </h2>
                     <p class="text-sm text-slate-500 font-light leading-relaxed">

@@ -52,7 +52,7 @@ const handleImageError = (e) => {
                             <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-2">
                                 Mi Biblioteca Digital
                             </span>
-                            <h1 class="text-4xl font-serif font-bold text-slate-900 mb-4">Mis Compras</h1>
+                            <h1 class="text-4xl font-sans font-bold text-slate-900 mb-4">Mis Compras</h1>
                             <p class="text-slate-600 max-w-2xl">
                                 Todas tus fotografías adquiridas están disponibles para descarga en cualquier momento.
                             </p>
@@ -61,11 +61,11 @@ const handleImageError = (e) => {
                         <!-- Stats -->
                         <div class="hidden md:flex gap-8 text-right">
                             <div>
-                                <div class="text-3xl font-serif font-bold text-slate-900">{{ totalPhotos }}</div>
+                                <div class="text-3xl font-sans font-bold text-slate-900">{{ totalPhotos }}</div>
                                 <div class="text-[10px] uppercase tracking-widest text-slate-400">Fotografías</div>
                             </div>
                             <div>
-                                <div class="text-3xl font-serif font-bold text-slate-900">${{ totalSpent }}</div>
+                                <div class="text-3xl font-sans font-bold text-slate-900">${{ totalSpent }}</div>
                                 <div class="text-[10px] uppercase tracking-widest text-slate-400">Invertido</div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@ const handleImageError = (e) => {
                     <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
                         <ShoppingBagIcon class="w-10 h-10 text-slate-300" />
                     </div>
-                    <h2 class="text-2xl font-serif font-bold text-slate-900 mb-3">
+                    <h2 class="text-2xl font-sans font-bold text-slate-900 mb-3">
                         Aún no has realizado compras
                     </h2>
                     <p class="text-slate-500 mb-8 max-w-md mx-auto">
@@ -125,7 +125,7 @@ const handleImageError = (e) => {
                                 <div class="flex items-center gap-4">
                                     <div class="text-right">
                                         <div class="text-xs text-slate-500 mb-1">Total</div>
-                                        <div class="text-2xl font-serif font-bold text-slate-900">
+                                        <div class="text-2xl font-sans font-bold text-slate-900">
                                             ${{ formatPrice(purchase.total_amount) }}
                                         </div>
                                     </div>

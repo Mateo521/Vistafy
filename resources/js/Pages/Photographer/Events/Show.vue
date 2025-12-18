@@ -713,7 +713,7 @@ const copyToClipboard = async (text) => {
                             <span>/</span>
                             <span class="text-white">{{ event.name }}</span>
                         </div>
-                        <h1 class="text-4xl md:text-5xl font-serif font-bold text-white mb-2">{{ event.name }}</h1>
+                        <h1 class="text-4xl md:text-5xl font-sans font-bold text-white mb-2">{{ event.name }}</h1>
                         <div class="flex items-center gap-6 text-sm text-white/80 font-light">
                             <span class="flex items-center gap-2" v-if="event.event_date">
                                 <CalendarIcon class="w-4 h-4" /> {{ formatDate(event.event_date) }}
@@ -752,17 +752,17 @@ const copyToClipboard = async (text) => {
                             <div class="space-y-6">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-500">Total Archivos</span>
-                                    <span class="text-xl font-serif font-bold text-slate-900">{{ stats.total_photos
+                                    <span class="text-xl font-sans font-bold text-slate-900">{{ stats.total_photos
                                         }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-500">Públicas</span>
-                                    <span class="text-xl font-serif font-bold text-emerald-600">{{ stats.active_photos
+                                    <span class="text-xl font-sans font-bold text-emerald-600">{{ stats.active_photos
                                         }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-slate-500">Descargas</span>
-                                    <span class="text-xl font-serif font-bold text-slate-900">{{ stats.total_downloads
+                                    <span class="text-xl font-sans font-bold text-slate-900">{{ stats.total_downloads
                                         }}</span>
                                 </div>
                             </div>
@@ -831,7 +831,7 @@ const copyToClipboard = async (text) => {
                             <div class="space-y-4">
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-serif border-2 border-white shadow-sm ring-1 ring-gray-100">
+                                        class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-sans border-2 border-white shadow-sm ring-1 ring-gray-100">
                                         {{ event.photographer?.business_name?.charAt(0) || 'YO' }}
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -849,7 +849,7 @@ const copyToClipboard = async (text) => {
                                     <img v-if="collab.profile_photo_url" :src="collab.profile_photo_url"
                                         class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-gray-100">
                                     <div v-else
-                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs font-serif border-2 border-white shadow-sm ring-1 ring-gray-100">
+                                        class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs font-sans border-2 border-white shadow-sm ring-1 ring-gray-100">
                                         {{ collab.business_name.charAt(0) }}
                                     </div>
 
@@ -886,7 +886,7 @@ const copyToClipboard = async (text) => {
                         <div v-if="!photos.data || photos.data.length === 0"
                             class="text-center py-24 border border-dashed border-gray-300 rounded-sm bg-white">
                             <PhotoIcon class="h-12 w-12 mx-auto text-gray-300 mb-4 stroke-1" />
-                            <h4 class="text-lg font-serif font-medium text-slate-900 mb-1">Sin material</h4>
+                            <h4 class="text-lg font-sans font-medium text-slate-900 mb-1">Sin material</h4>
                             <p class="text-xs text-slate-500 font-light mb-6">Esta galería está vacía.</p>
                             <button @click="showUploadModal = true"
                                 class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-0.5 hover:text-slate-600 hover:border-slate-600 transition">
@@ -988,7 +988,7 @@ const copyToClipboard = async (text) => {
                 <div class="border-b border-gray-200 bg-white">
                     <div class="p-6 pb-0">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-lg font-serif font-bold text-slate-900">Agregar Fotos</h3>
+                            <h3 class="text-lg font-sans font-bold text-slate-900">Agregar Fotos</h3>
                             <button @click="closeModal" class="text-slate-400 hover:text-slate-900">
                                 <XMarkIcon class="w-6 h-6" />
                             </button>

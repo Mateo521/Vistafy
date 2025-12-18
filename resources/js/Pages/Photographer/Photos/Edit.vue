@@ -41,7 +41,7 @@ const formatDate = (dateString) => {
                         <Link :href="route('photographer.photos.show', photo.id)" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors flex items-center gap-1">
                             <ArrowLeftIcon class="w-3 h-3" /> Volver al Detalle
                         </Link>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             Editar Propiedades
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1 font-mono">ID: {{ photo.unique_id }}</p>
@@ -79,7 +79,7 @@ const formatDate = (dateString) => {
                         </div>
 
                         <div class="p-8 lg:p-12 flex flex-col justify-center">
-                            <h3 class="text-lg font-serif font-bold text-slate-900 mb-6">Configuración de Venta</h3>
+                            <h3 class="text-lg font-sans font-bold text-slate-900 mb-6">Configuración de Venta</h3>
                             
                             <form @submit.prevent="submit" class="space-y-6">
                                 

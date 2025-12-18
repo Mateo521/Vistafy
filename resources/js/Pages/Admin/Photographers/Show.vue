@@ -81,7 +81,7 @@ const formatDate = (date) => {
                         <Link :href="route('admin.photographers.index')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors flex items-center gap-1">
                             <ArrowLeftIcon class="w-3 h-3" /> Volver al Directorio
                         </Link>
-                        <h1 class="text-3xl font-serif font-bold text-slate-900">
+                        <h1 class="text-3xl font-sans font-bold text-slate-900">
                             {{ photographer.business_name }}
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1 flex items-center gap-2">
@@ -179,7 +179,7 @@ const formatDate = (date) => {
                                         <span class="text-xs text-slate-500 font-bold uppercase tracking-wide">Eventos</span>
                                         <CalendarIcon class="w-4 h-4 text-slate-400" />
                                     </div>
-                                    <p class="text-3xl font-serif font-bold text-slate-900">{{ stats.events_count || 0 }}</p>
+                                    <p class="text-3xl font-sans font-bold text-slate-900">{{ stats.events_count || 0 }}</p>
                                 </div>
 
                                 <div>
@@ -187,7 +187,7 @@ const formatDate = (date) => {
                                         <span class="text-xs text-slate-500 font-bold uppercase tracking-wide">Fotografías</span>
                                         <PhotoIcon class="w-4 h-4 text-slate-400" />
                                     </div>
-                                    <p class="text-3xl font-serif font-bold text-slate-900">{{ stats.photos_count || 0 }}</p>
+                                    <p class="text-3xl font-sans font-bold text-slate-900">{{ stats.photos_count || 0 }}</p>
                                 </div>
 
                                 <div class="pt-4 border-t border-gray-100">
@@ -195,7 +195,7 @@ const formatDate = (date) => {
                                         <span class="text-xs text-slate-500 font-bold uppercase tracking-wide">Descargas</span>
                                         <ArrowDownTrayIcon class="w-4 h-4 text-slate-400" />
                                     </div>
-                                    <p class="text-3xl font-serif font-bold text-slate-900">{{ stats.downloads_count || 0 }}</p>
+                                    <p class="text-3xl font-sans font-bold text-slate-900">{{ stats.downloads_count || 0 }}</p>
                                 </div>
                             </div>
                         </div>
@@ -209,7 +209,7 @@ const formatDate = (date) => {
             <div v-if="showSuspendModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm" @click.self="showSuspendModal = false">
                 <div class="bg-white rounded-sm shadow-xl max-w-md w-full overflow-hidden">
                     <div class="p-6">
-                        <h3 class="text-lg font-serif font-bold text-slate-900 mb-2">Confirmar Suspensión</h3>
+                        <h3 class="text-lg font-sans font-bold text-slate-900 mb-2">Confirmar Suspensión</h3>
                         <p class="text-sm text-slate-500 font-light mb-6">
                             Se revocará el acceso a <strong>{{ photographer.business_name }}</strong>. Esta acción es reversible.
                         </p>
@@ -228,7 +228,7 @@ const formatDate = (date) => {
             <div v-if="showActivateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm" @click.self="showActivateModal = false">
                 <div class="bg-white rounded-sm shadow-xl max-w-md w-full overflow-hidden">
                     <div class="p-6">
-                        <h3 class="text-lg font-serif font-bold text-slate-900 mb-2">Reactivar Cuenta</h3>
+                        <h3 class="text-lg font-sans font-bold text-slate-900 mb-2">Reactivar Cuenta</h3>
                         <p class="text-sm text-slate-500 font-light mb-6">
                             El fotógrafo <strong>{{ photographer.business_name }}</strong> recuperará el acceso inmediato a su panel.
                         </p>
@@ -243,7 +243,7 @@ const formatDate = (date) => {
             <div v-if="showRevertModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm" @click.self="showRevertModal = false">
                 <div class="bg-white rounded-sm shadow-xl max-w-md w-full overflow-hidden">
                     <div class="p-6">
-                        <h3 class="text-lg font-serif font-bold text-slate-900 mb-2">Revertir Rechazo</h3>
+                        <h3 class="text-lg font-sans font-bold text-slate-900 mb-2">Revertir Rechazo</h3>
                         <p class="text-sm text-slate-500 font-light mb-6">
                             El estado volverá a <strong>Pendiente</strong> para una nueva revisión.
                         </p>

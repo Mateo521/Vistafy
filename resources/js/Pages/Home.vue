@@ -116,7 +116,7 @@ const auth = page.props.auth;
                     Fotografía Profesional
                 </span>
                 <h1
-                    class="text-4xl md:text-6xl lg:text-7xl font-serif font-medium text-white mb-6 drop-shadow-lg max-w-7xl leading-tight animate-fade-in">
+                    class="text-4xl md:text-6xl lg:text-7xl font-sans font-medium text-white mb-6 drop-shadow-lg max-w-7xl leading-tight animate-fade-in">
                     Preservando momentos <br /> <span class="italic text-gray-300">irrepetibles.</span>
                 </h1>
                 <p class="text-lg text-gray-300 mb-10 max-w-2xl font-light leading-relaxed animate-fade-in-delayed">
@@ -138,7 +138,7 @@ const auth = page.props.auth;
                     <div
                         class="p-8 md:p-10 border-b border-gray-100 flex flex-col md:flex-row justify-between items-end gap-4">
                         <div>
-                            <h2 class="text-3xl font-serif font-bold text-slate-900">Eventos Recientes</h2>
+                            <h2 class="text-3xl font-sans font-bold text-slate-900">Eventos Recientes</h2>
                             <p class="text-slate-500 mt-2 font-light">Deslice para explorar las últimas 15 coberturas.
                             </p>
                         </div>
@@ -195,7 +195,7 @@ const auth = page.props.auth;
 
                                             <div class="p-6 flex flex-col flex-1">
                                                 <h3
-                                                    class="text-xl font-serif font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-blue-900 transition-colors">
+                                                    class="text-xl font-sans font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-blue-900 transition-colors">
                                                     {{ event.name }}
                                                 </h3>
 
@@ -245,7 +245,7 @@ const auth = page.props.auth;
                         </div>
 
                         <div v-else class="text-center py-20 bg-white border border-dashed border-gray-300 rounded-sm">
-                            <p class="text-slate-400 font-serif text-lg">No hay eventos recientes disponibles.</p>
+                            <p class="text-slate-400 font-sans text-lg">No hay eventos recientes disponibles.</p>
                         </div>
                     </div>
 
@@ -253,20 +253,20 @@ const auth = page.props.auth;
                         <div
                             class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200">
                             <div class="pt-4 md:pt-0">
-                                <span class="block text-4xl font-serif font-bold text-slate-900">{{
+                                <span class="block text-4xl font-sans font-bold text-slate-900">{{
                                     Math.floor(animatedEvents) }}</span>
                                 <span
                                     class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-2 block">Eventos
                                     Cubiertos</span>
                             </div>
                             <div class="pt-4 md:pt-0">
-                                <span class="block text-4xl font-serif font-bold text-slate-900">{{
+                                <span class="block text-4xl font-sans font-bold text-slate-900">{{
                                     Math.floor(animatedPhotos) }}</span>
                                 <span
                                     class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-2 block">Fotografías</span>
                             </div>
                             <div class="pt-4 md:pt-0">
-                                <span class="block text-4xl font-serif font-bold text-slate-900">{{
+                                <span class="block text-4xl font-sans font-bold text-slate-900">{{
                                     Math.floor(animatedPhotographers) }}</span>
                                 <span
                                     class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-2 block">Profesionales</span>

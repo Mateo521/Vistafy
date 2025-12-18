@@ -28,11 +28,11 @@ const title = titles[props.status] || 'Error';
                 <div class="mb-8">
                     <ExclamationTriangleIcon class="w-24 h-24 text-red-500 mx-auto mb-6" />
                     
-                    <h1 class="text-6xl font-serif font-bold text-slate-900 mb-4">
+                    <h1 class="text-6xl font-sans font-bold text-slate-900 mb-4">
                         {{ status }}
                     </h1>
                     
-                    <h2 class="text-3xl font-serif font-bold text-slate-900 mb-4">
+                    <h2 class="text-3xl font-sans font-bold text-slate-900 mb-4">
                         {{ title }}
                     </h2>
                     

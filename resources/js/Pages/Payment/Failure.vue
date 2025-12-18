@@ -66,7 +66,7 @@ const formatDate = (date) => {
                             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-700/50 border border-red-400/30 mb-4 shadow-lg backdrop-blur-sm">
                                 <ExclamationTriangleIcon class="h-8 w-8 text-white" />
                             </div>
-                            <h2 class="text-3xl font-serif font-bold text-white mb-2">Transacción Fallida</h2>
+                            <h2 class="text-3xl font-sans font-bold text-white mb-2">Transacción Fallida</h2>
                             <p class="text-red-100 text-sm font-light tracking-wide">El proceso de pago no pudo completarse.</p>
                         </div>
                     </div>

@@ -22,7 +22,7 @@ import { Link } from '@inertiajs/vue3';
                         <ApplicationLogo class="h-8 w-8 text-white fill-current" />
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xl font-serif font-bold text-white tracking-widest">EMPRESA</span>
+                        <span class="text-xl font-sans font-bold text-white tracking-widest">EMPRESA</span>
                         <span class="text-[0.6rem] uppercase tracking-[0.4em] text-white/40 group-hover:text-white/60 transition-colors">Lorem ipsum...</span>
                     </div>
                 </Link>

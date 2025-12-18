@@ -22,7 +22,7 @@ import {
                     <p class="text-xs font-bold tracking-[0.25em] text-zinc-400 uppercase mb-8">
                         La nueva era de la fotografía
                     </p>
-                    <h1 class="text-5xl md:text-7xl font-serif font-medium mb-8 leading-[1.1] text-black">
+                    <h1 class="text-5xl md:text-7xl font-sans font-medium mb-8 leading-[1.1] text-black">
                         No busques tu foto.<br>
                         <span class="italic text-zinc-500">Lorem ipsum dolor sit amet consectetur, adipisicing elit..</span>
                     </h1>
@@ -37,7 +37,7 @@ import {
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 class="text-3xl md:text-4xl font-serif text-black mb-6 leading-tight">
+                        <h2 class="text-3xl md:text-4xl font-sans text-black mb-6 leading-tight">
                             El fin de buscar una aguja en un pajar.
                         </h2>
                         <div class="h-0.5 w-16 bg-black mb-8"></div>
@@ -56,7 +56,7 @@ import {
                     <div class="relative">
                         <div class="aspect-square bg-white border border-zinc-200 p-8 flex flex-col justify-center items-center text-center shadow-sm">
                             <FaceSmileIcon class="w-24 h-24 text-zinc-200 stroke-1 mb-6" />
-                            <p class="font-serif text-2xl text-black mb-2">Reconocimiento Facial</p>
+                            <p class="font-sans text-2xl text-black mb-2">Reconocimiento Facial</p>
                             <p class="text-zinc-400 text-sm tracking-widest uppercase">Tecnología Biométrica</p>
                         </div>
                         <div class="absolute -bottom-6 -right-6 w-full h-full border border-zinc-300 -z-10"></div>
@@ -68,7 +68,7 @@ import {
         <section class="py-24 bg-white border-t border-zinc-100">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="text-center mb-20">
-                    <h2 class="text-3xl font-serif text-black mb-4">Un ecosistema, dos protagonistas</h2>
+                    <h2 class="text-3xl font-sans text-black mb-4">Un ecosistema, dos protagonistas</h2>
                     <p class="text-zinc-500 font-light">Diseñado para conectar creadores y protagonistas.</p>
                 </div>
 
@@ -79,11 +79,11 @@ import {
                             <div class="p-3 bg-zinc-50 rounded-full border border-zinc-100">
                                 <UserGroupIcon class="w-6 h-6 text-black" />
                             </div>
-                            <h3 class="text-2xl font-serif text-black">Para Asistentes</h3>
+                            <h3 class="text-2xl font-sans text-black">Para Asistentes</h3>
                         </div>
                         <ul class="space-y-12">
                             <li class="flex gap-6">
-                                <span class="text-4xl font-serif text-zinc-200">01</span>
+                                <span class="text-4xl font-sans text-zinc-200">01</span>
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Búsqueda Instantánea</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
@@ -92,7 +92,7 @@ import {
                                 </div>
                             </li>
                             <li class="flex gap-6">
-                                <span class="text-4xl font-serif text-zinc-200">02</span>
+                                <span class="text-4xl font-sans text-zinc-200">02</span>
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Compra Segura</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
@@ -101,7 +101,7 @@ import {
                                 </div>
                             </li>
                             <li class="flex gap-6">
-                                <span class="text-4xl font-serif text-zinc-200">03</span>
+                                <span class="text-4xl font-sans text-zinc-200">03</span>
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Privacidad Total</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
@@ -117,11 +117,11 @@ import {
                             <div class="p-3 bg-zinc-50 rounded-full border border-zinc-100">
                                 <CameraIcon class="w-6 h-6 text-black" />
                             </div>
-                            <h3 class="text-2xl font-serif text-black">Para Fotógrafos</h3>
+                            <h3 class="text-2xl font-sans text-black">Para Fotógrafos</h3>
                         </div>
                         <ul class="space-y-12">
                             <li class="flex gap-6">
-                                <span class="text-4xl font-serif text-zinc-200">01</span>
+                                <span class="text-4xl font-sans text-zinc-200">01</span>
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Monetización Directa</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
@@ -130,7 +130,7 @@ import {
                                 </div>
                             </li>
                             <li class="flex gap-6">
-                                <span class="text-4xl font-serif text-zinc-200">02</span>
+                                <span class="text-4xl font-sans text-zinc-200">02</span>
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Protección de Autoría</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
@@ -139,7 +139,7 @@ import {
                                 </div>
                             </li>
                             <li class="flex gap-6">
-                                <span class="text-4xl font-serif text-zinc-200">03</span>
+                                <span class="text-4xl font-sans text-zinc-200">03</span>
                                 <div>
                                     <h4 class="text-lg font-bold text-black mb-2">Oportunidades Futuras</h4>
                                     <p class="text-zinc-600 font-light text-sm leading-relaxed">
@@ -159,21 +159,21 @@ import {
                 <div class="grid md:grid-cols-3 gap-12 text-center md:text-left">
                     <div class="space-y-4">
                         <CursorArrowRaysIcon class="w-10 h-10 text-white mx-auto md:mx-0 stroke-1" />
-                        <h3 class="text-xl font-serif">Simplicidad Radical</h3>
+                        <h3 class="text-xl font-sans">Simplicidad Radical</h3>
                         <p class="text-zinc-400 font-light leading-relaxed">
                             No necesitas registrarte para buscar. Diseñamos un flujo sin fricción: sube tu selfie, encuentra tus fotos, compra y descarga.
                         </p>
                     </div>
                     <div class="space-y-4">
                         <ShieldCheckIcon class="w-10 h-10 text-white mx-auto md:mx-0 stroke-1" />
-                        <h3 class="text-xl font-serif">Seguridad Bancaria</h3>
+                        <h3 class="text-xl font-sans">Seguridad Bancaria</h3>
                         <p class="text-zinc-400 font-light leading-relaxed">
                             Integración con Mercado Pago y sistemas de tokens efímeros. Tus datos financieros y tus archivos personales nunca están en riesgo.
                         </p>
                     </div>
                     <div class="space-y-4">
                         <MapPinIcon class="w-10 h-10 text-white mx-auto md:mx-0 stroke-1" />
-                        <h3 class="text-xl font-serif">Siempre Conectados</h3>
+                        <h3 class="text-xl font-sans">Siempre Conectados</h3>
                         <p class="text-zinc-400 font-light leading-relaxed">
                             Desde una maratón local hasta un festival internacional. Geolocalizamos eventos para que sepas qué fotógrafos cubrieron tu zona.
                         </p>
@@ -185,12 +185,12 @@ import {
         <section class="py-32 bg-zinc-50">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl font-serif text-black mb-6">Empieza tu experiencia</h2>
+                    <h2 class="text-4xl font-sans text-black mb-6">Empieza tu experiencia</h2>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     <div class="bg-white p-10 border border-zinc-200 hover:border-zinc-400 transition-all duration-300 group">
-                        <h3 class="text-2xl font-serif text-black mb-4">¿Buscas tus fotos?</h3>
+                        <h3 class="text-2xl font-sans text-black mb-4">¿Buscas tus fotos?</h3>
                         <p class="text-zinc-600 font-light mb-8 h-12">
                             Encontrá ese momento único en segundos.
                         </p>
@@ -204,7 +204,7 @@ import {
                     </div>
 
                     <div class="bg-black p-10 text-white group">
-                        <h3 class="text-2xl font-serif mb-4">Sos fotógrafo?</h3>
+                        <h3 class="text-2xl font-sans mb-4">Sos fotógrafo?</h3>
                         <p class="text-zinc-400 font-light mb-8 h-12">
                             Únete a la plataforma y monetiza tu talento.
                         </p>

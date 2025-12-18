@@ -13,11 +13,11 @@ import { HomeIcon, MagnifyingGlassIcon, ArrowLeftIcon } from '@heroicons/vue/24/
                 
                 <!-- Error 404 -->
                 <div class="mb-8">
-                    <h1 class="text-9xl font-serif font-bold text-slate-900 mb-4">
+                    <h1 class="text-9xl font-sans font-bold text-slate-900 mb-4">
                         404
                     </h1>
                     <div class="w-24 h-1 bg-slate-900 mx-auto mb-6"></div>
-                    <h2 class="text-3xl font-serif font-bold text-slate-900 mb-4">
+                    <h2 class="text-3xl font-sans font-bold text-slate-900 mb-4">
                         Página no encontrada
                     </h2>
                     <p class="text-lg text-slate-600 mb-8">
