@@ -136,54 +136,60 @@ const handleImageError = (e) => {
 
                     <!-- Columna Principal: Descripción -->
                     <div class="lg:col-span-2">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
-                            Sobre el Evento
-                        </h2>
-                        <div class="prose prose-lg max-w-none">
-                            <p class="text-slate-700 leading-relaxed text-lg">
-                                {{ event.description }}
-                            </p>
-                        </div>
+    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+        Sobre el Evento
+    </h2>
+    <div class="prose prose-lg max-w-none mb-12">
+        <p class="text-slate-700 leading-relaxed text-lg">
+            {{ event.description }}
+        </p>
+    </div>
 
-                        <!-- CTA para Fotógrafos -->
-                        <div v-if="isPhotographer" class="mt-12 p-8 bg-slate-900 text-white rounded-sm">
-                            <h3 class="text-2xl font-sans font-bold mb-4">
-                                ¿Querés ser parte de este evento?
-                            </h3>
-                            <p class="text-slate-300 mb-6">
-                                Postulate para cubrir este evento y amplía tu portafolio profesional.
-                            </p>
-                            <button
-                                class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-lg group">
-                                Postularme al Evento
-                                <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </div>
+    <div class="mb-8 p-6 bg-blue-50 border border-blue-100 rounded-sm flex items-start gap-4">
+        <div class="text-blue-500 mt-1">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+        </div>
+        <div>
+            <h3 class="text-lg font-bold text-blue-900 mb-1">
+                ¡Próximamente las fotos oficiales!
+            </h3>
+            <p class="text-blue-800 text-sm">
+                Asistí al evento, disfrutá el momento y sonreí. Una vez terminado, vas a poder buscar y adquirir tus mejores fotos directamente en esta página.
+            </p>
+        </div>
+    </div>
 
-                        <!-- CTA para No Fotógrafos -->
-                        <div v-else
-                            class="mt-12 p-8 border-2 border-dashed border-gray-300 bg-gray-50 rounded-sm text-center">
-                            <h3 class="text-xl font-sans font-bold text-slate-900 mb-3">
-                                ¿Sos Fotógrafo?
-                            </h3>
-                            <p class="text-slate-600 mb-6">
-                                Registrate para poder postularte a eventos como este
-                            </p>
-                            <div class="flex gap-4 justify-center flex-wrap">
-                                <Link v-if="!isAuthenticated" :href="route('photographer.register')"
-                                    class="px-6 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition rounded-sm">
-                                    Registrarme
-                                </Link>
-                                <Link v-if="!isAuthenticated" :href="route('login')"
-                                    class="px-6 py-3 border-2 border-slate-900 text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-900 hover:text-white transition rounded-sm">
-                                    Iniciar Sesión
-                                </Link>
-                                <div v-else class="text-slate-600 text-sm">
-                                    Contactá al administrador para cambiar tu rol a fotógrafo
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="p-8 bg-slate-900 text-white rounded-sm">
+        <h3 class="text-2xl font-sans font-bold mb-4">
+            ¿Sos fotógrafo? Cubrí este evento
+        </h3>
+        <p class="text-slate-300 mb-6">
+            Buscamos talentos para capturar los mejores momentos. Postulate, amplía tu portafolio y generá ingresos vendiendo tus fotos a los asistentes a través de nuestra plataforma.
+        </p>
+        
+        <div class="flex flex-wrap gap-4">
+            <button v-if="isPhotographer"
+                class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-lg group">
+                Postularme al Evento
+                <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+
+            <template v-else>
+                <Link :href="route('photographer.register')"
+                    class="px-6 py-3 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-lg">
+                    Crear cuenta de Fotógrafo
+                </Link>
+                <Link :href="route('login')"
+                    class="px-6 py-3 border-2 border-slate-700 text-slate-300 font-bold text-sm uppercase tracking-widest hover:border-white hover:text-white transition rounded-sm">
+                    Ya tengo cuenta
+                </Link>
+            </template>
+        </div>
+    </div>
+</div>
 
                     <!-- Sidebar: Info del Organizador -->
                     <div class="lg:col-span-1">

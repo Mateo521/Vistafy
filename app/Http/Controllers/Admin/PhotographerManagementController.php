@@ -52,18 +52,16 @@ class PhotographerManagementController extends Controller
         ]);
     }
 
-    /**
-     *  NUEVO: Mostrar detalles de un fotógrafo
-     */
-    public function show(Photographer $photographer)
+   
+   public function show(Photographer $photographer)
     {
         $photographer->load(['user', 'events', 'photos']);
 
-        // Estadísticas del fotógrafo
+       
         $stats = [
-            'events' => $photographer->events()->count(),
-            'photos' => $photographer->photos()->count(),
-            'downloads' => $photographer->photos()->sum('downloads') ?? 0,
+            'events_count' => $photographer->events()->count(),
+            'photos_count' => $photographer->photos()->count(),
+            'downloads_count' => $photographer->photos()->sum('downloads') ?? 0,
         ];
 
         return Inertia::render('Admin/Photographers/Show', [

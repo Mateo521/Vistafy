@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->seedImageService = app(SeedImageService::class);
-        // 1. Crear Usuario ADMIN
+       
         User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@empresa.com',
@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
-        // 2. Crear TU Usuario (Fotógrafo Principal)
+      
         $myUser = User::factory()->create([
             'name' => 'Yo Fotógrafo',
             'email' => 'foto@empresa.com',
@@ -59,9 +59,7 @@ class DatabaseSeeder extends Seeder
             });
 
 
-        // ----------------------------------------------------------------
-// ESCENARIO A: MIS EVENTOS (Soy dueño, otros colaboran)
-// ----------------------------------------------------------------
+    
 
         echo "\n ESCENARIO A: Creando mis eventos con fotos...\n";
 
@@ -73,8 +71,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($myEvents as $eventIndex => $event) {
             echo "  Evento {$eventIndex}/{$myEvents->count()}: {$event->name}";
-
-            // Mis fotos (10 fotos con marca de agua)
+ 
             for ($i = 0; $i < 10; $i++) {
                 try {
                     $photoData = $this->seedImageService->processSeedPhoto($myPhotographer->id);
@@ -101,13 +98,13 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
-            // Colaboradores
+         
             $collaborators = $otherPhotographers->random(2);
 
             foreach ($collaborators as $collab) {
                 $event->collaborators()->attach($collab->id);
 
-                // Fotos de colaboradores (5 fotos cada uno)
+                
                 for ($i = 0; $i < 5; $i++) {
                     try {
                         $photoData = $this->seedImageService->processSeedPhoto($collab->id);
@@ -137,10 +134,7 @@ class DatabaseSeeder extends Seeder
             echo " \n";
         }
 
-        // ----------------------------------------------------------------
-// ESCENARIO B: COLABORACIONES (Soy invitado, otros son dueños)
-// ----------------------------------------------------------------
-
+   
         echo "\n ESCENARIO B: Eventos donde soy colaborador...\n";
 
         $hosts = $otherPhotographers->random(3);
@@ -156,7 +150,7 @@ class DatabaseSeeder extends Seeder
 
             $event->collaborators()->attach($myPhotographer->id);
 
-            // Mis fotos (8 fotos)
+    
             for ($i = 0; $i < 8; $i++) {
                 try {
                     $photoData = $this->seedImageService->processSeedPhoto($myPhotographer->id);
@@ -182,7 +176,7 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
-            // Fotos del anfitrión (8 fotos)
+      
             for ($i = 0; $i < 8; $i++) {
                 try {
                     $photoData = $this->seedImageService->processSeedPhoto($host->id);
@@ -211,10 +205,7 @@ class DatabaseSeeder extends Seeder
             echo " \n";
         }
 
-        // ----------------------------------------------------------------
-// ESCENARIO C: RELLENO (Eventos random)
-// ----------------------------------------------------------------
-
+ 
         echo "\n ESCENARIO C: Eventos de relleno (otros fotógrafos)...\n";
 
         $total = $otherPhotographers->count();

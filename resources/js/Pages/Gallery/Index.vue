@@ -526,7 +526,7 @@ const handleImageError = (e) => {
 
                                         <div
                                             class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <span class="text-[10px] text-zinc-400 uppercase">Click to upload</span>
+                                            <span class="text-[10px] text-zinc-400 uppercase">Clic para subir</span>
                                         </div>
 
                                         <FaceSmileIcon

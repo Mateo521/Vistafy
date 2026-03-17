@@ -34,14 +34,20 @@ return new class extends Migration {
             $table->boolean('is_verified')->default(false);
             $table->enum('status', ['pending', 'approved', 'rejected', 'suspended'])->default('pending');
 
-            // Campos de administración
-            $table->text('rejection_reason')->nullable();
-            $table->text('suspension_reason')->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->foreignId('approved_by')->nullable()->constrained('users');
+        // Campos de administración
+$table->text('rejection_reason')->nullable();
+$table->text('suspension_reason')->nullable();
 
-            $table->softDeletes();
-            $table->timestamps();
+// Aprobación
+$table->timestamp('approved_at')->nullable();
+$table->foreignId('approved_by')->nullable()->constrained('users');
+
+ 
+$table->timestamp('suspended_at')->nullable();
+$table->foreignId('suspended_by')->nullable()->constrained('users');
+
+$table->softDeletes();
+$table->timestamps();
         });
     }
 
