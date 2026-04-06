@@ -148,7 +148,7 @@ const formatDate = (date) => {
                             <HomeIcon class="w-4 h-4" /> Volver al Inicio
                         </Link>
                         
-                        <a href="mailto:soporte@empresa.com" class="text-xs text-slate-400 hover:text-slate-600 transition">
+                        <a href="mailto:soporte@f33.com" class="text-xs text-slate-400 hover:text-slate-600 transition">
                             ¿Problemas con la descarga? Contactar Soporte
                         </a>
                     </div>

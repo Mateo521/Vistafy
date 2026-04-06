@@ -21,8 +21,8 @@ defineProps({
     </svg>
 
     <!-- Logo PNG (para diseños complejos) -->
-    <img v-else-if="variant === 'dark'" :src="'/images/logo-dark.png'" alt="Empresa Logo" :class="class" />
+    <img v-else-if="variant === 'dark'" :src="'/images/logo-dark.png'" alt="f33 Logo" :class="class" />
 
     <!-- Logo por defecto -->
-    <img v-else :src="'/images/logo.png'" alt="Empresa Logo" :class="class" />
+    <img v-else :src="'/images/logo.png'" alt="f33 Logo" :class="class" />
 </template>

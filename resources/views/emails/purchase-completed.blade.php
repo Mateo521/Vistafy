@@ -125,8 +125,8 @@
                                     <strong> ¿Necesitas ayuda?</strong><br>
                                     Puedes descargar tus fotos ilimitadamente desde tu cuenta. Si tienes alguna
                                     pregunta, contáctanos en
-                                    <a href="mailto:soporte@empresa.com"
-                                        style="color: #92400e; text-decoration: underline;">soporte@empresa.com</a>
+                                    <a href="mailto:soporte@f33.com"
+                                        style="color: #92400e; text-decoration: underline;">soporte@f33.com</a>
                                 </p>
                             </div>
                         </td>
@@ -137,10 +137,10 @@
                         <td
                             style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="color: #94a3b8; font-size: 12px; margin: 0 0 10px 0; line-height: 1.5;">
-                                Este email fue enviado porque completaste una compra en EMPRESA Lorem ipsum....
+                                Este email fue enviado porque completaste una compra en f33 Lorem ipsum....
                             </p>
                             <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
-                                © {{ date('Y') }} EMPRESA Lorem ipsum.... Todos los derechos reservados.
+                                © {{ date('Y') }} f33 Lorem ipsum.... Todos los derechos reservados.
                             </p>
                         </td>
                     </tr>

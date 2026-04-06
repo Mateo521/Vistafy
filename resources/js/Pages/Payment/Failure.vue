@@ -123,7 +123,7 @@ const formatDate = (date) => {
                         <div class="mt-8 text-center border-t border-gray-100 pt-6">
                             <p class="text-xs text-slate-400">
                                 Si el problema persiste, contacte a su banco o 
-                                <a href="mailto:soporte@empresa.com" class="text-slate-600 underline hover:text-slate-900">escríbanos a soporte</a>.
+                                <a href="mailto:soporte@f33.com" class="text-slate-600 underline hover:text-slate-900">escríbanos a soporte</a>.
                             </p>
                         </div>
 

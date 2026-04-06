@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
        
         User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'admin@empresa.com',
+            'email' => 'admin@f33.com',
             'password' => bcrypt('password'),
             'role' => 'admin',
             'is_admin' => true,
@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
       
         $myUser = User::factory()->create([
             'name' => 'Yo Fotógrafo',
-            'email' => 'foto@empresa.com',
+            'email' => 'foto@f33.com',
             'password' => bcrypt('password'),
             'role' => 'photographer',
         ]);
@@ -897,8 +897,8 @@ class DatabaseSeeder extends Seeder
         echo "   Base de datos poblada con éxito\n";
         echo "=============================================\n";
         echo " CREDENCIALES:\n";
-        echo "   Admin:      admin@empresa.com / password\n";
-        echo "   Fotógrafo:  foto@empresa.com / password\n";
+        echo "   Admin:      admin@f33.com / password\n";
+        echo "   Fotógrafo:  foto@f33.com / password\n";
         echo "---------------------------------------------\n";
         echo " ESTADÍSTICAS:\n";
         echo "   • Fotógrafos: {$totalPhotographers}\n";

@@ -180,7 +180,7 @@ class PaymentSimulationController extends Controller
                         'password' => $temporaryPassword,
                     ], function ($message) use ($email) {
                         $message->to($email)
-                                ->subject('Tu cuenta ha sido creada - EMPRESA Lorem ipsum...');
+                                ->subject('Tu cuenta ha sido creada - f33 Lorem ipsum...');
                     });
 
                     Log::info(' Cuenta creada automáticamente', [

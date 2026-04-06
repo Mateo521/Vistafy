@@ -22,7 +22,7 @@ import { Link } from '@inertiajs/vue3';
                         <ApplicationLogo class="h-8 w-8 text-white fill-current" />
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xl font-sans font-bold text-white tracking-widest">EMPRESA</span>
+                        <span class="text-xl font-sans font-bold text-white tracking-widest">f33</span>
                         <span class="text-[0.6rem] uppercase tracking-[0.4em] text-white/40 group-hover:text-white/60 transition-colors">Lorem ipsum...</span>
                     </div>
                 </Link>
@@ -42,7 +42,7 @@ import { Link } from '@inertiajs/vue3';
             
             <div class="mt-12 text-center">
                 <p class="text-[10px] text-white/20 uppercase tracking-widest">
-                    &copy; {{ new Date().getFullYear() }} Empresa S.A.
+                    &copy; {{ new Date().getFullYear() }} f33 S.A.
                 </p>
             </div>
         </div>

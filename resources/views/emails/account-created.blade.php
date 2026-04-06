@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Cuenta Creada - EMPRESA</title>
+    <title>Cuenta Creada - f33</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background-color: #f8fafc;">
     <table width="100%" cellpadding="0" cellspacing="0">
@@ -14,7 +14,7 @@
                     <tr>
                         <td style="background-color: #0f172a; padding: 40px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">
-                                ¡Bienvenido a EMPRESA!
+                                ¡Bienvenido a f33!
                             </h1>
                         </td>
                     </tr>
@@ -56,7 +56,7 @@
                     <tr>
                         <td style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="color: #94a3b8; font-size: 12px; margin: 0;">
-                                © {{ date('Y') }} EMPRESA Lorem ipsum.... Todos los derechos reservados.
+                                © {{ date('Y') }} f33 Lorem ipsum.... Todos los derechos reservados.
                             </p>
                         </td>
                     </tr>

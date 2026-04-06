@@ -287,7 +287,7 @@ class PaymentController extends Controller
                         'password' => $temporaryPassword,
                     ], function ($message) use ($email) {
                         $message->to($email)
-                                ->subject('Tu cuenta ha sido creada - EMPRESA');
+                                ->subject('Tu cuenta ha sido creada - f33');
                     });
 
                     Log::info(' Cuenta creada y vinculada', [

@@ -61,7 +61,7 @@ const submit = () => {
                     type="email"
                     class="block w-full bg-white/5 border-white/20 text-white placeholder-white/20 rounded-sm focus:border-white focus:ring-0 transition-colors py-3 px-4 text-sm"
                     v-model="form.email"
-                    placeholder="ejemplo@empresa.com"
+                    placeholder="ejemplo@f33.com"
                     required
                     autofocus
                     autocomplete="username"

@@ -37,7 +37,7 @@ const dashboardRoute = computed(() => {
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xl font-bold text-gray-900 block leading-none">Empresa</span>
+                            <span class="text-xl font-bold text-gray-900 block leading-none">f33</span>
                             <span class="text-xs text-purple-600 font-medium">Panel {{ user.role === 'photographer' ?
                                 'Fotógrafo' : user.role === 'admin' ? 'Admin' : 'Usuario' }}</span>
                         </div>
@@ -349,7 +349,7 @@ const dashboardRoute = computed(() => {
         <footer class="bg-white border-t border-gray-200 py-8 mt-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center text-gray-500 text-sm">
-                    © {{ new Date().getFullYear() }} Empresa. Panel de {{ user.role === 'photographer' ? 'Fotógrafo' :
+                    © {{ new Date().getFullYear() }} f33. Panel de {{ user.role === 'photographer' ? 'Fotógrafo' :
                         user.role === 'admin' ? 'Administrador' : 'Usuario' }}.
                 </div>
             </div>

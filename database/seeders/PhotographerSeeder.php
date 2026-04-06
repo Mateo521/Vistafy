@@ -49,7 +49,7 @@ class PhotographerSeeder extends Seeder
             [
                 'name' => 'Flash Eventos',
                 'email' => 'info@flasheventos.com',
-                'bio' => 'Cobertura completa de eventos sociales y empresariales. Entrega rápida y calidad garantizada.',
+                'bio' => 'Cobertura completa de eventos sociales y f33riales. Entrega rápida y calidad garantizada.',
             ],
         ];
 

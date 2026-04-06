@@ -70,7 +70,7 @@ const mobileNavLinkClasses = (active) => {
                             <Link :href="dashboardRoute" class="group">
                                 <div class="flex flex-col">
                                     <span
-                                        class="font-sans font-bold text-xl tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">EMPRESA</span>
+                                        class="font-sans font-bold text-xl tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">f33</span>
                                     <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400">
                                         {{ user.role === 'admin' ? 'Administration' : (user.role === 'photographer' ?
                                             'Professional' : 'Client Area') }}
@@ -283,7 +283,7 @@ const mobileNavLinkClasses = (active) => {
         <footer class="bg-white border-t border-gray-200 py-6">
             <div
                 class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center text-[10px] uppercase tracking-widest text-slate-400">
-                <span>© {{ new Date().getFullYear() }} EMPRESA.</span>
+                <span>© {{ new Date().getFullYear() }} f33.</span>
                 <span>
                     {{ user.role === 'admin' ? 'Administrator Access' : 'Professional Access' }}
                 </span>

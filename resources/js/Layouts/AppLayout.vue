@@ -142,7 +142,7 @@ const navigationItems = [
                                 'text-2xl font-sans font-bold tracking-tight transition-colors duration-300',
                                 isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
                             ]">
-                                EMPRESA
+                                f33
                             </span>
                             <span :class="[
                                 'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
@@ -424,7 +424,7 @@ const navigationItems = [
                 <div
                     class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
                     <div class="text-center md:text-left">
-                        <span class="text-xl font-sans font-bold tracking-wide block">EMPRESA</span>
+                        <span class="text-xl font-sans font-bold tracking-wide block">f33</span>
                         <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional
                             Lorem
                             ipsum...</span>
@@ -439,7 +439,7 @@ const navigationItems = [
 
                 <div
                     class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-                    <p>© {{ new Date().getFullYear() }} Empresa S.A.</p>
+                    <p>© {{ new Date().getFullYear() }} f33 S.A.</p>
                     <div class="flex space-x-6 mt-4 md:mt-0">
                         <a href="#" class="hover:text-slate-300 transition">Privacidad</a>
                         <a href="#" class="hover:text-slate-300 transition">Términos</a>
