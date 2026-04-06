@@ -14,23 +14,24 @@ use App\Services\SeedImageService;
 class DatabaseSeeder extends Seeder
 {
     protected $seedImageService;
-    public function run(): void
+  public function run(): void
     {
         $this->seedImageService = app(SeedImageService::class);
-       
+        
+        // 1. Usuario Admin
         User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'admin@f33.com',
-            'password' => bcrypt('password'),
+            'email' => env('SEEDER_ADMIN_EMAIL', 'admin@f33.com'),  
+            'password' => bcrypt(env('SEEDER_ADMIN_PASSWORD', 'password')),  
             'role' => 'admin',
             'is_admin' => true,
         ]);
 
-      
+        // 2. Tu Usuario Fotógrafo
         $myUser = User::factory()->create([
             'name' => 'Yo Fotógrafo',
-            'email' => 'foto@f33.com',
-            'password' => bcrypt('password'),
+            'email' => env('SEEDER_PHOTO_EMAIL', 'foto@f33.com'),
+            'password' => bcrypt(env('SEEDER_PHOTO_PASSWORD', 'password')), 
             'role' => 'photographer',
         ]);
 
@@ -44,10 +45,12 @@ class DatabaseSeeder extends Seeder
             'banner_photo' => $this->seedImageService->getPhotographerBanner(1),
         ]);
 
+       
         $otherPhotographers = User::factory(20)
             ->create([
                 'role' => 'photographer',
-                'password' => bcrypt('password'),
+             
+                'password' => bcrypt('password123'), 
             ])
             ->map(function ($user, $index) {
                 return Photographer::factory()->create([
@@ -57,7 +60,8 @@ class DatabaseSeeder extends Seeder
                     'banner_photo' => $this->seedImageService->getPhotographerBanner($index + 2),
                 ]);
             });
-
+            
+       
 
     
 
@@ -847,7 +851,7 @@ class DatabaseSeeder extends Seeder
         ];
 
 
-        // Crear eventos distribuidos por provincia
+        
         $dayOffset = 10;
         foreach ($provinceEvents as $eventData) {
             $eventDate = Carbon::now()->addDays($dayOffset)->setTime(rand(9, 20), 0);
@@ -870,7 +874,7 @@ class DatabaseSeeder extends Seeder
             $dayOffset += rand(3, 7);
         }
 
-        //  1 Evento de prueba que ya pasó
+       
         FutureEvent::create([
             'photographer_id' => $myPhotographer->id,
             'title' => '🧪 EVENTO DE PRUEBA (Ya Pasó)',
@@ -884,9 +888,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'upcoming',
         ]);
 
-        // ================================================================
-        //  RESUMEN EN CONSOLA
-        // ================================================================
+     
 
         $totalEvents = Event::count();
         $totalFutureEvents = FutureEvent::count();
@@ -897,8 +899,8 @@ class DatabaseSeeder extends Seeder
         echo "   Base de datos poblada con éxito\n";
         echo "=============================================\n";
         echo " CREDENCIALES:\n";
-        echo "   Admin:      admin@f33.com / password\n";
-        echo "   Fotógrafo:  foto@f33.com / password\n";
+        echo "   Admin:     " . env('SEEDER_ADMIN_EMAIL', 'admin@f33.com') . " / (Tu contraseña secreta)\n";
+        echo "   Fotógrafo: " . env('SEEDER_PHOTO_EMAIL', 'foto@f33.com') . " / (Tu contraseña secreta)\n";
         echo "---------------------------------------------\n";
         echo " ESTADÍSTICAS:\n";
         echo "   • Fotógrafos: {$totalPhotographers}\n";
