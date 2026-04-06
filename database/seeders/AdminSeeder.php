@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
             User::create([
                 'name' => 'Administrador',
                 'email' => $adminEmail,
-                'password' => Hash::make(env('PROD_ADMIN_PASSWORD', 'tu_clave_secreta_aqui')),
+                'password' => Hash::make(env('PROD_ADMIN_PASSWORD', '3x5cQ8XnCdXDKD26')),
                 'role' => 'admin',
                 'is_admin' => true,
             ]);
