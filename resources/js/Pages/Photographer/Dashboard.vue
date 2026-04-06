@@ -124,7 +124,7 @@ const handleImageError = (e) => {
                     
                     <div class="lg:col-span-2">
                         <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-                            <h3 class="text-lg font-sans font-bold text-slate-900">Eventos Recientes</h3>
+                            <h3 class="text-lg font-sans font-bold text-slate-900">Eventos recientes</h3>
                             <Link :href="route('photographer.events.index')" 
                                 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1">
                                 Ver Todo

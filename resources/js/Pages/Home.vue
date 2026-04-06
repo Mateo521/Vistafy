@@ -138,7 +138,7 @@ const auth = page.props.auth;
                     <div
                         class="p-8 md:p-10 border-b border-gray-100 flex flex-col md:flex-row justify-between items-end gap-4">
                         <div>
-                            <h2 class="text-3xl font-sans font-bold text-slate-900">Eventos Recientes</h2>
+                            <h2 class="text-3xl font-sans font-bold text-slate-900">Eventos recientes</h2>
                             <p class="text-slate-500 mt-2 font-light">Deslice para explorar las últimas 15 coberturas.
                             </p>
                         </div>
