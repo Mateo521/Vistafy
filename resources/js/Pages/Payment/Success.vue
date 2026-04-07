@@ -58,7 +58,7 @@ const formatDate = (date) => {
                             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-emerald-500 mb-4 shadow-lg">
                                 <CheckCircleIcon class="h-10 w-10 text-white" />
                             </div>
-                            <h2 class="text-3xl font-sans font-bold text-white mb-2">¡Pago Confirmado!</h2>
+                            <h2 class="text-3xl font-sans font-bold text-white mb-2">¡Pago confirmado!</h2>
                             <p class="text-emerald-100 text-sm font-light tracking-wide">Su transacción ha sido procesada correctamente.</p>
                         </div>
                     </div>

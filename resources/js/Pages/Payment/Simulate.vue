@@ -109,7 +109,7 @@ const formatPrice = (amount) => {
                                         <CheckCircleIcon class="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <div class="font-bold text-slate-900 text-sm">Pago Aprobado</div>
+                                        <div class="font-bold text-slate-900 text-sm">Pago aprobado</div>
                                         <div class="text-xs text-slate-500 font-light">Simula una transacción exitosa inmediata.</div>
                                     </div>
                                 </div>

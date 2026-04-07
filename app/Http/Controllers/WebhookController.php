@@ -52,8 +52,8 @@ class WebhookController extends Controller
         }
 
 
-        // Procesar merchant_order
-        if ($topic === 'merchant_order') {
+      
+        if ($topic === 'merchant_order' || $topic === 'topic_merchant_order_wh') {
             $merchantOrderId = $data['data']['id'] ?? $data['id'] ?? null;
 
             if (!$merchantOrderId) {
@@ -66,7 +66,8 @@ class WebhookController extends Controller
             try {
                 $accessToken = config('services.mercadopago.access_token');
 
-                $response = Http::withHeaders([
+               
+                $response = \Illuminate\Support\Facades\Http::withHeaders([
                     'Authorization' => 'Bearer ' . $accessToken,
                 ])->timeout(10)->get("https://api.mercadopago.com/merchant_orders/{$merchantOrderId}");
 
@@ -74,25 +75,26 @@ class WebhookController extends Controller
                     $merchantOrder = $response->json();
                     $payments = $merchantOrder['payments'] ?? [];
 
-                    Log::info(' Payments en merchant_order', [
+                    Log::info(' Payments encontrados en la orden', [
                         'count' => count($payments),
-                        'payments' => $payments,
+                        'status_orden' => $merchantOrder['status'] ?? 'N/A'
                     ]);
 
                     if (!empty($payments)) {
-                        $paymentId = $payments[0]['id'] ?? null;
+                        // Buscamos el último pago de la lista
+                        $lastPayment = end($payments);
+                        $paymentId = $lastPayment['id'] ?? null;
 
                         if ($paymentId) {
-                            Log::info(' Procesando payment desde merchant_order', ['payment_id' => $paymentId]);
+                            Log::info(' Re-encaminando a processPayment', ['payment_id' => $paymentId]);
                             return $this->processPayment($paymentId);
                         }
                     }
 
-                    //  IMPORTANTE: Retornar success si no hay payments aún
-                    return response()->json(['status' => 'processed'], 200);
+                    return response()->json(['status' => 'processed_no_payments_yet'], 200);
                 }
 
-                Log::error(' Error al obtener merchant_order', [
+                Log::error(' Error al obtener merchant_order de la API de MP', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
@@ -103,9 +105,12 @@ class WebhookController extends Controller
                 ]);
             }
 
-            //  Retornar 200 incluso si falla para que MP no reintente infinitamente
             return response()->json(['status' => 'error'], 200);
         }
+
+
+
+
 
         Log::info(' Tipo de notificación no manejada', ['topic' => $topic]);
         return response()->json(['status' => 'ignored'], 200);
@@ -195,6 +200,10 @@ class WebhookController extends Controller
             Log::error(' Purchase no encontrada', ['purchase_id' => $purchaseId]);
             return response()->json(['error' => 'Purchase not found'], 404);
         }
+        if ($purchase->status === 'approved') {
+            Log::info(' Compra ya estaba aprobada, saltando update', ['purchase_id' => $purchaseId]);
+            return response()->json(['status' => 'already_approved'], 200);
+        }
 
         // Mapear status
         $newStatus = match ($payment['status']) {
@@ -208,6 +217,7 @@ class WebhookController extends Controller
 
         $purchase->update([
             'mp_payment_id' => $paymentId,
+            'mp_payment_status' => $payment['status'],  
             'status' => $newStatus,
             'payment_details' => [
                 'payment_method' => $payment['payment_method_id'] ?? null,
