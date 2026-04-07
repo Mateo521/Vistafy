@@ -41,7 +41,7 @@ const updatePassword = () => {
             </h2>
 
             <p class="mt-1 text-sm text-slate-500 font-light">
-                Asegúrese de que su cuenta utilice una contraseña larga y segura para mantener la protección de sus datos.
+                Asegúrese de que su cuenta Usá una contraseña larga y segura para mantener la protección de sus datos.
             </p>
         </header>
 

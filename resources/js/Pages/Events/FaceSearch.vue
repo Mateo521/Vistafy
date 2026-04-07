@@ -177,7 +177,7 @@ onMounted(async () => {
 
     if (typeof window.faceapi === 'undefined') {
         console.error(' face-api.js no se cargó');
-        faceError.value = 'Error: Sistema de reconocimiento facial no disponible';
+        faceError.value = 'Error: Sistema de Reconocimiento facial no disponible';
         return;
     }
 
@@ -202,7 +202,7 @@ onMounted(async () => {
                         ← Volver al evento
                     </Link>
                     <h1 class="text-4xl font-sans font-bold text-slate-900 mb-2">
-                        Búsqueda por Reconocimiento Facial
+                        Búsqueda por Reconocimiento facial
                     </h1>
                     <p class="text-slate-600">
                         Subí una foto de tu rostro y vamos a encontrar todas las fotos donde apareces en 
@@ -222,7 +222,7 @@ onMounted(async () => {
                 <div v-else-if="modelsLoaded" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                     <div class="flex items-center gap-3">
                         <CheckCircleIcon class="w-5 h-5 text-green-600" />
-                        <span class="text-sm text-green-800">Sistema de reconocimiento facial listo</span>
+                        <span class="text-sm text-green-800">Sistema de Reconocimiento facial listo</span>
                     </div>
                 </div>
 

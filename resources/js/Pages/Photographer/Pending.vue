@@ -79,7 +79,7 @@ import {
 
                         <a href="mailto:soporte@f33.com" class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm w-full sm:w-auto text-center flex items-center justify-center gap-2">
                             <EnvelopeIcon class="w-4 h-4" />
-                            Contactar Soporte
+                            Contactar soporte
                         </a>
                     </div>
 

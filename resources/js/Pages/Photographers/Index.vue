@@ -65,10 +65,10 @@ const getInitials = (name) => {
                         Staff Oficial
                     </span>
                     <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900 mb-6">
-                        Fotógrafos Profesionales
+                        Fotógrafos profesionales
                     </h1>
                     <p class="text-lg text-slate-500 font-light leading-relaxed">
-                        Conecte con los talentos detrás de la lente. Profesionales verificados comprometidos con la
+                        Conectá con los talentos detrás de la lente. Profesionales verificados comprometidos con la
                         excelencia visual.
                     </p>
                 </div>

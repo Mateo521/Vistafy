@@ -180,7 +180,7 @@ const handleImageError = (e) => {
             <!-- Header -->
             <div class="text-center mb-16">
                 <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 block mb-4">
-                    Próximos Eventos
+                    Próximos eventos
                 </span>
                 <h2 class="text-5xl font-sans font-bold text-slate-900 mb-6">
                     Eventos Futuros

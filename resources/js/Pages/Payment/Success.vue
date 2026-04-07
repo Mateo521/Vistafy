@@ -149,7 +149,7 @@ const formatDate = (date) => {
                         </Link>
                         
                         <a href="mailto:soporte@f33.com" class="text-xs text-slate-400 hover:text-slate-600 transition">
-                            ¿Problemas con la descarga? Contactar Soporte
+                            ¿Problemas con la descarga? Contactar soporte
                         </a>
                     </div>
 

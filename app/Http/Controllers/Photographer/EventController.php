@@ -375,7 +375,7 @@ class EventController extends Controller
 
 
     /**
-     * Mostrar formulario de búsqueda por dorsal
+     * Mostrar formulario de Búsqueda por dorsal
      */
     public function bibSearch(Event $event)
     {
@@ -417,7 +417,7 @@ class EventController extends Controller
                 'bib_numbers' => $photo->bib_numbers,
             ]);
 
-        \Log::info(' Resultados de búsqueda por dorsal', [
+        \Log::info(' Resultados de Búsqueda por dorsal', [
             'bib_number' => $bibNumber,
             'total_found' => $photos->total(),
         ]);

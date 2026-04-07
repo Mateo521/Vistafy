@@ -244,7 +244,7 @@ class PhotoController extends Controller
                         'price' => $request->price ?? 5000,
                         'is_active' => $request->is_active ?? true,
 
-                        // Campos de reconocimiento facial
+                        // Campos de Reconocimiento facial
                         'face_encodings' => $faceEncodings,
                         'has_faces' => $hasFaces,
                         'faces_processed_at' => $hasFaces ? now() : null,

@@ -70,7 +70,7 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-    <Head title="Archivo de Eventos" />
+    <Head title="Archivo de eventos" />
 
     <AppLayout>
         <div class="bg-white border-b border-gray-100 pt-24 pb-12 md:pt-32 md:pb-16">
@@ -80,10 +80,10 @@ const handleImageError = (e) => {
                         Galería Oficial
                     </span>
                     <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900 mb-6">
-                        Archivo de Eventos
+                        Archivo de eventos
                     </h1>
                     <p class="text-lg text-slate-500 font-light leading-relaxed">
-                        Explore nuestra colección cronológica. Utilice las herramientas de búsqueda para filtrar por ubicación, fecha o profesional.
+                        Explorá nuestra colección cronológica. Usá las herramientas de búsqueda para filtrar por ubicación, fecha o profesional.
                     </p>
                 </div>
             </div>

@@ -56,7 +56,7 @@ import {
                     <div class="relative">
                         <div class="aspect-square bg-white border border-zinc-200 p-8 flex flex-col justify-center items-center text-center shadow-sm">
                             <FaceSmileIcon class="w-24 h-24 text-zinc-200 stroke-1 mb-6" />
-                            <p class="font-sans text-2xl text-black mb-2">Reconocimiento Facial</p>
+                            <p class="font-sans text-2xl text-black mb-2">Reconocimiento facial</p>
                             <p class="text-zinc-400 text-sm tracking-widest uppercase">Tecnología Biométrica</p>
                         </div>
                         <div class="absolute -bottom-6 -right-6 w-full h-full border border-zinc-300 -z-10"></div>

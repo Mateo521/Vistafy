@@ -39,7 +39,7 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-    <Head title="Mis Compras" />
+    <Head title="Mis compras" />
 
     <AppLayout>
         <div class="min-h-screen bg-white">
@@ -50,9 +50,9 @@ const handleImageError = (e) => {
                     <div class="flex items-start justify-between">
                         <div>
                             <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-2">
-                                Mi Biblioteca Digital
+                                Mi biblioteca digital
                             </span>
-                            <h1 class="text-4xl font-sans font-bold text-slate-900 mb-4">Mis Compras</h1>
+                            <h1 class="text-4xl font-sans font-bold text-slate-900 mb-4">Mis compras</h1>
                             <p class="text-slate-600 max-w-2xl">
                                 Todas tus fotografías adquiridas están disponibles para descarga en cualquier momento.
                             </p>

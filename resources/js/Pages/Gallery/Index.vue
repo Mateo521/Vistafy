@@ -196,7 +196,7 @@ const performBibSearch = async () => {
         }
 
     } catch (error) {
-        console.error('Error en búsqueda por dorsal:', error);
+        console.error('Error en Búsqueda por dorsal:', error);
         bibErrorMessage.value = error.response?.data?.message || 'Error al buscar. Intenta nuevamente.';
     } finally {
         isSearchingBib.value = false;
@@ -393,7 +393,7 @@ const handleImageError = (e) => {
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-900 mb-1">
-                                    Resultados de Búsqueda por Dorsal
+                                    Resultados de Búsqueda por dorsal
                                 </h3>
                                 <p class="text-sm text-slate-600 mb-3">
                                     Encontramos <strong>{{ bibSearchResults.count }}</strong> fotos con el dorsal
@@ -501,7 +501,7 @@ const handleImageError = (e) => {
                                     </div>
                                     <div>
                                         <h3 class="font-sans text-2xl text-black mt-4 mb-2">
-                                            Reconocimiento Facial
+                                            Reconocimiento facial
                                         </h3>
                                         <p class="text-xs font-light text-zinc-500 leading-relaxed">
                                             Algoritmo de detección biométrica. Subí una referencia visual para indexar y
@@ -601,7 +601,7 @@ const handleImageError = (e) => {
 
 
 
-                            <!--  NUEVO: Búsqueda por DORSAL -->
+                            <!--  NUEVO: Búsqueda por dorsal -->
                             <div class="bg-white border border-blue-200 p-8 shadow-sm">
                                 <div class="flex flex-col gap-2 mb-8 border-b border-blue-100 pb-6">
                                     <div class="flex items-center justify-between">
@@ -615,7 +615,7 @@ const handleImageError = (e) => {
                                     </div>
                                     <div>
                                         <h3 class="font-sans text-2xl text-black mt-4 mb-2">
-                                            Búsqueda por Dorsal
+                                            Búsqueda por dorsal
                                         </h3>
                                         <p class="text-xs font-light text-zinc-500 leading-relaxed">
                                             Sistema de reconocimiento óptico. Ingresá tu número de competidor para

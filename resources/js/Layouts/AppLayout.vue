@@ -110,8 +110,8 @@ const navigationItems = [
         hasDropdown: true,
         active: page.url.startsWith('/eventos'),
         items: [
-            { label: 'Eventos Vigentes', route: route('events.index') },
-            { label: 'Próximos Eventos', route: route('future-events.map') }
+            { label: 'Eventos vigentes', route: route('events.index') },
+            { label: 'Próximos eventos', route: route('future-events.map') }
         ]
     },
     { label: 'Galería', route: route('gallery.index'), active: page.url.startsWith('/galeria') },
@@ -351,11 +351,11 @@ const navigationItems = [
                             </span>
                             <Link :href="route('events.index')"
                                 class="text-xs text-slate-600 hover:text-slate-900 pl-4">
-                                → Eventos Vigentes
+                                → Eventos vigentes
                             </Link>
                             <Link :href="route('future-events.map')"
                                 class="text-xs text-slate-600 hover:text-slate-900 pl-4">
-                                → Próximos Eventos
+                                → Próximos eventos
                             </Link>
                         </div>
 

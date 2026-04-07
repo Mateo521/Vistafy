@@ -20,7 +20,7 @@ onMounted(async () => {
         progressMessage.value = 'Cargando detector de rostros...';
         await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
         
-        progressMessage.value = 'Cargando reconocimiento facial...';
+        progressMessage.value = 'Cargando Reconocimiento facial...';
         await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
         await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
         

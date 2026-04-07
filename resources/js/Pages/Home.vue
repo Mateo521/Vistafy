@@ -120,7 +120,7 @@ const auth = page.props.auth;
                     Preservando momentos <br /> <span class="italic text-gray-300">irrepetibles.</span>
                 </h1>
                 <p class="text-lg text-gray-300 mb-10 max-w-2xl font-light leading-relaxed animate-fade-in-delayed">
-                    Accedé a tu galería privada o explore nuestra cobertura de eventos recientes con la calidad que nos
+                    Accedé a tu galería privada o Explorá nuestra cobertura de eventos recientes con la calidad que nos
                     distingue.
                 </p>
                 <!--Link :href="route('gallery.index')"
@@ -299,7 +299,7 @@ const auth = page.props.auth;
 
 
         <div class="py-16">
-            <RecentPhotosSection :photos="recentPhotos" title="Últimas Incorporaciones"
+            <RecentPhotosSection :photos="recentPhotos" title="Últimas incorporaciones"
                 subtitle="Explora las imágenes más recientes añadidas a nuestro archivo." />
         </div>
 

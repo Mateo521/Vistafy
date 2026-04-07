@@ -9,7 +9,7 @@ const props = defineProps({
     },
     title: {
         type: String,
-        default: 'Últimas Incorporaciones'
+        default: 'Últimas incorporaciones'
     },
     subtitle: {
         type: String,
