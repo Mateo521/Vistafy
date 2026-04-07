@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
@@ -378,4 +379,67 @@ class PaymentController extends Controller
             return response()->json(['status' => 'error'], 500);
         }
     }
+
+    /**
+     * Descargar fotos compradas (Originales sin marca de agua)
+     */
+    public function download($token)
+    {
+        // 1. Buscar la compra por su token de seguridad
+        $purchase = Purchase::with('items.photo')->where('order_token', $token)->firstOrFail();
+
+        // 2. Verificar que Mercado Pago haya aprobado el pago
+        if ($purchase->status !== 'approved') {
+            abort(403, 'El pago de esta orden aún no está aprobado.');
+        }
+
+        $items = $purchase->items;
+
+        if ($items->isEmpty()) {
+            abort(404, 'No hay fotos en esta orden.');
+        }
+
+        // 3. CASO A: Si es una sola foto, la descargamos directamente
+        if ($items->count() === 1) {
+            $photo = $items->first()->photo;
+            $filePath = $photo->original_path;
+
+            if (!Storage::disk('public')->exists($filePath)) {
+                abort(404, 'El archivo original no se encuentra disponible.');
+            }
+
+            return Storage::disk('public')->download($filePath, $photo->original_name);
+        }
+
+       
+        $zipFileName = 'f33_orden_' . $purchase->id . '.zip';
+        
+      
+        $tempDir = storage_path('app/public/temp');
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        $zipPath = $tempDir . '/' . $zipFileName;
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+            foreach ($items as $item) {
+                $photo = $item->photo;
+                 
+                $filePath = storage_path('app/public/' . $photo->original_path);
+                
+                if (file_exists($filePath)) {
+                    $zip->addFile($filePath, $photo->original_name);
+                }
+            }
+            $zip->close();
+        } else {
+            abort(500, 'No se pudo crear el archivo ZIP con tus fotos.');
+        }
+
+     
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
 }
