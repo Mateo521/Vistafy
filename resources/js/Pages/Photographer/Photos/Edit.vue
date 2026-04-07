@@ -105,7 +105,7 @@ const formatDate = (dateString) => {
 
                                 <div>
                                     <label for="price" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
-                                        Precio Unitario (USD)
+                                        Precio Unitario (ARS)
                                     </label>
                                     <input
                                         id="price"

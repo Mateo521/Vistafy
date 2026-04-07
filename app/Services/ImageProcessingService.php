@@ -115,7 +115,7 @@ class ImageProcessingService
 
             // Ruta del logo
             $logoPath = config('app.watermark_logo_path', 'watermarks/logo.png');
-            $logoFullPath = storage_path('app/public/' . $logoPath);
+            $logoFullPath = public_path($logoPath);
 
             // Verificar que existe el logo
             if (!file_exists($logoFullPath)) {
