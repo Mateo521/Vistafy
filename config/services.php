@@ -29,27 +29,11 @@ return [
     ],
 
     'mercadopago' => [
-        'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
         'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
-
-        //  Modo Sandbox / Test
-        'test_mode' => env('MP_TEST_MODE', false), // << usa este SIEMPRE
-        'sandbox_mode' => env('MP_TEST_MODE', false), // << opcional, pero útil si algo lo referencia
-
-        //  Datos del comprador de prueba
-        'test_buyer_email' => env('MP_TEST_BUYER_EMAIL'),
-        'test_buyer_dni' => env('MP_TEST_BUYER_DNI', '12345678'),
-
-        // URLs de retorno
-        'success_url' => env('APP_URL') . '/payment/success',
-        'failure_url' => env('APP_URL') . '/payment/failure',
-        'pending_url' => env('APP_URL') . '/payment/pending',
-
-        // Webhook
-        'notification_url' => env('APP_URL') . '/webhooks/mercadopago',
-
-        'simulation_mode' => env('MERCADOPAGO_SIMULATION_MODE', false),
-
+        'test_mode' => env('MERCADOPAGO_TEST_MODE', true),
+        
+      
+        'notification_url' => env('MERCADOPAGO_NOTIFICATION_URL', env('APP_URL') . '/webhooks/mercadopago'),
     ],
 
 

@@ -419,10 +419,10 @@ const formatDate = (date) => {
                     <div>
                         <Link :href="route('photographer.photos.index')"
                             class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors">
-                            ← Volver al Archivo
+                            ← Volver al archivo
                         </Link>
                         <h1 class="text-3xl font-sans font-bold text-slate-900">
-                            Carga de Material
+                            Carga de material
                         </h1>
                         <p class="text-sm text-slate-500 font-light mt-1">Gestión de activos digitales y asignación de
                             precios.</p>
@@ -442,7 +442,7 @@ const formatDate = (date) => {
                                 <div>
                                     <label
                                         class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Precio
-                                        Unitario (USD)</label>
+                                        unitario (ARS)</label>
                                     <input v-model="form.price" type="number" step="0.01" min="0.01" required
                                         class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 font-mono"
                                         placeholder="0.00">

@@ -51,15 +51,12 @@ class PaymentController extends Controller
             $photos = Photo::whereIn('id', $request->photo_ids)->get();
 
             if ($photos->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No se encontraron fotos válidas'
-                ], 400);
+                return response()->json(['success' => false, 'message' => 'No se encontraron fotos válidas'], 400);
             }
 
             DB::beginTransaction();
 
-            // Crear la compra
+            
             $purchase = Purchase::create([
                 'user_id' => $user->id,
                 'buyer_email' => $user->email,
@@ -70,7 +67,7 @@ class PaymentController extends Controller
                 'order_token' => Str::random(64),
             ]);
 
-            // Crear items de la compra
+          
             foreach ($photos as $photo) {
                 PurchaseItem::create([
                     'purchase_id' => $purchase->id,
@@ -79,69 +76,27 @@ class PaymentController extends Controller
                 ]);
             }
 
-            //  SIMULACIÓN: Aprobar compra automáticamente en desarrollo
-            if ($request->input('simulate_payment') && config('app.env') === 'local') {
-                $purchase->update([
-                    'status' => 'approved',
-                    'mp_payment_id' => 'SIM-' . time(),
-                    'mp_payment_status' => 'approved',
-                ]);
-
-                Log::info(' Compra del carrito simulada aprobada', [
-                    'purchase_id' => $purchase->id,
-                    'photo_count' => $photos->count(),
-                ]);
-
-                // Vaciar el carrito
-                $this->cartService->clear();
-
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'simulated' => true,
-                    'purchase_id' => $purchase->id,
-                    'redirect_url' => route('payment.success', ['purchase_id' => $purchase->id])
-                ]);
-            }
-
-            //  Crear preferencia en Mercado Pago
+          
             $preferenceResult = $this->mpService->createCartPreference($photos, $user->email, $purchase);
 
             if (!$preferenceResult['success']) {
-                throw new \Exception('Error al crear preferencia de Mercado Pago');
+                throw new \Exception('Error al crear preferencia de Mercado Pago: ' . ($preferenceResult['message'] ?? 'Desconocido'));
             }
 
-            // Vaciar el carrito después de crear la compra exitosamente
+           
             $this->cartService->clear();
-
             DB::commit();
-
-            Log::info(' Compra desde carrito iniciada', [
-                'purchase_id' => $purchase->id,
-                'photo_count' => $photos->count(),
-                'total' => $purchase->total_amount,
-            ]);
 
             return response()->json([
                 'success' => true,
                 'purchase_id' => $purchase->id,
                 'sandbox_init_point' => $preferenceResult['sandbox_init_point'],
-                'simulation_mode' => $preferenceResult['simulation_mode'] ?? false,
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            Log::error(' Error en compra desde carrito', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al procesar la compra: ' . $e->getMessage()
-            ], 500);
+            Log::error('Error en compra desde carrito', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error al procesar la compra: ' . $e->getMessage()], 500);
         }
     }
 

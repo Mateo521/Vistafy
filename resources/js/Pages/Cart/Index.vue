@@ -66,7 +66,7 @@ const clearCart = async () => {
     }
 };
 
-const checkout = async (simulate = false) => {
+const checkout = async () => {
     if (processing.value || itemCount.value === 0) return;
 
     processing.value = true;
@@ -75,16 +75,14 @@ const checkout = async (simulate = false) => {
         const photoIds = props.items.map(item => item.photo_id);
 
         const response = await axios.post(route('payment.initiate.cart'), {
-            photo_ids: photoIds,
-            simulate_payment: simulate
+            photo_ids: photoIds
         });
 
-        if (response.data.success) {
-            if (response.data.simulated) {
-                window.location.href = response.data.redirect_url;
-            } else {
-                window.location.href = response.data.sandbox_init_point;
-            }
+       
+        if (response.data.success && response.data.sandbox_init_point) {
+            window.location.href = response.data.sandbox_init_point;
+        } else {
+            error('No se pudo generar el link de pago');
         }
     } catch (err) {
         console.error('Error en checkout:', err);
@@ -255,13 +253,7 @@ const handleImageError = (e) => {
                                 <span v-if="!processing" class="text-lg leading-none">→</span>
                             </button>
 
-                            <!-- 🧪 Botón de Simulación (Solo en desarrollo) -->
-                            <button @click="checkout(true)" :disabled="processing || itemCount === 0"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white text-xs font-bold uppercase tracking-widest py-3 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mb-4">
-                                <BeakerIcon class="w-4 h-4" />
-                                <span v-if="processing">Procesando...</span>
-                                <span v-else>Simular Pago (Dev)</span>
-                            </button>
+                           
 
                             <!-- Info -->
                             <div class="space-y-3">
@@ -274,9 +266,9 @@ const handleImageError = (e) => {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                     </svg>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                                    <!--span class="text-[10px] font-bold uppercase tracking-wider text-slate-600">
                                         Entrega Inmediata vía Email
-                                    </span>
+                                    </span-->
                                 </div>
                             </div>
                         </div>
