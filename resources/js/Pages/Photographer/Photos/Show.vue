@@ -250,7 +250,7 @@ const formatDate = (dateString) => {
                                 </h3>
                             </div>
                             <div class="p-6 flex items-center justify-between">
-                                <span class="text-sm text-slate-600">Descargas Totales</span>
+                                <span class="text-sm text-slate-600">Descargas totales</span>
                                 <span class="text-xl font-sans font-bold text-slate-900">{{ photo.downloads }}</span>
                             </div>
                         </div>

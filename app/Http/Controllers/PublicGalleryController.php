@@ -728,35 +728,7 @@ class PublicGalleryController extends Controller
         ]);
     }
 
-    /**
-     * Descargar foto (después del pago)
-     * Esta función debería estar protegida por el sistema de pagos
-     */
-    public function download($uniqueId)
-    {
-        $photo = Photo::where('unique_id', strtoupper($uniqueId))
-            ->where('is_active', true)
-            ->firstOrFail();
-
-        // TODO: Verificar que el usuario haya pagado por esta foto
-        // Esto se implementará con el sistema de pagos
-
-        // Incrementar contador de descargas
-        $photo->increment('downloads');
-
-        // Generar URL de descarga temporal
-        $filePath = storage_path('app/' . $photo->file_path);
-
-        if (!file_exists($filePath)) {
-            abort(404, 'Archivo no encontrado');
-        }
-
-        return response()->download(
-            $filePath,
-            $photo->unique_id . '.' . pathinfo($photo->file_path, PATHINFO_EXTENSION)
-        );
-    }
-
+  
     /**
      * Verificar disponibilidad de una foto
      */

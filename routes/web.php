@@ -177,9 +177,7 @@ Route::prefix('pago')->name('payment.')->group(function () {
 });
 
 
-Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success.en');
-Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure.en');
-Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending.en');
+ 
 
 Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'checkStatus'])
     ->name('purchases.check-status');
@@ -187,17 +185,11 @@ Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'ch
 
 
 
-// Página de descarga (opcional, con botón)
-Route::get('/descargar/{token}', [DownloadController::class, 'download'])
-    ->name('download');  // ← Nombre: payment.download
+ 
 
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 
-/*
-|--------------------------------------------------------------------------
-| Rutas de Descarga (Autenticadas)
-|--------------------------------------------------------------------------
-*/
+ 
 
 Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
     ->name('photo.download')
@@ -213,11 +205,7 @@ Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(func
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Rutas de Autenticación
-|--------------------------------------------------------------------------
-*/
+ 
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -242,12 +230,7 @@ Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
 
 
 
-
-/*
-|--------------------------------------------------------------------------
-|  NUEVO: Páginas de Estado de Fotógrafo (Autenticadas)
-|--------------------------------------------------------------------------
-*/
+ 
 
 Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(function () {
     // Página de pendiente de aprobación
@@ -269,11 +252,7 @@ Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(f
     })->name('suspended');
 });
 
-/*
-|--------------------------------------------------------------------------
-|  ACTUALIZADO: Panel de Fotógrafo (Requiere Aprobación)
-|--------------------------------------------------------------------------
-*/
+ 
 
 Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name('photographer.')->group(function () {
 

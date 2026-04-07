@@ -22,7 +22,7 @@ class PurchaseController extends Controller
             Log::info(' Ya está aprobado', ['purchase_id' => $purchase->id]);
             return response()->json([
                 'status' => 'approved',
-                'download_url' => route('download.show', $purchase->download_token),
+                'redirect_url' => route('purchases.index'),
             ]);
         }
 
@@ -103,7 +103,7 @@ class PurchaseController extends Controller
                                     if ($newStatus === 'approved') {
                                         return response()->json([
                                             'status' => 'approved',
-                                            'download_url' => route('download.show', $purchase->download_token),
+                                            'redirect_url' => route('purchases.index'),
                                         ]);
                                     }
                                 }
@@ -112,7 +112,7 @@ class PurchaseController extends Controller
                     }
                 }
 
-                //  OPCIÓN 2: Buscar por external_reference (fallback)
+
                 $url = 'https://api.mercadopago.com/v1/payments/search';
                 $params = [
                     'external_reference' => (string) $purchase->id,
@@ -154,7 +154,7 @@ class PurchaseController extends Controller
                         if ($newStatus === 'approved') {
                             return response()->json([
                                 'status' => 'approved',
-                                'download_url' => route('download.show', $purchase->download_token),
+                                'redirect_url' => route('purchases.index'),
                             ]);
                         }
                     }

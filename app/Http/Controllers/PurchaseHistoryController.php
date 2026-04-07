@@ -76,6 +76,7 @@ class PurchaseHistoryController extends Controller
         $photo = $item->photo;
 
         // Incrementar contador de descargas
+        $photo->increment('downloads');
         $item->increment('download_count');
 
         // Verificar que el archivo existe
@@ -122,6 +123,7 @@ class PurchaseHistoryController extends Controller
                     $zip->addFile($filePath, $fileName);
                     
                     // Incrementar contador
+                    $photo->increment('downloads');
                     $item->increment('download_count');
                 }
             }
