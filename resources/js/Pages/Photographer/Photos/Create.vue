@@ -75,7 +75,7 @@ onMounted(async () => {
 });
 
 // ----------------------------------------------------------------------
-// 2. MANEJO DE ARCHIVOS (Modificado para soportar Async/Await)
+// 2. MANEJO DE ARCHIVOS (Con Compresión en el Frontend)
 // ----------------------------------------------------------------------
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
@@ -88,17 +88,67 @@ const handleDrop = (event) => {
     addFiles(files);
 };
 
+ 
+const compressImage = async (file) => {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Limitar el lado más largo a 2500px (Excelente calidad, pero pesa un 80% menos)
+                const maxSize = 2500; 
+
+                if (width > height && width > maxSize) {
+                    height = Math.round((height * maxSize) / width);
+                    width = maxSize;
+                } else if (height > maxSize) {
+                    width = Math.round((width * maxSize) / height);
+                    height = maxSize;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Comprimir a JPEG con 80% de calidad
+                canvas.toBlob((blob) => {
+                    // Re-creamos un archivo "File" para que el FormData lo acepte
+                    const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    
+                    resolve({
+                        file: compressedFile, // El archivo liviano
+                        name: compressedFile.name,
+                        preview: canvas.toDataURL('image/jpeg', 0.8) // El preview para la grilla
+                    });
+                }, 'image/jpeg', 0.8);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
 const addFiles = async (files) => {
     // Validaciones
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        const maxSize = 10 * 1024 * 1024; // 10MB
+        // Subimos el límite aparente a 50MB para que el celu deje seleccionar la foto, 
+        // total el compresor la va a bajar a ~1.5MB
+        const maxSize = 50 * 1024 * 1024; 
         if (!validTypes.includes(file.type)) {
             error(`${file.name} no es un formato válido.`);
             return false;
         }
         if (file.size > maxSize) {
-            error(`${file.name} excede el límite.`);
+            error(`${file.name} excede el límite de 50MB.`);
             return false;
         }
         return true;
@@ -111,23 +161,11 @@ const addFiles = async (files) => {
         error(`Límite de 50 fotos. Se agregaron ${remainingSlots}.`);
     }
 
-    // Convertir a Promesas para esperar a que todas se lean
-    const readingPromises = filesToAdd.map(file => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                resolve({
-                    file: file,
-                    name: file.name,
-                    preview: e.target.result,
-                });
-            };
-            reader.readAsDataURL(file);
-        });
-    });
+    // Ponemos a comprimir y generar previews a todas las fotos seleccionadas
+    const compressingPromises = filesToAdd.map(file => compressImage(file));
 
-    // Esperar a que se generen las previews
-    const newFileObjects = await Promise.all(readingPromises);
+    // Esperar a que TODAS terminen de comprimirse
+    const newFileObjects = await Promise.all(compressingPromises);
     selectedFiles.value.push(...newFileObjects);
 
     // DISPARAR DETECCIÓN DE IA AUTOMÁTICAMENTE
@@ -138,8 +176,6 @@ const addFiles = async (files) => {
 
 const removeFile = (index) => {
     selectedFiles.value.splice(index, 1);
-    // Sincronizar arrays de IA eliminando el índice correspondiente
-    // Nota: Esto es simple, en producción idealmente recalcularíamos por ID único
     if (faceDetectionResults.value[index]) faceDetectionResults.value.splice(index, 1);
     if (bibDetectionResults.value[index]) bibDetectionResults.value.splice(index, 1);
 };
@@ -361,25 +397,18 @@ const submitPhotos = () => {
         formData.append(`photos[${index}]`, item.file);
     });
 
-    // Agregar parámetros básicos
+  
     formData.append('price', form.price);
     formData.append('is_active', form.is_active ? 1 : 0);
     if (form.event_id) formData.append('event_id', form.event_id);
 
-    //  ADJUNTAR JSON CON LA ESTRUCTURA CORRECTA
+    
     formData.append('face_data', JSON.stringify({
         faces: facesData,
         bibs: bibsData
     }));
 
-    // Debug: Ver qué se está enviando
-    console.log('📤 Enviando datos:', {
-        fotos: selectedFiles.value.length,
-        event_id: form.event_id,
-        price: form.price,
-        faces_detectadas: facesData.filter(f => f.count > 0).length,
-        dorsales_detectados: bibsData.filter(b => b.numbers.length > 0).length,
-    });
+   
 
     router.post(route('photographer.photos.store'), formData, {
         forceFormData: true,
@@ -394,7 +423,7 @@ const submitPhotos = () => {
         },
         onError: (err) => {
             uploading.value = false;
-            console.error('❌ Error en carga:', err);
+            console.error(' Error en carga:', err);
             error('Hubo un error en la carga.');
         },
     });
