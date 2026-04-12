@@ -30,9 +30,10 @@ return [
 
     'mercadopago' => [
         'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
+        'client_id' => env('MERCADOPAGO_CLIENT_ID'),     
+        'client_secret' => env('MERCADOPAGO_CLIENT_SECRET'),
+
         'test_mode' => env('MERCADOPAGO_TEST_MODE', true),
-        
-      
         'notification_url' => env('MERCADOPAGO_NOTIFICATION_URL', env('APP_URL') . '/webhooks/mercadopago'),
     ],
 
