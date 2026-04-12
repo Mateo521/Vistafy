@@ -89,6 +89,7 @@ const addToCart = async () => {
 };
 
 // Para invitados: compra directa
+// Para invitados: compra directa
 const submitPurchase = async () => {
     if (loading.value) return;
 
@@ -114,9 +115,16 @@ const submitPurchase = async () => {
             payload
         );
 
-        if (response.data.success) {
-            window.location.href = response.data.sandbox_init_point;
+     
+        const paymentUrl = response.data.init_point || response.data.sandbox_init_point;
+
+        if (response.data.success && paymentUrl) {
+            window.location.href = paymentUrl;
+        } else {
+            emailError.value = 'No se pudo generar el link de pago';
         }
+        
+
     } catch (error) {
         console.error('Error en compra:', error);
 
