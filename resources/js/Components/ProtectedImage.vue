@@ -11,7 +11,7 @@ const imageSrc = ref('');
 const loading = ref(true);
 const error = ref(false);
 
-const loadImage = async () => {
+const loadImage = () => {
     if (!props.src) {
         error.value = true;
         loading.value = false;
@@ -21,39 +21,23 @@ const loadImage = async () => {
     loading.value = true;
     error.value = false;
 
-    try {
-        //  NUEVO: Permitir rutas del visor sin fetch
-        if (props.src.startsWith('/foto/')) {
-            imageSrc.value = props.src;
-            loading.value = false;
-            return;
-        }
-
-        // Para URLs de storage tradicionales
-        if (props.src.startsWith('/storage/')) {
-            imageSrc.value = props.src;
-            loading.value = false;
-            return;
-        }
-
-        // Para URLs externas o con marca de agua
-        const response = await fetch(props.src, {
-            method: 'GET',
-            credentials: 'same-origin',
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al cargar la imagen');
-        }
-
-        const blob = await response.blob();
-        imageSrc.value = URL.createObjectURL(blob);
-    } catch (err) {
-        console.error('Error cargando imagen:', err);
-        error.value = true;
-    } finally {
+     
+    const img = new Image();
+    
+    img.onload = () => {
+       
+        imageSrc.value = props.src;
         loading.value = false;
-    }
+    };
+    
+    img.onerror = () => {
+        console.error('Error cargando imagen desde la nube:', props.src);
+        error.value = true;
+        loading.value = false;
+    };
+
+   
+    img.src = props.src;
 };
 
 onMounted(() => {
@@ -67,13 +51,11 @@ watch(() => props.src, () => {
 
 <template>
     <div class="relative inline-block w-full h-full">
-        <!-- Loading skeleton -->
         <div v-if="loading" 
             :class="['animate-pulse bg-gray-200', props.class]"
             class="w-full h-full"
         />
 
-        <!-- Error placeholder -->
         <div v-else-if="error" 
             :class="['bg-gray-100 flex items-center justify-center', props.class]"
         >
@@ -84,7 +66,6 @@ watch(() => props.src, () => {
             </svg>
         </div>
 
-        <!-- Imagen cargada -->
         <img 
             v-else
             :src="imageSrc" 

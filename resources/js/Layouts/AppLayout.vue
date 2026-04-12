@@ -123,192 +123,129 @@ const navigationItems = [
 <template>
     <CustomCursor />
 
-    <div class="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-900 selection:text-white">
-
+    <div class="min-h-screen bg-[#111920] font-['Syne'] text-[#EEE9DF] selection:bg-[#FFB162] selection:text-[#1B2632]">
 
         <nav :class="[
             'fixed top-0 w-full z-50 transition-all duration-500 ease-in-out border-b',
             isHomePage && !scrolled
-                ? 'bg-transparent border-transparent py-6'
-                : 'bg-white/95 backdrop-blur-md border-gray-100 py-4 shadow-sm'
+                ? 'bg-transparent border-transparent py-8'
+                : 'bg-[#1B2632]/95 backdrop-blur-md border-[#C9C1B1]/10 py-4 shadow-xl'
         ]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center">
 
-                    <!-- Logo -->
-                    <Link href="/" class="group z-50 relative">
-                        <div class="flex flex-col">
-                            <span :class="[
-                                'text-2xl font-sans font-bold tracking-tight transition-colors duration-300',
-                                isHomePage && !scrolled ? 'text-white' : 'text-slate-900'
-                            ]">
-                                f33
-                            </span>
-                            <span :class="[
-                                'text-[0.60rem] uppercase tracking-[0.3em] transition-colors duration-300',
-                                isHomePage && !scrolled ? 'text-white/60' : 'text-slate-500'
-                            ]">
-                                Lorem ipsum...
-                            </span>
-                        </div>
+                    <Link href="/" class="group z-50 relative flex flex-col">
+                        <span class="text-3xl font-['Syne'] font-extrabold tracking-tighter text-[#EEE9DF] transition-colors duration-300">
+                            f<span class="text-[#FFB162]">3</span>3
+                        </span>
+                        <span class="text-[0.55rem] uppercase tracking-[0.4em] text-[#C9C1B1]/60 transition-colors duration-300 -mt-1">
+                            Photography
+                        </span>
                     </Link>
 
-                    <!-- Desktop Menu -->
-                    <div class="hidden md:flex items-center space-x-12">
+                    <div class="hidden md:flex items-center space-x-10">
                         <div class="flex space-x-8">
-                            <!--  Items de navegación con dropdown -->
                             <template v-for="item in navigationItems" :key="item.label">
-                                <!-- Con Dropdown -->
+                                
                                 <div v-if="item.hasDropdown" class="relative">
                                     <button @click="eventsMenuOpen = !eventsMenuOpen" :class="[
-                                        'flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
-                                        isHomePage && !scrolled
-                                            ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
-                                            : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
+                                        'flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 border-b',
+                                        item.active 
+                                            ? 'text-[#FFB162] border-[#FFB162]' 
+                                            : 'text-[#C9C1B1] border-transparent hover:text-[#EEE9DF] hover:border-[#C9C1B1]/30'
                                     ]">
                                         {{ item.label }}
                                         <ChevronDownIcon :class="[
-                                            'w-3 h-3 transition-transform duration-200',
-                                            eventsMenuOpen ? 'rotate-180' : ''
+                                            'w-3 h-3 transition-transform duration-300',
+                                            eventsMenuOpen ? 'rotate-180 text-[#FFB162]' : ''
                                         ]" />
                                     </button>
 
-                                    <!-- Dropdown Menu -->
-                                    <transition enter-active-class="transition duration-200 ease-out"
-                                        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
-                                        leave-active-class="transition duration-150 ease-in"
-                                        leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+                                    <transition enter-active-class="transition duration-300 ease-out"
+                                        enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100 translate-y-0"
+                                        leave-active-class="transition duration-200 ease-in"
+                                        leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
                                         <div v-show="eventsMenuOpen" @click.away="eventsMenuOpen = false"
-                                            class="absolute left-0 mt-3 w-52 bg-white border border-gray-200 rounded-sm shadow-xl overflow-hidden">
+                                            class="absolute left-0 mt-6 w-56 bg-[#1B2632] border border-[#C9C1B1]/10 rounded-sm shadow-2xl overflow-hidden">
                                             <Link v-for="subItem in item.items" :key="subItem.route"
                                                 :href="subItem.route" @click="eventsMenuOpen = false"
-                                                class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
+                                                class="block px-5 py-4 text-[11px] font-bold tracking-widest uppercase text-[#C9C1B1] hover:bg-[#2C3B4D] hover:text-[#FFB162] transition-colors border-b border-[#C9C1B1]/5 last:border-0">
                                                 {{ subItem.label }}
                                             </Link>
                                         </div>
                                     </transition>
                                 </div>
 
-                                <!-- Sin Dropdown -->
                                 <Link v-else :href="item.route" :class="[
-                                    'text-xs font-bold uppercase tracking-widest transition-all duration-300 border-b-2',
-                                    isHomePage && !scrolled
-                                        ? (item.active ? 'text-white border-white' : 'text-white/70 border-transparent hover:text-white hover:border-white/50')
-                                        : (item.active ? 'text-slate-900 border-slate-900' : 'text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300')
+                                    'text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 border-b',
+                                    item.active 
+                                        ? 'text-[#FFB162] border-[#FFB162]' 
+                                        : 'text-[#C9C1B1] border-transparent hover:text-[#EEE9DF] hover:border-[#C9C1B1]/30'
                                 ]">
                                     {{ item.label }}
                                 </Link>
                             </template>
                         </div>
 
-                        <div :class="['h-4 w-px', isHomePage && !scrolled ? 'bg-white/20' : 'bg-slate-200']"></div>
+                        <div class="h-4 w-px bg-[#C9C1B1]/20"></div>
 
                         <div class="flex items-center space-x-6">
-                            <!-- Carrito (solo para usuarios autenticados) -->
-                            <Link v-if="user" :href="route('cart.index')" class="relative group">
-                                <ShoppingCartIcon :class="[
-                                    'w-5 h-5 transition-colors duration-300',
-                                    isHomePage && !scrolled ? 'text-white group-hover:text-white/80' : 'text-slate-900 group-hover:text-slate-600'
-                                ]" />
-
-                                <!-- Contador -->
-                                <span v-if="cartCount > 0" :class="[
-                                    'absolute -top-2 -right-2 min-w-[1.25rem] h-5 flex items-center justify-center px-1 rounded-full text-[10px] font-bold transition-colors duration-300',
-                                    isHomePage && !scrolled
-                                        ? 'bg-white text-slate-900'
-                                        : 'bg-slate-900 text-white'
-                                ]">
+                            <Link v-if="user" :href="route('cart.index')" class="relative group flex items-center justify-center w-8 h-8 rounded-full hover:bg-[#2C3B4D] transition-colors duration-300">
+                                <ShoppingCartIcon class="w-4 h-4 text-[#C9C1B1] group-hover:text-[#FFB162] transition-colors duration-300" />
+                                <span v-if="cartCount > 0" class="absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] flex items-center justify-center px-1 rounded-full text-[9px] font-bold bg-[#FFB162] text-[#1B2632]">
                                     {{ cartCount > 99 ? '99+' : cartCount }}
                                 </span>
                             </Link>
 
-                            <!-- Guest: Login/Register -->
                             <template v-if="!user">
-                                <Link :href="route('photographer.register')" :class="[
-                                    'text-xs font-bold uppercase tracking-widest transition-colors',
-                                    isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
-                                ]">
+                                <Link :href="route('photographer.register')" class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] hover:text-[#FFB162] transition-colors">
                                     Soy fotógrafo
                                 </Link>
-
-                                <Link :href="route('login')" :class="[
-                                    'text-xs font-bold uppercase tracking-widest transition-colors',
-                                    isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
-                                ]">
+                                <Link :href="route('login')" class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] hover:text-[#EEE9DF] transition-colors">
                                     Ingresar
                                 </Link>
-
-                                <Link :href="route('register')" :class="[
-                                    'px-6 py-2 text-xs font-bold uppercase tracking-widest border transition-all duration-300',
-                                    isHomePage && !scrolled
-                                        ? 'border-white text-white hover:bg-white hover:text-slate-900'
-                                        : 'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white'
-                                ]">
+                                <Link :href="route('register')" class="px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] border border-[#FFB162] text-[#FFB162] hover:bg-[#FFB162] hover:text-[#1B2632] transition-all duration-300 rounded-sm">
                                     Registrarse
                                 </Link>
                             </template>
 
-                            <!-- Authenticated: Dashboard/User Menu -->
                             <template v-else>
                                 <div class="flex items-center space-x-4">
-                                    <!-- Admin/Photographer: Link directo -->
-                                    <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" :class="[
-                                        'text-xs font-bold uppercase tracking-widest transition-colors',
-                                        isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
-                                    ]">
+                                    <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFB162] hover:text-[#EEE9DF] transition-colors">
                                         {{ dashboardInfo.text }}
                                     </Link>
 
-                                    <!-- Usuario Regular: Dropdown -->
                                     <div v-else class="relative">
-                                        <button @click="userMenuOpen = !userMenuOpen" :class="[
-                                            'flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors',
-                                            isHomePage && !scrolled ? 'text-white hover:text-white/80' : 'text-slate-900 hover:text-slate-600'
-                                        ]">
+                                        <button @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] hover:text-[#EEE9DF] transition-colors">
                                             {{ user.name }}
-                                            <ChevronDownIcon :class="[
-                                                'w-3 h-3 transition-transform duration-200',
-                                                userMenuOpen ? 'rotate-180' : ''
-                                            ]" />
+                                            <ChevronDownIcon :class="['w-3 h-3 transition-transform duration-300', userMenuOpen ? 'rotate-180 text-[#FFB162]' : '']" />
                                         </button>
 
-                                        <!-- Dropdown Menu -->
-                                        <transition enter-active-class="transition duration-200 ease-out"
-                                            enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
-                                            leave-active-class="transition duration-150 ease-in"
-                                            leave-from-class="opacity-100 scale-100"
-                                            leave-to-class="opacity-0 scale-95">
+                                        <transition enter-active-class="transition duration-300 ease-out"
+                                            enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100 translate-y-0"
+                                            leave-active-class="transition duration-200 ease-in"
+                                            leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
                                             <div v-show="userMenuOpen" @click.away="userMenuOpen = false"
-                                                class="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-sm shadow-xl overflow-hidden">
-
-                                                <!-- Email -->
-                                                <div
-                                                    class="px-4 py-3 text-xs text-slate-500 border-b border-gray-100 truncate">
+                                                class="absolute right-0 mt-6 w-56 bg-[#1B2632] border border-[#C9C1B1]/10 rounded-sm shadow-2xl overflow-hidden">
+                                                
+                                                <div class="px-5 py-4 text-[10px] text-[#C9C1B1]/60 border-b border-[#C9C1B1]/10 truncate tracking-widest">
                                                     {{ user.email }}
                                                 </div>
 
-                                                <!-- Menu Items -->
-                                                <Link v-for="item in dashboardInfo.items" :key="item.route"
-                                                    :href="item.route"
-                                                    class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors border-b border-gray-50 last:border-0">
+                                                <Link v-for="item in dashboardInfo.items" :key="item.route" :href="item.route"
+                                                    class="block px-5 py-4 text-[11px] font-bold uppercase tracking-widest text-[#C9C1B1] hover:bg-[#2C3B4D] hover:text-[#FFB162] transition-colors border-b border-[#C9C1B1]/5">
                                                     {{ item.text }}
                                                 </Link>
 
-                                                <!-- Logout -->
                                                 <Link :href="route('logout')" method="post" as="button"
-                                                    class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                                    class="w-full text-left px-5 py-4 text-[11px] font-bold uppercase tracking-widest text-[#A35139] hover:bg-[#A35139]/10 hover:text-[#FFB162] transition-colors">
                                                     Cerrar Sesión
                                                 </Link>
                                             </div>
                                         </transition>
                                     </div>
 
-                                    <!-- Logout button (solo si es link directo) -->
-                                    <Link v-if="dashboardInfo?.single" :href="route('logout')" method="post" as="button"
-                                        :class="[
-                                            'text-xs font-bold uppercase tracking-widest transition-colors',
-                                            isHomePage && !scrolled ? 'text-red-300 hover:text-red-100' : 'text-red-600 hover:text-red-800'
-                                        ]">
+                                    <Link v-if="dashboardInfo?.single" :href="route('logout')" method="post" as="button" class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A35139] hover:text-[#FFB162] transition-colors">
                                         Salir
                                     </Link>
                                 </div>
@@ -316,97 +253,57 @@ const navigationItems = [
                         </div>
                     </div>
 
-                    <!-- Mobile Menu Button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none">
-                        <div class="space-y-1.5">
-                            <span
-                                :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'rotate-45 translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
-                            <span
-                                :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? 'opacity-0' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
-                            <span
-                                :class="['block w-6 h-0.5 transition-all duration-300', mobileMenuOpen ? '-rotate-45 -translate-y-2 bg-slate-900' : (isHomePage && !scrolled ? 'bg-white' : 'bg-slate-900')]"></span>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none p-2">
+                        <div class="space-y-1.5 relative w-6 h-4">
+                            <span :class="['absolute w-6 h-[2px] bg-[#EEE9DF] transition-all duration-300', mobileMenuOpen ? 'rotate-45 top-2' : 'top-0']"></span>
+                            <span :class="['absolute w-6 h-[2px] bg-[#EEE9DF] transition-all duration-300', mobileMenuOpen ? 'opacity-0 top-2' : 'top-2']"></span>
+                            <span :class="['absolute w-6 h-[2px] bg-[#EEE9DF] transition-all duration-300', mobileMenuOpen ? '-rotate-45 top-2' : 'top-4']"></span>
                         </div>
                     </button>
                 </div>
             </div>
 
-            <!-- Mobile Menu -->
-            <transition enter-active-class="transition duration-300 ease-out"
-                enter-from-class="opacity-0 -translate-y-4" enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-4">
-                <div v-show="mobileMenuOpen"
-                    class="absolute top-0 left-0 w-full bg-white shadow-xl pt-24 pb-10 px-6 border-b border-gray-100 md:hidden">
-                    <div class="flex flex-col space-y-6 text-center">
-                        <!-- Navigation Links -->
-                        <Link href="/"
-                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
-                            Inicio
-                        </Link>
+            <transition enter-active-class="transition duration-400 ease-out"
+                enter-from-class="opacity-0 -translate-y-full" enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition duration-300 ease-in" leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-full">
+                <div v-show="mobileMenuOpen" class="absolute top-0 left-0 w-full h-screen bg-[#1B2632] shadow-2xl pt-28 pb-10 px-8 border-b border-[#C9C1B1]/10 md:hidden flex flex-col overflow-y-auto">
+                    <div class="flex flex-col space-y-8 text-center flex-1">
+                        
+                        <Link href="/" class="text-sm font-bold uppercase tracking-[0.2em] text-[#EEE9DF] hover:text-[#FFB162]">Inicio</Link>
 
-                        <!--  Eventos con dropdown mobile -->
-                        <div class="flex flex-col space-y-3">
-                            <span class="text-sm font-bold uppercase tracking-widest text-slate-900">
-                                Eventos
-                            </span>
-                            <Link :href="route('events.index')"
-                                class="text-xs text-slate-600 hover:text-slate-900 pl-4">
-                                → Eventos vigentes
-                            </Link>
-                            <Link :href="route('future-events.map')"
-                                class="text-xs text-slate-600 hover:text-slate-900 pl-4">
-                                → Próximos eventos
-                            </Link>
+                        <div class="flex flex-col space-y-4">
+                            <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#FFB162]">Eventos</span>
+                            <Link :href="route('events.index')" class="text-sm tracking-widest text-[#C9C1B1] hover:text-[#EEE9DF]">Vigentes</Link>
+                            <Link :href="route('future-events.map')" class="text-sm tracking-widest text-[#C9C1B1] hover:text-[#EEE9DF]">Próximos</Link>
                         </div>
 
-                        <Link :href="route('gallery.index')"
-                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
-                            Galería
-                        </Link>
-                        <Link :href="route('photographers.index')"
-                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600">
-                            Fotógrafos
-                        </Link>
+                        <Link :href="route('gallery.index')" class="text-sm font-bold uppercase tracking-[0.2em] text-[#EEE9DF] hover:text-[#FFB162]">Galería</Link>
+                        <Link :href="route('photographers.index')" class="text-sm font-bold uppercase tracking-[0.2em] text-[#EEE9DF] hover:text-[#FFB162]">Fotógrafos</Link>
 
-                        <!-- Carrito Mobile -->
-                        <Link v-if="user" :href="route('cart.index')"
-                            class="text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 flex items-center justify-center gap-2">
+                        <Link v-if="user" :href="route('cart.index')" class="text-sm font-bold uppercase tracking-[0.2em] text-[#FFB162] flex items-center justify-center gap-3">
                             <ShoppingCartIcon class="w-5 h-5" />
                             Carrito
-                            <span v-if="cartCount > 0"
-                                class="bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                {{ cartCount }}
-                            </span>
+                            <span v-if="cartCount > 0" class="bg-[#FFB162] text-[#1B2632] text-xs font-bold px-2 py-0.5 rounded-full">{{ cartCount }}</span>
                         </Link>
 
-                        <hr class="border-gray-100 w-1/3 mx-auto my-4">
+                        <div class="h-px w-1/3 mx-auto bg-[#C9C1B1]/20 my-4"></div>
 
-                        <!-- Auth Links -->
                         <template v-if="!user">
-                            <Link :href="route('login')" class="text-sm text-slate-600 hover:text-slate-900">
-                                Iniciar Sesión
-                            </Link>
-                            <Link :href="route('register')" class="text-sm font-bold text-slate-900">
-                                Crear Cuenta
-                            </Link>
+                            <Link :href="route('login')" class="text-xs font-bold tracking-widest uppercase text-[#C9C1B1] hover:text-[#EEE9DF]">Iniciar Sesión</Link>
+                            <Link :href="route('register')" class="text-xs font-bold tracking-widest uppercase text-[#FFB162] border border-[#FFB162] py-3 mx-10 rounded-sm">Crear Cuenta</Link>
                         </template>
 
                         <template v-else>
-                            <!-- Admin/Photographer -->
-                            <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route"
-                                class="text-sm font-bold text-slate-900">
+                            <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" class="text-xs font-bold tracking-widest uppercase text-[#FFB162]">
                                 {{ dashboardInfo.text }}
                             </Link>
-
-                            <!-- Usuario Regular -->
                             <template v-else>
-                                <Link v-for="item in dashboardInfo.items" :key="item.route" :href="item.route"
-                                    class="text-sm font-bold text-slate-900 hover:text-slate-600">
+                                <Link v-for="item in dashboardInfo.items" :key="item.route" :href="item.route" class="text-xs font-bold tracking-widest uppercase text-[#C9C1B1] hover:text-[#EEE9DF]">
                                     {{ item.text }}
                                 </Link>
                             </template>
-
-                            <Link :href="route('logout')" method="post" class="text-sm text-red-600">
+                            <Link :href="route('logout')" method="post" class="text-xs font-bold tracking-widest uppercase text-[#A35139] mt-4">
                                 Cerrar Sesión
                             </Link>
                         </template>
@@ -415,38 +312,38 @@ const navigationItems = [
             </transition>
         </nav>
 
-        <main :class="['relative z-0 min-h-screen', isHomePage ? 'pt-0' : 'pt-24']">
+        <main :class="['relative z-0 min-h-screen', isHomePage ? 'pt-0' : 'pt-20']">
             <slot />
         </main>
 
-        <footer class="bg-slate-900 text-white border-t border-slate-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div
-                    class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
+        <footer class="bg-[#111920] text-[#C9C1B1] border-t border-[#C9C1B1]/10">
+            <div class="max-w-7xl mx-auto px-8 md:px-16 py-20">
+                <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-10 md:space-y-0">
+                    
                     <div class="text-center md:text-left">
-                        <span class="text-xl font-sans font-bold tracking-wide block">f33</span>
-                        <span class="text-[0.60rem] uppercase tracking-[0.3em] text-slate-500 block mt-1">Professional
-                            Lorem
-                            ipsum...</span>
+                        <span class="font-['Cormorant_Garamond'] text-4xl font-light tracking-wide block text-[#EEE9DF]">f<em class="italic text-[#FFB162]">3</em>3</span>
+                        <span class="text-[0.60rem] uppercase tracking-[0.4em] text-[#C9C1B1]/50 block mt-2">
+                            Photography & Art
+                        </span>
                     </div>
 
-                    <div class="flex space-x-8 text-xs font-bold uppercase tracking-widest text-slate-400">
-                        <Link :href="route('events.index')" class="hover:text-white transition">Eventos</Link>
-                        <Link :href="route('about')" class="hover:text-white transition">Nosotros</Link>
-                        <Link :href="route('contact.index')"  class="hover:text-white transition">Soporte</Link>
+                    <div class="flex flex-wrap justify-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1]">
+                        <Link :href="route('events.index')" class="hover:text-[#FFB162] transition-colors">Eventos</Link>
+                        <Link :href="route('about')" class="hover:text-[#FFB162] transition-colors">Nosotros</Link>
+                        <Link :href="route('contact.index')" class="hover:text-[#FFB162] transition-colors">Soporte</Link>
                     </div>
                 </div>
 
-                <div
-                    class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-                    <p>© {{ new Date().getFullYear() }} f33 S.A.</p>
-                    <div class="flex space-x-6 mt-4 md:mt-0">
-                        <a href="#" class="hover:text-slate-300 transition">Privacidad</a>
-                        <a href="#" class="hover:text-slate-300 transition">Términos</a>
+                <div class="mt-16 pt-8 border-t border-[#C9C1B1]/10 flex flex-col md:flex-row justify-between items-center text-[11px] tracking-wider text-[#C9C1B1]/50">
+                    <p>© {{ new Date().getFullYear() }} f33 Photography. Todos los derechos reservados.</p>
+                    <div class="flex space-x-8 mt-6 md:mt-0 uppercase tracking-widest text-[9px]">
+                        <a href="#" class="hover:text-[#FFB162] transition-colors">Privacidad</a>
+                        <a href="#" class="hover:text-[#FFB162] transition-colors">Términos</a>
                     </div>
                 </div>
             </div>
         </footer>
+
         <ToastContainer />
         <ConfirmDialog :show="confirmState.show" :title="confirmState.title" :message="confirmState.message"
             :confirm-text="confirmState.confirmText" :cancel-text="confirmState.cancelText" :type="confirmState.type"

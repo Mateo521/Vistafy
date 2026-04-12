@@ -1,7 +1,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
-import MapLayout from '@/Layouts/MapLayout.vue';      //  NUEVO LAYOUT
+import MapLayout from '@/Layouts/MapLayout.vue';      //   LAYOUT
 import FutureEventsMap from '@/Components/FutureEventsMap.vue';
 import axios from 'axios';
 

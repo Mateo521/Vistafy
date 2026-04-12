@@ -60,28 +60,25 @@ class PublicGalleryController extends Controller
             ->take(20)
             ->get()
             ->map(function ($photo) {
-                return [
-                    'id' => $photo->id,
-                    'unique_id' => $photo->unique_id,
-                    'original_url' => $photo->original_path
-                        ? Storage::url($photo->original_path)
-                        : null,
-                    'thumbnail_url' => $photo->thumbnail_path
-                        ? Storage::url($photo->thumbnail_path)
-                        : null,
-                    'watermarked_url' => $photo->watermarked_path
-                        ? Storage::url($photo->watermarked_path)
-                        : null,
-                    'downloads' => $photo->downloads ?? 0,
-                    'created_at' => $photo->created_at->toISOString(),
-                    'event_name' => optional($photo->event)->name,
-                    'event_slug' => optional($photo->event)->slug,
-                    'event_is_private' => optional($photo->event)->is_private,
-                    'photographer_name' => optional($photo->photographer)->business_name
-                        ?? optional($photo->photographer->user)->name
-                        ?? null,
-                ];
-            });
+            return [
+                'id' => $photo->id,
+                'unique_id' => $photo->unique_id,
+                
+                
+                'original_url' => $photo->original_url,
+                'thumbnail_url' => $photo->thumbnail_url,
+                'watermarked_url' => $photo->watermarked_url,
+                
+                'downloads' => $photo->downloads ?? 0,
+                'created_at' => $photo->created_at->toISOString(),
+                'event_name' => optional($photo->event)->name,
+                'event_slug' => optional($photo->event)->slug,
+                'event_is_private' => optional($photo->event)->is_private,
+                'photographer_name' => optional($photo->photographer)->business_name
+                    ?? optional(optional($photo->photographer)->user)->name
+                    ?? null,
+            ];
+        });
 
 
         //  EVENTOS FUTUROS CON COORDENADAS PARA EL MAPA
@@ -140,7 +137,7 @@ class PublicGalleryController extends Controller
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
-            'futureEvents' => $futureEvents,  //  AGREGAR ESTO
+            'futureEvents' => $futureEvents,  //  
             'stats' => $stats,
             'videoList' => $videoFiles,
             'canLogin' => Route::has('login'),
@@ -778,7 +775,7 @@ class PublicGalleryController extends Controller
             $query->whereDate('event_date', $request->date);
         }
 
-        // 3. NUEVO: Filtro por Fotógrafo
+        // 3. : Filtro por Fotógrafo
         if ($request->filled('photographer_id')) {
             $query->where('photographer_id', $request->photographer_id);
         }

@@ -9,7 +9,7 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;        //  ESTA LÍNEA
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
@@ -156,7 +156,7 @@ class PhotoController extends Controller
             }
         }
 
-        //  NUEVO: Decodificar datos faciales Y de dorsales
+        //  : Decodificar datos faciales Y de dorsales
         $facesData = [];
         $bibsData = [];
 
@@ -206,7 +206,7 @@ class PhotoController extends Controller
                     $hasFaces = $photoFaceData && $photoFaceData['count'] > 0;
                     $faceEncodings = $hasFaces ? $photoFaceData['descriptors'] : null;
 
-                    //  NUEVO: Obtener datos de dorsales de esta foto específica
+                    //  : Obtener datos de dorsales de esta foto específica
                     $photoBibData = $bibsData[$index] ?? null;
                     $hasBibs = $photoBibData && !empty($photoBibData['numbers']);
                     $bibNumbers = $hasBibs ? $photoBibData['numbers'] : null;
@@ -219,7 +219,7 @@ class PhotoController extends Controller
                         ]);
                     }
 
-                    //  NUEVO: Log de dorsales detectados
+                    //  : Log de dorsales detectados
                     if ($hasBibs) {
                         \Log::info(" Foto con dorsales detectados", [
                             'index' => $index,
@@ -249,7 +249,7 @@ class PhotoController extends Controller
                         'has_faces' => $hasFaces,
                         'faces_processed_at' => $hasFaces ? now() : null,
 
-                        //  NUEVO: Campos de detección de dorsales
+                        //  : Campos de detección de dorsales
                         'bib_numbers' => $bibNumbers,
                         'bib_processed' => $hasBibs,
                         'bib_processed_at' => $hasBibs ? now() : null,
@@ -261,8 +261,8 @@ class PhotoController extends Controller
                         'original_path' => $photo->original_path,
                         'has_faces' => $photo->has_faces,
                         'num_faces' => $photo->has_faces ? count($photo->face_encodings) : 0,
-                        'bib_numbers' => $photo->bib_numbers, //  NUEVO
-                        'bib_processed' => $photo->bib_processed, //  NUEVO
+                        'bib_numbers' => $photo->bib_numbers, //  
+                        'bib_processed' => $photo->bib_processed, //  
                     ]);
 
                     $uploadedPhotos[] = $photo;
@@ -286,7 +286,7 @@ class PhotoController extends Controller
                 ->where('has_faces', true)
                 ->sum(fn($p) => count($p->face_encodings ?? []));
 
-            //  NUEVO: Contar dorsales detectados
+            //  : Contar dorsales detectados
             $photosWithBibs = collect($uploadedPhotos)->where('bib_processed', true)->count();
             $totalBibs = collect($uploadedPhotos)
                 ->where('bib_processed', true)
@@ -298,8 +298,8 @@ class PhotoController extends Controller
                 'event_id' => $request->event_id,
                 'photos_with_faces' => $photosWithFaces,
                 'total_faces' => $totalFaces,
-                'photos_with_bibs' => $photosWithBibs, //  NUEVO
-                'total_bibs' => $totalBibs, //  NUEVO
+                'photos_with_bibs' => $photosWithBibs, //  
+                'total_bibs' => $totalBibs, //  
             ]);
 
             //  ACTUALIZADO: Mensaje con rostros y dorsales
@@ -419,15 +419,14 @@ class PhotoController extends Controller
             if ($request->hasFile('new_image')) {
                 // Eliminar archivos antiguos
                 if ($photo->original_path) {
-                    Storage::disk('public')->delete($photo->original_path);
+                    Storage::disk('b2')->delete($photo->original_path);
                 }
                 if ($photo->watermarked_path) {
-                    Storage::disk('public')->delete($photo->watermarked_path);
+                    Storage::disk('b2')->delete($photo->watermarked_path);
                 }
                 if ($photo->thumbnail_path) {
-                    Storage::disk('public')->delete($photo->thumbnail_path);
+                    Storage::disk('b2')->delete($photo->thumbnail_path);
                 }
-
                 $processed = $this->imageService->processPhoto($request->file('new_image'), auth()->user()->photographer->id);
 
                 $photo->update([
@@ -487,17 +486,15 @@ class PhotoController extends Controller
         DB::beginTransaction();
 
         try {
-            // Eliminar archivos físicos
             if ($photo->original_path) {
-                Storage::disk('public')->delete($photo->original_path);
+                Storage::disk('b2')->delete($photo->original_path);
             }
             if ($photo->watermarked_path) {
-                Storage::disk('public')->delete($photo->watermarked_path);
+                Storage::disk('b2')->delete($photo->watermarked_path);
             }
             if ($photo->thumbnail_path) {
-                Storage::disk('public')->delete($photo->thumbnail_path);
+                Storage::disk('b2')->delete($photo->thumbnail_path);
             }
-
             // Eliminar registro de la base de datos
             $photo->delete();
 

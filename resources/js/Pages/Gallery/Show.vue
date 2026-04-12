@@ -54,21 +54,17 @@ onUnmounted(() => {
     document.body.style.overflow = '';
 });
 
-
-//  NUEVO: Lógica del carrito
+// Lógica del carrito
 const handlePurchaseClick = () => {
     if (isAuthenticated.value) {
-        // Usuario autenticado: agregar al carrito
         addToCart();
     } else {
-        // Invitado: compra directa
         showEmailModal.value = true;
     }
 };
 
 const addToCart = async () => {
     if (addingToCart.value) return;
-
     addingToCart.value = true;
 
     try {
@@ -76,16 +72,12 @@ const addToCart = async () => {
 
         if (response.data.success) {
             success('Fotografía agregada al carrito');
-
-            //  Disparar evento para actualizar el contador
             window.dispatchEvent(new Event('cart-updated'));
         } else {
             error('Esta foto ya está en tu carrito');
-
         }
     } catch (error) {
         console.error('Error agregando al carrito:', error);
-
         if (error.response) {
             error('Error al agregar al carrito');
         } else {
@@ -96,8 +88,7 @@ const addToCart = async () => {
     }
 };
 
-
-// Para invitados: compra directa como antes
+// Para invitados: compra directa
 const submitPurchase = async () => {
     if (loading.value) return;
 
@@ -130,10 +121,7 @@ const submitPurchase = async () => {
         console.error('Error en compra:', error);
 
         if (error.response?.status === 422 && error.response?.data?.email_exists) {
-            //  Email ya existe
             emailError.value = error.response.data.message;
-
-            // Opcional: Ofrecer ir al login
             if (confirm(error.response.data.message + '\n\n¿Deseas ir a iniciar sesión?')) {
                 window.location.href = route('login');
             }
@@ -148,105 +136,102 @@ const submitPurchase = async () => {
     }
 };
 
+// Placeholder actualizado al Dark Theme
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
     if (!parent.querySelector('.placeholder-institutional')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-gray-100 text-slate-300';
-        placeholder.innerHTML = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>`;
+        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-[#111920]';
+        placeholder.innerHTML = `<span class="font-['Cormorant_Garamond'] text-4xl italic opacity-20 text-[#EEE9DF]">f33</span>`;
         parent.appendChild(placeholder);
     }
 };
 </script>
 
 <template>
-
     <Head :title="`Foto ${photo.unique_id}`" />
 
     <AppLayout>
-        <div class="min-h-screen bg-white">
+        <div class="min-h-screen bg-[#111920] font-['Syne']">
 
-            <div class="border-b border-gray-100 bg-white sticky top-0 z-30">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="border-b border-[#C9C1B1]/10 bg-[#111920]/95 backdrop-blur-md sticky top-0 z-30 pt-24 md:pt-0">
+                <div class="max-w-7xl mx-auto px-8 md:px-16 h-20 flex items-center justify-between">
                     <Link :href="route('gallery.index')"
-                        class="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 flex items-center gap-2 transition-colors">
-                        <ArrowLeftIcon class="w-3 h-3" /> Volver a la galería
+                        class="text-[10px] font-bold uppercase tracking-widest text-[#C9C1B1] hover:text-[#FFB162] flex items-center gap-3 transition-colors">
+                        <ArrowLeftIcon class="w-4 h-4" /> Volver a la galería
                     </Link>
 
-                    <!--  Icono de carrito (solo para usuarios autenticados) -->
                     <Link v-if="isAuthenticated" :href="route('cart.index')"
-                        class="text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-2">
-                        <ShoppingCartIcon class="w-5 h-5" />
+                        class="text-[#C9C1B1] hover:text-[#FFB162] transition-colors flex items-center gap-2 group">
+                        <ShoppingCartIcon class="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span class="text-[10px] font-bold uppercase tracking-widest">Carrito</span>
                     </Link>
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="max-w-7xl mx-auto px-8 md:px-16 py-12 md:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
 
                     <div class="lg:col-span-8">
-                        <div class="bg-gray-50 border border-gray-100 rounded-sm p-2 md:p-8 flex items-center justify-center shadow-inner relative group cursor-zoom-in"
+                        <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-4 md:p-8 flex items-center justify-center shadow-2xl relative group cursor-zoom-in"
                             @click="showFullImage = true">
                             <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                                class="max-w-full max-h-[80vh] object-contain shadow-lg transition-transform duration-300"
+                                class="max-w-full max-h-[75vh] object-contain shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.02]"
                                 @error="handleImageError" />
-                            <div
-                                class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                <InformationCircleIcon class="w-3 h-3" /> Vista previa con marca de agua
+                            
+                            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#111920]/80 backdrop-blur-md border border-[#FFB162]/20 text-[#FFB162] text-[9px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none">
+                                <InformationCircleIcon class="w-4 h-4" /> Vista previa con marca de agua
                             </div>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-4 space-y-8">
+                    <div class="lg:col-span-4 flex flex-col">
 
-                        <div>
-                            <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-1 block">ID: #{{
-                                photo.unique_id }}</span>
-                            <h1 class="text-3xl font-sans font-bold text-slate-900 mb-4 leading-tight">
+                        <div class="mb-10">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#FFB162]">ID: #{{ photo.unique_id }}</span>
+                                <div class="h-px flex-1 bg-[#C9C1B1]/10"></div>
+                            </div>
+                            
+                            <h1 class="text-4xl md:text-5xl font-['Cormorant_Garamond'] text-[#EEE9DF] mb-6 leading-tight">
                                 {{ photo.title || 'Fotografía Artística' }}
                             </h1>
 
-                            <div class="flex flex-wrap gap-2 mb-8">
+                            <div class="flex flex-wrap gap-3 mb-10">
                                 <span v-if="photo.event"
-                                    class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-1 rounded-sm">
+                                    class="text-[9px] font-bold uppercase tracking-widest bg-[#1B2632] border border-[#C9C1B1]/20 text-[#C9C1B1] px-3 py-1.5 shadow-sm">
                                     {{ photo.event.name }}
                                 </span>
-                                <span
-                                    class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2 py-1 rounded-sm">
+                                <span class="text-[9px] font-bold uppercase tracking-widest bg-[#1B2632] border border-[#C9C1B1]/20 text-[#C9C1B1] px-3 py-1.5 shadow-sm">
                                     {{ photo.width }} x {{ photo.height }} px
                                 </span>
                             </div>
 
-                            <div
-                                class="border-t border-b border-gray-100 py-6 mb-6 flex items-baseline justify-between">
-                                <span class="text-sm text-slate-500">Licencia Digital</span>
-                                <span class="text-4xl font-sans font-bold text-slate-900">${{ photo.price }}</span>
+                            <div class="border-y border-[#C9C1B1]/10 py-8 mb-8 flex items-end justify-between">
+                                <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] mb-1">Licencia Digital</span>
+                                <span class="text-5xl font-['Cormorant_Garamond'] text-[#FFB162] leading-none">${{ photo.price }}</span>
                             </div>
 
-                            <!--  Botón actualizado -->
                             <button @click="handlePurchaseClick" :disabled="loading || addingToCart"
-                                class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest py-4 rounded-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                                class="w-full bg-[#FFB162] hover:bg-[#EEE9DF] text-[#1B2632] text-[11px] font-bold uppercase tracking-[0.25em] py-5 transition-all duration-300 shadow-[0_0_20px_rgba(255,177,98,0.2)] hover:shadow-[0_0_30px_rgba(238,233,223,0.3)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group">
 
-                                <!-- Usuario autenticado: Agregar al carrito -->
                                 <template v-if="isAuthenticated">
-                                    <PlusIcon v-if="!addingToCart" class="w-4 h-4" />
-                                    <span v-if="addingToCart">Agregando...</span>
-                                    <span v-else>Agregar al Carrito</span>
+                                    <PlusIcon v-if="!addingToCart" class="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    <span v-if="addingToCart">Procesando...</span>
+                                    <span v-else>Añadir al Carrito</span>
                                 </template>
 
-                                <!-- Invitado: Comprar directo -->
                                 <template v-else>
-                                    <ShoppingCartIcon v-if="!loading" class="w-4 h-4" />
+                                    <ShoppingCartIcon v-if="!loading" class="w-5 h-5 group-hover:scale-110 transition-transform" />
                                     <span v-if="loading">Iniciando...</span>
                                     <span v-else>Comprar Ahora</span>
                                 </template>
                             </button>
 
-                            <p class="text-[10px] text-slate-400 text-center mt-3 leading-relaxed">
+                            <p class="text-[10px] text-[#C9C1B1]/50 text-center mt-5 leading-relaxed tracking-wider uppercase font-bold">
                                 <template v-if="isAuthenticated">
-                                    Agrega al carrito y paga todo junto
+                                    Añade al carrito y paga todo junto
                                 </template>
                                 <template v-else>
                                     Pago seguro a través de Mercado Pago. <br> Entrega inmediata vía email.
@@ -254,27 +239,25 @@ const handleImageError = (e) => {
                             </p>
                         </div>
 
-                        <div class="bg-white border border-gray-200 rounded-sm p-6">
-                            <h3
-                                class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-gray-100 pb-2">
-                                Autor
+                        <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8 mt-auto">
+                            <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
+                                Curaduría Visual Por
                             </h3>
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
+                            <div class="flex items-center gap-5">
+                                <div class="w-14 h-14 bg-[#111920] border border-[#FFB162]/20 rounded-full overflow-hidden flex-shrink-0">
                                     <ProtectedImage v-if="photo.photographer?.profile_photo_url"
                                         :src="photo.photographer.profile_photo_url"
-                                        class="w-full h-full object-cover" />
+                                        class="w-full h-full object-cover grayscale-[0.3]" />
                                     <div v-else
-                                        class="w-full h-full flex items-center justify-center text-slate-400 font-sans font-bold">
-                                        {{ photo.photographer?.business_name?.charAt(0) || 'A' }}
+                                        class="w-full h-full flex items-center justify-center text-[#FFB162] font-['Cormorant_Garamond'] text-2xl">
+                                        {{ photo.photographer?.business_name?.charAt(0) || 'f' }}
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-slate-900">{{ photo.photographer?.business_name ||
-                                        'Fotógrafo' }}</p>
+                                    <p class="text-sm font-bold text-[#EEE9DF] mb-1">{{ photo.photographer?.business_name || 'Fotógrafo Oficial' }}</p>
                                     <Link v-if="photo.photographer?.slug"
                                         :href="route('photographers.show', photo.photographer.slug)"
-                                        class="text-xs text-slate-500 hover:text-slate-900 underline decoration-1 underline-offset-2 transition-colors">
+                                        class="text-[10px] uppercase tracking-[0.2em] font-bold text-[#FFB162] hover:text-[#EEE9DF] border-b border-[#FFB162]/50 hover:border-[#EEE9DF] pb-0.5 transition-colors">
                                         Ver portafolio
                                     </Link>
                                 </div>
@@ -284,20 +267,25 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-                <!-- Fotos relacionadas (sin cambios) -->
-                <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-24 border-t border-gray-100 pt-12">
-                    <h2 class="text-xl font-sans font-bold text-slate-900 mb-8">También podría interesarte</h2>
+                <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-32 border-t border-[#C9C1B1]/10 pt-20">
+                    <div class="flex items-center justify-between mb-10">
+                        <h2 class="text-4xl font-['Cormorant_Garamond'] text-[#EEE9DF]">Obras <em class="italic text-[#C9C1B1]">Similares</em></h2>
+                    </div>
+                    
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         <Link v-for="related in relatedPhotos" :key="related.id"
-                            :href="route('gallery.show', related.unique_id)" class="group block relative">
-                            <div class="aspect-square bg-gray-100 overflow-hidden rounded-sm relative mb-2">
+                            :href="route('gallery.show', related.unique_id)" class="group block relative overflow-hidden bg-[#1B2632] border border-[#C9C1B1]/5 hover:border-[#FFB162]/30 transition-colors">
+                            <div class="aspect-[3/4] relative overflow-hidden">
                                 <ProtectedImage :src="related.thumbnail_url"
-                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale-[0.3] group-hover:grayscale-0"
+                                    class="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105 saturate-[0.5] group-hover:saturate-100"
                                     @error="handleImageError" />
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-[10px] font-mono text-slate-400">#{{ related.unique_id }}</span>
-                                <span class="text-xs font-bold text-slate-900">${{ related.price }}</span>
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#111920]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-4">
+                                    <div class="flex justify-between items-center translate-y-2 group-hover:translate-y-0 transition-transform">
+                                        <span class="text-[9px] font-mono text-[#FFB162] uppercase tracking-widest">#{{ related.unique_id }}</span>
+                                        <span class="text-sm font-bold text-[#EEE9DF] font-['Cormorant_Garamond']">${{ related.price }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </Link>
                     </div>
@@ -305,113 +293,100 @@ const handleImageError = (e) => {
             </div>
         </div>
 
-        <!-- Modal de email (sin cambios - solo para invitados) -->
-        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity"
-                @click="showEmailModal = false">
-            </div>
+        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 font-['Syne']">
+            <div class="absolute inset-0 bg-[#111920]/90 backdrop-blur-md transition-opacity" @click="showEmailModal = false"></div>
 
-            <div
-                class="relative bg-white rounded-sm shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-100">
-                <div class="h-1 w-full bg-slate-900"></div>
+            <div class="relative bg-[#1B2632] border border-[#FFB162]/20 shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-[#FFB162] to-transparent"></div>
 
                 <div class="p-10">
-                    <div class="flex justify-between items-start mb-8">
+                    <div class="flex justify-between items-start mb-8 border-b border-[#C9C1B1]/10 pb-6">
                         <div>
-                            <span
-                                class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 block mb-2">Checkout</span>
-                            <h3 class="text-2xl font-sans font-bold text-slate-900">Datos de Entrega</h3>
+                            <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#FFB162] block mb-2">Checkout Rápido</span>
+                            <h3 class="text-3xl font-['Cormorant_Garamond'] text-[#EEE9DF]">Datos de Entrega</h3>
                         </div>
-                        <button @click="showEmailModal = false" class="text-slate-400 hover:text-slate-900 transition">
+                        <button @click="showEmailModal = false" class="text-[#C9C1B1] hover:text-[#FFB162] transition-colors p-1">
                             <XMarkIcon class="w-6 h-6" />
                         </button>
                     </div>
 
-                    <form @submit.prevent="submitPurchase" class="space-y-6">
+                    <form @submit.prevent="submitPurchase" class="space-y-8">
                         <div>
-                            <label
-                                class="block text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-2 flex items-center gap-2">
-                                <EnvelopeIcon class="w-3 h-3" /> Correo Electrónico
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-[#C9C1B1] mb-3 flex items-center gap-2">
+                                <EnvelopeIcon class="w-4 h-4 text-[#FFB162]" /> Correo Electrónico
                             </label>
                             <input v-model="guestEmail" type="email" required
-                                class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 text-sm py-3 px-4 placeholder-gray-300 transition-colors"
+                                class="w-full bg-[#111920] border border-[#C9C1B1]/20 focus:border-[#FFB162] focus:ring-0 text-[#EEE9DF] text-[13px] py-4 px-4 placeholder-[#C9C1B1]/30 transition-colors outline-none"
                                 placeholder="ejemplo@email.com">
-                            <p v-if="emailError" class="text-red-600 text-xs mt-2 flex items-center gap-1">
-                                <InformationCircleIcon class="w-3 h-3" /> {{ emailError }}
+                            <p v-if="emailError" class="text-[#A35139] text-[10px] uppercase tracking-widest font-bold mt-3 flex items-center gap-1.5">
+                                <InformationCircleIcon class="w-4 h-4" /> {{ emailError }}
                             </p>
                         </div>
 
-                        <label
-                            class="flex items-start cursor-pointer group p-4 border border-gray-100 rounded-sm hover:border-slate-300 transition-colors bg-gray-50/50">
-                            <div class="flex items-center h-5">
+                        <label class="flex items-start cursor-pointer group p-5 border border-[#C9C1B1]/10 bg-[#111920]/50 hover:border-[#FFB162]/50 transition-colors">
+                            <div class="flex items-center h-5 mt-0.5">
                                 <input id="createAccount" v-model="createAccount" type="checkbox"
-                                    class="focus:ring-slate-900 h-4 w-4 text-slate-900 border-gray-300 rounded-sm cursor-pointer">
+                                    class="focus:ring-[#FFB162] h-4 w-4 text-[#FFB162] border-[#C9C1B1]/30 bg-transparent rounded-sm cursor-pointer">
                             </div>
-                            <div class="ml-3">
-                                <span
-                                    class="block text-xs font-bold uppercase tracking-wide text-slate-700 group-hover:text-slate-900 transition-colors">Crear
-                                    cuenta automáticamente</span>
-                                <span class="block text-[10px] text-slate-400 font-light mt-1">
-                                    Guardaremos esta compra en su historial para futuras descargas. Se le enviará una
-                                    contraseña
-                                    temporal.
+                            <div class="ml-4">
+                                <span class="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#EEE9DF] group-hover:text-[#FFB162] transition-colors">
+                                    Crear cuenta automáticamente
+                                </span>
+                                <span class="block text-[11px] text-[#C9C1B1]/60 font-light mt-2 leading-relaxed">
+                                    Guardaremos esta compra en su historial para futuras descargas. Se le enviará una contraseña temporal.
                                 </span>
                             </div>
                         </label>
 
-                        <div class="pt-4 flex flex-col gap-3">
+                        <div class="pt-6 flex flex-col gap-4">
                             <button type="submit" :disabled="loading"
-                                class="w-full py-4 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                                class="w-full py-5 bg-[#FFB162] text-[#1B2632] text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[#EEE9DF] transition-all shadow-[0_0_20px_rgba(255,177,98,0.15)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
                                 <span v-if="loading">Procesando...</span>
-                                <span v-else>Continuar al Pago</span>
-                                <span v-if="!loading" class="text-lg leading-none">→</span>
+                                <span v-else>Continuar al Pago Seguro</span>
+                                <span v-if="!loading" class="text-lg leading-none">&rarr;</span>
                             </button>
 
                             <button type="button" @click="showEmailModal = false"
-                                class="w-full py-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-slate-600 transition">
+                                class="w-full py-4 text-[#C9C1B1] text-[10px] font-bold uppercase tracking-widest hover:text-[#EEE9DF] transition-colors">
                                 Cancelar
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <div class="bg-gray-50 px-10 py-5 border-t border-gray-100 flex justify-center items-center gap-2">
-                    <span class="text-[10px] text-slate-400 uppercase tracking-wider">¿Ya es miembro?</span>
+                <div class="bg-[#111920] border-t border-[#C9C1B1]/10 px-10 py-6 flex justify-center items-center gap-3">
+                    <span class="text-[9px] text-[#C9C1B1] uppercase tracking-[0.2em] font-bold">¿Ya eres miembro?</span>
                     <Link :href="route('login')"
-                        class="text-[10px] font-bold uppercase tracking-wider text-slate-900 border-b border-slate-900 pb-0.5 hover:text-slate-600 hover:border-slate-600 transition">
+                        class="text-[9px] font-bold uppercase tracking-[0.2em] text-[#FFB162] border-b border-[#FFB162]/50 pb-0.5 hover:text-[#EEE9DF] hover:border-[#EEE9DF] transition-colors">
                         Iniciar Sesión
                     </Link>
                 </div>
             </div>
         </div>
 
-        <!--  Modal imagen completa MEJORADO -->
-        <Transition enter-active-class="transition-opacity duration-200" enter-from-class="opacity-0"
-            enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200"
+        <Transition enter-active-class="transition-opacity duration-300" enter-from-class="opacity-0"
+            enter-to-class="opacity-100" leave-active-class="transition-opacity duration-300"
             leave-from-class="opacity-100" leave-to-class="opacity-0">
-            <div v-if="showFullImage" class="fixed top-16 inset-0 z-50 bg-black/95 backdrop-blur-sm"
+            
+            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-[#111920]/98 backdrop-blur-xl"
                 @click="showFullImage = false">
-                <!-- Botón cerrar -->
+                
                 <button @click="showFullImage = false"
-                    class="absolute top-4 right-4 md:top-6 md:right-6 text-white/70 hover:text-white transition-colors z-10 p-2 hover:bg-white/10 rounded-full"
+                    class="absolute top-6 right-6 md:top-8 md:right-10 text-[#C9C1B1] hover:text-[#FFB162] transition-colors z-10 p-2"
                     aria-label="Cerrar">
-                    <XMarkIcon class="w-8 h-8 md:w-10 md:h-10" />
+                    <XMarkIcon class="w-10 h-10 md:w-12 md:h-12" />
                 </button>
 
-                <!-- Contenedor centrado -->
-                <div class="w-full h-full  flex items-center justify-center p-4 md:p-8">
+                <div class="w-full h-full flex items-center justify-center p-8 md:p-16">
                     <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                        class="max-h-[80vh] mx-auto max-w-[80vw] flex items-center h-full object-contain shadow-2xl" @click.stop />
+                        class="max-h-[85vh] mx-auto max-w-[90vw] object-contain shadow-[0_0_50px_rgba(0,0,0,0.8)]" @click.stop />
                 </div>
 
-                <!-- Hint para cerrar -->
-                <div
-                    class="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 text-white/40 text-[10px] md:text-xs uppercase tracking-widest pointer-events-none">
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#C9C1B1]/50 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] pointer-events-none">
                     Presiona ESC o click fuera para cerrar
                 </div>
             </div>
         </Transition>
-
 
     </AppLayout>
 </template>

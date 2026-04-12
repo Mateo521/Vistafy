@@ -175,180 +175,100 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-    <section class="py-24 bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header -->
-            <div class="text-center mb-16">
-                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 block mb-4">
-                    Próximos eventos
-                </span>
-                <h2 class="text-5xl font-sans font-bold text-slate-900 mb-6">
-                    Eventos Futuros
-                </h2>
-                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
-                    Oportunidades exclusivas para fotógrafos profesionales
-                </p>
+    <section class="py-24 bg-[#1B2632] font-['Syne'] relative border-t border-[#C9C1B1]/10">
+        <div class="absolute top-10 right-10 font-['Cormorant_Garamond'] text-[150px] font-light text-[#2C3B4D]/40 leading-none pointer-events-none tracking-tighter">
+            Próximos
+        </div>
 
-                <!-- Total Count -->
+        <div class="max-w-7xl mx-auto px-8 md:px-16 relative z-10">
+            <div class="mb-16">
+                <div class="text-[9px] font-bold tracking-[0.35em] uppercase text-[#FFB162] mb-3 flex items-center gap-3 after:content-[''] after:h-px after:w-12 after:bg-[#A35139]">
+                    Próximos eventos
+                </div>
+                <h2 class="font-['Cormorant_Garamond'] text-5xl md:text-6xl font-light text-[#EEE9DF] mb-4">
+                    Oportunidades <em class="italic text-[#C9C1B1]">exclusivas</em>
+                </h2>
                 <div v-if="totalEvents > 0" class="mt-4">
-                    <span
-                        class="inline-block px-4 py-2 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest rounded-full">
-                        {{ totalEvents }} evento{{ totalEvents !== 1 ? 's' : '' }} disponible{{ totalEvents !== 1 ? 's'
-                            : '' }}
+                    <span class="inline-block px-4 py-2 border border-[#FFB162]/30 text-[#FFB162] text-[10px] font-bold uppercase tracking-widest bg-[#FFB162]/5">
+                        {{ totalEvents }} evento{{ totalEvents !== 1 ? 's' : '' }} disponible{{ totalEvents !== 1 ? 's' : '' }}
                     </span>
                 </div>
-
-                <!--  DEBUG INFO (eliminar después) -->
-                <!--div v-if="!loading" class="mt-4 text-xs text-gray-400">
-                    Debug: {{ allEvents.length }} eventos mostrados | Página {{ currentPage }} | Clics: {{ clickCount }}
-                </div-->
             </div>
 
-            <!-- Loading State (Primera Carga) -->
-            <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div v-for="i in 3" :key="i" class="animate-pulse">
-                    <div class="bg-gray-200 h-64 rounded-sm mb-4"></div>
-                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-                </div>
+            <div v-if="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div v-for="i in 3" :key="i" class="animate-pulse bg-[#2C3B4D] aspect-[4/3] rounded-sm"></div>
             </div>
 
-            <!-- Events Grid -->
             <div v-else-if="allEvents.length > 0">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
                     <div v-for="(event, index) in allEvents" :key="`event-${event.id}-${index}`"
-                        class="group bg-white border border-gray-200 rounded-sm overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                        class="group relative bg-[#2C3B4D]/50 border border-[#C9C1B1]/10 overflow-hidden hover:border-[#FFB162]/50 transition-colors duration-500 flex flex-col">
 
-
-                        <!--div class="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
-                            #{{ index + 1 }} - ID: {{ event.id }}
-                        </div-->
-
-                        <!-- Image -->
-                        <div class="relative h-64 overflow-hidden bg-slate-900">
+                        <div class="relative h-56 overflow-hidden bg-[#1B2632]">
                             <img :src="event.cover_image" :alt="event.title"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 saturate-50 group-hover:saturate-100"
                                 loading="lazy" @error="handleImageError">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#1B2632] to-transparent opacity-80"></div>
 
-                            <!-- Overlay gradient -->
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                            </div>
-
-                            <!-- Days Badge -->
-                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-sm shadow-lg">
-                                <span :class="[
-                                    'inline-flex items-center px-3 py-1 text-xs font-semibold',
-                                    getDaysBadgeColor(event.days_until)
-                                ]">
-                                    <ClockIcon class="w-3 h-3 mr-1" />
+                            <div class="absolute top-4 right-4 bg-[#1B2632] border border-[#C9C1B1]/20">
+                                <span class="inline-flex items-center px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold" :class="getDaysBadgeColor(event.days_until) ? 'text-[#FFB162]' : 'text-[#C9C1B1]'">
                                     {{ getDaysText(event.days_until) }}
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Content -->
-                        <div class="p-6">
-                            <h3
-                                class="text-xl font-sans font-bold text-slate-900 mb-3 group-hover:text-slate-700 transition line-clamp-2">
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="text-[9px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] mb-2">
+                                {{ event.formatted_date }} &bull; {{ event.location }}
+                            </div>
+                            <h3 class="font-['Cormorant_Garamond'] text-2xl text-[#EEE9DF] mb-3 leading-tight group-hover:text-[#FFB162] transition-colors">
                                 {{ event.title }}
                             </h3>
-
-                            <p class="text-sm text-slate-600 mb-4 line-clamp-2">
+                            <p class="text-[13px] text-[#C9C1B1]/80 mb-6 line-clamp-2 leading-relaxed flex-1">
                                 {{ event.description }}
                             </p>
 
-                            <!-- Meta Info -->
-                            <div class="space-y-2 mb-4">
-                                <div class="flex items-center gap-2 text-xs text-slate-500">
-                                    <CalendarIcon class="w-4 h-4" />
-                                    <span>{{ event.formatted_date }}</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-slate-500">
-                                    <MapPinIcon class="w-4 h-4" />
-                                    <span>{{ event.location }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Photographer Info -->
-                            <div class="text-xs text-slate-400 mb-4">
-                                Por {{ event.photographer.business_name }}
-                            </div>
-
-                            <!-- Action Button -->
                             <Link v-if="isPhotographer" :href="`/eventos-futuros/${event.id}`"
-                                class="w-full py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition flex items-center justify-center gap-2 group/btn">
+                                class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFB162] border-t border-[#C9C1B1]/10 pt-4 flex items-center justify-between group/btn hover:text-[#EEE9DF] transition-colors">
                                 Ver Detalles
-                                <ArrowRightIcon class="w-4 h-4 group-hover/btn:translate-x-1 transition" />
+                                <span class="group-hover/btn:translate-x-2 transition-transform">&rarr;</span>
                             </Link>
-                            <div v-else class="text-center py-3 border-2 border-dashed border-gray-300 rounded-sm">
-                                <span class="text-xs text-slate-400 uppercase tracking-wide">Requiere cuenta de
-                                    fotógrafo</span>
+                            <div v-else class="text-[10px] text-center uppercase tracking-widest text-[#C9C1B1]/50 border-t border-[#C9C1B1]/10 pt-4">
+                                Requiere cuenta fotógrafo
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!--  BOTÓN CONDICIONAL CON PROTECCIONES EXTRA -->
                 <div class="text-center">
-                    <!-- CASO 1: Fotógrafo con más páginas → Botón "Cargar Más" -->
-                    <button v-if="isPhotographer && hasMorePages" @click.prevent.stop="loadMore"
-                        :disabled="loadingMore || isLoadingInProgress" type="button"
-                        class="px-8 py-4 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed rounded-sm shadow-lg hover:shadow-xl">
-                        <span v-if="loadingMore" class="flex items-center gap-2 justify-center">
-                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            Cargando...
-                        </span>
+                    <button v-if="isPhotographer && hasMorePages" @click.prevent.stop="loadMore" :disabled="loadingMore || isLoadingInProgress"
+                        class="bg-transparent border border-[#FFB162] text-[#FFB162] px-8 py-4 text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFB162] hover:text-[#1B2632] transition-colors disabled:opacity-50">
+                        <span v-if="loadingMore">Cargando...</span>
                         <span v-else>Cargar Más Eventos</span>
                     </button>
 
-                    <!-- CASO 2: Usuario limitado → CTA "Crear Cuenta" -->
-                    <div v-else-if="showingLimited && totalEvents > 6"
-                        class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-8">
-                        <UserPlusIcon class="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                        <h3 class="text-2xl font-bold text-slate-900 mb-3">
-                            ¿Querés ver más eventos?
-                        </h3>
-                        <p class="text-slate-600 mb-6 max-w-md mx-auto">
-                            Hay <strong>{{ totalEvents - 6 }} eventos más</strong> disponibles para fotógrafos
-                            profesionales
-                        </p>
-
-                        <div class="flex gap-4 justify-center flex-wrap">
-                            <!-- Si NO está autenticado -->
+                    <div v-else-if="showingLimited && totalEvents > 6" class="bg-[#2C3B4D] border border-[#C9C1B1]/20 p-10 max-w-2xl mx-auto">
+                        <h3 class="font-['Cormorant_Garamond'] text-3xl text-[#EEE9DF] mb-2">¿Querés ver más eventos?</h3>
+                        <p class="text-[13px] text-[#C9C1B1] mb-8">Hay <strong>{{ totalEvents - 6 }} eventos más</strong> disponibles para fotógrafos profesionales.</p>
+                        
+                        <div class="flex flex-wrap gap-4 justify-center">
                             <template v-if="!isUserAuthenticated">
-                                <Link :href="route('photographer.register')"
-                                    class="px-8 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition rounded-sm shadow-lg">
-                                    Registrarme como Fotógrafo
+                                <Link :href="route('photographer.register')" class="bg-[#FFB162] text-[#1B2632] px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-[#A35139] hover:text-[#EEE9DF] transition-colors">
+                                    Registrarme
                                 </Link>
-                                <Link :href="route('login')"
-                                    class="px-8 py-3 border-2 border-slate-900 text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-900 hover:text-white transition rounded-sm">
+                                <Link :href="route('login')" class="border border-[#C9C1B1] text-[#C9C1B1] px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:border-[#FFB162] hover:text-[#FFB162] transition-colors">
                                     Iniciar Sesión
                                 </Link>
                             </template>
-
-                            <!-- Si está autenticado pero no es fotógrafo -->
-                            <div v-else
-                                class="text-slate-600 text-sm bg-yellow-50 border border-yellow-200 rounded-lg px-6 py-4">
-                                <p class="font-semibold mb-2"> Acceso Restringido</p>
-                                <p>Contactá al administrador para cambiar tu rol a <strong>Fotógrafo</strong></p>
+                            <div v-else class="text-[11px] text-[#FFB162] tracking-widest uppercase border border-[#FFB162]/30 px-6 py-3">
+                                Contactá al admin para rol de Fotógrafo
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Empty State -->
-            <div v-else class="text-center py-16">
-                <CalendarIcon class="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                <p class="text-slate-400 text-lg">No hay eventos futuros disponibles</p>
+            <div v-else class="text-center py-20">
+                <p class="text-[#C9C1B1] font-['Cormorant_Garamond'] text-2xl italic">No hay eventos futuros disponibles</p>
             </div>
         </div>
     </section>

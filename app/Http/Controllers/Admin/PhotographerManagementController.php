@@ -172,7 +172,7 @@ class PhotographerManagementController extends Controller
     }
 
     /**
-     *  NUEVO: Revertir rechazo (volver a pendiente)
+     *  : Revertir rechazo (volver a pendiente)
      */
     public function revert(Photographer $photographer)
     {

@@ -10,6 +10,8 @@ class SeedImageService
     protected $imageService;
     protected $photoUrls;
 
+    protected $disk = 'b2';
+    
     public function __construct(ImageProcessingService $imageService)
     {
         $this->imageService = $imageService;
@@ -128,26 +130,36 @@ class SeedImageService
     /**
      * Obtener ruta de imagen de evento futuro
      */
-    public function getFutureEventImage($name)
+public function getFutureEventImage($name)
     {
-        $path = "future-events/{$name}.jpg";
+        $localPath = "future-events/{$name}.jpg";
+        $cloudPath = "seeds/future-events/{$name}.jpg";
 
-        if (Storage::disk('public')->exists($path)) {
-            return $path;
+        // Si el archivo existe localmente y NO está en la nube, lo subimos
+        if (Storage::disk('public')->exists($localPath)) {
+            if (!Storage::disk($this->disk)->exists($cloudPath)) {
+                $content = Storage::disk('public')->get($localPath);
+                Storage::disk($this->disk)->put($cloudPath, $content, 'public');
+            }
+            return $cloudPath;
         }
 
         return null;
     }
-
     /**
      * Obtener ruta de imagen de fotógrafo
      */
-    public function getPhotographerImage($index)
+  public function getPhotographerImage($index)
     {
-        $path = "photographers/profiles/photographer_{$index}.jpg"; // 
+        $localPath = "photographers/profiles/photographer_{$index}.jpg";
+        $cloudPath = "seeds/photographers/profiles/photographer_{$index}.jpg";
 
-        if (Storage::disk('public')->exists($path)) {
-            return $path;
+        if (Storage::disk('public')->exists($localPath)) {
+            if (!Storage::disk($this->disk)->exists($cloudPath)) {
+                $content = Storage::disk('public')->get($localPath);
+                Storage::disk($this->disk)->put($cloudPath, $content, 'public');
+            }
+            return $cloudPath;
         }
 
         return null;
@@ -156,12 +168,17 @@ class SeedImageService
     /**
      * Obtener ruta de imagen de banner de fotógrafo
      */
-    public function getPhotographerBanner($index)
+   public function getPhotographerBanner($index)
     {
-        $path = "photographers/banners/banner_{$index}.jpg"; // 
+        $localPath = "photographers/banners/banner_{$index}.jpg";
+        $cloudPath = "seeds/photographers/banners/banner_{$index}.jpg";
 
-        if (Storage::disk('public')->exists($path)) {
-            return $path;
+        if (Storage::disk('public')->exists($localPath)) {
+            if (!Storage::disk($this->disk)->exists($cloudPath)) {
+                $content = Storage::disk('public')->get($localPath);
+                Storage::disk($this->disk)->put($cloudPath, $content, 'public');
+            }
+            return $cloudPath;
         }
 
         return null;

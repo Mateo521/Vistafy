@@ -200,7 +200,7 @@ const formatDate = (dateString) => {
                                     </div>
                                 </div>
 
-                                <!--  NUEVO: Dorsales Detectados -->
+                                <!--  : Dorsales Detectados -->
                                 <div class="px-6 py-3 flex justify-between items-start"
                                     :class="photo.bib_processed && formatBibNumbers(photo.bib_numbers).length > 0 ? 'bg-emerald-50/30' : ''">
                                     <span class="text-xs text-slate-500 flex items-center gap-2 pt-1">

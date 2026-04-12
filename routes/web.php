@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\FutureEventController;
 use Illuminate\Support\Facades\Route;
 use App\Models\ContactMessage; 
+use App\Http\Controllers\Photographer\MercadoPagoOAuthController;
 use Inertia\Inertia;
 
 
@@ -132,7 +133,7 @@ Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name(
 
 /*
 |--------------------------------------------------------------------------
-|  NUEVO: Registro de Fotógrafos (Público)
+|  : Registro de Fotógrafos (Público)
 |--------------------------------------------------------------------------
 */
 
@@ -280,6 +281,17 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     });
 
 
+
+
+    Route::prefix('mercadopago')->name('mercadopago.')->group(function () {
+        // Redirige a MP
+        Route::get('/vincular', [MercadoPagoOAuthController::class, 'redirectToProvider'])->name('auth');
+        // MP nos devuelve acá con el código
+        Route::get('/callback', [MercadoPagoOAuthController::class, 'handleProviderCallback'])->name('callback');
+        // Para desvincular la cuenta
+        Route::get('/desvincular', [MercadoPagoOAuthController::class, 'unlinkAccount'])->name('unlink');
+    });
+    
 
 
 

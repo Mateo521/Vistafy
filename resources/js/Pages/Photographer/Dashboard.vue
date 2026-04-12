@@ -23,36 +23,19 @@ const formatDate = (dateString) => {
     });
 };
 
-// --- CORRECCIÓN DE IMÁGENES ---
 
-// 1. Función inteligente para determinar la URL correcta
 const getImageUrl = (photo) => {
-    // Intenta obtener la propiedad que exista
-    let url = photo.thumbnail_url || photo.thumbnail_path || photo.file_path;
-    
-    if (!url) return null;
 
-    // Si ya empieza con http (ej: Picsum), devolver tal cual
-    if (url.startsWith('http')) {
-        return url;
-    }
-
-    // Si es local y no tiene /storage/, agregarlo
-    if (!url.startsWith('/storage/')) {
-        return `/storage/${url.replace(/^\//, '')}`;
-    }
-
-    return url;
+    return photo.watermarked_url || photo.thumbnail_url || null;
 };
 
-// 2. Manejador de errores para ocultar imagen rota y mostrar SVG
+
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
-    // Mostrar el div con el SVG que está justo debajo (v-else o hermano)
-    // En este caso, como usamos v-if en el template, esto es un fallback de seguridad
+  
     if (parent) {
-        parent.classList.add('bg-slate-100'); // Asegurar fondo gris
+        parent.classList.add('bg-slate-100'); 
     }
 };
 </script>

@@ -52,17 +52,15 @@ const formatDate = (dateString) => {
     });
 };
 
+// Actualizado para el Dark Theme
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
     if (!parent.querySelector('.placeholder-institutional')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-gray-100';
+        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-[#111920]';
         placeholder.innerHTML = `
-            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            <span class="font-['Cormorant_Garamond'] text-5xl italic opacity-20 text-[#EEE9DF]">f33</span>
         `;
         parent.appendChild(placeholder);
     }
@@ -73,179 +71,183 @@ const handleImageError = (e) => {
     <Head title="Archivo de eventos" />
 
     <AppLayout>
-        <div class="bg-white border-b border-gray-100 pt-24 pb-12 md:pt-32 md:pb-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-[#111920] pt-32 pb-16 md:pt-40 md:pb-20 font-['Syne'] relative overflow-hidden">
+            <div class="absolute -top-10 right-0 font-['Cormorant_Garamond'] text-[150px] md:text-[200px] font-light text-[#1B2632] opacity-50 leading-none pointer-events-none select-none">
+                ARCHIVO
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-8 md:px-16 relative z-10">
                 <div class="max-w-3xl">
-                    <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                    <span class="text-[10px] font-bold tracking-[0.3em] text-[#FFB162] uppercase mb-4 block flex items-center gap-3 after:content-[''] after:h-px after:w-12 after:bg-[#A35139]">
                         Galería Oficial
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900 mb-6">
-                        Archivo de eventos
+                    <h1 class="text-5xl md:text-7xl font-['Cormorant_Garamond'] font-light text-[#EEE9DF] mb-6 leading-tight">
+                        Archivo de <em class="italic text-[#C9C1B1]">eventos</em>
                     </h1>
-                    <p class="text-lg text-slate-500 font-light leading-relaxed">
+                    <p class="text-[14px] md:text-base text-[#C9C1B1] font-light leading-relaxed max-w-xl">
                         Explorá nuestra colección cronológica. Usá las herramientas de búsqueda para filtrar por ubicación, fecha o profesional.
                     </p>
                 </div>
             </div>
         </div>
 
-        <div class="min-h-screen bg-gray-50 py-12 md:py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="min-h-screen bg-[#111920] py-12 md:py-20 font-['Syne']">
+            <div class="max-w-7xl mx-auto px-8 md:px-16">
                 
-                <div class="bg-white border border-gray-200 p-6 mb-12 rounded-sm shadow-sm">
+                <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8 mb-16 shadow-2xl">
                     <form @submit.prevent="submitFilters">
-                        <div class="flex flex-col lg:flex-row gap-4">
+                        <div class="flex flex-col lg:flex-row gap-6">
                             
                             <div class="flex-1 relative">
                                 <input 
                                     v-model="form.search" 
                                     type="text"
                                     placeholder="Buscar por nombre, ciudad o ubicación..."
-                                    class="w-full pl-10 pr-4 py-3 rounded-sm border-gray-300 text-sm focus:border-slate-900 focus:ring-0 placeholder-gray-400 transition-colors" 
+                                    class="w-full pl-12 pr-4 py-4 bg-[#111920] border border-[#C9C1B1]/20 text-[#EEE9DF] text-[13px] focus:border-[#FFB162] focus:ring-0 placeholder-[#C9C1B1]/40 transition-colors rounded-none outline-none" 
                                 />
-                                <div class="absolute left-3 top-3 text-slate-400">
+                                <div class="absolute left-4 top-4 text-[#FFB162]">
                                     <MagnifyingGlassIcon class="w-5 h-5" />
                                 </div>
                             </div>
 
-                            <div class="flex gap-3">
+                            <div class="flex gap-4">
                                 <button type="button" @click="showFilters = !showFilters" 
                                     :class="[
-                                        'px-6 py-3 rounded-sm border text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-2 whitespace-nowrap',
+                                        'px-8 py-4 border text-[10px] font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-3 whitespace-nowrap',
                                         showFilters 
-                                            ? 'bg-slate-100 border-slate-300 text-slate-900' 
-                                            : 'bg-white border-gray-300 text-slate-600 hover:border-slate-900 hover:text-slate-900'
+                                            ? 'bg-[#FFB162]/10 border-[#FFB162] text-[#FFB162]' 
+                                            : 'bg-[#111920] border-[#C9C1B1]/20 text-[#C9C1B1] hover:border-[#FFB162] hover:text-[#FFB162]'
                                     ]">
                                     <AdjustmentsHorizontalIcon class="w-4 h-4" />
                                     <span>Filtros Avanzados</span>
                                 </button>
                                 
                                 <button type="submit" 
-                                    class="bg-slate-900 text-white px-8 py-3 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition shadow-sm">
+                                    class="bg-[#FFB162] text-[#1B2632] px-10 py-4 text-[10px] font-bold uppercase tracking-widest hover:bg-[#EEE9DF] transition-colors shadow-lg">
                                     Buscar
                                 </button>
                             </div>
                         </div>
 
-                        <div v-show="showFilters" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 mt-6 border-t border-gray-100 animate-fade-in-down">
+                        <div v-show="showFilters" class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 mt-8 border-t border-[#C9C1B1]/10 animate-fade-in-down">
                             
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Fecha del Evento</label>
+                                <label class="block text-[9px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] mb-3">Fecha del Evento</label>
                                 <div class="relative">
                                     <input 
                                         v-model="form.date"
                                         type="date" 
-                                        class="w-full rounded-sm border-gray-300 text-sm focus:border-slate-900 focus:ring-0 text-slate-700"
+                                        class="w-full py-3 px-4 border border-[#C9C1B1]/20 bg-[#111920] text-[#EEE9DF] text-[13px] focus:border-[#FFB162] focus:ring-0 appearance-none outline-none rounded-none [color-scheme:dark]"
                                     >
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Fotógrafo</label>
-                                <select 
-                                    v-model="form.photographer_id"
-                                    class="w-full rounded-sm border-gray-300 text-sm focus:border-slate-900 focus:ring-0 bg-white text-slate-700"
-                                >
-                                    <option value="">Todos los fotógrafos</option>
-                                    <option v-for="photographer in photographers" :key="photographer.id" :value="photographer.id">
-                                        {{ photographer.business_name || photographer.user?.name }}
-                                    </option>
-                                </select>
+                                <label class="block text-[9px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] mb-3">Fotógrafo</label>
+                                <div class="relative">
+                                    <select 
+                                        v-model="form.photographer_id"
+                                        class="w-full py-3 pl-4 pr-10 border border-[#C9C1B1]/20 bg-[#111920] text-[#EEE9DF] text-[13px] focus:border-[#FFB162] focus:ring-0 appearance-none outline-none rounded-none"
+                                    >
+                                        <option value="" class="bg-[#1B2632]">Todos los fotógrafos</option>
+                                        <option v-for="photographer in photographers" :key="photographer.id" :value="photographer.id" class="bg-[#1B2632]">
+                                            {{ photographer.business_name || photographer.user?.name }}
+                                        </option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#FFB162]">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="md:col-span-2 flex justify-end">
                                 <button type="button" @click="clearFilters" 
-                                    class="text-xs font-bold uppercase tracking-widest text-red-600 hover:text-red-800 flex items-center gap-1 transition border-b border-transparent hover:border-red-600 pb-0.5">
-                                    <XMarkIcon class="w-4 h-4" />
+                                    class="text-[9px] font-bold uppercase tracking-[0.2em] text-[#A35139] hover:text-[#FFB162] flex items-center gap-2 transition-colors border-b border-[#A35139] hover:border-[#FFB162] pb-1">
+                                    <XMarkIcon class="w-3.5 h-3.5" />
                                     Limpiar todos los filtros
                                 </button>
                             </div>
                         </div>
                     </form>
 
-                    <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-slate-400">
+                    <div class="mt-8 pt-6 border-t border-[#C9C1B1]/10 flex justify-between items-center text-[10px] text-[#C9C1B1] uppercase tracking-[0.2em]">
                         <span>
-                            Mostrando <strong class="text-slate-900">{{ events.data.length }}</strong> resultados
+                            Mostrando <strong class="text-[#FFB162] text-[12px]">{{ events.data.length }}</strong> resultados
                         </span>
-                        <span v-if="form.search || form.date || form.photographer_id" class="text-slate-500">
+                        <span v-if="form.search || form.date || form.photographer_id" class="text-[#A35139] font-bold">
                             Filtros activos
                         </span>
                     </div>
                 </div>
 
-                <div v-if="!events.data || events.data.length === 0" class="flex flex-col items-center justify-center py-24 border border-dashed border-gray-300 rounded-sm bg-white">
-                    <div class="w-16 h-16 text-gray-300 mb-4">
+                <div v-if="!events.data || events.data.length === 0" class="flex flex-col items-center justify-center py-32 border border-dashed border-[#C9C1B1]/20 bg-[#1B2632]">
+                    <div class="w-16 h-16 text-[#FFB162] opacity-50 mb-6">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                     </div>
-                    <h3 class="text-xl font-sans font-medium text-slate-900 mb-2">Sin resultados</h3>
-                    <p class="text-slate-500 mb-8 font-light max-w-md text-center">No encontramos eventos que coincidan con sus criterios de búsqueda.</p>
+                    <h3 class="text-3xl font-['Cormorant_Garamond'] text-[#EEE9DF] mb-3">Sin resultados</h3>
+                    <p class="text-[#C9C1B1] text-[13px] font-light mb-8 max-w-md text-center">No encontramos eventos que coincidan con sus criterios de búsqueda.</p>
                     <button @click="clearFilters"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-1 hover:text-slate-600 hover:border-slate-600 transition">
+                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFB162] border-b border-[#FFB162] pb-1 hover:text-[#EEE9DF] hover:border-[#EEE9DF] transition-colors">
                         Ver todos los eventos
                     </button>
                 </div>
 
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     <Link v-for="event in events.data" :key="event.id" :href="route('events.show', event.slug)"
-                        class="group flex flex-col bg-white border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-500 ease-out rounded-sm">
+                        class="group flex flex-col bg-[#1B2632] border border-[#C9C1B1]/10 hover:border-[#FFB162]/50 transition-colors duration-500 overflow-hidden relative">
                         
-                        <div class="relative h-64 overflow-hidden bg-gray-100 border-b border-gray-100">
+                        <div class="relative h-64 overflow-hidden bg-[#111920]">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url"
                                 :alt="event.name"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter saturate-[0.7] group-hover:saturate-100" 
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter saturate-[0.6] group-hover:saturate-100" 
                                 @error="handleImageError" 
                             />
 
-                            <div v-else class="w-full h-full flex items-center justify-center bg-gray-100">
-                                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#1B2632] via-transparent to-transparent opacity-90"></div>
 
-                            <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-start">
-                                <span class="bg-white/95 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-900 shadow-sm border border-gray-100">
+                            <div class="absolute top-4 left-4 flex justify-between items-start z-10">
+                                <span class="bg-[#1B2632]/80 backdrop-blur-md border border-[#C9C1B1]/20 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[#FFB162] shadow-xl">
                                     {{ formatDate(event.event_date) }}
                                 </span>
                             </div>
                         </div>
 
-                        <div class="p-6 flex-1 flex flex-col">
-                            <h3 class="text-xl font-sans font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors">
+                        <div class="p-8 flex-1 flex flex-col relative z-10">
+                            <h3 class="text-3xl font-['Cormorant_Garamond'] text-[#EEE9DF] mb-4 line-clamp-2 group-hover:text-[#FFB162] transition-colors leading-tight">
                                 {{ event.name }}
                             </h3>
 
-                            <p v-if="event.description" class="text-slate-500 text-sm font-light mb-6 line-clamp-3 leading-relaxed">
+                            <p v-if="event.description" class="text-[#C9C1B1]/80 text-[13px] font-light mb-8 line-clamp-3 leading-relaxed">
                                 {{ event.description }}
                             </p>
 
-                            <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
-                                <div v-if="event.location" class="flex items-center text-slate-500">
-                                    <MapPinIcon class="w-3 h-3 mr-1.5" />
-                                    <span class="uppercase tracking-wide truncate max-w-[120px]">{{ event.location }}</span>
+                            <div class="mt-auto pt-6 border-t border-[#C9C1B1]/10 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em]">
+                                <div v-if="event.location" class="flex items-center text-[#C9C1B1]">
+                                    <MapPinIcon class="w-3.5 h-3.5 mr-1.5 text-[#FFB162]" />
+                                    <span class="truncate max-w-[120px]">{{ event.location }}</span>
                                 </div>
                                 <div v-else></div>
 
-                                <span class="text-slate-900 font-bold uppercase tracking-wider group-hover:underline decoration-1 underline-offset-4">
-                                    Ver Galería
+                                <span class="text-[#FFB162] group-hover:text-[#EEE9DF] transition-colors flex items-center gap-2">
+                                    Ver Galería <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
                                 </span>
                             </div>
                         </div>
                     </Link>
                 </div>
 
-                <div v-if="events.data && events.data.length > 0 && events.last_page > 1" class="mt-16 border-t border-gray-200 pt-8">
-                    <div class="flex items-center justify-center gap-2">
+                <div v-if="events.data && events.data.length > 0 && events.last_page > 1" class="mt-20 flex justify-center">
+                    <div class="flex items-center gap-2 bg-[#1B2632] p-2 border border-[#C9C1B1]/10 shadow-xl">
                         <template v-for="(link, index) in events.links" :key="index">
                             <Link v-if="link.url" :href="link.url" 
-                                class="px-4 py-2 text-sm font-medium transition-colors border border-transparent rounded-sm"
+                                class="min-w-[40px] h-10 flex items-center justify-center px-4 text-[11px] font-bold transition-colors"
                                 :class="link.active 
-                                    ? 'bg-slate-900 text-white border-slate-900' 
-                                    : 'text-slate-600 hover:text-slate-900 hover:border-slate-300'"
+                                    ? 'bg-[#FFB162] text-[#1B2632]' 
+                                    : 'text-[#C9C1B1] hover:bg-[#2C3B4D] hover:text-[#EEE9DF]'"
                             >
                                 <span v-html="link.label"></span>
                             </Link>
-                            <span v-else v-html="link.label" class="px-4 py-2 text-sm font-medium text-gray-300"></span>
+                            <span v-else v-html="link.label" class="min-w-[40px] h-10 flex items-center justify-center px-4 text-[11px] font-bold text-[#C9C1B1]/30"></span>
                         </template>
                     </div>
                 </div>
@@ -262,5 +264,15 @@ const handleImageError = (e) => {
 }
 .animate-fade-in-down {
     animation: fadeInDown 0.3s ease-out;
+}
+
+/* Fuerza el ícono de calendario en Chrome a ser blanco/claro en modo oscuro */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.5;
+    cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.8;
 }
 </style>

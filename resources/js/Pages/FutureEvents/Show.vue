@@ -9,7 +9,8 @@ import {
     ClockIcon,
     UserIcon,
     EnvelopeIcon,
-    ArrowRightIcon
+    ArrowRightIcon,
+    CameraIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -19,7 +20,7 @@ const props = defineProps({
 });
 
 /**
- *  Formatear días hasta el evento
+ * Formatear días hasta el evento
  */
 const getDaysText = computed(() => {
     const days = Math.round(props.event.days_until);
@@ -36,17 +37,16 @@ const getDaysText = computed(() => {
 });
 
 /**
- *  Color del badge según proximidad
+ * Color del badge según proximidad (Adaptado al Dark Theme)
  */
 const getDaysBadgeColor = computed(() => {
     const days = Math.round(props.event.days_until);
 
-    if (days < 0) return 'bg-gray-100 text-gray-700';
-    if (days === 0) return 'bg-red-100 text-red-700';
-    if (days === 1) return 'bg-orange-100 text-orange-700';
-    if (days <= 7) return 'bg-yellow-100 text-yellow-700';
-    if (days <= 30) return 'bg-blue-100 text-blue-700';
-    return 'bg-green-100 text-green-700';
+    if (days < 0) return 'border-[#C9C1B1]/30 text-[#C9C1B1] bg-[#1B2632]';
+    if (days === 0) return 'border-[#FFB162] text-[#FFB162] bg-[#FFB162]/10';
+    if (days === 1) return 'border-[#FFB162]/70 text-[#FFB162] bg-[#FFB162]/5';
+    if (days <= 7) return 'border-[#EEE9DF]/50 text-[#EEE9DF] bg-[#EEE9DF]/5';
+    return 'border-[#C9C1B1]/40 text-[#EEE9DF] bg-[#1B2632]/50';
 });
 
 const handleImageError = (e) => {
@@ -54,12 +54,9 @@ const handleImageError = (e) => {
     const parent = e.target.parentElement;
     if (parent && !parent.querySelector('.placeholder')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder w-full h-full flex items-center justify-center bg-gray-100';
+        placeholder.className = 'placeholder w-full h-full flex items-center justify-center bg-[#1B2632]';
         placeholder.innerHTML = `
-            <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            <span class="font-['Cormorant_Garamond'] text-6xl italic opacity-20 text-[#EEE9DF]">f33</span>
         `;
         parent.appendChild(placeholder);
     }
@@ -71,56 +68,46 @@ const handleImageError = (e) => {
     <Head :title="event.title" />
 
     <AppLayout>
-        <!--  HERO: Imagen Completa del Evento -->
-        <section class="relative min-h-[70vh] bg-slate-900 overflow-hidden">
-            <!-- Imagen de Fondo -->
+        <section class="relative min-h-[70vh] bg-[#111920] overflow-hidden font-['Syne']">
             <div class="absolute inset-0">
-                <img :src="event.cover_image" :alt="event.title" class="w-full h-full object-cover opacity-50"
+                <img :src="event.cover_image" :alt="event.title" class="w-full h-full object-cover opacity-40 saturate-[0.6]"
                     @error="handleImageError" />
             </div>
 
-            <!-- Overlay Gradient -->
-            <div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/70 to-slate-900"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#111920] via-[#111920]/60 to-transparent"></div>
 
-            <!-- Botón Volver -->
-            <div class="absolute top-24 left-0 w-full px-4 sm:px-6 lg:px-8 z-10">
+            <div class="absolute top-32 left-0 w-full px-8 md:px-16 z-10 max-w-7xl mx-auto left-0 right-0">
                 <Link :href="route('home')"
-                    class="inline-flex items-center text-white/70 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors group">
+                    class="inline-flex items-center text-[#C9C1B1] hover:text-[#FFB162] text-[10px] font-bold uppercase tracking-[0.2em] transition-colors group">
                     <ArrowLeftIcon class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Volver
+                    Volver al inicio
                 </Link>
             </div>
 
-            <!-- Contenido Principal -->
             <div class="relative z-10 h-full min-h-[70vh] flex items-end">
-                <div class="w-full px-4 sm:px-6 lg:px-8 py-12">
+                <div class="w-full px-8 md:px-16 py-16">
                     <div class="max-w-7xl mx-auto">
-                        <!-- Badge de Proximidad -->
-                        <div class="mb-4">
+                        <div class="mb-6">
                             <span :class="[
-                                'inline-flex items-center px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-wider',
+                                'inline-flex items-center px-4 py-2 rounded-none border text-[9px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm',
                                 getDaysBadgeColor
                             ]">
-                                <ClockIcon class="w-4 h-4 mr-2" />
+                                <ClockIcon class="w-3.5 h-3.5 mr-2" />
                                 {{ getDaysText }}
                             </span>
                         </div>
 
-                        <!-- Título -->
-                        <h1
-                            class="text-4xl md:text-6xl lg:text-7xl font-sans font-bold text-white mb-6 max-w-7xl leading-tight">
+                        <h1 class="text-5xl md:text-7xl lg:text-8xl font-['Cormorant_Garamond'] font-light text-[#EEE9DF] mb-6 max-w-5xl leading-[0.95]">
                             {{ event.title }}
                         </h1>
 
-                        <!-- Meta Info -->
-                        <div class="flex flex-wrap items-center gap-6 text-white/90 text-base md:text-lg">
+                        <div class="flex flex-wrap items-center gap-6 text-[#C9C1B1] text-[11px] font-bold uppercase tracking-[0.2em]">
                             <div class="flex items-center gap-2">
-                                <CalendarIcon class="w-5 h-5" />
-                                <span>{{ event.formatted_date }} · {{ event.formatted_time }}hs</span>
+                                <CalendarIcon class="w-4 h-4 text-[#FFB162]" />
+                                <span>{{ event.formatted_date }} <span class="mx-1 text-[#C9C1B1]/30">|</span> {{ event.formatted_time }}hs</span>
                             </div>
-                            <span class="w-1 h-1 bg-white/50 rounded-full"></span>
                             <div class="flex items-center gap-2">
-                                <MapPinIcon class="w-5 h-5" />
+                                <MapPinIcon class="w-4 h-4 text-[#FFB162]" />
                                 <span>{{ event.location }}</span>
                             </div>
                         </div>
@@ -129,131 +116,121 @@ const handleImageError = (e) => {
             </div>
         </section>
 
-        <!--  DETALLES DEL EVENTO -->
-        <section class="bg-white py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <section class="bg-[#111920] py-16 font-['Syne']">
+            <div class="max-w-7xl mx-auto px-8 md:px-16">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24">
 
-                    <!-- Columna Principal: Descripción -->
                     <div class="lg:col-span-2">
-    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
-        Sobre el Evento
-    </h2>
-    <div class="prose prose-lg max-w-none mb-12">
-        <p class="text-slate-700 leading-relaxed text-lg">
-            {{ event.description }}
-        </p>
-    </div>
+                        <h2 class="text-[9px] font-bold uppercase tracking-[0.35em] text-[#FFB162] mb-6 flex items-center gap-3 after:content-[''] after:h-px after:w-12 after:bg-[#A35139]">
+                            Sobre el Evento
+                        </h2>
+                        
+                        <div class="prose prose-lg max-w-none mb-16 text-[#C9C1B1]/90">
+                            <p class="leading-relaxed text-[15px] md:text-lg font-light">
+                                {{ event.description }}
+                            </p>
+                        </div>
 
-    <div class="mb-8 p-6 bg-blue-50 border border-blue-100 rounded-sm flex items-start gap-4">
-        <div class="text-blue-500 mt-1">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-        </div>
-        <div>
-            <h3 class="text-lg font-bold text-blue-900 mb-1">
-                ¡Próximamente las fotos oficiales!
-            </h3>
-            <p class="text-blue-800 text-sm">
-                Asistí al evento, disfrutá el momento y sonreí. Una vez terminado, vas a poder buscar y adquirir tus mejores fotos directamente en esta página.
-            </p>
-        </div>
-    </div>
+                        <div class="mb-12 p-8 bg-[#1B2632] border border-[#FFB162]/20 flex flex-col sm:flex-row items-start gap-6 relative overflow-hidden group">
+                            <CameraIcon class="absolute -right-8 -bottom-8 w-48 h-48 text-[#FFB162] opacity-[0.03] transform -rotate-12 group-hover:scale-110 transition-transform duration-700" />
+                            
+                            <div class="text-[#FFB162] mt-1 shrink-0">
+                                <CameraIcon class="w-8 h-8" />
+                            </div>
+                            <div class="relative z-10">
+                                <h3 class="font-['Cormorant_Garamond'] text-2xl md:text-3xl text-[#EEE9DF] mb-2 italic">
+                                    ¡Próximamente las fotos oficiales!
+                                </h3>
+                                <p class="text-[#C9C1B1] text-sm leading-relaxed max-w-xl">
+                                    Asistí al evento, disfrutá el momento y sonreí. Una vez terminado, vas a poder buscar y adquirir tus mejores fotos directamente en esta página con la calidad de <span class="text-[#FFB162] font-bold">f33</span>.
+                                </p>
+                            </div>
+                        </div>
 
-    <div class="p-8 bg-slate-900 text-white rounded-sm">
-        <h3 class="text-2xl font-sans font-bold mb-4">
-            ¿Sos fotógrafo? Cubrí este evento
-        </h3>
-        <p class="text-slate-300 mb-6">
-            Buscamos talentos para capturar los mejores momentos. Postulate, amplía tu portafolio y generá ingresos vendiendo tus fotos a los asistentes a través de nuestra plataforma.
-        </p>
-        
-        <div class="flex flex-wrap gap-4">
-            <button v-if="isPhotographer"
-                class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-lg group">
-                Postularme al Evento
-                <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+                        <div class="p-10 bg-[#2C3B4D] border-l-4 border-[#FFB162] shadow-2xl relative">
+                            <h3 class="font-['Cormorant_Garamond'] text-3xl md:text-4xl text-[#EEE9DF] mb-4">
+                                ¿Sos fotógrafo? <em class="italic text-[#FFB162]">Cubrí este evento</em>
+                            </h3>
+                            <p class="text-[#C9C1B1] text-sm mb-8 max-w-2xl leading-relaxed">
+                                Buscamos talentos para capturar los mejores momentos. Postulate, amplía tu portafolio y generá ingresos vendiendo tus fotos a los asistentes a través de nuestra plataforma.
+                            </p>
+                            
+                            <div class="flex flex-wrap gap-4">
+                                <button v-if="isPhotographer"
+                                    class="inline-flex items-center gap-3 px-8 py-4 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#EEE9DF] transition-colors rounded-sm shadow-lg group">
+                                    Postularme al Evento
+                                    <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
 
-            <template v-else>
-                <Link :href="route('photographer.register')"
-                    class="px-6 py-3 bg-white text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-lg">
-                    Crear cuenta de Fotógrafo
-                </Link>
-                <Link :href="route('login')"
-                    class="px-6 py-3 border-2 border-slate-700 text-slate-300 font-bold text-sm uppercase tracking-widest hover:border-white hover:text-white transition rounded-sm">
-                    Ya tengo cuenta
-                </Link>
-            </template>
-        </div>
-    </div>
-</div>
+                                <template v-else>
+                                    <Link :href="route('photographer.register')"
+                                        class="px-8 py-4 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#EEE9DF] transition-colors rounded-sm shadow-lg text-center">
+                                        Crear cuenta de Fotógrafo
+                                    </Link>
+                                    <Link :href="route('login')"
+                                        class="px-8 py-4 border border-[#C9C1B1]/30 text-[#C9C1B1] font-bold text-[10px] uppercase tracking-[0.2em] hover:border-[#FFB162] hover:text-[#FFB162] transition-colors rounded-sm text-center">
+                                        Ya tengo cuenta
+                                    </Link>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Sidebar: Info del Organizador -->
                     <div class="lg:col-span-1">
-                        <div class="sticky top-24">
-                            <!-- Card: Organizador -->
-                            <div class="bg-gray-50 border border-gray-200 rounded-sm p-6 mb-6">
-                                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+                        <div class="sticky top-32 space-y-6">
+                            
+                            <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8">
+                                <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
                                     Organizado Por
                                 </h3>
                                 <div class="flex items-start gap-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-slate-900 rounded-sm flex items-center justify-center">
-                                            <UserIcon class="w-6 h-6 text-white" />
+                                        <div class="w-14 h-14 bg-[#111920] border border-[#FFB162]/20 rounded-full flex items-center justify-center">
+                                            <UserIcon class="w-6 h-6 text-[#FFB162]" />
                                         </div>
                                     </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 mb-1">
+                                    <div class="pt-1">
+                                        <h4 class="font-bold text-[#EEE9DF] text-sm tracking-wide mb-1">
                                             {{ event.photographer.business_name }}
                                         </h4>
-                                        <p class="text-sm text-slate-600 mb-3">
+                                        <p class="text-xs text-[#C9C1B1] mb-4">
                                             {{ event.photographer.name }}
                                         </p>
                                         <a :href="`mailto:${event.photographer.email}`"
-                                            class="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-900 transition">
-                                            <EnvelopeIcon class="w-4 h-4" />
+                                            class="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#FFB162] hover:text-[#EEE9DF] transition-colors pb-1 border-b border-[#FFB162]/30 hover:border-[#EEE9DF]/50">
+                                            <EnvelopeIcon class="w-3.5 h-3.5" />
                                             Contactar
                                         </a>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Card: Detalles Rápidos -->
-                            <div class="bg-slate-900 text-white rounded-sm p-6">
-                                <h3 class="text-xs font-bold uppercase tracking-widest text-white/60 mb-4">
+                            <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8">
+                                <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
                                     Detalles del Evento
                                 </h3>
-                                <div class="space-y-4">
+                                <div class="space-y-6">
                                     <div>
-                                        <div
-                                            class="flex items-center gap-2 text-white/60 text-xs uppercase tracking-wide mb-1">
-                                            <CalendarIcon class="w-4 h-4" />
-                                            Fecha
+                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase tracking-[0.2em] mb-1.5">
+                                            <CalendarIcon class="w-3.5 h-3.5" /> Fecha
                                         </div>
-                                        <p class="text-white font-medium">
+                                        <p class="text-[#EEE9DF] text-sm font-medium">
                                             {{ event.formatted_date }}
                                         </p>
                                     </div>
                                     <div>
-                                        <div
-                                            class="flex items-center gap-2 text-white/60 text-xs uppercase tracking-wide mb-1">
-                                            <ClockIcon class="w-4 h-4" />
-                                            Hora
+                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase tracking-[0.2em] mb-1.5">
+                                            <ClockIcon class="w-3.5 h-3.5" /> Hora
                                         </div>
-                                        <p class="text-white font-medium">
+                                        <p class="text-[#EEE9DF] text-sm font-medium">
                                             {{ event.formatted_time }}hs
                                         </p>
                                     </div>
                                     <div>
-                                        <div
-                                            class="flex items-center gap-2 text-white/60 text-xs uppercase tracking-wide mb-1">
-                                            <MapPinIcon class="w-4 h-4" />
-                                            Ubicación
+                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase tracking-[0.2em] mb-1.5">
+                                            <MapPinIcon class="w-3.5 h-3.5" /> Ubicación
                                         </div>
-                                        <p class="text-white font-medium">
+                                        <p class="text-[#EEE9DF] text-sm font-medium leading-relaxed">
                                             {{ event.location }}
                                         </p>
                                     </div>
@@ -266,19 +243,22 @@ const handleImageError = (e) => {
             </div>
         </section>
 
-        <!--  CTA Final -->
-        <section v-if="isPhotographer" class="bg-gradient-to-r from-slate-900 to-slate-800 py-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl md:text-4xl font-sans font-bold text-white mb-4">
-                    No te pierdas esta oportunidad
+        <section v-if="isPhotographer" class="bg-[#1B2632] py-24 border-t border-[#C9C1B1]/10 relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-['Cormorant_Garamond'] text-[120px] md:text-[200px] font-light text-[#111920] opacity-50 leading-none pointer-events-none whitespace-nowrap">
+                UNIRSE
+            </div>
+            
+            <div class="max-w-3xl mx-auto px-8 relative z-10 text-center font-['Syne']">
+                <h2 class="font-['Cormorant_Garamond'] text-4xl md:text-5xl font-light text-[#EEE9DF] mb-4">
+                    No te pierdas esta <em class="italic text-[#FFB162]">oportunidad</em>
                 </h2>
-                <p class="text-slate-300 text-lg mb-8">
-                    Postulate ahora y formá parte de {{ event.title }}
+                <p class="text-[#C9C1B1] text-sm tracking-wide mb-10">
+                    Postulate ahora y formá parte de la cobertura oficial de {{ event.title }}.
                 </p>
                 <button
-                    class="inline-flex items-center gap-2 px-10 py-5 bg-white text-slate-900 font-bold text-base uppercase tracking-widest hover:bg-slate-100 transition rounded-sm shadow-2xl group">
+                    class="inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase tracking-[0.25em] hover:bg-[#EEE9DF] transition-all rounded-sm shadow-2xl group">
                     Postularme Ahora
-                    <ArrowRightIcon class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
             </div>
         </section>

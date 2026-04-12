@@ -27,8 +27,8 @@ class Photographer extends Model
         'instagram',
         'facebook',
 
-        'profile_photo',      //  NUEVO
-        'banner_photo',       //  NUEVO
+        'profile_photo',      //  
+        'banner_photo',       //  
         'is_active',
         'is_verified',
         'status',
@@ -201,22 +201,35 @@ class Photographer extends Model
     /**
      * Obtener URL de la foto de perfil
      */
-    public function getProfilePhotoUrlAttribute()
+   public function getProfilePhotoUrlAttribute()
     {
-        if ($this->profile_photo && Storage::disk('public')->exists($this->profile_photo)) {
-            return Storage::url($this->profile_photo);
+        if (!$this->profile_photo) return null;
+
+    
+        if (filter_var($this->profile_photo, FILTER_VALIDATE_URL)) {
+            return $this->profile_photo;
         }
-        return null;
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('b2');
+
+
+        return $disk->temporaryUrl($this->profile_photo, now()->addMinutes(60));
     }
 
 
-
-    public function getBannerPhotoUrlAttribute()
+public function getBannerPhotoUrlAttribute()
     {
-        if ($this->banner_photo && Storage::disk('public')->exists($this->banner_photo)) {
-            return Storage::url($this->banner_photo);
+        if (!$this->banner_photo) return null;
+
+        if (filter_var($this->banner_photo, FILTER_VALIDATE_URL)) {
+            return $this->banner_photo;
         }
-        return null;
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('b2');
+
+        return $disk->temporaryUrl($this->banner_photo, now()->addMinutes(60));
     }
 
     /**

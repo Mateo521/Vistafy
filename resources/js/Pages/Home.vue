@@ -3,23 +3,36 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import RecentPhotosSection from '@/Components/RecentPhotosSection.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLongRightIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
 import FutureEventsSection from '@/Components/FutureEventsSection.vue';
 import FutureEventsMap from '@/Components/FutureEventsMap.vue';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Navigation, Autoplay, EffectFade } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';  
+
+import { 
+    ArrowLongRightIcon, 
+    ArrowLeftIcon, 
+    ArrowRightIcon, 
+    UserIcon, 
+    MapPinIcon, 
+    CalendarIcon 
+} from '@heroicons/vue/24/outline';
+
+
+import { computed } from 'vue';
 
 const prevButton = ref(null);
 const nextButton = ref(null);
-// --- SWIPER ---
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
+
+
 
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     recentEvents: { type: Array, default: () => [] },
-    futureEvents: {        //  AGREGAR ESTO
+    futureEvents: {         
         type: Array,
         default: () => []
     },
@@ -29,7 +42,24 @@ const props = defineProps({
 });
 
 
-// --- Stats Animation ---
+const heroPrevBtn = ref(null);
+const heroNextBtn = ref(null);
+const currentHeroSlide = ref(1);
+
+ 
+const heroEvents = computed(() => props.recentEvents ? props.recentEvents.slice(0, 4) : []);
+const totalHeroSlides = computed(() => heroEvents.value.length + 1);
+
+ 
+const onHeroSlideChange = (swiper) => {
+    currentHeroSlide.value = swiper.realIndex + 1;
+};
+
+
+const formatSlideNum = (num) => String(num).padStart(2, '0');
+
+
+
 const animatedPhotos = ref(0);
 const animatedEvents = ref(0);
 const animatedPhotographers = ref(0);
@@ -57,12 +87,12 @@ function randomVideo() {
 
 
 onMounted(() => {
-    //  Iniciar animación de estadísticas
+    
     animateCount(props.stats.total_events || 0, animatedEvents);
     animateCount(props.stats.total_photos || 0, animatedPhotos);
     animateCount(props.stats.total_photographers || 0, animatedPhotographers);
 
-    // Video logic
+    
     if (videos.value.length === 0) return;
     currentVideo.value = randomVideo();
     const videoEl = promoVideo.value;
@@ -99,215 +129,217 @@ const auth = page.props.auth;
 </script>
 
 <template>
-
     <Head title="Inicio - Institucional" />
 
     <AppLayout>
 
-        <div class="relative h-[85vh] min-h-[600px] overflow-hidden bg-slate-900">
-            <video autoplay muted playsinline class="absolute inset-0 w-full h-full object-cover opacity-60"
-                ref="promoVideo">
-                <source :src="currentVideo" type="video/mp4">
-            </video>
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-            <div class="relative h-full flex flex-col items-center pt-32 text-center px-4">
-                <span
-                    class="text-xs md:text-sm font-bold tracking-[0.3em] text-white/80 uppercase mb-4 animate-fade-in">
-                    Fotografía Profesional
-                </span>
-                <h1
-                    class="text-4xl md:text-6xl lg:text-7xl font-sans font-medium text-white mb-6 drop-shadow-lg max-w-7xl leading-tight animate-fade-in">
-                    Preservando momentos <br /> <span class="italic text-gray-300">irrepetibles.</span>
-                </h1>
-                <p class="text-lg text-gray-300 mb-10 max-w-2xl font-light leading-relaxed animate-fade-in-delayed">
-                    Accedé a tu galería privada o Explorá nuestra cobertura de eventos recientes con la calidad que nos
-                    distingue.
-                </p>
-                <!--Link :href="route('gallery.index')"
-                    class="group relative px-8 py-3 overflow-hidden bg-white text-slate-900 text-sm font-bold uppercase tracking-widest hover:bg-gray-100 transition duration-300">
-                <span class="relative z-10">Buscar mis Fotos</span>
-                </Link-->
-            </div>
-        </div>
-
-        <div class="relative z-20 -mt-64 pb-20 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto">
-
-                <div class="bg-white shadow-2xl rounded-sm border-t-4 border-slate-900">
-
-                    <div
-                        class="p-8 md:p-10 border-b border-gray-100 flex flex-col md:flex-row justify-between items-end gap-4">
-                        <div>
-                            <h2 class="text-3xl font-sans font-bold text-slate-900">Eventos recientes</h2>
-                            <p class="text-slate-500 mt-2 font-light">Deslice para explorar las últimas 15 coberturas.
-                            </p>
-                        </div>
-                        <Link :href="route('events.index')"
-                            class="group flex items-center text-sm font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 transition">
-                            Ver todo el archivo
-                            <ArrowLongRightIcon class="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition" />
+        <div class="relative h-screen min-h-[700px] w-full bg-[#1B2632] overflow-hidden font-['Syne']">
+    
+    <Swiper
+        :modules="[Navigation, Autoplay, EffectFade]"
+        effect="fade"
+        :fadeEffect="{ crossFade: true }"
+        :autoplay="{ delay: 6000, disableOnInteraction: false }"
+        :navigation="{ prevEl: heroPrevBtn, nextEl: heroNextBtn }"
+        @slideChange="onHeroSlideChange"
+        :loop="true"
+        class="h-full w-full"
+    >
+        <SwiperSlide>
+            <div class="w-full h-full relative">
+                <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0" ref="promoVideo">
+                    <source :src="currentVideo" type="video/mp4">
+                </video>
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-[#111920] via-[#111920]/40 to-transparent z-10"></div>
+                
+                <div class="relative z-20 h-full flex flex-col justify-end pb-[12%] pl-24 pr-8 md:pl-32 max-w-7xl mx-auto hero-content-container">
+                    <span class="text-[10px] font-bold tracking-[0.3em] text-[#FFB162] uppercase mb-4 slide-anim">
+                        Fotografía Profesional
+                    </span>
+                    
+                    <h1 class="font-['Cormorant_Garamond'] text-6xl md:text-8xl lg:text-[110px] font-light text-[#EEE9DF] mb-8 leading-[0.9] slide-anim delay-100">
+                        Preservando <br /> <em class="italic text-[#C9C1B1]">momentos</em>
+                    </h1>
+                    
+                    <div class="flex flex-wrap items-center gap-6 slide-anim delay-200">
+                        <Link :href="route('events.index')" class="bg-white text-[#1B2632] px-8 py-3.5 text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFB162] hover:text-[#1B2632] transition-colors rounded-full flex items-center gap-3 shadow-lg group">
+                            Explorar Archivo <ArrowLongRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
                         </Link>
-                    </div>
-
-
-                    <div class="p-8 md:p-10 bg-gray-50/50 relative">
-                        <div v-if="recentEvents && recentEvents.length > 0">
-
-                            <div class="relative"> <!-- relative group -->
-
-                                <Swiper :modules="[Navigation, Autoplay]" :slides-per-view="1" :space-between="30"
-                                    :navigation="{
-                                        prevEl: prevButton,
-                                        nextEl: nextButton,
-                                    }" :autoplay="{ delay: 5000, disableOnInteraction: false }" :breakpoints="{
-                                        '640': { slidesPerView: 1, spaceBetween: 20 },
-                                        '768': { slidesPerView: 2, spaceBetween: 30 },
-                                        '1024': { slidesPerView: 3, spaceBetween: 30 },
-                                    }" class="!static">
-                                    <SwiperSlide v-for="event in recentEvents.slice(0, 15)" :key="event.id"
-                                        class="h-auto">
-                                        <Link :href="route('events.show', event.slug)"
-                                            class="group block bg-white rounded-sm shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 h-full flex flex-col">
-
-                                            <div class="relative h-60 overflow-hidden bg-gray-200 flex-shrink-0">
-                                                <img v-if="event.cover_image_url" :src="event.cover_image_url"
-                                                    :alt="event.name"
-                                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter saturate-[0.8] group-hover:saturate-100"
-                                                    @error="handleImageError" />
-                                                <div v-else
-                                                    class="w-full h-full flex items-center justify-center bg-gray-100">
-                                                    <svg class="w-10 h-10 text-gray-300" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="1"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div
-                                                    class="absolute top-0 right-0 bg-white/95 backdrop-blur px-4 py-2 shadow-sm border-b border-l border-gray-100">
-                                                    <div
-                                                        class="text-[10px] font-bold uppercase tracking-wider text-slate-900">
-                                                        {{ formatDate(event.event_date) }}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="p-6 flex flex-col flex-1">
-                                                <h3
-                                                    class="text-xl font-sans font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-blue-900 transition-colors">
-                                                    {{ event.name }}
-                                                </h3>
-
-                                                <div class="flex flex-col space-y-2 mb-6 flex-1">
-                                                    <div v-if="event.location"
-                                                        class="flex items-center text-xs text-slate-500 uppercase tracking-wide">
-                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        </svg>
-                                                        <span class="truncate">{{ event.location }}</span>
-                                                    </div>
-                                                    <div
-                                                        class="flex items-center text-xs text-slate-500 uppercase tracking-wide">
-                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                        {{ event.photos_count || 0 }} Fotos
-                                                    </div>
-                                                </div>
-
-                                                <div
-                                                    class="w-full text-center py-3 border border-slate-900 text-slate-900 text-xs font-bold uppercase tracking-widest group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">
-                                                    Ver Galería
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </SwiperSlide>
-                                </Swiper>
-
-                                <div ref="prevButton" class="custom-nav-btn prev-btn hidden lg:flex">
-                                    <ArrowLeftIcon class="w-5 h-5" />
-                                </div>
-
-                                <div ref="nextButton" class="custom-nav-btn next-btn hidden lg:flex">
-                                    <ArrowRightIcon class="w-5 h-5" />
-                                </div>
-
-                            </div>
+                        
+                        <div class="flex items-center gap-3 border border-[#C9C1B1]/30 rounded-full px-6 py-3.5 backdrop-blur-sm text-white">
+                            <span class="text-[12px] font-bold text-[#FFB162]">f33</span>
+                            <span class="text-[11px] text-[#C9C1B1] tracking-wide border-l border-[#C9C1B1]/30 pl-3">Agencia de fotografía oficial</span>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </SwiperSlide>
 
-                        <div v-else class="text-center py-20 bg-white border border-dashed border-gray-300 rounded-sm">
-                            <p class="text-slate-400 font-sans text-lg">No hay eventos recientes disponibles.</p>
+        <SwiperSlide v-for="event in heroEvents" :key="event.id">
+            <div class="w-full h-full relative">
+                <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name" class="absolute inset-0 w-full h-full object-cover z-0 hero-img-anim saturate-[0.8]" />
+                <div class="absolute inset-0 bg-gradient-to-t from-[#1B2632] via-[#1B2632]/40 to-transparent z-10"></div>
+                
+                <div class="relative z-20 h-full flex flex-col justify-end pb-[12%] pl-24 pr-8 md:pl-32 max-w-7xl mx-auto hero-content-container">
+                    
+                    <span class="text-[10px] font-bold tracking-[0.3em] text-[#FFB162] uppercase mb-4 slide-anim flex items-center gap-2">
+                        Última Cobertura
+                    </span>
+                    
+                    <h1 class="font-['Cormorant_Garamond'] text-6xl md:text-8xl lg:text-[110px] font-light text-[#EEE9DF] mb-6 leading-[0.9] slide-anim delay-100 line-clamp-2">
+                        {{ event.name }}
+                    </h1>
+
+                    <div v-if="event.photographer" class="flex items-center gap-4 mb-8 slide-anim delay-200">
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden bg-[#2C3B4D] border border-white/20 flex-shrink-0 flex items-center justify-center shadow-lg">
+                            <img v-if="event.photographer.avatar" :src="event.photographer.avatar" class="w-full h-full object-cover" />
+                            <UserIcon v-else class="w-6 h-6 text-white/50" />
+                        </div>
+                        
+                        <div class="flex flex-col justify-center">
+                            <span class="text-[#EEE9DF] text-[13px] md:text-[15px] font-bold tracking-wide">
+                                {{ event.photographer.business_name || event.photographer.name }}
+                            </span>
+                            <span class="text-[#C9C1B1] text-[11px] md:text-[12px] tracking-wider flex items-center gap-1.5 mt-1">
+                                <MapPinIcon class="w-3.5 h-3.5 text-[#FFB162]" />
+                                {{ event.location || 'Ubicación no especificada' }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 border-t border-gray-200 px-8 py-10">
-                        <div
-                            class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200">
-                            <div class="pt-4 md:pt-0">
-                                <span class="block text-4xl font-sans font-bold text-slate-900">{{
-                                    Math.floor(animatedEvents) }}</span>
-                                <span
-                                    class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-2 block">Eventos
-                                    Cubiertos</span>
-                            </div>
-                            <div class="pt-4 md:pt-0">
-                                <span class="block text-4xl font-sans font-bold text-slate-900">{{
-                                    Math.floor(animatedPhotos) }}</span>
-                                <span
-                                    class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-2 block">Fotografías</span>
-                            </div>
-                            <div class="pt-4 md:pt-0">
-                                <span class="block text-4xl font-sans font-bold text-slate-900">{{
-                                    Math.floor(animatedPhotographers) }}</span>
-                                <span
-                                    class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-2 block">Profesionales</span>
-                            </div>
+                    <div class="flex flex-wrap items-center gap-4 slide-anim delay-[300ms]">
+                        <Link :href="route('events.show', event.slug)" class="bg-white text-[#1B2632] px-8 py-3.5 text-[11px] font-bold uppercase tracking-widest hover:bg-[#FFB162] hover:text-[#1B2632] transition-colors rounded-full flex items-center gap-3 shadow-lg group">
+                            Ver Galería <ArrowLongRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
+                        </Link>
+                        
+                        <div class="flex items-center gap-2 border border-[#C9C1B1]/30 rounded-full px-6 py-3.5 backdrop-blur-sm text-white">
+                            <CalendarIcon class="w-4 h-4 text-[#FFB162]"/>
+                            <span class="text-[11px] text-[#C9C1B1] tracking-widest">{{ formatDate(event.event_date) }}</span>
+                            <span class="text-[11px] text-[#C9C1B1] tracking-widest border-l border-[#C9C1B1]/30 pl-3 ml-1">{{ event.photos_count || 0 }} Fotos</span>
                         </div>
                     </div>
 
                 </div>
             </div>
-        </div>
+        </SwiperSlide>
+    </Swiper>
+
+    <div class="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-4">
+        <span class="text-white text-[11px] font-bold tracking-[0.2em] transition-all duration-300">{{ formatSlideNum(currentHeroSlide) }}</span>
+        <div class="w-[1px] h-12 bg-[#C9C1B1]/30"></div>
+        <span class="text-[#C9C1B1]/60 text-[11px] tracking-[0.2em]">{{ formatSlideNum(totalHeroSlides) }}</span>
+    </div>
+
+    <div class="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
+        <button ref="heroPrevBtn" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:border-[#FFB162] hover:bg-[#FFB162] hover:text-[#1B2632] transition-all duration-300 backdrop-blur-sm group">
+            <ArrowLeftIcon class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+        </button>
+        <button ref="heroNextBtn" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:border-[#FFB162] hover:bg-[#FFB162] hover:text-[#1B2632] transition-all duration-300 backdrop-blur-sm group">
+            <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        </button>
+    </div>
+</div>
+
+        <section class="py-24 bg-[#1B2632] relative font-['Syne'] overflow-hidden">
+            <div class="max-w-7xl mx-auto px-8 md:px-16">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+                    <div>
+                        <div class="text-[9px] font-bold tracking-[0.35em] uppercase text-[#FFB162] mb-3 flex items-center gap-3 after:content-[''] after:h-px after:w-12 after:bg-[#A35139]">
+                            Últimos Eventos
+                        </div>
+                        <h2 class="font-['Cormorant_Garamond'] text-4xl md:text-6xl font-light text-[#EEE9DF] leading-none">
+                            Lo que <em class="italic text-[#C9C1B1]">captamos</em> <br />recientemente
+                        </h2>
+                    </div>
+                    <Link :href="route('events.index')" class="text-[11px] font-bold tracking-[0.2em] uppercase text-[#FFB162] border-b border-[#A35139] pb-1 hover:text-[#A35139] transition-colors whitespace-nowrap">
+                        Ver todos &rarr;
+                    </Link>
+                </div>
+
+                <div class="relative group">
+                    <Swiper v-if="recentEvents && recentEvents.length > 0" :modules="[Navigation, Autoplay]" :slides-per-view="1" :space-between="20"
+                        :navigation="{ prevEl: prevButton, nextEl: nextButton }" :autoplay="{ delay: 5000 }" 
+                        :breakpoints="{ '768': { slidesPerView: 2 }, '1024': { slidesPerView: 3 } }" class="!overflow-visible">
+                        
+                        <SwiperSlide v-for="event in recentEvents.slice(0, 15)" :key="event.id">
+                            <Link :href="route('events.show', event.slug)" class="block relative overflow-hidden rounded-sm group/card cursor-none aspect-[4/5] bg-[#2C3B4D]">
+                                <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
+                                    class="w-full h-full object-cover transition-transform duration-[800ms] group-hover/card:scale-105 saturate-[0.8] group-hover/card:saturate-110" @error="handleImageError" />
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#1B2632]/90 via-transparent to-transparent opacity-80 group-hover/card:opacity-100 transition-opacity duration-400"></div>
+                                
+                                <div class="absolute top-5 right-5 w-9 h-9 border border-[#FFB162]/40 flex items-center justify-center text-[#FFB162] opacity-0 -translate-y-2 group-hover/card:opacity-100 group-hover/card:translate-y-0 transition-all duration-300">
+                                    &rarr;
+                                </div>
+
+                                <div class="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover/card:translate-y-0 transition-transform duration-400">
+                                    <div class="text-[9px] font-bold tracking-[0.3em] uppercase text-[#FFB162] mb-1">
+                                        {{ event.location || 'Evento' }}
+                                    </div>
+                                    <h3 class="font-['Cormorant_Garamond'] text-2xl text-[#EEE9DF] leading-tight mb-2">
+                                        {{ event.name }}
+                                    </h3>
+                                    <div class="text-[11px] text-[#C9C1B1] tracking-widest opacity-0 translate-y-2 group-hover/card:opacity-100 group-hover/card:translate-y-0 transition-all duration-400 delay-100">
+                                        {{ formatDate(event.event_date) }} &mdash; {{ event.photos_count || 0 }} Fotos
+                                    </div>
+                                </div>
+                            </Link>
+                        </SwiperSlide>
+                    </Swiper>
+                    <div v-else class="text-center py-20 border border-dashed border-[#2C3B4D] text-[#C9C1B1]">
+                        No hay eventos recientes.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+        <section class="bg-[#2C3B4D] py-20 px-8 relative overflow-hidden font-['Syne'] border-y border-[#FFB162]/10">
+            <div class="absolute -top-16 -right-16 w-80 h-80 rounded-full border border-[#FFB162]/10"></div>
+            <div class="absolute -bottom-10 left-10 w-40 h-40 rounded-full border border-[#FFB162]/20"></div>
+            
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div class="bg-[#1B2632]/50 p-8 border border-[#C9C1B1]/10 text-center md:text-left">
+                    <div class="font-['Cormorant_Garamond'] text-6xl text-[#FFB162] font-light leading-none mb-2">{{ Math.floor(animatedEvents) }}</div>
+                    <div class="text-[10px] tracking-[0.2em] uppercase text-[#C9C1B1] opacity-70">Eventos Cubiertos</div>
+                </div>
+                <div class="bg-[#1B2632]/50 p-8 border border-[#C9C1B1]/10 text-center md:text-left">
+                    <div class="font-['Cormorant_Garamond'] text-6xl text-[#FFB162] font-light leading-none mb-2">{{ Math.floor(animatedPhotos) }}</div>
+                    <div class="text-[10px] tracking-[0.2em] uppercase text-[#C9C1B1] opacity-70">Fotografías</div>
+                </div>
+                <div class="bg-[#1B2632]/50 p-8 border border-[#C9C1B1]/10 text-center md:text-left">
+                    <div class="font-['Cormorant_Garamond'] text-6xl text-[#FFB162] font-light leading-none mb-2">{{ Math.floor(animatedPhotographers) }}</div>
+                    <div class="text-[10px] tracking-[0.2em] uppercase text-[#C9C1B1] opacity-70">Profesionales</div>
+                </div>
+            </div>
+        </section>
 
         <FutureEventsSection :is-authenticated="!!auth?.user" :user-role="auth?.user?.role" />
 
-        <div class="h-[500px] overflow-hidden shadow-lg relative">
+        <div class="h-[500px] overflow-hidden relative border-t border-[#1B2632]">
             <FutureEventsMap :events="futureEvents" />
-
             <div class="absolute bottom-6 left-6 z-20">
-                <Link :href="route('future-events.map')"
-                    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-black/70 text-white text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg hover:bg-black/85 transition">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5" />
-                    </svg>
-
-                    <span>Ver en pantalla completa</span>
+                <Link :href="route('future-events.map')" class="bg-[#1B2632] text-[#EEE9DF] px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#FFB162] hover:text-[#1B2632] transition-colors flex items-center gap-2">
+                    <span>Ver Mapa Completo</span>
                 </Link>
             </div>
         </div>
 
-
-        <div class="py-16">
-            <RecentPhotosSection :photos="recentPhotos" title="Últimas incorporaciones"
-                subtitle="Explora las imágenes más recientes añadidas a nuestro archivo." />
-        </div>
+        <RecentPhotosSection :photos="recentPhotos" title="Últimas incorporaciones" subtitle="Explora las imágenes más recientes añadidas a nuestro archivo." />
 
     </AppLayout>
 </template>
 
 <style>
-/* Animaciones generales */
+@keyframes fade-in { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fade-in 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.animate-fade-in-delayed { opacity: 0; animation: fade-in 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards; }
+
+ 
 @keyframes fade-in {
     from {
         opacity: 0;
@@ -329,20 +361,20 @@ const auth = page.props.auth;
     animation: fade-in 1s ease-out 0.3s forwards;
 }
 
-/* --- BOTONES DE NAVEGACIÓN PERSONALIZADOS --- */
+ 
 .custom-nav-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     width: 60px;
-    /* Tamaño grande para impacto editorial */
+    
     height: 60px;
     background-color: white;
     border: 1px solid #0f172a;
-    /* Slate 900 */
+   
     color: #0f172a;
     display: flex;
-    /* Flex para centrar el icono */
+    
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -351,19 +383,45 @@ const auth = page.props.auth;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Posicionamiento FUERA del Swiper */
-/* Ajusta los valores de px según el margen de tu diseño */
+ 
 .prev-btn {
     left: -80px;
-    /* Lo saca hacia la izquierda */
+     
 }
 
 .next-btn {
     right: -80px;
-    /* Lo saca hacia la derecha */
+    
 }
 
-/* Efecto Hover */
+
+
+
+/* Animaciones exclusivas del nuevo Hero Slider */
+.hero-content-container .slide-anim {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.swiper-slide-active .hero-content-container .slide-anim {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-100 { transition-delay: 150ms !important; }
+.delay-200 { transition-delay: 300ms !important; }
+.delay-\[300ms\] { transition-delay: 450ms !important; }
+
+/* Efecto Ken Burns (zoom suave) para las imágenes de los eventos al estar activas */
+.hero-img-anim {
+    transform: scale(1.08);
+    transition: transform 10s ease-out;
+}
+.swiper-slide-active .hero-img-anim {
+    transform: scale(1);
+}
+ 
 .custom-nav-btn:hover {
     background-color: #0f172a;
     color: white;
@@ -372,7 +430,7 @@ const auth = page.props.auth;
     /* Mantiene el centrado vertical y escala */
 }
 
-/* Estado Desactivado (Swiper le agrega esta clase automáticamente si se configura bien) */
+ 
 .swiper-button-disabled {
     opacity: 0.3;
     cursor: not-allowed;
@@ -382,7 +440,7 @@ const auth = page.props.auth;
     color: #94a3b8;
 }
 
-/* Ocultar botones en móviles para usar swipe */
+ 
 @media (max-width: 1024px) {
     .custom-nav-btn {
         display: none !important;

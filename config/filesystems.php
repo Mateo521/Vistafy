@@ -59,6 +59,17 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'b2' => [
+            'driver' => 's3',  
+            'key' => env('BACKBLAZE_KEY_ID'),
+            'secret' => env('BACKBLAZE_APPLICATION_KEY'),
+            'region' => env('BACKBLAZE_REGION'),
+            'bucket' => env('BACKBLAZE_BUCKET'),
+            'endpoint' => env('BACKBLAZE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'private',
+            'throw' => true,
+        ],
 
     ],
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -99,20 +100,23 @@ class FutureEvent extends Model
     /**
      * Accessor: URL de cover image
      */
-    public function getCoverImageUrlAttribute()
+public function getCoverImageUrlAttribute()
     {
         if (!$this->cover_image) {
-            // Placeholder si no hay imagen
-            return 'https://picsum.photos/1280/720?random=' . $this->id;
+            // Placeholder si no hay imagen (este es público, no necesita firma)
+            return 'https://picsum.photos/seed/event-'.$this->id.'/1280/720';
         }
 
-        // Si ya es una URL completa, devolverla tal cual
+     
         if (filter_var($this->cover_image, FILTER_VALIDATE_URL)) {
             return $this->cover_image;
         }
 
-        //  Construir URL con asset() - funciona para cualquier carpeta
-        return asset('storage/' . $this->cover_image);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('b2');
+
+        // Generamos link temporal de 60 min
+        return $disk->temporaryUrl($this->cover_image, now()->addMinutes(60));
     }
 
 

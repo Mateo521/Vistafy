@@ -43,90 +43,79 @@ const isRecent = (date) => {
 };
 
 const getImageUrl = (photo) => {
-    // 1. Obtener la propiedad disponible (url procesada o path crudo)
-    let url = photo.watermarked_url || photo.thumbnail_url || photo.original_path;
-    
-    if (!url) return null;
-
-    // 2. CORRECCIÓN DE EMERGENCIA:
-    // Si la URL contiene "/storage/http", significa que Laravel la concatenó mal.
-    // La limpiamos tomando todo lo que está después de "/storage/"
-    if (url.includes('/storage/http')) {
-        const parts = url.split('/storage/');
-        return parts[1]; // Devuelve "https://picsum..." limpio
-    }
-
-    // 3. Si es una ruta local simple (ej: "fotos/archivo.jpg"), agregamos /storage/
-    if (!url.startsWith('http') && !url.startsWith('/storage')) {
-        return `/storage/${url}`;
-    }
-
-    return url;
+ 
+    return photo.watermarked_url || photo.thumbnail_url || null;
 };
 </script>
 
 <template>
-    <div class="bg-white py-24 border-t border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-[#111920] py-24 font-['Syne']">
+        <div class="max-w-7xl mx-auto px-8 md:px-16">
             
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-                <div class="max-w-2xl">
-                    <h2 class="text-3xl md:text-4xl font-sans font-bold text-slate-900 mb-3">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                <div>
+                    <div class="text-[9px] font-bold tracking-[0.35em] uppercase text-[#FFB162] mb-3 flex items-center gap-3 after:content-[''] after:h-px after:w-12 after:bg-[#A35139]">
+                        Galería
+                    </div>
+                    <h2 class="font-['Cormorant_Garamond'] text-4xl md:text-5xl font-light text-[#EEE9DF] leading-tight">
                         {{ title }}
                     </h2>
-                    <p class="text-sm text-slate-500 font-light leading-relaxed">
+                    <p class="text-[13px] text-[#C9C1B1] mt-2 max-w-lg">
                         {{ subtitle }}
                     </p>
                 </div>
                 
                 <Link :href="route('gallery.index')" 
-                    class="group flex items-center text-xs font-bold uppercase tracking-widest text-slate-900 hover:text-slate-600 transition-colors pb-1 border-b border-slate-900 hover:border-slate-600 w-fit">
+                    class="group flex items-center text-[11px] font-bold uppercase tracking-[0.2em] text-[#FFB162] pb-1 border-b border-[#A35139] hover:text-[#A35139] transition-colors w-fit">
                     Ver Archivo Completo
-                    <ArrowLongRightIcon class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <span class="ml-2 group-hover:translate-x-1 transition-transform">&rarr;</span>
                 </Link>
             </div>
 
-            <div v-if="photos && photos.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    
+
+            <div v-if="photos && photos.length > 0" class="columns-2 md:columns-3 lg:columns-5 gap-4">
                 <Link 
-                    v-for="photo in photos" 
+                    v-for="(photo, index) in photos" 
                     :key="photo.id"
                     :href="route('gallery.show', photo.unique_id)"
-                    class="group relative aspect-square overflow-hidden bg-gray-100 rounded-sm border border-gray-200 hover:border-slate-400 transition-all duration-300"
+                    class="group relative overflow-hidden bg-[#1B2632] block break-inside-avoid mb-4"
+                    :class="(index % 3 === 0) ? 'aspect-[4/5]' : ((index % 2 === 0) ? 'aspect-[2/3]' : 'aspect-[3/4]')"
                 >
                     <img 
                         v-if="getImageUrl(photo)"
                         :src="getImageUrl(photo)"
                         :alt="`Foto ${photo.unique_id}`"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale-[0.3] group-hover:grayscale-0" 
+                        class="w-full h-full object-cover transition-all duration-[800ms] group-hover:scale-110 saturate-[0.4] group-hover:saturate-110" 
                         loading="lazy"
                         @error="handleImageError"
                     />
                     
-                    <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <div v-else class="w-full h-full flex items-center justify-center text-[#2C3B4D]">
+                        <span class="font-['Cormorant_Garamond'] text-4xl italic opacity-30">f33</span>
                     </div>
 
                     <div v-if="isRecent(photo.created_at)" 
-                        class="absolute top-3 left-3 bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 shadow-sm">
+                        class="absolute top-3 left-3 bg-[#FFB162] text-[#1B2632] text-[9px] font-bold uppercase tracking-widest px-2 py-1">
                         Nuevo
                     </div>
 
-                    <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-slate-900/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="text-white">
-                            <p class="text-[10px] uppercase tracking-widest text-white/60 mb-1">ID: {{ photo.unique_id }}</p>
-                            <div class="flex justify-between items-end">
-                                <span class="text-xs font-bold truncate pr-2">{{ photo.event_name || 'Sin evento' }}</span>
-                                <span v-if="photo.downloads > 0" class="flex items-center text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded-sm">
-                                    <ArrowDownTrayIcon class="w-3 h-3 mr-1" /> {{ photo.downloads }}
-                                </span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#111920] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-5">
+                        <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-400">
+                            <p class="text-[9px] uppercase tracking-widest text-[#FFB162] mb-1">ID: {{ photo.unique_id }}</p>
+                            <div class="font-['Cormorant_Garamond'] text-xl text-[#EEE9DF] leading-tight truncate">
+                                {{ photo.event_name || 'Sin evento' }}
+                            </div>
+                            <div v-if="photo.downloads > 0" class="mt-2 text-[10px] text-[#C9C1B1] font-mono tracking-widest">
+                                &darr; {{ photo.downloads }} DL
                             </div>
                         </div>
                     </div>
                 </Link>
             </div>
 
-            <div v-else class="text-center py-24 border border-dashed border-gray-300 bg-gray-50 rounded-sm">
-                <p class="text-slate-400 text-sm font-light">No se han cargado fotografías recientemente.</p>
+            <div v-else class="text-center py-32 border border-[#C9C1B1]/10 bg-[#1B2632]">
+                <p class="font-['Cormorant_Garamond'] text-2xl italic text-[#C9C1B1]/50">No se han cargado fotografías recientemente.</p>
             </div>
 
         </div>

@@ -14,7 +14,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',      // 'client', 'photographer'
-        'is_admin',  //  NUEVO: true/false para admin
+        'is_admin',  //  : true/false para admin
     ];
 
     protected $hidden = [
@@ -25,7 +25,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'is_admin' => 'boolean', //  NUEVO
+        'is_admin' => 'boolean', //  
     ];
 
     //  Relaciones
@@ -52,10 +52,10 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->is_admin === true; //  ACTUALIZADO: usar campo is_admin
+        return $this->is_admin === true;  
     }
 
-    //  Helper adicional: verificar si es fotógrafo aprobado
+   
     public function isApprovedPhotographer(): bool
     {
         if (!$this->isPhotographer()) {

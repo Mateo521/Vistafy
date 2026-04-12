@@ -11,6 +11,9 @@ class ImageProcessingService
 {
     protected $manager;
 
+  
+    protected $disk = 'b2';
+
     public function __construct()
     {
         $this->manager = new ImageManager(new Driver());
@@ -19,66 +22,55 @@ class ImageProcessingService
     /**
      * Procesar y guardar foto con 3 versiones
      */
-    public function processPhoto($file, $photographerId)
+public function processPhoto($file, $photographerId)
     {
-        \Log::info(' Iniciando procesamiento de imagen');
+        \Log::info(' Iniciando procesamiento y subida a Backblaze B2');
 
-        // Generar nombres únicos
         $uniqueId = $this->generateUniqueId();
         $timestamp = now()->format('Y/m/d');
 
-        // Rutas de almacenamiento
         $basePath = "photos/{$photographerId}/{$timestamp}";
-        $originalPath = "{$basePath}/originals";
-        $watermarkedPath = "{$basePath}/watermarked";
-        $thumbnailPath = "{$basePath}/thumbnails";
-
+        
         try {
-            // Leer la imagen original
             $image = $this->manager->read($file);
             $width = $image->width();
             $height = $image->height();
 
-            \Log::info(' Dimensiones originales', ['width' => $width, 'height' => $height]);
-
-            // 1. Guardar ORIGINAL (sin marca de agua) - PRIVADO
-            $originalFilename = "{$uniqueId}_original.jpg";
-            $originalFullPath = "{$originalPath}/{$originalFilename}";
-
+            // 1. Guardar ORIGINAL 
+            $originalFullPath = "{$basePath}/originals/{$uniqueId}_original.jpg";
             $encoded = $image->toJpeg(95);
-            Storage::disk('public')->put($originalFullPath, (string) $encoded);
-            \Log::info(' Original guardado', ['path' => $originalFullPath]);
+            
+            if (!Storage::disk($this->disk)->put($originalFullPath, (string) $encoded)) {
+                throw new \Exception("Fallo al subir el archivo original a B2");
+            }
+            \Log::info(' Original en la nube', ['path' => $originalFullPath]);
 
-            // 2. Crear PREVIEW CON MARCA DE AGUA (estilo Shutterstock)
-            $watermarkedFilename = "{$uniqueId}_watermarked.jpg";
-            $watermarkedFullPath = "{$watermarkedPath}/{$watermarkedFilename}";
-
+            // 2. Crear PREVIEW CON MARCA DE AGUA
+            $watermarkedFullPath = "{$basePath}/watermarked/{$uniqueId}_watermarked.jpg";
             $watermarkedImage = $this->manager->read($file);
 
-            // Redimensionar si es muy grande (para optimizar)
             if ($watermarkedImage->width() > 1920 || $watermarkedImage->height() > 1920) {
                 $watermarkedImage->scale(width: 1920, height: 1920);
             }
 
-            //  APLICAR MARCA DE AGUA EN PATRÓN
             $watermarkedImage = $this->addTiledWatermark($watermarkedImage, $photographerId);
-
             $encodedWatermarked = $watermarkedImage->toJpeg(85);
-            Storage::disk('public')->put($watermarkedFullPath, (string) $encodedWatermarked);
-            \Log::info(' Watermarked guardado', ['path' => $watermarkedFullPath]);
 
-            // 3. Crear THUMBNAIL (sin marca de agua, es muy pequeño)
-            $thumbnailFilename = "{$uniqueId}_thumb.jpg";
-            $thumbnailFullPath = "{$thumbnailPath}/{$thumbnailFilename}";
+            // Quitamos el 'public' porque el bucket es privado y usamos temporaryUrl
+            if (!Storage::disk($this->disk)->put($watermarkedFullPath, (string) $encodedWatermarked)) {
+                throw new \Exception("Fallo al subir la vista previa a B2");
+            }
 
+            // 3. Crear THUMBNAIL
+            $thumbnailFullPath = "{$basePath}/thumbnails/{$uniqueId}_thumb.jpg";
             $thumbnailImage = $this->manager->read($file);
             $thumbnailImage->cover(400, 400);
-
             $encodedThumb = $thumbnailImage->toJpeg(80);
-            Storage::disk('public')->put($thumbnailFullPath, (string) $encodedThumb);
-            \Log::info(' Thumbnail guardado', ['path' => $thumbnailFullPath]);
 
-            // Retornar las rutas completas
+            if (!Storage::disk($this->disk)->put($thumbnailFullPath, (string) $encodedThumb)) {
+                throw new \Exception("Fallo al subir el thumbnail a B2");
+            }
+
             return [
                 'unique_id' => $uniqueId,
                 'original_path' => $originalFullPath,
@@ -93,17 +85,14 @@ class ImageProcessingService
             ];
 
         } catch (\Exception $e) {
-            \Log::error(' Error en processPhoto', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('❌ Error subiendo a Backblaze', ['error' => $e->getMessage()]);
             throw $e;
         }
     }
+ 
 
-    /**
-     *  MARCA DE AGUA EN PATRÓN (ESTILO SHUTTERSTOCK) - CON TRANSPARENCIA
-     */
+
+
     protected function addTiledWatermark($image, $photographerId)
     {
         try {
@@ -194,9 +183,10 @@ class ImageProcessingService
     }
 
 
-    /**
-     * Generar ID único de 6 caracteres
-     */
+ 
+
+
+
     protected function generateUniqueId()
     {
         do {
@@ -206,21 +196,20 @@ class ImageProcessingService
         return $uniqueId;
     }
 
-    /**
-     * Eliminar archivos de una foto
-     */
-    public function deletePhoto($photo)
+
+
+public function deletePhoto($photo)
     {
-        Storage::disk('public')->delete([
+       
+        Storage::disk($this->disk)->delete([
             $photo->original_path,
             $photo->watermarked_path,
             $photo->thumbnail_path,
         ]);
+        
+        \Log::info(' Archivos eliminados de Backblaze', ['id' => $photo->unique_id]);
     }
 
-    /**
-     * Actualizar foto (eliminar la anterior y procesar la nueva)
-     */
     public function updatePhoto($file, $photo)
     {
         $this->deletePhoto($photo);

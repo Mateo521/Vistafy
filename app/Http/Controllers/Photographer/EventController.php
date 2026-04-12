@@ -165,7 +165,7 @@ class EventController extends Controller
 
 
 
-        //  NUEVO: Obtener fotos sin evento asignado del fotógrafo
+        //  : Obtener fotos sin evento asignado del fotógrafo
         $unassignedPhotos = Photo::where('photographer_id', $photographer->id)
             ->whereNull('event_id')
             ->latest()
@@ -212,7 +212,7 @@ class EventController extends Controller
             ],
             'photos' => $photos,
             'stats' => $stats,
-            'unassignedPhotos' => $unassignedPhotos, //  NUEVO
+            'unassignedPhotos' => $unassignedPhotos, //  
         ]);
     }
 

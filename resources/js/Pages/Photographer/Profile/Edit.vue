@@ -23,7 +23,7 @@ const form = useForm({
     bio: props.photographer.bio || '',
     phone: props.photographer.phone || '',
     region: props.photographer.region,
-    // --- NUEVOS CAMPOS ---
+    // --- S CAMPOS ---
     website: props.photographer.website || '',
     instagram: props.photographer.instagram || '',
     facebook: props.photographer.facebook || '',
@@ -265,6 +265,53 @@ const submit = () => {
                             </div>
                         </div>
                     </div>
+
+<div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                            Cobros y Finanzas
+                        </h2>
+
+                        <div class="space-y-5">
+                            <div class="flex items-start gap-4 p-4 rounded-sm" 
+                                 :class="photographer.mp_access_token ? 'bg-emerald-50 border border-emerald-100' : 'bg-amber-50 border border-amber-100'">
+                                
+                                <div class="flex-shrink-0 mt-1">
+                                    <svg class="w-8 h-8" :class="photographer.mp_access_token ? 'text-emerald-500' : 'text-amber-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                </div>
+
+                                <div class="flex-grow">
+                                    <h3 class="text-sm font-bold text-slate-900 mb-1">Cuenta de Mercado Pago</h3>
+                                    
+                                    <template v-if="photographer.mp_access_token">
+                                        <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+                                            Su cuenta está vinculada correctamente. Usted está listo para vender fotografías y recibir los pagos directamente en su cuenta (descontando la comisión de la plataforma).
+                                        </p>
+                                        <div class="flex items-center gap-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
+                                                <CheckCircleIcon class="w-3 h-3 mr-1" /> Conectado
+                                            </span>
+                                            <a :href="route('mercadopago.unlink')" onclick="return confirm('¿Está seguro que desea desvincular su cuenta? No podrá recibir pagos hasta que la vuelva a conectar.')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition">
+                                                Desvincular
+                                            </a>
+                                        </div>
+                                    </template>
+
+                                    <template v-else>
+                                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                            Para poder publicar y vender sus fotos en Vistafy, es requisito obligatorio vincular su cuenta de Mercado Pago. Todo el dinero de sus ventas irá directamente a su billetera virtual.
+                                        </p>
+                                        <a :href="route('mercadopago.auth')" class="inline-flex items-center justify-center bg-[#009EE3] text-white px-5 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-[#008CDB] transition shadow-sm">
+                                            Vincular mi cuenta ahora
+                                        </a>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                     <div class="flex justify-end pt-4">
                         <button type="submit" :disabled="form.processing"

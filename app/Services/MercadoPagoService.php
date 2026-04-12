@@ -77,17 +77,29 @@ class MercadoPagoService
         return $this->buildPreference($photos, $purchase, $email);
     }
 
-    /**
-     * Lógica centralizada para armar y enviar la preferencia a MP
+  /**
+     * Lógica centralizada para armar y enviar la preferencia a MP (MARKETPLACE)
      */
     private function buildPreference($photos, $purchase, $email): array
     {
         $isLocal = app()->environment(['local', 'development']);
         $items = [];
+        $totalAmount = 0;
+
+        // 1. Obtener al fotógrafo dueño de las fotos
+        // (Asumimos que todas las fotos del carrito son del mismo fotógrafo)
+        $photographer = $photos->first()->photographer;
+
+        if (!$photographer || !$photographer->mp_access_token) {
+            Log::error('Intento de compra sin cuenta vinculada', ['photographer_id' => $photographer->id ?? 'N/A']);
+            throw new \Exception("El fotógrafo no puede recibir pagos en este momento.");
+        }
+
+        // 2. Cambiamos el Token: Ahora operamos en nombre del Fotógrafo
+        MercadoPagoConfig::setAccessToken($photographer->mp_access_token);
 
         foreach ($photos as $photo) {
             $pictureUrl = $photo->thumbnail_url;
-            // MP no acepta URLs de localhost para las fotos, las limpiamos si estamos en local
             if ($isLocal && (Str::contains($pictureUrl, 'localhost') || Str::contains($pictureUrl, '127.0.0.1'))) {
                 $pictureUrl = null;
             }
@@ -102,10 +114,19 @@ class MercadoPagoService
                 'currency_id' => 'ARS',
                 'unit_price' => (float) $photo->price,
             ];
+
+            $totalAmount += (float) $photo->price;
         }
+
+        // 3. CALCULAR TU COMISIÓN (Ejemplo: 10%)
+        // Si la foto vale 5000, $platformFee será 500. 
+        // El fotógrafo recibe 4500 y vos recibís 500.
+        $comisionPorcentaje = 0.10; 
+        $platformFee = $totalAmount * $comisionPorcentaje;
 
         $preferenceData = [
             'items' => $items,
+            'marketplace_fee' => $platformFee, // <--- ACÁ ESTÁ LA MAGIA DEL SPLIT
             'payer' => [
                 'email' => $email,
             ],
@@ -122,29 +143,28 @@ class MercadoPagoService
         ];
 
         try {
-            // Enviar a Mercado Pago
+            // Creamos la preferencia (la plata va al fotógrafo, menos el fee)
             $preference = $this->preferenceClient->create($preferenceData);
 
-            // Guardar el ID de preferencia en la compra
             $purchase->update(['mp_preference_id' => $preference->id]);
-
             $isSandbox = config('services.mercadopago.test_mode');
+
+            // Importante: Volver a poner tu Token principal por las dudas 
+            // para futuras operaciones en el mismo request
+            MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
 
             return [
                 'success' => true,
                 'purchase_id' => $purchase->id,
-                // Si test_mode es true, usamos sandbox_init_point, sino init_point normal
                 'sandbox_init_point' => $isSandbox ? $preference->sandbox_init_point : $preference->init_point,
             ];
 
         } catch (\Exception $e) {
             $purchase->update(['status' => 'failed']);
-
-            Log::error('[MP] Error creando preferencia', [
+            Log::error('[MP] Error creando preferencia Marketplace', [
                 'error' => $e->getMessage(),
                 'email' => $email,
             ]);
-
             throw new \Exception("Error comunicándose con Mercado Pago.");
         }
     }

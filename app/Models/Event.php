@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class Event extends Model
 {
@@ -43,37 +44,38 @@ class Event extends Model
     }
 
     // Accessor para URL de portada
+// Accessor para URL de portada 100% en la nube
     public function getCoverImageUrlAttribute()
     {
-        // 1. Cover image directo
-     if ($this->cover_image) {
-            // SI ES URL EXTERNA (Como las del seeder), RETORNARLA DIRECTA
-            if (Str::startsWith($this->cover_image, ['http://', 'https://'])) {
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = \Illuminate\Support\Facades\Storage::disk('b2');
+        $path = null;
+
+    
+        if ($this->cover_image) {
+     
+            if (\Illuminate\Support\Str::startsWith($this->cover_image, ['http://', 'https://'])) {
                 return $this->cover_image;
             }
-            // SI ES RUTA LOCAL, USAR STORAGE
-            return asset('storage/' . $this->cover_image);
+            $path = $this->cover_image;
+        } 
+        
+        else {
+            $firstPhoto = $this->relationLoaded('photos') && $this->photos->isNotEmpty()
+                ? $this->photos->first()
+                : $this->photos()->where('is_active', true)->first();
+
+            if ($firstPhoto) {
+                $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
+            }
         }
 
-        // 2. Primera foto del evento (ya cargada con with())
-        if ($this->relationLoaded('photos') && $this->photos->isNotEmpty()) {
-            $photo = $this->photos->first();
-            $path = $photo->thumbnail_path ?? $photo->watermarked_path ?? $photo->original_path;
-            return $path ? asset('storage/' . $path) : null;
-        }
-
-        // 3. Fallback: buscar primera foto
-        $firstPhoto = $this->photos()->where('is_active', true)->first();
-        if ($firstPhoto) {
-            $path = $firstPhoto->thumbnail_path ?? $firstPhoto->watermarked_path ?? $firstPhoto->original_path;
-            return $path ? asset('storage/' . $path) : null;
-        }
-
-        return null;
+        
+        return $path ? $disk->temporaryUrl($path, now()->addMinutes(60)) : null;
     }
 
 
-    // 1. El Dueño / Creador (Relación original)
+ 
     public function owner()
     {
         return $this->belongsTo(Photographer::class, 'photographer_id');
