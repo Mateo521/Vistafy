@@ -292,7 +292,7 @@ const submit = () => {
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
                                                 <CheckCircleIcon class="w-3 h-3 mr-1" /> Conectado
                                             </span>
-                                            <a :href="route('mercadopago.unlink')" onclick="return confirm('¿Está seguro que desea desvincular su cuenta? No podrá recibir pagos hasta que la vuelva a conectar.')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition">
+                                            <a :href="route('photographer.mercadopago.unlink')" onclick="return confirm('¿Está seguro que desea desvincular su cuenta? No podrá recibir pagos hasta que la vuelva a conectar.')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition">
                                                 Desvincular
                                             </a>
                                         </div>
@@ -302,7 +302,7 @@ const submit = () => {
                                         <p class="text-xs text-slate-600 mb-4 leading-relaxed">
                                             Para poder publicar y vender sus fotos en Vistafy, es requisito obligatorio vincular su cuenta de Mercado Pago. Todo el dinero de sus ventas irá directamente a su billetera virtual.
                                         </p>
-                                        <a :href="route('mercadopago.auth')" class="inline-flex items-center justify-center bg-[#009EE3] text-white px-5 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-[#008CDB] transition shadow-sm">
+                                        <a :href="route('photographer.mercadopago.auth')" class="inline-flex items-center justify-center bg-[#009EE3] text-white px-5 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-[#008CDB] transition shadow-sm">
                                             Vincular mi cuenta ahora
                                         </a>
                                     </template>
