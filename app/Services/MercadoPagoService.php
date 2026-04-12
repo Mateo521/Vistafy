@@ -66,7 +66,7 @@ class MercadoPagoService
             'unit_price' => $photo->price,
         ]);
 
-        return $this->buildPreference([$photo], $purchase, $email);
+        return $this->buildPreference(collect([$photo]), $purchase, $email);
     }
 
     /**
