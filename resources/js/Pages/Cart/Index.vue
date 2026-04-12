@@ -78,9 +78,11 @@ const checkout = async () => {
             photo_ids: photoIds
         });
 
-       
-        if (response.data.success && response.data.sandbox_init_point) {
-            window.location.href = response.data.sandbox_init_point;
+ 
+        const paymentUrl = response.data.init_point || response.data.sandbox_init_point;
+
+        if (response.data.success && paymentUrl) {
+            window.location.href = paymentUrl; // Redirigimos a MP
         } else {
             error('No se pudo generar el link de pago');
         }

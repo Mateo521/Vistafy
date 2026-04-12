@@ -156,7 +156,8 @@ class MercadoPagoService
             return [
                 'success' => true,
                 'purchase_id' => $purchase->id,
-                'sandbox_init_point' => $isSandbox ? $preference->sandbox_init_point : $preference->init_point,
+                'init_point' => $preference->init_point,
+                'sandbox_init_point' => $preference->sandbox_init_point,
             ];
 
         } catch (\Exception $e) {

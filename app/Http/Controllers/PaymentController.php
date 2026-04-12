@@ -88,6 +88,7 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'purchase_id' => $purchase->id,
+                'init_point' => $preferenceResult['init_point'],
                 'sandbox_init_point' => $preferenceResult['sandbox_init_point'],
             ]);
 
