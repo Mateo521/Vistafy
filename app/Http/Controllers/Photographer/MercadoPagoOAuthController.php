@@ -72,7 +72,7 @@ class MercadoPagoOAuthController extends Controller
                 Log::info('Fotógrafo vinculado a MP exitosamente', ['photographer_id' => $photographer->id]);
 
                 return redirect()->route('photographer.profile.edit')
-                    ->with('success', '¡Excelente! Tu cuenta de Mercado Pago fue vinculada exitosamente. Ya puedes recibir pagos.');
+                    ->with('success', '¡Excelente! Tu cuenta de Mercado Pago fue vinculada exitosamente. Ya podés recibir pagos.');
             }
 
             // Si MP responde con error (ej: el código ya se usó o expiró)
