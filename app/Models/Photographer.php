@@ -19,16 +19,15 @@ class Photographer extends Model
         'business_name',
         'slug',
         'region',
-        'latitude',  // <--- AGREGAR
-        'longitude', // <--- AGREGAR
+        'latitude',  
+        'longitude', 
         'bio',
         'phone',
         'website',
         'instagram',
         'facebook',
-
-        'profile_photo',      //  
-        'banner_photo',       //  
+        'profile_photo',      
+        'banner_photo',       
         'is_active',
         'is_verified',
         'status',
@@ -38,6 +37,11 @@ class Photographer extends Model
         'suspended_at',
         'suspended_by',
         'suspension_reason',
+  
+        'mp_access_token',
+        'mp_refresh_token',
+        'mp_public_key',
+        'mp_user_id',
     ];
 
 
