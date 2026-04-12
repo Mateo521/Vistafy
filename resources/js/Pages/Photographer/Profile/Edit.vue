@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm , usePage } from '@inertiajs/vue3';
-import { ref , computed } from 'vue';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import {
     UserCircleIcon,
     PhotoIcon,
@@ -86,6 +86,7 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Perfil Profesional" />
 
     <AuthenticatedLayout>
@@ -99,53 +100,68 @@ const submit = () => {
                     <h1 class="text-3xl font-sans font-bold text-slate-900">
                         Perfil Público
                     </h1>
-                    <p class="text-sm text-slate-500 font-light mt-1">Gestione su identidad visual y datos de contacto.</p>
+                    <p class="text-sm text-slate-500 font-light mt-1">Gestione su identidad visual y datos de contacto.
+                    </p>
                 </div>
 
-                <div v-if="$page.props.flash?.success" class="mb-8 bg-emerald-50 text-emerald-800 px-4 py-3 rounded-sm text-xs font-medium flex items-center gap-2 border border-emerald-100">
+                <div v-if="$page.props.flash?.success"
+                    class="mb-8 bg-emerald-50 text-emerald-800 px-4 py-3 rounded-sm text-xs font-medium flex items-center gap-2 border border-emerald-100">
                     <CheckCircleIcon class="w-4 h-4" /> {{ $page.props.flash.success }}
                 </div>
 
                 <form @submit.prevent="submit" class="space-y-8">
 
                     <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
                             Identidad Visual
                         </h2>
 
                         <div class="mb-8">
-                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Banner de Portada</label>
-                            
-                            <div class="relative h-48 bg-slate-100 border border-gray-200 rounded-sm overflow-hidden group">
-                                <img v-if="bannerPhotoPreview" :src="bannerPhotoPreview" class="w-full h-full object-cover" />
-                                <img v-else-if="photographer.banner_photo_url" :src="photographer.banner_photo_url" class="w-full h-full object-cover transition-opacity group-hover:opacity-75" />
-                                
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Banner de
+                                Portada</label>
+
+                            <div
+                                class="relative h-48 bg-slate-100 border border-gray-200 rounded-sm overflow-hidden group">
+                                <img v-if="bannerPhotoPreview" :src="bannerPhotoPreview"
+                                    class="w-full h-full object-cover" />
+                                <img v-else-if="photographer.banner_photo_url" :src="photographer.banner_photo_url"
+                                    class="w-full h-full object-cover transition-opacity group-hover:opacity-75" />
+
                                 <div v-else class="flex flex-col items-center justify-center h-full text-slate-300">
                                     <PhotoIcon class="h-10 w-10 mb-2" />
                                     <span class="text-[10px] uppercase tracking-widest">1920x400 Recomendado</span>
                                 </div>
 
-                                <div class="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                                    <label class="cursor-pointer bg-white text-slate-900 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 transition rounded-sm flex items-center gap-2 shadow-sm">
+                                <div
+                                    class="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
+                                    <label
+                                        class="cursor-pointer bg-white text-slate-900 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 transition rounded-sm flex items-center gap-2 shadow-sm">
                                         <ArrowUpTrayIcon class="w-3 h-3" /> Cambiar
-                                        <input type="file" accept="image/*" @change="handleBannerPhotoChange" class="hidden" />
+                                        <input type="file" accept="image/*" @change="handleBannerPhotoChange"
+                                            class="hidden" />
                                     </label>
-                                    <button v-if="photographer.banner_photo_url" @click.prevent="deleteBannerPhoto" 
+                                    <button v-if="photographer.banner_photo_url" @click.prevent="deleteBannerPhoto"
                                         class="bg-red-600 text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition rounded-sm flex items-center gap-2 shadow-sm">
                                         <TrashIcon class="w-3 h-3" />
                                     </button>
                                 </div>
                             </div>
-                            <p v-if="form.errors.banner_photo" class="text-red-600 text-xs mt-2">{{ form.errors.banner_photo }}</p>
+                            <p v-if="form.errors.banner_photo" class="text-red-600 text-xs mt-2">{{
+                                form.errors.banner_photo }}</p>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Foto de Perfil</label>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Foto de
+                                Perfil</label>
                             <div class="flex items-center gap-6">
-                                <div class="relative w-24 h-24 bg-slate-100 border border-gray-200 rounded-sm overflow-hidden group flex-shrink-0">
-                                    <img v-if="profilePhotoPreview" :src="profilePhotoPreview" class="w-full h-full object-cover" />
-                                    <img v-else-if="photographer.profile_photo_url" :src="photographer.profile_photo_url" class="w-full h-full object-cover" />
-                                    
+                                <div
+                                    class="relative w-24 h-24 bg-slate-100 border border-gray-200 rounded-sm overflow-hidden group flex-shrink-0">
+                                    <img v-if="profilePhotoPreview" :src="profilePhotoPreview"
+                                        class="w-full h-full object-cover" />
+                                    <img v-else-if="photographer.profile_photo_url"
+                                        :src="photographer.profile_photo_url" class="w-full h-full object-cover" />
+
                                     <div v-else class="w-full h-full flex items-center justify-center text-slate-300">
                                         <UserCircleIcon class="h-10 w-10" />
                                     </div>
@@ -153,146 +169,173 @@ const submit = () => {
 
                                 <div class="space-y-3">
                                     <div class="flex gap-3">
-                                        <label class="cursor-pointer border border-slate-300 text-slate-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm bg-white">
+                                        <label
+                                            class="cursor-pointer border border-slate-300 text-slate-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm bg-white">
                                             Seleccionar
-                                            <input type="file" accept="image/*" @change="handleProfilePhotoChange" class="hidden" />
+                                            <input type="file" accept="image/*" @change="handleProfilePhotoChange"
+                                                class="hidden" />
                                         </label>
-                                        <button v-if="photographer.profile_photo_url" @click.prevent="deleteProfilePhoto" 
+                                        <button v-if="photographer.profile_photo_url"
+                                            @click.prevent="deleteProfilePhoto"
                                             class="text-red-600 hover:text-red-800 text-[10px] font-bold uppercase tracking-widest border border-transparent hover:border-red-200 px-3 py-2 transition rounded-sm">
                                             Eliminar
                                         </button>
                                     </div>
                                     <p class="text-[10px] text-slate-400 font-light">JPG, PNG o WEBP. Máximo 2MB.</p>
-                                    <p v-if="form.errors.profile_photo" class="text-red-600 text-xs">{{ form.errors.profile_photo }}</p>
+                                    <p v-if="form.errors.profile_photo" class="text-red-600 text-xs">{{
+                                        form.errors.profile_photo }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
                             Datos del Negocio
                         </h2>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Nombre Comercial</label>
+                                <label
+                                    class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Nombre
+                                    Comercial</label>
                                 <input v-model="form.business_name" type="text"
                                     class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 text-sm"
-                                    placeholder="Ej: Estudio Fotográfico" required 
-                                />
-                                <p v-if="form.errors.business_name" class="text-red-600 text-xs mt-1">{{ form.errors.business_name }}</p>
+                                    placeholder="Ej: Estudio Fotográfico" required />
+                                <p v-if="form.errors.business_name" class="text-red-600 text-xs mt-1">{{
+                                    form.errors.business_name }}</p>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Región</label>
+                                <label
+                                    class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Región</label>
                                 <select v-model="form.region" required
                                     class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 bg-white text-sm">
                                     <option value="" disabled>Seleccione una opción</option>
-                                    <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
+                                    <option v-for="region in regions" :key="region" :value="region">{{ region }}
+                                    </option>
                                 </select>
-                                <p v-if="form.errors.region" class="text-red-600 text-xs mt-1">{{ form.errors.region }}</p>
+                                <p v-if="form.errors.region" class="text-red-600 text-xs mt-1">{{ form.errors.region }}
+                                </p>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Teléfono</label>
+                                <label
+                                    class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Teléfono</label>
                                 <input v-model="form.phone" type="text"
                                     class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 text-sm"
-                                    placeholder="+54 9 11 ..." 
-                                />
-                                <p v-if="form.errors.phone" class="text-red-600 text-xs mt-1">{{ form.errors.phone }}</p>
+                                    placeholder="+54 9 11 ..." />
+                                <p v-if="form.errors.phone" class="text-red-600 text-xs mt-1">{{ form.errors.phone }}
+                                </p>
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Biografía</label>
+                                <label
+                                    class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Biografía</label>
                                 <textarea v-model="form.bio" rows="4" maxlength="1000"
                                     class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 resize-none text-sm"
-                                    placeholder="Describa su experiencia y servicios..."
-                                ></textarea>
+                                    placeholder="Describa su experiencia y servicios..."></textarea>
                                 <div class="flex justify-between mt-1">
                                     <p v-if="form.errors.bio" class="text-red-600 text-xs">{{ form.errors.bio }}</p>
-                                    <span class="text-[10px] text-slate-400 ml-auto">{{ form.bio?.length || 0 }} / 1000</span>
+                                    <span class="text-[10px] text-slate-400 ml-auto">{{ form.bio?.length || 0 }} /
+                                        1000</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
                             Presencia Digital
                         </h2>
 
                         <div class="space-y-5">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
+                                <label
+                                    class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
                                     <GlobeAltIcon class="w-4 h-4" /> Sitio Web
                                 </label>
                                 <input v-model="form.website" type="url"
                                     class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 text-sm"
-                                    placeholder="https://www.miportfolio.com" 
-                                />
-                                <p v-if="form.errors.website" class="text-red-600 text-xs mt-1">{{ form.errors.website }}</p>
+                                    placeholder="https://www.miportfolio.com" />
+                                <p v-if="form.errors.website" class="text-red-600 text-xs mt-1">{{ form.errors.website
+                                    }}</p>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
                                         <CameraIcon class="w-4 h-4" /> Instagram
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">@</span>
+                                        <span
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">@</span>
                                         <input v-model="form.instagram" type="text"
                                             class="w-full pl-8 border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 text-sm"
-                                            placeholder="usuario" 
-                                        />
+                                            placeholder="usuario" />
                                     </div>
-                                    <p v-if="form.errors.instagram" class="text-red-600 text-xs mt-1">{{ form.errors.instagram }}</p>
+                                    <p v-if="form.errors.instagram" class="text-red-600 text-xs mt-1">{{
+                                        form.errors.instagram }}</p>
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-2">
                                         <HandThumbUpIcon class="w-4 h-4" /> Facebook
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">/</span>
+                                        <span
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">/</span>
                                         <input v-model="form.facebook" type="text"
                                             class="w-full pl-6 border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 text-sm"
-                                            placeholder="pagina" 
-                                        />
+                                            placeholder="pagina" />
                                     </div>
-                                    <p v-if="form.errors.facebook" class="text-red-600 text-xs mt-1">{{ form.errors.facebook }}</p>
+                                    <p v-if="form.errors.facebook" class="text-red-600 text-xs mt-1">{{
+                                        form.errors.facebook }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-<div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
-                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
                             Cobros y Finanzas
                         </h2>
 
                         <div class="space-y-5">
-                            <div class="flex items-start gap-4 p-4 rounded-sm" 
-                                 :class="photographer.mp_access_token ? 'bg-emerald-50 border border-emerald-100' : 'bg-amber-50 border border-amber-100'">
-                                
+                            <div class="flex items-start gap-4 p-4 rounded-sm"
+                                :class="photographer.mp_access_token ? 'bg-emerald-50 border border-emerald-100' : 'bg-amber-50 border border-amber-100'">
+
                                 <div class="flex-shrink-0 mt-1">
-                                    <svg class="w-8 h-8" :class="photographer.mp_access_token ? 'text-emerald-500' : 'text-amber-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    <svg class="w-8 h-8"
+                                        :class="photographer.mp_access_token ? 'text-emerald-500' : 'text-amber-500'"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                     </svg>
                                 </div>
 
                                 <div class="flex-grow">
                                     <h3 class="text-sm font-bold text-slate-900 mb-1">Cuenta de Mercado Pago</h3>
-                                    
+
                                     <template v-if="photographer.mp_access_token">
                                         <p class="text-xs text-slate-600 mb-3 leading-relaxed">
-                                            Su cuenta está vinculada correctamente. Usted está listo para vender fotografías y recibir los pagos directamente en su cuenta (descontando la comisión de la plataforma).
+                                            Su cuenta está vinculada correctamente. Usted está listo para vender
+                                            fotografías y recibir los pagos directamente en su cuenta (descontando la
+                                            comisión de la plataforma).
                                         </p>
                                         <div class="flex items-center gap-3">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
                                                 <CheckCircleIcon class="w-3 h-3 mr-1" /> Conectado
                                             </span>
-                                            <a :href="route('photographer.mercadopago.unlink')" onclick="return confirm('¿Está seguro que desea desvincular su cuenta? No podrá recibir pagos hasta que la vuelva a conectar.')" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition">
+                                            <a :href="route('photographer.mercadopago.unlink')"
+                                                onclick="return confirm('¿Está seguro que desea desvincular su cuenta? No podrá recibir pagos hasta que la vuelva a conectar.')"
+                                                class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition">
                                                 Desvincular
                                             </a>
                                         </div>
@@ -300,9 +343,12 @@ const submit = () => {
 
                                     <template v-else>
                                         <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-                                            Para poder publicar y vender sus fotos en f33, es requisito obligatorio vincular su cuenta de Mercado Pago. Todo el dinero de sus ventas irá directamente a su billetera virtual.
+                                            Para poder publicar y vender sus fotos en f33, es requisito obligatorio
+                                            vincular su cuenta de Mercado Pago. Todo el dinero de sus ventas irá
+                                            directamente a su billetera virtual.
                                         </p>
-                                        <a :href="route('photographer.mercadopago.auth')" class="inline-flex items-center justify-center bg-[#009EE3] text-white px-5 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-[#008CDB] transition shadow-sm">
+                                        <a :href="route('photographer.mercadopago.auth')" target="_top"
+                                            class="inline-flex items-center justify-center bg-[#009EE3] text-white px-5 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-[#008CDB] transition shadow-sm">
                                             Vincular mi cuenta ahora
                                         </a>
                                     </template>
