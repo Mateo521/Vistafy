@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PhotographerRegisteredMail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -71,9 +73,13 @@ class PhotographerRegistrationController extends Controller
             'status' => 'pending', //  Pendiente de aprobación
         ]);
 
-        event(new Registered($user));
+        // Enviar correo de "Cuenta en revisión"
+        Mail::to($user->email)->send(new \App\Mail\PhotographerRegisteredMail($user));
 
+        event(new Registered($user));
         Auth::login($user);
+
+    
 
         return redirect()->route('photographer.dashboard')->with('info', 'Tu cuenta está pendiente de aprobación por nuestro equipo.');
     }
