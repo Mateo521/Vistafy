@@ -128,7 +128,7 @@ class PublicGalleryController extends Controller
             ->map(fn($file) => asset('videos/' . $file->getFilename()))
             ->values();
 
-        //  DEBUG: Ver qué se envía (puedes quitar esto después)
+        //  DEBUG: Ver qué se envía (podés quitar esto después)
         \Log::info('Home - Future Events:', [
             'count' => $futureEvents->count(),
             'events' => $futureEvents->toArray(),

@@ -29,22 +29,22 @@
                 <a href="{{ config('app.url') }}" class="logo">f33</a>
             </div>
             
-            <h1 class="title">¡Tu cuenta ha sido aprobada!</h1>
+            <h1 class="title">Tu cuenta fue aprobada</h1>
             
-            <p>¡Excelentes noticias, <span class="highlight">{{ $photographer->business_name }}</span>! Tu perfil profesional ha superado nuestro proceso de revisión y ya formas parte de nuestra exclusiva red de fotógrafos.</p>
+            <p>¡Excelentes noticias, <span class="highlight">{{ $photographer->business_name }}</span>! Tu perfil profesional superó nuestro proceso de revisión y ya formás parte de nuestra red de fotógrafos.</p>
             
             <div class="steps">
                 <p class="steps-title">Tus próximos pasos:</p>
-                <div class="step-item"><span style="color:#FFB162;">1.</span> Inicia sesión en tu nuevo Panel de Control.</div>
+                <div class="step-item"><span style="color:#FFB162;">1.</span> Iniciá sesión en tu nuevo Panel de control.</div>
                 <div class="step-item"><span style="color:#FFB162;">2.</span> Vincula tu cuenta de Mercado Pago para poder cobrar.</div>
-                <div class="step-item"><span style="color:#FFB162;">3.</span> Sube tu primera galería y comienza a vender.</div>
+                <div class="step-item"><span style="color:#FFB162;">3.</span> Subí tu primera galería y comenzá a vender.</div>
             </div>
             
             <div class="btn-container">
-                <a href="{{ route('login') }}" class="button">Ingresar a mi Panel</a>
+                <a href="{{ route('login') }}" class="button">Ingresar a mi panel</a>
             </div>
             
-            <p>Estamos muy contentos de tenerte con nosotros. Si tienes alguna duda sobre cómo subir tus fotos o configurar tus cobros, no dudes en contactarnos.</p>
+            <p>Estamos muy contentos de tenerte con nosotros. Si tenés alguna duda sobre cómo subir tus fotos o configurar tus cobros, no dudés en contactarnos.</p>
             
             <p>¡Mucho éxito en tus ventas!<br><span class="highlight">El equipo de f33</span></p>
             

@@ -14,7 +14,7 @@
                     <tr>
                         <td style="background-color: #0f172a; padding: 40px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">
-                                ¡Bienvenido a f33!
+                                Bienvenido a f33
                             </h1>
                         </td>
                     </tr>
@@ -37,17 +37,17 @@
                             </div>
 
                             <p style="color: #334155; font-size: 14px; line-height: 1.6; margin: 20px 0;">
-                                Por favor, cambia tu contraseña después de iniciar sesión por primera vez.
+                                Por favor, cambiá tu contraseña después de iniciar sesión por primera vez.
                             </p>
 
                             <div style="text-align: center; margin: 30px 0;">
                                 <a href="{{ route('login') }}" style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 4px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                    Iniciar Sesión
+                                    Iniciar sesión
                                 </a>
                             </div>
 
                             <p style="color: #94a3b8; font-size: 12px; line-height: 1.6; margin: 20px 0 0 0;">
-                                Ahora puedes acceder a tu historial de compras y descargar tus fotos en cualquier momento.
+                                Ahora podés acceder a tu historial de compras y descargar tus fotos en cualquier momento.
                             </p>
                         </td>
                     </tr>

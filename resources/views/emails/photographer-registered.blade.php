@@ -29,16 +29,16 @@
             
             <h1 class="title">¡Hola, <span class="highlight">{{ $user->name }}</span>!</h1>
             
-            <p>Hemos recibido tu solicitud para unirte como fotógrafo profesional en f33. Nos emociona mucho tu interés en formar parte de nuestra galería.</p>
+            <p>Recibimos tu solicitud para unirte como fotógrafo en f33. Nos emociona mucho tu interés en formar parte de nuestra galería.</p>
             
             <div class="status-box">
                 <p class="status-title">Estado de tu cuenta</p>
-                <p class="status-desc">En Revisión Administrativa</p>
+                <p class="status-desc">En Revisión</p>
             </div>
             
             <p>Para mantener la exclusividad y calidad de nuestra plataforma, nuestro equipo está revisando tus datos. Este proceso suele demorar entre 24 y 48 horas.</p>
             
-            <p>Te enviaremos un nuevo correo electrónico tan pronto como tu cuenta sea aprobada y esté lista para operar.</p>
+            <p>Te vamos a enviar un nuevo correo cuando tu cuenta sea aprobada y esté lista para operar.</p>
             
             <p>¡Gracias por elegirnos!<br><span class="highlight">El equipo de f33</span></p>
             

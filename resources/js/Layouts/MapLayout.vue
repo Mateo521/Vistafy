@@ -25,7 +25,7 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
     <!-- Contenedor fullscreen -->
     <div class="min-h-screen bg-slate-900 text-white relative overflow-hidden">
 
-        <!-- Encabezado muy sutil arriba (puedes simplificar aún más si quieres) -->
+        <!-- Encabezado muy sutil arriba (podés simplificar aún más si quieres) -->
         <header
             class="fixed top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-4 sm:px-6 lg:px-8 pt-4 pb-6 flex items-center justify-between pointer-events-none">
             <div class="pointer-events-auto flex items-center gap-3">

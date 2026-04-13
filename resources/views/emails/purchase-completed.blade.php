@@ -37,7 +37,7 @@
                             </p>
 
                             <p style="color: #334155; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                                Tu pago ha sido procesado exitosamente. Ya puedes descargar tus fotografías en alta
+                                Tu pago ha sido procesado exitosamente. Ya podés descargar tus fotografías en alta
                                 resolución.
                             </p>
 
