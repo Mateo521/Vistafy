@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderSuccessMail;
 use App\Notifications\PurchaseCompleted;
 
 class WebhookController extends Controller
@@ -61,72 +63,46 @@ class WebhookController extends Controller
     /**
      * Procesa un pago de Marketplace
      */
-    private function processMarketplacePayment($paymentId)
+   private function processMarketplacePayment($paymentId)
     {
-        Log::info(' Procesando payment Marketplace', ['payment_id' => $paymentId]);
-
-        // PASO CLAVE MARKETPLACE: Primero necesitamos saber DE QUIÉN es el pago
-        // MP siempre manda el external_reference en el webhook secundario, pero a veces no en el inicial.
-        // Como no sabemos el fotógrafo aún, tenemos que usar la "Master Key" (Tu Token) para buscar la info básica.
-        
         $masterToken = config('services.mercadopago.access_token');
         $paymentInfo = $this->fetchPaymentData($paymentId, $masterToken);
 
-        if (!$paymentInfo) {
-            Log::error(' No se pudo obtener el payment con la Master Key', ['payment_id' => $paymentId]);
-            return response()->json(['status' => 'payment_fetch_failed', 'will_retry' => true], 200);
-        }
+        if (!$paymentInfo) return response()->json(['status' => 'error'], 200);
 
         $purchaseId = $paymentInfo['external_reference'] ?? null;
-
-        if (!$purchaseId) {
-            Log::warning(' Payment sin external_reference. Posiblemente no es de Vistafy.', ['payment_id' => $paymentId]);
-            return response()->json(['status' => 'no_reference'], 200);
-        }
-
         $purchase = Purchase::with('items.photo.photographer')->find($purchaseId);
 
-        if (!$purchase) {
-            Log::error(' Purchase no encontrada en BD', ['purchase_id' => $purchaseId]);
-            return response()->json(['error' => 'Purchase not found'], 404);
-        }
+        if (!$purchase) return response()->json(['status' => 'not_found'], 404);
 
-        if ($purchase->status === 'approved') {
-            Log::info(' Compra ya estaba aprobada, saltando update', ['purchase_id' => $purchaseId]);
-            return response()->json(['status' => 'already_approved'], 200);
-        }
+        if ($purchase->status === 'approved') return response()->json(['status' => 'already_done'], 200);
 
-        // Mapear status
-        $newStatus = match ($paymentInfo['status']) {
-            'approved' => 'approved',
-            'pending', 'in_process', 'in_mediation' => 'in_process',
-            'rejected' => 'rejected',
-            'cancelled' => 'cancelled',
-            'refunded', 'charged_back' => 'refunded',
-            default => 'pending',
-        };
+        $isApproved = ($paymentInfo['status'] === 'approved');
 
         $purchase->update([
             'mp_payment_id' => $paymentId,
             'mp_payment_status' => $paymentInfo['status'],  
-            'status' => $newStatus,
+            'status' => $isApproved ? 'approved' : 'pending',
         ]);
 
-        // Si se aprueba ahora, creamos cuenta y mandamos mail
-        if ($newStatus === 'approved') {
-            $this->handleAccountCreation($purchase);
-            $this->sendSuccessEmail($purchase);
-            
-            // Limpiar carrito si estaba logueado
+        if ($isApproved) {
+            // 1. Manejamos la creación de cuenta (si es necesaria)
+            $temporaryPassword = $this->handleAccountCreation($purchase);
+
+            // 2. MANDAMOS EL MAIL ÚNICO (Con Brevo)
+            // Este mail lleva el link de descarga y la contraseña si se creó
+            try {
+                Mail::to($purchase->buyer_email)->send(new OrderSuccessMail($purchase, $temporaryPassword));
+                Log::info(' Mail de éxito enviado a: ' . $purchase->buyer_email);
+            } catch (\Exception $e) {
+                Log::error(' Error enviando mail por Brevo: ' . $e->getMessage());
+            }
+
+            // 3. Limpiamos carrito si el usuario ya existía
             if ($purchase->user) {
                 $purchase->user->cartItems()->delete();
             }
         }
-
-        Log::info(' Compra actualizada vía Webhook', [
-            'purchase_id' => $purchase->id,
-            'status' => $newStatus,
-        ]);
 
         return response()->json(['status' => 'processed'], 200);
     }
@@ -169,39 +145,30 @@ class WebhookController extends Controller
      */
     private function handleAccountCreation($purchase)
     {
-        $pendingAccount = session('pending_account');
-
-        if ($pendingAccount && $pendingAccount['purchase_id'] == $purchase->id) {
-            $email = $pendingAccount['email'];
+       
+        if (!$purchase->user_id && $purchase->buyer_email) {
             
-            if (!User::where('email', $email)->exists()) {
-                $tempPassword = Str::random(12);
-
+          
+            $user = User::where('email', $purchase->buyer_email)->first();
+            
+            if (!$user) {
+                $password = Str::random(12);
+                
                 $user = User::create([
-                    'name' => explode('@', $email)[0],
-                    'email' => $email,
-                    'password' => Hash::make($tempPassword),
+                    'name' => $purchase->buyer_name ?? explode('@', $purchase->buyer_email)[0],
+                    'email' => $purchase->buyer_email,
+                    'password' => Hash::make($password),
                     'role' => 'client',
                 ]);
 
-                $purchase->update([
-                    'user_id' => $user->id,
-                    'buyer_name' => $user->name,
-                ]);
+              
+                $purchase->update(['user_id' => $user->id]);
 
-                try {
-                    \Mail::send('emails.account-created', [
-                        'email' => $email,
-                        'password' => $tempPassword,
-                    ], function ($message) use ($email) {
-                        $message->to($email)->subject('Tu cuenta ha sido creada - Vistafy');
-                    });
-                } catch (\Exception $e) {
-                    Log::error('Error enviando email de cuenta', ['error' => $e->getMessage()]);
-                }
+                return $password;  
             }
-            session()->forget('pending_account');
         }
+
+        return null; // No se creó cuenta nueva
     }
 
     /**

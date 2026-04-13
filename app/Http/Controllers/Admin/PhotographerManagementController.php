@@ -7,6 +7,9 @@ use App\Models\Photographer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PhotographerRegisteredMail;
+use App\Mail\PhotographerApprovedMail;
 
 class PhotographerManagementController extends Controller
 {
@@ -117,6 +120,12 @@ class PhotographerManagementController extends Controller
 
         DB::commit();
         
+        try {
+            Mail::to($photographer->user->email)->send(new PhotographerApprovedMail($photographer));
+        } catch (\Exception $e) {
+            \Log::error('Error enviando mail de aprobación: ' . $e->getMessage());
+        }
+
         \Log::info(' APPROVE: Commit exitoso');
 
         return back()->with('success', "Fotógrafo '{$photographer->business_name}' aprobado correctamente.");

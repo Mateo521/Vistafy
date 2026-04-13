@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
        
         User::create([
-            'name' => 'Admin Vistafy',
+            'name' => 'Admin f33',
             'email' => 'admin@f33.click',
             'password' => Hash::make('admin123'),  
             'role' => 'admin',

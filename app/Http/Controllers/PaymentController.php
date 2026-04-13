@@ -88,7 +88,6 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'purchase_id' => $purchase->id,
-                'init_point' => $preferenceResult['init_point'],
                 'sandbox_init_point' => $preferenceResult['sandbox_init_point'],
             ]);
 
@@ -177,44 +176,57 @@ class PaymentController extends Controller
     /**
      * Crear cuenta automática después del pago
      */
-    public function handleAccountCreation($purchase)
+  
+
+ 
+
+     public function success(Request $request)
     {
-        $pendingAccount = session('pending_account');
+        $purchaseId = $request->query('purchase_id');
 
-        if ($pendingAccount && $pendingAccount['purchase_id'] == $purchase->id) {
-            $email = $pendingAccount['email'];
-            
-            if (!User::where('email', $email)->exists()) {
-                $temporaryPassword = Str::random(12);
-
-                $user = User::create([
-                    'name' => explode('@', $email)[0],
-                    'email' => $email,
-                    'password' => Hash::make($temporaryPassword),
-                    'role' => 'client', // Asegurate de que el rol coincida con tu sistema
-                ]);
-
-                $purchase->update([
-                    'user_id' => $user->id,
-                    'buyer_name' => $user->name,
-                ]);
-
-                try {
-                    \Mail::send('emails.account-created', [
-                        'email' => $email,
-                        'password' => $temporaryPassword,
-                    ], function ($message) use ($email) {
-                        $message->to($email)->subject('Tu cuenta ha sido creada - Vistafy');
-                    });
-                } catch (\Exception $e) {
-                    Log::error(' Error enviando email de cuenta creada', ['error' => $e->getMessage()]);
-                }
-            }
-            session()->forget('pending_account');
+        if (!$purchaseId) {
+            return redirect()->route('home')
+                ->with('error', 'ID de compra inválido');
         }
+
+        $purchase = Purchase::with('items.photo.event', 'items.photo.photographer')
+            ->findOrFail($purchaseId);
+
+        return Inertia::render('Payment/Success', [
+            'purchase' => $purchase,
+        ]);
     }
 
-    // ... (Mantén tus métodos success, failure, pending y webhook exactamente igual) ...
+    /**
+     *  Failure page
+     */
+    public function failure(Request $request)
+    {
+        $purchaseId = $request->query('purchase_id');
+
+        return Inertia::render('Payment/Failure', [
+            'purchase_id' => $purchaseId,
+            'message' => 'El pago fue rechazado o cancelado',
+        ]);
+    }
+
+    /**
+     *  Pending page
+     */
+    public function pending(Request $request)
+    {
+        $purchaseId = $request->query('purchase_id');
+
+        return Inertia::render('Payment/Pending', [
+            'purchase_id' => $purchaseId,
+            'message' => 'Tu pago está siendo procesado',
+        ]);
+    }
+
+
+    
+
+    
 
     /**
      * Descargar fotos compradas (Originales desde Backblaze B2)
