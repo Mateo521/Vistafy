@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Photographer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ProfileController extends Controller
 {
@@ -34,29 +37,44 @@ class ProfileController extends Controller
             'banner_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // 1. Manejo de Foto de Perfil (Guardando en B2)
+        $manager = new ImageManager(new Driver);
+
         if ($request->hasFile('profile_photo')) {
-            // Borramos la vieja de la nube (si existe)
             if ($photographer->profile_photo) {
                 Storage::disk('b2')->delete($photographer->profile_photo);
             }
-            // Guardamos la nueva en la nube
-            $validated['profile_photo'] = $request->file('profile_photo')->store('photographers/profiles', 'b2');
+
+            $file = $request->file('profile_photo');
+            $filename = 'photographers/profiles/'.Str::random(20).'.jpg';
+
+            $image = $manager->read($file);
+            $image->cover(800, 800);
+            $encoded = $image->toJpeg(80);
+
+            Storage::disk('b2')->put($filename, (string) $encoded);
+            $validated['profile_photo'] = $filename;
         } else {
             unset($validated['profile_photo']);
         }
 
-        // 2. Manejo del Banner (Guardando en B2)
         if ($request->hasFile('banner_photo')) {
             if ($photographer->banner_photo) {
                 Storage::disk('b2')->delete($photographer->banner_photo);
             }
-            $validated['banner_photo'] = $request->file('banner_photo')->store('photographers/banners', 'b2');
+
+            $file = $request->file('banner_photo');
+            $filename = 'photographers/banners/'.Str::random(20).'.jpg';
+
+            $image = $manager->read($file);
+            $image->cover(1920, 400);
+            $encoded = $image->toJpeg(80);
+
+            Storage::disk('b2')->put($filename, (string) $encoded);
+            $validated['banner_photo'] = $filename;
         } else {
             unset($validated['banner_photo']);
         }
 
-        // 3. Actualizar base de datos
         $photographer->update($validated);
 
         return redirect()->back()->with('success', '¡Perfil actualizado correctamente!');

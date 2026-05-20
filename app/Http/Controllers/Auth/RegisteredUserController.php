@@ -9,25 +9,18 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): Response
     {
         return Inertia::render('Auth/Register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -40,14 +33,22 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'customer', // Por defecto es cliente
+            'role' => 'customer',
         ]);
+
+        try {
+
+            Mail::raw("¡Hola {$user->name}! Bienvenido a f33. Tu cuenta fué creada y ya podés empezar a adquirir fotografías", function ($msg) use ($user) {
+                $msg->to($user->email)->subject('¡Bienvenido a f33!');
+            });
+        } catch (\Exception $e) {
+            \Log::error('Error enviando correo a cliente nuevo: '.$e->getMessage());
+        }
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        // Redirigir según el rol
         if ($user->isPhotographer()) {
             return redirect()->route('photographer.dashboard');
         }
