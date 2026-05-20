@@ -19,9 +19,7 @@ class ImageProcessingService
         $this->manager = new ImageManager(new Driver());
     }
 
-    /**
-     * Procesar y guardar foto con 3 versiones
-     */
+  
 public function processPhoto($file, $photographerId)
     {
         \Log::info(' Iniciando procesamiento y subida a Backblaze B2');
@@ -36,7 +34,7 @@ public function processPhoto($file, $photographerId)
             $width = $image->width();
             $height = $image->height();
 
-            // 1. Guardar ORIGINAL 
+        
             $originalFullPath = "{$basePath}/originals/{$uniqueId}_original.jpg";
             $encoded = $image->toJpeg(95);
             
@@ -45,7 +43,7 @@ public function processPhoto($file, $photographerId)
             }
             \Log::info(' Original en la nube', ['path' => $originalFullPath]);
 
-            // 2. Crear PREVIEW CON MARCA DE AGUA
+          
             $watermarkedFullPath = "{$basePath}/watermarked/{$uniqueId}_watermarked.jpg";
             $watermarkedImage = $this->manager->read($file);
 
@@ -56,21 +54,24 @@ public function processPhoto($file, $photographerId)
             $watermarkedImage = $this->addTiledWatermark($watermarkedImage, $photographerId);
             $encodedWatermarked = $watermarkedImage->toJpeg(85);
 
-            // Quitamos el 'public' porque el bucket es privado y usamos temporaryUrl
+            
             if (!Storage::disk($this->disk)->put($watermarkedFullPath, (string) $encodedWatermarked)) {
                 throw new \Exception("Fallo al subir la vista previa a B2");
             }
 
-            // 3. Crear THUMBNAIL
+            
             $thumbnailFullPath = "{$basePath}/thumbnails/{$uniqueId}_thumb.jpg";
             $thumbnailImage = $this->manager->read($file);
             $thumbnailImage->cover(400, 400);
+            
+        
+            $thumbnailImage = $this->addTiledWatermark($thumbnailImage, $photographerId);
+            
             $encodedThumb = $thumbnailImage->toJpeg(80);
 
             if (!Storage::disk($this->disk)->put($thumbnailFullPath, (string) $encodedThumb)) {
                 throw new \Exception("Fallo al subir el thumbnail a B2");
             }
-
             return [
                 'unique_id' => $uniqueId,
                 'original_path' => $originalFullPath,
@@ -85,7 +86,7 @@ public function processPhoto($file, $photographerId)
             ];
 
         } catch (\Exception $e) {
-            \Log::error('❌ Error subiendo a Backblaze', ['error' => $e->getMessage()]);
+            \Log::error(' Error subiendo a Backblaze', ['error' => $e->getMessage()]);
             throw $e;
         }
     }
