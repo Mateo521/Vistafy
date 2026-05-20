@@ -26,9 +26,9 @@ const form = useForm({
     price: 5.00,
     event_id: null,
     is_active: true,
-    face_data: null, // Campo para enviar los metadatos
+    read_bibs: true,
+    face_data: null,
 });
-
 const { success, error } = useToast();
 
 // Estado de Archivos
@@ -88,7 +88,7 @@ const handleDrop = (event) => {
     addFiles(files);
 };
 
- 
+
 const compressImage = async (file) => {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -98,9 +98,9 @@ const compressImage = async (file) => {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                
+
                 // Limitar el lado más largo a 2500px (Excelente calidad, pero pesa un 80% menos)
-                const maxSize = 2500; 
+                const maxSize = 2500;
 
                 if (width > height && width > maxSize) {
                     height = Math.round((height * maxSize) / width);
@@ -115,14 +115,14 @@ const compressImage = async (file) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Comprimir a JPEG con 80% de calidad
+
                 canvas.toBlob((blob) => {
                     // Re-creamos un archivo "File" para que el FormData lo acepte
                     const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
                         type: 'image/jpeg',
                         lastModified: Date.now()
                     });
-                    
+
                     resolve({
                         file: compressedFile, // El archivo liviano
                         name: compressedFile.name,
@@ -140,9 +140,8 @@ const addFiles = async (files) => {
     // Validaciones
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        // Subimos el límite aparente a 50MB para que el celu deje seleccionar la foto, 
-        // total el compresor la va a bajar a ~1.5MB
-        const maxSize = 50 * 1024 * 1024; 
+
+        const maxSize = 50 * 1024 * 1024;
         if (!validTypes.includes(file.type)) {
             error(`${file.name} no es un formato válido.`);
             return false;
@@ -161,14 +160,14 @@ const addFiles = async (files) => {
         error(`Límite de 50 fotos. Se agregaron ${remainingSlots}.`);
     }
 
-    // Ponemos a comprimir y generar previews a todas las fotos seleccionadas
+
     const compressingPromises = filesToAdd.map(file => compressImage(file));
 
-    // Esperar a que TODAS terminen de comprimirse
+
     const newFileObjects = await Promise.all(compressingPromises);
     selectedFiles.value.push(...newFileObjects);
 
-    // DISPARAR DETECCIÓN DE IA AUTOMÁTICAMENTE
+
     if (modelsLoaded.value) {
         runAIDetection();
     }
@@ -187,25 +186,27 @@ const clearFiles = () => {
     if (fileInput.value) fileInput.value.value = '';
 };
 
-// ----------------------------------------------------------------------
-// 3. LÓGICA DE DETECCIÓN (Copiada y adaptada a selectedFiles)
-// ----------------------------------------------------------------------
 
 const runAIDetection = async () => {
-    // Limpiamos resultados previos para re-procesar todo (o podríamos procesar solo nuevos)
-    // Para simplificar, reprocesamos el array actual que coincida con selectedFiles
-    processingFaces.value = true;
-    await detectFacesInImages();
-    processingFaces.value = false;
 
-    processingBibs.value = true;
-    await detectBibNumbers(faceDetectionResults.value);
-    processingBibs.value = false;
+    processingFaces = true;
+    await detectFacesInImages();
+    processingFaces = false;
+
+
+    if (form.read_bibs) {
+        processingBibs = true;
+        await detectBibNumbers(faceDetectionResults.value);
+        processingBibs = false;
+    } else {
+
+        bibDetectionResults.value = selectedFiles.value.map((_, i) => ({ index: i, numbers: [], raw_text: '' }));
+    }
 };
 
-// --- DETECCIÓN DE ROSTROS ---
+
 const detectFacesInImages = async () => {
-    faceDetectionResults.value = []; // Reset o merge logic needed if appending
+    faceDetectionResults.value = [];
 
     for (let i = 0; i < selectedFiles.value.length; i++) {
         try {
@@ -235,7 +236,7 @@ const detectFacesInImages = async () => {
     }
 };
 
-// --- DETECCIÓN DE DORSALES (OCR) ---
+
 const detectBibNumbers = async (facesData) => {
     bibDetectionResults.value = [];
 
@@ -252,7 +253,7 @@ const detectBibNumbers = async (facesData) => {
             let uniqueNumbers = new Set();
 
             if (boxes.length > 0) {
-                // Procesar cada persona detectada
+
                 for (const faceBox of boxes) {
                     const roiDataUrl = await cropTorsoFromFace(selectedFiles.value[i].preview, faceBox);
                     const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
@@ -261,7 +262,7 @@ const detectBibNumbers = async (facesData) => {
                     if (found) found.forEach(num => { if (num.length >= 2) uniqueNumbers.add(num); });
                 }
             } else {
-                // Fallback sin rostros
+
                 const roiDataUrl = await cropTorsoFromFace(selectedFiles.value[i].preview, null);
                 const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
                 const result = await worker.recognize(cleanedDataUrl);
@@ -283,7 +284,7 @@ const detectBibNumbers = async (facesData) => {
     await worker.terminate();
 };
 
-// --- UTILIDADES DE IMAGEN (Iguales) ---
+
 const cropTorsoFromFace = async (imageUrl, faceBox) => {
     return new Promise((resolve) => {
         const img = new Image();
@@ -338,7 +339,7 @@ const preprocessForOCR = async (imageUrl) => {
     });
 };
 
-// --- EDICIÓN MANUAL DE DORSALES ---
+
 const addBibTag = (index, event) => {
     const val = event.target.value.trim();
     if (!val) return;
@@ -397,18 +398,18 @@ const submitPhotos = () => {
         formData.append(`photos[${index}]`, item.file);
     });
 
-  
+
     formData.append('price', form.price);
     formData.append('is_active', form.is_active ? 1 : 0);
     if (form.event_id) formData.append('event_id', form.event_id);
 
-    
+
     formData.append('face_data', JSON.stringify({
         faces: facesData,
         bibs: bibsData
     }));
 
-   
+
 
     router.post(route('photographer.photos.store'), formData, {
         forceFormData: true,
@@ -503,6 +504,21 @@ const formatDate = (date) => {
                                             Inmediata</label>
                                         <p class="text-xs text-slate-500">Las fotos serán visibles en la galería al
                                             terminar la carga.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start pt-2 border-t border-gray-100 mt-4">
+                                    <div class="flex items-center h-5">
+                                        <input id="read_bibs" v-model="form.read_bibs" type="checkbox"
+                                            class="focus:ring-0 h-4 w-4 text-slate-900 border-gray-300 rounded-sm">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="read_bibs" class="font-medium text-slate-700">Leer Dorsales
+                                            (OCR)</label>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">
+                                            Desactive esto si el evento no es deportivo (Bodas, Cumpleaños). La carga
+                                            será mucho más rápida.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
