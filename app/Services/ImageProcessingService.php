@@ -4,74 +4,71 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ImageProcessingService
 {
     protected $manager;
 
-  
     protected $disk = 'b2';
 
     public function __construct()
     {
-        $this->manager = new ImageManager(new Driver());
+        $this->manager = new ImageManager(new Driver);
     }
 
-  
-public function processPhoto($file, $photographerId)
+    public function processPhoto($file, $photographerId)
     {
-        \Log::info(' Iniciando procesamiento y subida a Backblaze B2');
+        \Log::info(' Iniciando procesamiento eficiente a Backblaze B2');
 
         $uniqueId = $this->generateUniqueId();
         $timestamp = now()->format('Y/m/d');
-
         $basePath = "photos/{$photographerId}/{$timestamp}";
-        
+
         try {
+
             $image = $this->manager->read($file);
             $width = $image->width();
             $height = $image->height();
 
-        
             $originalFullPath = "{$basePath}/originals/{$uniqueId}_original.jpg";
-            $encoded = $image->toJpeg(95);
-            
-            if (!Storage::disk($this->disk)->put($originalFullPath, (string) $encoded)) {
-                throw new \Exception("Fallo al subir el archivo original a B2");
+            $encodedOriginal = $image->toJpeg(95);
+
+            if (! Storage::disk($this->disk)->put($originalFullPath, (string) $encodedOriginal)) {
+                throw new \Exception('Fallo al subir el archivo original');
             }
-            \Log::info(' Original en la nube', ['path' => $originalFullPath]);
+            unset($encodedOriginal);
 
-          
-            $watermarkedFullPath = "{$basePath}/watermarked/{$uniqueId}_watermarked.jpg";
-            $watermarkedImage = $this->manager->read($file);
-
+            $watermarkedImage = clone $image;
             if ($watermarkedImage->width() > 1920 || $watermarkedImage->height() > 1920) {
                 $watermarkedImage->scale(width: 1920, height: 1920);
             }
-
             $watermarkedImage = $this->addTiledWatermark($watermarkedImage, $photographerId);
             $encodedWatermarked = $watermarkedImage->toJpeg(85);
 
-            
-            if (!Storage::disk($this->disk)->put($watermarkedFullPath, (string) $encodedWatermarked)) {
-                throw new \Exception("Fallo al subir la vista previa a B2");
-            }
+            $watermarkedFullPath = "{$basePath}/watermarked/{$uniqueId}_watermarked.jpg";
+            Storage::disk($this->disk)->put($watermarkedFullPath, (string) $encodedWatermarked);
 
-            
-            $thumbnailFullPath = "{$basePath}/thumbnails/{$uniqueId}_thumb.jpg";
-            $thumbnailImage = $this->manager->read($file);
+            $watermarkedImage = null;
+            unset($encodedWatermarked);
+
+            $thumbnailImage = clone $image;
             $thumbnailImage->cover(400, 400);
-            
-        
             $thumbnailImage = $this->addTiledWatermark($thumbnailImage, $photographerId);
-            
             $encodedThumb = $thumbnailImage->toJpeg(80);
 
-            if (!Storage::disk($this->disk)->put($thumbnailFullPath, (string) $encodedThumb)) {
-                throw new \Exception("Fallo al subir el thumbnail a B2");
+            $thumbnailFullPath = "{$basePath}/thumbnails/{$uniqueId}_thumb.jpg";
+            Storage::disk($this->disk)->put($thumbnailFullPath, (string) $encodedThumb);
+
+            $image = null;
+            $thumbnailImage = null;
+            unset($encodedThumb);
+
+            if (function_exists('gc_collect_cycles')) {
+                gc_collect_cycles();
             }
+
             return [
                 'unique_id' => $uniqueId,
                 'original_path' => $originalFullPath,
@@ -79,27 +76,22 @@ public function processPhoto($file, $photographerId)
                 'thumbnail_path' => $thumbnailFullPath,
                 'original_name' => $file->getClientOriginalName(),
                 'file_size' => $file->getSize(),
-                'dimensions' => [
-                    'width' => $width,
-                    'height' => $height,
-                ],
+                'dimensions' => ['width' => $width, 'height' => $height],
             ];
 
         } catch (\Exception $e) {
-            \Log::error(' Error subiendo a Backblaze', ['error' => $e->getMessage()]);
+            \Log::error(' Error crítico en procesamiento: '.$e->getMessage());
             throw $e;
         }
     }
- 
-
-
 
     protected function addTiledWatermark($image, $photographerId)
     {
         try {
             // Verificar si la marca de agua está habilitada
-            if (!config('app.watermark_enabled', true)) {
+            if (! config('app.watermark_enabled', true)) {
                 \Log::info(' Marca de agua deshabilitada en .env');
+
                 return $image;
             }
 
@@ -108,8 +100,9 @@ public function processPhoto($file, $photographerId)
             $logoFullPath = public_path($logoPath);
 
             // Verificar que existe el logo
-            if (!file_exists($logoFullPath)) {
+            if (! file_exists($logoFullPath)) {
                 \Log::warning(' Logo de marca de agua no encontrado', ['path' => $logoFullPath]);
+
                 return $image;
             }
 
@@ -148,7 +141,7 @@ public function processPhoto($file, $photographerId)
                 'cols' => $cols,
                 'rows' => $rows,
                 'tile_size' => $tileSize,
-                'opacity' => $opacity
+                'opacity' => $opacity,
             ]);
 
             //  Aplicar marca de agua en patrón CON TRANSPARENCIA
@@ -175,18 +168,13 @@ public function processPhoto($file, $photographerId)
         } catch (\Exception $e) {
             \Log::error(' Error al aplicar marca de agua', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             // En caso de error, devolver la imagen sin marca de agua
             return $image;
         }
     }
-
-
- 
-
-
 
     protected function generateUniqueId()
     {
@@ -197,23 +185,22 @@ public function processPhoto($file, $photographerId)
         return $uniqueId;
     }
 
-
-
-public function deletePhoto($photo)
+    public function deletePhoto($photo)
     {
-       
+
         Storage::disk($this->disk)->delete([
             $photo->original_path,
             $photo->watermarked_path,
             $photo->thumbnail_path,
         ]);
-        
+
         \Log::info(' Archivos eliminados de Backblaze', ['id' => $photo->unique_id]);
     }
 
     public function updatePhoto($file, $photo)
     {
         $this->deletePhoto($photo);
+
         return $this->processPhoto($file, $photo->photographer_id);
     }
 }
