@@ -24,7 +24,7 @@ class WebhookController extends Controller
 
         $data = $request->all();
 
-        // Si viene como query params
+        
         if (empty($data) && $request->has('topic')) {
             $data = [
                 'topic' => $request->query('topic'),

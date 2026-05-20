@@ -1,31 +1,29 @@
 <?php
 
+use App\Http\Controllers\Admin\ContactMessageController;
+use App\Http\Controllers\Admin\PhotographerManagementController;
+use App\Http\Controllers\Auth\PhotographerRegistrationController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\EventFaceSearchController;
+use App\Http\Controllers\FutureEventController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentSimulationController;
+use App\Http\Controllers\Photographer\EventController;
+use App\Http\Controllers\Photographer\FutureEventManagementController;
+use App\Http\Controllers\Photographer\MercadoPagoOAuthController;
+use App\Http\Controllers\Photographer\PhotoController;
+use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
+use App\Http\Controllers\PhotographerController;
+use App\Http\Controllers\PhotoViewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicGalleryController;
-use App\Http\Controllers\Photographer\EventController;
-use App\Http\Controllers\PhotographerController;
-use App\Http\Controllers\Photographer\PhotoController;
-use App\Http\Controllers\EventFaceSearchController;
-use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
-use App\Http\Controllers\Admin\PhotographerManagementController;
-use App\Http\Controllers\PurchaseHistoryController;
-use App\Http\Controllers\PaymentSimulationController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\Auth\PhotographerRegistrationController;
-use App\Http\Controllers\WebhookController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\Photographer\FutureEventManagementController;
-use App\Http\Controllers\PhotoViewController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\Admin\ContactMessageController;
-use App\Http\Controllers\FutureEventController;
+use App\Http\Controllers\PurchaseHistoryController;
+use App\Http\Controllers\WebhookController;
+use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Route;
-use App\Models\ContactMessage; 
-use App\Http\Controllers\Photographer\MercadoPagoOAuthController;
 use Inertia\Inertia;
-
 
 Route::get(
     'foto/{photographer}/{year}/{month}/{day}/{type}/{filename}',
@@ -38,15 +36,8 @@ Route::get(
         'month' => '[0-9]{2}',
         'day' => '[0-9]{2}',
         'type' => 'watermarked|thumbnails',
-        'filename' => '.*\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)'
+        'filename' => '.*\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)',
     ]);
-
-
-/*
-|--------------------------------------------------------------------------
-| Rutas Públicas
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', [PublicGalleryController::class, 'index'])->name('home');
 
@@ -57,28 +48,18 @@ Route::get('/nosotros', function () {
     return Inertia::render('About');
 })->name('about');
 
-
 Route::prefix('eventos-futuros')->name('future-events.')->group(function () {
-    // 1) API
+
     Route::get('/api', [FutureEventController::class, 'index'])->name('api');
 
-    // 2) Página de mapa (DEBE IR ANTES QUE {futureEvent})
     Route::get('/mapa', function () {
         return Inertia::render('FutureEvents/Map');
     })->name('map');
 
-    // 3) Listado (cards)
     Route::get('/', [FutureEventController::class, 'page'])->name('index');
 
-    // 4) Detalle (catch-all por ID)
     Route::get('/{futureEvent}', [FutureEventController::class, 'show'])->name('show');
 });
-
-
-
-
-
-
 
 Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'gallery'])->name('index');
@@ -87,19 +68,15 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
     Route::post('/buscar-rostro', [PublicGalleryController::class, 'faceSearch'])
         ->name('face-search');
 
-    // Búsqueda por dorsal en galería global
     Route::post('/buscar-dorsal', [PublicGalleryController::class, 'bibSearch'])
         ->name('bib-search');
-
 
     Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
 });
 
-//  EVENTOS (pasados/realizados) - EN ESPAÑOL
 Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{event:slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
-
 
     Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'show'])
         ->name('face-search.show');
@@ -107,57 +84,33 @@ Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'index'])
         ->name('face-search');
 
-
     Route::post('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'search'])
         ->name('face-search.submit');
-
-
 
     Route::get('/{event:slug}/buscar-dorsal', [EventController::class, 'bibSearch'])
         ->name('bib-search'); //
 
     Route::post('/{event:slug}/buscar-dorsal', [EventController::class, 'searchByBib'])
-        ->name('search-bib'); //  
-
-
+        ->name('search-bib'); //
 
 });
-
-
-
-
 
 Route::get('/fotografos', [PhotographerController::class, 'index'])->name('photographers.index');
 Route::get('/fotografos/{slug}', [PhotographerController::class, 'show'])->name('photographers.show');
 
-
-/*
-|--------------------------------------------------------------------------
-|  : Registro de Fotógrafos (Público)
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/registro-fotografo', [PhotographerRegistrationController::class, 'create'])
     ->name('photographer.register');
 Route::post('/registro-fotografo', [PhotographerRegistrationController::class, 'store']);
-
-/*
-|--------------------------------------------------------------------------
-| Rutas de Pago - Mercado Pago
-|--------------------------------------------------------------------------
-*/
 
 Route::prefix('pago')->name('payment.')->group(function () {
     // Iniciar compra
     Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
         ->name('initiate');
 
-
     Route::post('/carrito/comprar', [PaymentController::class, 'initiateCartPurchase'])
         ->middleware('auth')
         ->name('initiate.cart');
 
-    //  SIMULADOR (solo en local)
     if (app()->environment('local') && config('services.mercadopago.simulation_mode')) {
         Route::get('/simular/{purchase}', [PaymentSimulationController::class, 'show'])
             ->name('simulate');
@@ -166,60 +119,33 @@ Route::prefix('pago')->name('payment.')->group(function () {
             ->name('simulate.process');
     }
 
-
-    // Callbacks de Mercado Pago (español)
-    //  IMPORTANTE: Ahora reciben 'purchase_id' como parámetro de query
     Route::get('/exito', [PaymentController::class, 'success'])->name('success');
     Route::get('/fallo', [PaymentController::class, 'failure'])->name('failure');
     Route::get('/pendiente', [PaymentController::class, 'pending'])->name('pending');
 
-    // Descarga con token
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });
-
-
- 
 
 Route::get('/purchases/{purchase}/check-status', [PurchaseController::class, 'checkStatus'])
     ->name('purchases.check-status');
 
-
-
-
- 
-
 Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
-
- 
 
 Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
     ->name('photo.download')
     ->middleware('auth');
 
-
-
-//  Compras del Usuario
 Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(function () {
     Route::get('/', [PurchaseHistoryController::class, 'index'])->name('index');
     Route::get('/{purchase}/descargar/{photo}', [PurchaseHistoryController::class, 'download'])->name('download');
     Route::get('/{purchase}/descargar-todas', [PurchaseHistoryController::class, 'downloadAll'])->name('download.all');
 });
 
-
- 
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
-
-
-
-
-
 
 Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
@@ -229,72 +155,48 @@ Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
     Route::get('/count', [CartController::class, 'count'])->name('count');
 });
 
-
-
- 
-
 Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(function () {
-    // Página de pendiente de aprobación
+
     Route::get('/pendiente', function () {
         return Inertia::render('Photographer/Pending');
     })->name('pending');
 
-    // Página de cuenta rechazada
     Route::get('/rechazado', function () {
         $photographer = auth()->user()->photographer;
+
         return Inertia::render('Photographer/Rejected', [
             'reason' => $photographer?->rejection_reason,
         ]);
     })->name('rejected');
 
-    // Página de cuenta suspendida
     Route::get('/suspendido', function () {
         return Inertia::render('Photographer/Suspended');
     })->name('suspended');
 });
-
- 
 
 Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name('photographer.')->group(function () {
 
     Route::post('/fotos/assign-to-event', [PhotoController::class, 'assignToEvent'])
         ->name('photos.assign-to-event');
 
-    // --- PERFIL PROFESIONAL ---
-    // El prefijo 'perfil' se suma a 'fotografo' -> /fotografo/perfil
     Route::prefix('perfil')->name('profile.')->group(function () {
 
-        // 1. Mostrar el formulario
-        // URL: /fotografo/perfil/editar
-        // Nombre de ruta: photographer.profile.edit
         Route::get('/editar', [PhotographerProfileController::class, 'edit'])->name('edit');
 
-        // 2. Guardar los cambios
-        // URL: /fotografo/perfil/actualizar
-        // Nombre de ruta: photographer.profile.update
-        // Usamos PATCH porque es una actualización parcial
         Route::patch('/actualizar', [PhotographerProfileController::class, 'update'])->name('update');
 
-        // 3. Eliminar fotos específicas
         Route::delete('/foto-perfil', [PhotographerProfileController::class, 'deleteProfilePhoto'])->name('photo.delete');
         Route::delete('/banner', [PhotographerProfileController::class, 'deleteBannerPhoto'])->name('banner.delete');
     });
 
-
-
-
     Route::prefix('mercadopago')->name('mercadopago.')->group(function () {
-        // Redirige a MP
+
         Route::get('/vincular', [MercadoPagoOAuthController::class, 'redirectToProvider'])->name('auth');
-        // MP nos devuelve acá con el código
+
         Route::get('/callback', [MercadoPagoOAuthController::class, 'handleProviderCallback'])->name('callback');
-        // Para desvincular la cuenta
+
         Route::get('/desvincular', [MercadoPagoOAuthController::class, 'unlinkAccount'])->name('unlink');
     });
-    
-
-
-
 
     Route::prefix('oportunidades')->name('opportunities.')->group(function () {
         Route::get('/', [FutureEventManagementController::class, 'index'])->name('index');
@@ -305,12 +207,6 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
         Route::delete('/{id}', [FutureEventManagementController::class, 'destroy'])->name('destroy');
     });
 
-
-
-
-
-
-    // Dashboard
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;
 
@@ -341,16 +237,10 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
         ]);
     })->name('dashboard');
 
-    // Perfil
     Route::get('/perfil/editar', [App\Http\Controllers\Photographer\ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/perfil/actualizar', [App\Http\Controllers\Photographer\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/perfil/foto-perfil', [App\Http\Controllers\Photographer\ProfileController::class, 'deleteProfilePhoto'])->name('profile.photo.delete');
     Route::delete('/perfil/banner', [App\Http\Controllers\Photographer\ProfileController::class, 'deleteBannerPhoto'])->name('profile.banner.delete');
-
-    // Fotos
-
-
-
 
     Route::get('/fotos', [PhotoController::class, 'index'])->name('photos.index');
     Route::get('/fotos/crear', [PhotoController::class, 'create'])->name('photos.create');
@@ -360,7 +250,6 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::put('/fotos/{photo}', [PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/fotos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
 
-    // Eventos
     Route::get('/eventos', [EventController::class, 'index'])->name('events.index');
     Route::get('/eventos/crear', [EventController::class, 'create'])->name('events.create');
     Route::post('/eventos', [EventController::class, 'store'])->name('events.store');
@@ -371,17 +260,8 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
 });
 
-
-
-/*
-|--------------------------------------------------------------------------
-| Rutas de Administrador
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // Dashboard de admin
     Route::get('/panel', function () {
         $stats = [
             'total_photographers' => \App\Models\Photographer::count(),
@@ -400,20 +280,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         ]);
     })->name('dashboard');
 
-
-
     Route::get('/mensajes', [ContactMessageController::class, 'index'])->name('messages.index');
     Route::get('/mensajes/{message}', [ContactMessageController::class, 'show'])->name('messages.show');
     Route::patch('/mensajes/{message}/toggle-read', [ContactMessageController::class, 'toggleRead'])->name('messages.toggle-read');
     Route::delete('/mensajes/{message}', [ContactMessageController::class, 'destroy'])->name('messages.destroy');
 
-
-
-    //  Gestión de fotógrafos
     Route::prefix('fotografos')->name('photographers.')->group(function () {
         Route::get('/', [PhotographerManagementController::class, 'index'])->name('index');
 
-        //  Usar solo {photographer} - el modelo decidirá usar ID en admin
         Route::get('/{photographer}', [PhotographerManagementController::class, 'show'])->name('show');
         Route::post('/{photographer}/aprobar', [PhotographerManagementController::class, 'approve'])->name('approve');
         Route::post('/{photographer}/rechazar', [PhotographerManagementController::class, 'reject'])->name('reject');
@@ -424,9 +298,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 });
 
-
 Route::fallback(function () {
     return Inertia::render('Errors/404');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
