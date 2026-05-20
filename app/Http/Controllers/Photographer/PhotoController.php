@@ -2,77 +2,61 @@
 
 namespace App\Http\Controllers\Photographer;
 
-
 use App\Http\Controllers\Controller;
-use App\Models\Photo;
 use App\Models\Event;
+use App\Models\Photo;
+use App\Services\ImageProcessingService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
-
-use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Services\ImageProcessingService;
 
 class PhotoController extends Controller
 {
     use AuthorizesRequests;
+
     protected $imageService;
 
     public function __construct(ImageProcessingService $imageService)
     {
 
-
         $this->imageService = $imageService;
     }
 
-    /**
-     * Lista de fotos del fotógrafo
-     */
-    /**
-     * Mostrar listado de fotos del fotógrafo
-     */
     public function index(Request $request)
     {
         $photographer = auth()->user()->photographer;
 
         $query = Photo::where('photographer_id', $photographer->id)
-            ->with('event:id,name');  // ← event (singular)
+            ->with('event:id,name');
 
-        // Filtros
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('unique_id', 'like', '%' . $request->search . '%')
-                    ->orWhere('original_name', 'like', '%' . $request->search . '%');
+                $q->where('unique_id', 'like', '%'.$request->search.'%')
+                    ->orWhere('original_name', 'like', '%'.$request->search.'%');
             });
         }
 
         if ($request->filled('event_id')) {
-            $query->where('event_id', $request->event_id);  // ← Cambiar whereHas por where directo
+            $query->where('event_id', $request->event_id);
         }
 
         if ($request->filled('is_active')) {
             $query->where('is_active', $request->is_active);
         }
 
-        // Ordenar
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        // Paginar
         $photos = $query->paginate(24)->withQueryString();
 
-        // Eventos para el filtro
         $events = Event::where('photographer_id', $photographer->id)
             ->select('id', 'name')
             ->orderBy('name')
             ->get();
 
-        // Estadísticas
         $stats = [
             'total' => Photo::where('photographer_id', $photographer->id)->count(),
             'active' => Photo::where('photographer_id', $photographer->id)->where('is_active', true)->count(),
@@ -88,18 +72,9 @@ class PhotoController extends Controller
         ]);
     }
 
-
-
-    /**
-     * Formulario para subir fotos
-     */
-    /**
-     * Formulario para subir fotos
-     */
     public function create()
     {
         $photographer = auth()->user()->photographer;
-
 
         $events = Event::where('photographer_id', $photographer->id)
             ->select('id', 'name', 'event_date')
@@ -111,13 +86,6 @@ class PhotoController extends Controller
         ]);
     }
 
-
-
-
-
-    /**
-     * Subir fotos (múltiples)
-     */
     public function store(Request $request)
     {
         //  LOG PARA VER QUÉ LLEGA
@@ -130,9 +98,9 @@ class PhotoController extends Controller
             'photographer_id' => auth()->user()->photographer->id ?? 'NO_PHOTOGRAPHER',
         ]);
 
-        // Verificar que el usuario tiene un perfil de fotógrafo
-        if (!auth()->user()->photographer) {
+        if (! auth()->user()->photographer) {
             \Log::error(' Usuario no tiene perfil de fotógrafo');
+
             return redirect()->back()->with('error', 'No tenés un perfil de fotógrafo activo');
         }
 
@@ -147,16 +115,15 @@ class PhotoController extends Controller
 
         $photographer = auth()->user()->photographer;
 
-        // Verificar que el evento pertenece al fotógrafo (si se proporciona)
         if ($request->event_id) {
             $event = Event::find($request->event_id);
-            if (!$event || $event->photographer_id !== $photographer->id) {
+            if (! $event || $event->photographer_id !== $photographer->id) {
                 \Log::error(' Evento no pertenece al fotógrafo');
+
                 return redirect()->back()->with('error', 'No tenés permiso para subir fotos a este evento');
             }
         }
 
-        //  : Decodificar datos faciales Y de dorsales
         $facesData = [];
         $bibsData = [];
 
@@ -164,15 +131,14 @@ class PhotoController extends Controller
             try {
                 $decodedData = json_decode($request->face_data, true);
 
-                //  Extraer rostros y dorsales por separado
                 $facesData = $decodedData['faces'] ?? [];
                 $bibsData = $decodedData['bibs'] ?? [];
 
                 \Log::info(' Datos de detección recibidos', [
-                    'fotos_con_rostros' => count(array_filter($facesData, fn($f) => $f['count'] > 0)),
+                    'fotos_con_rostros' => count(array_filter($facesData, fn ($f) => $f['count'] > 0)),
                     'total_rostros' => array_sum(array_column($facesData, 'count')),
-                    'fotos_con_dorsales' => count(array_filter($bibsData, fn($b) => !empty($b['numbers']))),
-                    'total_dorsales' => array_sum(array_map(fn($b) => count($b['numbers'] ?? []), $bibsData)),
+                    'fotos_con_dorsales' => count(array_filter($bibsData, fn ($b) => ! empty($b['numbers']))),
+                    'total_dorsales' => array_sum(array_map(fn ($b) => count($b['numbers'] ?? []), $bibsData)),
                 ]);
             } catch (\Exception $e) {
                 \Log::warning(' Error decodificando face_data', ['error' => $e->getMessage()]);
@@ -192,43 +158,38 @@ class PhotoController extends Controller
                         'size' => $file->getSize(),
                     ]);
 
-                    // Procesar imagen usando el servicio
                     $processed = $this->imageService->processPhoto($file, $photographer->id);
 
-                    \Log::info(" Foto procesada exitosamente", [
+                    \Log::info(' Foto procesada exitosamente', [
                         'unique_id' => $processed['unique_id'],
                         'event_id' => $request->event_id,
                         'original_path' => $processed['original_path'],
                     ]);
 
-                    //  Obtener datos faciales de esta foto específica
                     $photoFaceData = $facesData[$index] ?? null;
                     $hasFaces = $photoFaceData && $photoFaceData['count'] > 0;
                     $faceEncodings = $hasFaces ? $photoFaceData['descriptors'] : null;
 
-                    //  : Obtener datos de dorsales de esta foto específica
                     $photoBibData = $bibsData[$index] ?? null;
-                    $hasBibs = $photoBibData && !empty($photoBibData['numbers']);
+                    $hasBibs = $photoBibData && ! empty($photoBibData['numbers']);
                     $bibNumbers = $hasBibs ? $photoBibData['numbers'] : null;
 
                     if ($hasFaces) {
-                        \Log::info("👤 Foto con rostros detectados", [
+                        \Log::info(' Foto con rostros detectados', [
                             'index' => $index,
                             'num_rostros' => $photoFaceData['count'],
                             'num_descriptors' => count($photoFaceData['descriptors']),
                         ]);
                     }
 
-                    //  : Log de dorsales detectados
                     if ($hasBibs) {
-                        \Log::info(" Foto con dorsales detectados", [
+                        \Log::info(' Foto con dorsales detectados', [
                             'index' => $index,
                             'dorsales' => implode(', ', $photoBibData['numbers']),
                             'raw_text' => $photoBibData['raw_text'] ?? '',
                         ]);
                     }
 
-                    //  CREAR REGISTRO EN BASE DE DATOS CON DORSALES
                     $photo = Photo::create([
                         'photographer_id' => $photographer->id,
                         'event_id' => $request->event_id,
@@ -244,25 +205,23 @@ class PhotoController extends Controller
                         'price' => $request->price ?? 5000,
                         'is_active' => $request->is_active ?? true,
 
-                        // Campos de Reconocimiento facial
                         'face_encodings' => $faceEncodings,
                         'has_faces' => $hasFaces,
                         'faces_processed_at' => $hasFaces ? now() : null,
 
-                        //  : Campos de detección de dorsales
                         'bib_numbers' => $bibNumbers,
                         'bib_processed' => $hasBibs,
                         'bib_processed_at' => $hasBibs ? now() : null,
                     ]);
 
-                    \Log::info(" Foto guardada en BD", [
+                    \Log::info(' Foto guardada en BD', [
                         'photo_id' => $photo->id,
                         'event_id' => $photo->event_id,
                         'original_path' => $photo->original_path,
                         'has_faces' => $photo->has_faces,
                         'num_faces' => $photo->has_faces ? count($photo->face_encodings) : 0,
-                        'bib_numbers' => $photo->bib_numbers, //  
-                        'bib_processed' => $photo->bib_processed, //  
+                        'bib_numbers' => $photo->bib_numbers, //
+                        'bib_processed' => $photo->bib_processed, //
                     ]);
 
                     $uploadedPhotos[] = $photo;
@@ -274,36 +233,33 @@ class PhotoController extends Controller
                         'file' => $e->getFile(),
                         'trace' => $e->getTraceAsString(),
                     ]);
-                    $errors[] = "Error en {$file->getClientOriginalName()}: " . $e->getMessage();
+                    $errors[] = "Error en {$file->getClientOriginalName()}: ".$e->getMessage();
                 }
             }
 
             DB::commit();
 
-            //  ACTUALIZADO: Estadísticas con rostros Y dorsales
             $photosWithFaces = collect($uploadedPhotos)->where('has_faces', true)->count();
             $totalFaces = collect($uploadedPhotos)
                 ->where('has_faces', true)
-                ->sum(fn($p) => count($p->face_encodings ?? []));
+                ->sum(fn ($p) => count($p->face_encodings ?? []));
 
-            //  : Contar dorsales detectados
             $photosWithBibs = collect($uploadedPhotos)->where('bib_processed', true)->count();
             $totalBibs = collect($uploadedPhotos)
                 ->where('bib_processed', true)
-                ->sum(fn($p) => count($p->bib_numbers ?? []));
+                ->sum(fn ($p) => count($p->bib_numbers ?? []));
 
-            \Log::info(" Proceso completado", [
+            \Log::info(' Proceso completado', [
                 'uploaded' => count($uploadedPhotos),
                 'errors' => count($errors),
                 'event_id' => $request->event_id,
                 'photos_with_faces' => $photosWithFaces,
                 'total_faces' => $totalFaces,
-                'photos_with_bibs' => $photosWithBibs, //  
-                'total_bibs' => $totalBibs, //  
+                'photos_with_bibs' => $photosWithBibs, //
+                'total_bibs' => $totalBibs, //
             ]);
 
-            //  ACTUALIZADO: Mensaje con rostros y dorsales
-            $message = count($uploadedPhotos) . ' foto(s) subida(s) exitosamente';
+            $message = count($uploadedPhotos).' foto(s) subida(s) exitosamente';
 
             $detectionInfo = [];
             if ($photosWithFaces > 0) {
@@ -313,15 +269,14 @@ class PhotoController extends Controller
                 $detectionInfo[] = "{$totalBibs} dorsal(es) en {$photosWithBibs} foto(s)";
             }
 
-            if (!empty($detectionInfo)) {
-                $message .= ' (' . implode(', ', $detectionInfo) . ')';
+            if (! empty($detectionInfo)) {
+                $message .= ' ('.implode(', ', $detectionInfo).')';
             }
 
             if (count($errors) > 0) {
-                $message .= '. ' . count($errors) . ' foto(s) fallaron.';
+                $message .= '. '.count($errors).' foto(s) fallaron.';
             }
 
-            // Redirigir según el contexto
             if ($request->event_id) {
                 return redirect()
                     ->route('photographer.events.show', $request->event_id)
@@ -334,32 +289,24 @@ class PhotoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error(" Error general en subida", [
+            \Log::error(' Error general en subida', [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return redirect()->back()->with('error', 'Error al subir fotos: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Error al subir fotos: '.$e->getMessage());
         }
     }
 
-
-
-    /**
-     * Ver detalles de una foto
-     */
-
-
-
     public function show($photoId)
     {
-        // Cargar la foto manualmente
+
         $photo = Photo::findOrFail($photoId);
 
         $photographer = auth()->user()->photographer;
 
-        // Verificar permisos
         if ($photo->photographer_id != $photographer->id) {
             abort(403, 'No autorizado');
         }
@@ -371,18 +318,13 @@ class PhotoController extends Controller
         ]);
     }
 
-
-
-    /**
-     * Formulario de edición
-     */
     public function edit(Photo $photo)
     {
         if ($photo->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No autorizado');
         }
 
-        $photo->load('event:id,name');  // ← event (singular)
+        $photo->load('event:id,name');
 
         $events = Event::where('photographer_id', auth()->user()->photographer->id)
             ->select('id', 'name', 'event_date')
@@ -395,11 +337,6 @@ class PhotoController extends Controller
         ]);
     }
 
-
-
-    /**
-     * Actualizar foto
-     */
     public function update(Request $request, Photo $photo)
     {
         if ($photo->photographer_id !== auth()->user()->photographer->id) {
@@ -409,15 +346,15 @@ class PhotoController extends Controller
         $request->validate([
             'price' => 'required|numeric|min:0.01|max:999999.99',
             'is_active' => 'boolean',
-            'event_id' => 'nullable|exists:events,id',  // ← event_id (singular)
+            'event_id' => 'nullable|exists:events,id',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Si se Subí una nueva imagen, re-procesar
+
             if ($request->hasFile('new_image')) {
-                // Eliminar archivos antiguos
+
                 if ($photo->original_path) {
                     Storage::disk('b2')->delete($photo->original_path);
                 }
@@ -440,11 +377,10 @@ class PhotoController extends Controller
                 ]);
             }
 
-            // Actualizar información
             $photo->update([
                 'price' => $request->price,
                 'is_active' => $request->is_active ?? $photo->is_active,
-                'event_id' => $request->event_id,  // ← Actualizar event_id
+                'event_id' => $request->event_id,
             ]);
 
             DB::commit();
@@ -453,27 +389,22 @@ class PhotoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error al actualizar foto: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
+            \Log::error('Error al actualizar foto: '.$e->getMessage());
+
+            return redirect()->back()->with('error', 'Error al actualizar: '.$e->getMessage());
         }
     }
 
-    /**
-     * Eliminar foto
-     */
-
-    public function destroy(Photo $photo)  // ← Debe ser Photo $photo (el nombre debe coincidir con la ruta)
+    public function destroy(Photo $photo)
     {
         $photographer = auth()->user()->photographer;
 
-        // DEBUG: Ver qué valores tiene
         \Log::info('Intentando eliminar foto', [
             'photo_id' => $photo->id,
             'photo_photographer_id' => $photo->photographer_id,
             'auth_photographer_id' => $photographer->id,
         ]);
 
-        // Verificar que la foto pertenece al fotógrafo autenticado
         if ($photo->photographer_id !== $photographer->id) {
             \Log::error('Permiso denegado para eliminar foto', [
                 'photo_photographer_id' => $photo->photographer_id,
@@ -495,7 +426,7 @@ class PhotoController extends Controller
             if ($photo->thumbnail_path) {
                 Storage::disk('b2')->delete($photo->thumbnail_path);
             }
-            // Eliminar registro de la base de datos
+
             $photo->delete();
 
             DB::commit();
@@ -506,22 +437,19 @@ class PhotoController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error al eliminar foto: ' . $e->getMessage());
+            \Log::error('Error al eliminar foto: '.$e->getMessage());
 
-            return back()->with('error', 'Error al eliminar la foto: ' . $e->getMessage());
+            return back()->with('error', 'Error al eliminar la foto: '.$e->getMessage());
         }
     }
 
-    /**
-     * Activar/Desactivar foto
-     */
     public function toggleStatus(Photo $photo)
     {
         if ($photo->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No autorizado');
         }
         $photo->update([
-            'is_active' => !$photo->is_active,
+            'is_active' => ! $photo->is_active,
         ]);
 
         $status = $photo->is_active ? 'activada' : 'desactivada';
@@ -529,9 +457,6 @@ class PhotoController extends Controller
         return redirect()->back()->with('success', "Foto {$status} exitosamente");
     }
 
-    /**
-     * Subida masiva con AJAX
-     */
     public function uploadChunk(Request $request)
     {
         $request->validate([
@@ -574,17 +499,11 @@ class PhotoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'message' => 'Error: '.$e->getMessage(),
             ], 500);
         }
     }
 
-
-
-
-    /**
-     * Asignar fotos existentes a un evento
-     */
     public function assignToEvent(Request $request)
     {
         $request->validate([
@@ -595,27 +514,23 @@ class PhotoController extends Controller
 
         $photographer = auth()->user()->photographer;
 
-        // Verificar que las fotos pertenecen al fotógrafo
         $photos = Photo::whereIn('id', $request->photo_ids)
             ->where('photographer_id', $photographer->id)
-            ->whereNull('event_id') // Solo fotos sin evento
+            ->whereNull('event_id')
             ->get();
 
         if ($photos->count() !== count($request->photo_ids)) {
             return back()->withErrors([
-                'photos' => 'Algunas fotos no están disponibles para asignar.'
+                'photos' => 'Algunas fotos no están disponibles para asignar.',
             ]);
         }
 
-        // Asignar evento a todas las fotos
         Photo::whereIn('id', $request->photo_ids)
             ->update(['event_id' => $request->event_id]);
 
         return back()->with('message', [
             'type' => 'success',
-            'text' => count($request->photo_ids) . ' foto(s) asignada(s) al evento.'
+            'text' => count($request->photo_ids).' foto(s) asignada(s) al evento.',
         ]);
     }
-
-
 }

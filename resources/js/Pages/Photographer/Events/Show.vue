@@ -984,7 +984,7 @@ const copyToClipboard = async (text) => {
             <div
                 class="relative bg-white rounded-sm shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
 
-                <!-- Header con Tabs -->
+               
                 <div class="border-b border-gray-200 bg-white">
                     <div class="p-6 pb-0">
                         <div class="flex justify-between items-start mb-4">
@@ -995,7 +995,7 @@ const copyToClipboard = async (text) => {
                         </div>
                     </div>
 
-                    <!--  TABS -->
+                  
                     <div class="flex border-b border-gray-200 px-6">
                         <button @click="uploadMode = 'upload'" :class="[
                             'px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2',
@@ -1017,7 +1017,7 @@ const copyToClipboard = async (text) => {
                         </button>
                     </div>
 
-                    <!-- Indicador de IA (solo en modo upload) -->
+                  
                     <div v-if="uploadMode === 'upload'" class="px-6 py-2 bg-gray-50">
                         <p v-if="modelsLoaded" class="text-xs text-green-600 flex items-center gap-1">
                             <CheckIcon class="w-3 h-3" />
@@ -1029,16 +1029,16 @@ const copyToClipboard = async (text) => {
                     </div>
                 </div>
 
-                <!-- Body -->
+            
                 <div class="p-6 overflow-y-auto flex-1">
 
-                    <!--  TAB 1: SUBIR DESDE PC -->
+                 
                     <div v-if="uploadMode === 'upload'">
-                        <!--  Banner de procesamiento DUAL -->
+                      
                         <div v-if="processingFaces || processingBibs"
                             class="bg-blue-50 border border-blue-200 rounded-sm p-4 mb-4 space-y-3">
 
-                            <!-- Rostros -->
+                          
                             <div v-if="processingFaces" class="flex items-center gap-3">
                                 <div
                                     class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent">
@@ -1051,7 +1051,7 @@ const copyToClipboard = async (text) => {
                                 </div>
                             </div>
 
-                            <!--  Dorsales -->
+                          
                             <div v-if="processingBibs" class="flex items-center gap-3">
                                 <div
                                     class="animate-spin rounded-full h-5 w-5 border-2 border-purple-600 border-t-transparent">
@@ -1065,7 +1065,7 @@ const copyToClipboard = async (text) => {
                             </div>
                         </div>
 
-                        <!-- Zona de carga -->
+                      
                         <div v-if="selectedFiles.length === 0"
                             class="border-2 border-dashed border-gray-300 rounded-sm p-12 text-center hover:border-slate-400 transition-colors bg-gray-50">
                             <input type="file" multiple accept="image/*" @change="handleFileSelect" class="hidden"
@@ -1079,7 +1079,7 @@ const copyToClipboard = async (text) => {
                             </label>
                         </div>
 
-                        <!-- Previews -->
+                      
                         <div v-else>
                             <div class="grid grid-cols-4 sm:grid-cols-5 gap-3 mb-6">
 
@@ -1088,7 +1088,7 @@ const copyToClipboard = async (text) => {
 
                                     <img :src="url" class="w-full h-full object-cover" />
 
-                                    <!--  Badge de rostros (arriba derecha) -->
+                                 
                                     <div v-if="faceDetectionResults[index]"
                                         class="absolute top-2 right-2 px-2 py-1  text-[10px] font-bold shadow-lg"
                                         :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black' : 'bg-gray-400 text-white'">
@@ -1132,7 +1132,7 @@ const copyToClipboard = async (text) => {
                                     </div>
 
 
-                                    <!-- Loading overlay -->
+                                  
                                     <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
                                         class="absolute inset-0 bg-black/40 flex items-center justify-center">
                                         <div
@@ -1145,13 +1145,13 @@ const copyToClipboard = async (text) => {
 
                             </div>
 
-                            <!--  Estadísticas finales -->
+                         
                             <div class="border-t border-gray-200 pt-4 space-y-2">
                                 <p class="text-xs text-slate-500 text-right">
                                     {{ selectedFiles.length }} archivo(s) seleccionado(s)
                                 </p>
 
-                                <!-- Rostros -->
+                               
                                 <div v-if="faceDetectionResults.length > 0 && !processingFaces"
                                     class="flex items-center justify-end gap-2">
                                     <CheckIcon class="w-3 h-3 text-green-600" />
@@ -1161,7 +1161,7 @@ const copyToClipboard = async (text) => {
                                     </p>
                                 </div>
 
-                                <!--  Dorsales -->
+                              
                                 <div v-if="bibDetectionResults.length > 0 && !processingBibs"
                                     class="flex items-center justify-end gap-2">
                                     <CheckIcon class="w-3 h-3 text-purple-600" />
@@ -1175,7 +1175,7 @@ const copyToClipboard = async (text) => {
                     </div>
 
 
-                    <!--  TAB 2: FOTOS EXISTENTES -->
+                   
                     <div v-else-if="uploadMode === 'existing'">
                         <div v-if="unassignedPhotos.length === 0"
                             class="text-center py-12 border border-dashed border-gray-300 rounded-sm bg-gray-50">
@@ -1201,7 +1201,7 @@ const copyToClipboard = async (text) => {
                                     <img :src="photo.thumbnail_url" :alt="photo.unique_id"
                                         class="w-full h-full object-cover" />
 
-                                    <!-- Checkmark -->
+                                  
                                     <div v-if="selectedExistingPhotos.includes(photo.id)"
                                         class="absolute inset-0 bg-slate-900/60 flex items-center justify-center">
                                         <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
@@ -1209,7 +1209,7 @@ const copyToClipboard = async (text) => {
                                         </div>
                                     </div>
 
-                                    <!-- ID -->
+                                 
                                     <div
                                         class="absolute bottom-1 left-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-sm font-mono">
                                         #{{ photo.unique_id }}
@@ -1221,7 +1221,7 @@ const copyToClipboard = async (text) => {
 
                 </div>
 
-                <!-- Footer -->
+              
                 <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
                     <div class="text-xs text-slate-500">
                         <span v-if="uploadMode === 'upload'">
@@ -1237,7 +1237,7 @@ const copyToClipboard = async (text) => {
                             Cancelar
                         </button>
 
-                        <!-- Botón para SUBIR -->
+                      
                         <button v-if="uploadMode === 'upload'" @click="uploadPhotos"
                             :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces"
                             class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm disabled:opacity-50 disabled:cursor-not-allowed">
@@ -1246,7 +1246,7 @@ const copyToClipboard = async (text) => {
                             <span v-else>Subir Fotos</span>
                         </button>
 
-                        <!-- Botón para ASIGNAR -->
+                       
                         <button v-else @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0"
                             class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm disabled:opacity-50 disabled:cursor-not-allowed">
                             Asignar al Evento

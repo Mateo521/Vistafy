@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ArrowLeftIcon, FunnelIcon, MagnifyingGlassIcon, HashtagIcon } from '@heroicons/vue/24/outline';
@@ -37,7 +37,7 @@ const formatDate = (dateString) => {
     });
 };
 
-// Actualizado para encajar con el Dark Theme
+
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
@@ -163,17 +163,22 @@ const handleImageError = (e) => {
 
                 <div v-if="photos.data && photos.data.length > 0">
                     <div class="columns-2 md:columns-3 lg:columns-4 gap-4 mb-16">
-                        <Link v-for="(photo, index) in photos.data" :key="photo.id"
-                            :href="route('gallery.show', photo.unique_id)"
-                            class="group relative overflow-hidden bg-[#1B2632] block break-inside-avoid mb-4"
+                        
+                        
+                        <div v-for="(photo, index) in photos.data" :key="photo.id"
+                            @click="router.visit(route('gallery.show', photo.unique_id))"
+                            @contextmenu.prevent
+                            class="group relative overflow-hidden bg-[#1B2632] block break-inside-avoid mb-4 cursor-pointer"
                             :class="(index % 4 === 0 || index % 7 === 0) ? 'aspect-[4/5]' : ((index % 3 === 0) ? 'aspect-[3/4]' : 'aspect-[2/3]')">
                             
-                            <img :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                class="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105 saturate-[0.5] group-hover:saturate-100"
+                            <img :src="photo.watermarked_url" :alt="photo.unique_id"
+                                draggable="false"
+                                @contextmenu.prevent
+                                class="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105 saturate-[0.5] group-hover:saturate-100 select-none pointer-events-none"
                                 loading="lazy" 
                                 @error="handleImageError" />
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#111920]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-5">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#111920]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-5 pointer-events-none">
                                 <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-400">
                                     <span class="text-[9px] font-bold text-[#FFB162] uppercase tracking-[0.2em] mb-1 block">
                                         Ver Detalles
@@ -184,10 +189,13 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
-                            <div class="absolute top-3 right-3 bg-[#111920]/80 backdrop-blur-md border border-[#C9C1B1]/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[#EEE9DF] opacity-0 group-hover:opacity-100 transition-opacity duration-400 transform translate-y-2 group-hover:translate-y-0">
+                            <div class="absolute top-3 right-3 bg-[#111920]/80 backdrop-blur-md border border-[#C9C1B1]/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[#EEE9DF] opacity-0 group-hover:opacity-100 transition-opacity duration-400 transform translate-y-2 group-hover:translate-y-0 pointer-events-none">
                                 {{ photo.photographer_name }}
                             </div>
-                        </Link>
+                        </div>
+
+
+
                     </div>
 
                     <div v-if="photos.last_page > 1" class="flex justify-center gap-2 pt-8 border-t border-[#C9C1B1]/10">

@@ -10,16 +10,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+
 class EventController extends Controller
 {
-    /**
-     * Mostrar lista de eventos del fotógrafo
-     */
     public function index(Request $request)
     {
         $photographer = $request->user()->photographer;
 
-        // --- 1. Query para MIS EVENTOS (Dueño) ---
         $myEventsQuery = $photographer->events()
             ->withCount('photos');
 
@@ -27,49 +24,42 @@ class EventController extends Controller
 
         $myEvents = $myEventsQuery
             ->orderBy($request->get('sort', 'event_date'), $request->get('order', 'desc'))
-            ->paginate(9, ['*'], 'page') // Paginación principal
+            ->paginate(9, ['*'], 'page')
             ->withQueryString();
 
-        // --- 2. Query para COLABORACIONES (Invitado) ---
-        // Asegúrate de tener la relación guestEvents() en el modelo Photographer
         $collaborationsQuery = $photographer->guestEvents()
             ->withCount('photos')
-            ->with('photographer'); // Cargar al dueño original del evento
+            ->with('photographer');
 
         $this->applyFilters($collaborationsQuery, $request);
 
         $collaborations = $collaborationsQuery
             ->orderBy($request->get('sort', 'event_date'), $request->get('order', 'desc'))
-            ->paginate(9, ['*'], 'collab_page') // Importante: Nombre de página distinto
+            ->paginate(9, ['*'], 'collab_page')
             ->withQueryString();
 
-        // --- Estadísticas ---
         $stats = [
             'total_events' => $photographer->events()->count(),
             'active_events' => $photographer->events()->where('is_active', true)->count(),
-            // Contamos fotos subidas por ESTE fotógrafo (no importa si es evento propio o ajeno)
             'total_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->count(),
             'total_sales' => 0,
         ];
 
         return Inertia::render('Photographer/Events/Index', [
             'events' => $myEvents,
-            'collaborations' => $collaborations, // <--- Nueva prop
+            'collaborations' => $collaborations,
             'stats' => $stats,
             'filters' => $request->only(['search', 'date_from', 'date_to', 'sort', 'order']),
         ]);
     }
 
-    /**
-     * Helper privado para aplicar los mismos filtros a ambas listas
-     */
     private function applyFilters($query, $request)
     {
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('description', 'like', '%' . $request->search . '%')
-                    ->orWhere('location', 'like', '%' . $request->search . '%');
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%')
+                    ->orWhere('location', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -82,17 +72,11 @@ class EventController extends Controller
         }
     }
 
-    /**
-     * Mostrar formulario de creación
-     */
     public function create()
     {
         return Inertia::render('Photographer/Events/Create');
     }
 
-    /**
-     * Guardar nuevo evento
-     */
     public function store(Request $request)
     {
         $photographer = auth()->user()->photographer;
@@ -107,13 +91,11 @@ class EventController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // 5MB
         ]);
 
-        // Generar slug único
-        $slug = Str::slug($validated['name']) . '-' . Str::random(6);
+        $slug = Str::slug($validated['name']).'-'.Str::random(6);
 
-        // Subir imagen de portada si existe
         $coverImagePath = null;
         if ($request->hasFile('cover_image')) {
-            $coverImagePath = $request->file('cover_image')->store('events/covers', 'public');
+            $coverImagePath = $request->file('cover_image')->store('events/covers', 'b2');
         }
 
         $event = Event::create([
@@ -132,12 +114,6 @@ class EventController extends Controller
             ->with('success', 'Evento creado exitosamente');
     }
 
-    /**
-     * Mostrar evento específico
-     */
-    /**
-     * Mostrar evento específico
-     */
     public function show($id)
     {
         $photographer = auth()->user()->photographer;
@@ -148,7 +124,7 @@ class EventController extends Controller
         $isOwner = $event->photographer_id === $photographer->id;
         $isCollaborator = $event->collaborators->contains($photographer->id);
 
-        if (!$isOwner && !$isCollaborator) {
+        if (! $isOwner && ! $isCollaborator) {
             abort(403, 'No tenés permiso para gestionar este evento.');
         }
 
@@ -163,23 +139,18 @@ class EventController extends Controller
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
-
-
-        //  : Obtener fotos sin evento asignado del fotógrafo
         $unassignedPhotos = Photo::where('photographer_id', $photographer->id)
             ->whereNull('event_id')
             ->latest()
-            ->get(['id', 'unique_id', 'thumbnail_path', 'watermarked_path', 'original_name']) //  Columnas reales
+            ->get(['id', 'unique_id', 'thumbnail_path', 'watermarked_path', 'original_name'])
             ->map(function ($photo) {
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
-                    'thumbnail_url' => $photo->thumbnail_url, //  Accessor calculado acá
+                    'thumbnail_url' => $photo->thumbnail_url,
                     'original_name' => $photo->original_name,
                 ];
             });
-
-
 
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
@@ -212,15 +183,11 @@ class EventController extends Controller
             ],
             'photos' => $photos,
             'stats' => $stats,
-            'unassignedPhotos' => $unassignedPhotos, //  
+            'unassignedPhotos' => $unassignedPhotos,  
         ]);
     }
 
-
-
-    /**
-     * Mostrar formulario de edición
-     */
+    
     public function edit(Event $event)
     {
         if ($event->photographer_id !== auth()->user()->photographer->id) {
@@ -237,7 +204,7 @@ class EventController extends Controller
             'is_private' => (bool) $event->is_private,
             'is_active' => (bool) $event->is_active,
             'cover_image' => $event->cover_image,
-            'cover_image_url' => $event->cover_image_url,  //  Usa el accessor
+            'cover_image_url' => $event->cover_image_url,   
         ];
 
         return Inertia::render('Photographer/Events/Edit', [
@@ -245,15 +212,9 @@ class EventController extends Controller
         ]);
     }
 
-
-
-
-    /**
-     * Actualizar evento
-     */
     public function update(Request $request, Event $event)
     {
-        // Verificar permisos
+
         if ($event->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tenés permiso para actualizar este evento');
         }
@@ -269,28 +230,22 @@ class EventController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        // Subir nueva imagen si existe
         if ($request->hasFile('cover_image')) {
             if ($event->cover_image) {
-                \Storage::disk('public')->delete($event->cover_image);
+                \Storage::disk('b2')->delete($event->cover_image);
             }
-            $validated['cover_image'] = $request->file('cover_image')->store('events/covers', 'public');
+            $validated['cover_image'] = $request->file('cover_image')->store('events/covers', 'b2');
         }
 
-        // Actualizar evento (el modelo se encarga del token automáticamente)
         $event->update($validated);
 
         return redirect()->route('photographer.events.index')
             ->with('success', 'Evento actualizado exitosamente');
     }
 
-
-    /**
-     * Eliminar evento
-     */
     public function destroy(Event $event)
     {
-        // Verificar que el evento pertenece al fotógrafo autenticado
+
         if ($event->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tenés permiso para eliminar este evento.');
         }
@@ -298,29 +253,26 @@ class EventController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. Eliminar la imagen de portada del evento
+
             if ($event->cover_image) {
-                Storage::disk('public')->delete($event->cover_image);
+                Storage::disk('b2')->delete($event->cover_image);
             }
 
-            // 2. Eliminar todas las fotos asociadas al evento
             foreach ($event->photos as $photo) {
-                // Eliminar archivos físicos
+
                 if ($photo->original_path) {
-                    Storage::disk('public')->delete($photo->original_path);
+                    Storage::disk('b2')->delete($photo->original_path);
                 }
                 if ($photo->watermarked_path) {
-                    Storage::disk('public')->delete($photo->watermarked_path);
+                    Storage::disk('b2')->delete($photo->watermarked_path);
                 }
                 if ($photo->thumbnail_path) {
-                    Storage::disk('public')->delete($photo->thumbnail_path);
+                    Storage::disk('b2')->delete($photo->thumbnail_path);
                 }
 
-                // Eliminar registro de la base de datos
                 $photo->delete();
             }
 
-            // 3. Eliminar el evento
             $event->delete();
 
             DB::commit();
@@ -330,19 +282,15 @@ class EventController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error al eliminar evento: ' . $e->getMessage());
+            \Log::error('Error al eliminar evento: '.$e->getMessage());
 
-            return back()->with('error', 'Error al eliminar el evento: ' . $e->getMessage());
+            return back()->with('error', 'Error al eliminar el evento: '.$e->getMessage());
         }
     }
 
-
-    /**
-     * Actualizar solo la imagen de portada
-     */
+    
     public function updateCoverImage(Request $request, Event $event)
     {
-        // Verificar que el evento pertenece al fotógrafo
         if ($event->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tenés permiso para actualizar este evento');
         }
@@ -352,13 +300,13 @@ class EventController extends Controller
         ]);
 
         try {
-            // Eliminar imagen anterior
+            
             if ($event->cover_image) {
-                Storage::disk('public')->delete($event->cover_image);
+                Storage::disk('b2')->delete($event->cover_image);
             }
 
-            // Guardar nueva imagen
-            $path = $request->file('cover_image')->store('events/covers', 'public');
+            
+            $path = $request->file('cover_image')->store('events/covers', 'b2');
 
             $event->update([
                 'cover_image' => $path,
@@ -366,17 +314,10 @@ class EventController extends Controller
 
             return back()->with('success', 'Imagen de portada actualizada correctamente');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al subir la imagen: ' . $e->getMessage());
+            return back()->with('error', 'Error al subir la imagen: '.$e->getMessage());
         }
     }
 
-
-
-
-
-    /**
-     * Mostrar formulario de Búsqueda por dorsal
-     */
     public function bibSearch(Event $event)
     {
         return inertia('Events/BibSearch', [
@@ -384,9 +325,6 @@ class EventController extends Controller
         ]);
     }
 
-    /**
-     * Buscar fotos por número de dorsal
-     */
     public function searchByBib(Request $request, Event $event)
     {
         $request->validate([
@@ -400,7 +338,6 @@ class EventController extends Controller
             'bib_number' => $bibNumber,
         ]);
 
-        // Buscar fotos que contengan ese dorsal en el array bib_numbers
         $photos = Photo::where('event_id', $event->id)
             ->where('is_active', true)
             ->where('bib_processed', true)
@@ -408,7 +345,7 @@ class EventController extends Controller
             ->whereRaw('JSON_CONTAINS(bib_numbers, ?)', [json_encode($bibNumber)])
             ->with(['photographer.user'])
             ->paginate(20)
-            ->through(fn($photo) => [
+            ->through(fn ($photo) => [
                 'id' => $photo->id,
                 'unique_id' => $photo->unique_id,
                 'thumbnail_url' => $photo->thumbnail_url,
@@ -428,7 +365,4 @@ class EventController extends Controller
             'searchedBib' => $bibNumber,
         ]);
     }
-
-
-
 }

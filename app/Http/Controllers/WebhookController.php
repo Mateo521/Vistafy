@@ -24,7 +24,7 @@ class WebhookController extends Controller
 
         $data = $request->all();
 
-        
+
         if (empty($data) && $request->has('topic')) {
             $data = [
                 'topic' => $request->query('topic'),
@@ -140,9 +140,7 @@ class WebhookController extends Controller
         return null;
     }
 
-    /**
-     * Crear cuenta automática para invitados
-     */
+ 
     private function handleAccountCreation($purchase)
     {
        
