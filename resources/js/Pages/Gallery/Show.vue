@@ -14,6 +14,7 @@ import {
     PlusIcon
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
+
 const { success, error } = useToast();
 
 const props = defineProps({
@@ -54,7 +55,7 @@ onUnmounted(() => {
     document.body.style.overflow = '';
 });
 
-// Lógica del carrito
+
 const handlePurchaseClick = () => {
     if (isAuthenticated.value) {
         addToCart();
@@ -71,30 +72,29 @@ const addToCart = async () => {
         const response = await axios.post(route('cart.add', props.photo.id));
 
         if (response.data.success) {
-            success('Fotografía agregada al carrito');
+            success('FOTOGRAFÍA ENCOLADA AL CARRITO');
             window.dispatchEvent(new Event('cart-updated'));
         } else {
-            error('Esta foto ya está en tu carrito');
+            error('FOTOGRAFÍA YA EXISTENTE EN COLA');
         }
-    } catch (error) {
-        console.error('Error agregando al carrito:', error);
-        if (error.response) {
-            error('Error al agregar al carrito');
+    } catch (err) {
+        console.error('Error agregando al carrito:', err);
+        if (err.response) {
+            error('ERROR AL ENCOLAR DATO');
         } else {
-            error('Error de conexión');
+            error('ERROR DE CONEXIÓN DEL NODO');
         }
     } finally {
         addingToCart.value = false;
     }
 };
 
-// Para invitados: compra directa
-// Para invitados: compra directa
+
 const submitPurchase = async () => {
     if (loading.value) return;
 
     if (!isAuthenticated.value && !guestEmail.value) {
-        emailError.value = 'El email es requerido';
+        emailError.value = 'IDENTIFICADOR DE CORREO REQUERIDO';
         return;
     }
 
@@ -102,9 +102,7 @@ const submitPurchase = async () => {
     emailError.value = '';
 
     try {
-        const payload = {
-            create_account: createAccount.value,
-        };
+        const payload = { create_account: createAccount.value };
 
         if (!isAuthenticated.value) {
             payload.email = guestEmail.value;
@@ -115,158 +113,158 @@ const submitPurchase = async () => {
             payload
         );
 
-     
         const paymentUrl = response.data.init_point || response.data.sandbox_init_point;
 
         if (response.data.success && paymentUrl) {
             window.location.href = paymentUrl;
         } else {
-            emailError.value = 'No se pudo generar el link de pago';
+            emailError.value = 'FALLO AL GENERAR PASARELA DE PAGO';
         }
-        
 
-    } catch (error) {
-        console.error('Error en compra:', error);
+    } catch (err) {
+        console.error('Error en compra:', err);
 
-        if (error.response?.status === 422 && error.response?.data?.email_exists) {
-            emailError.value = error.response.data.message;
-            if (confirm(error.response.data.message + '\n\n¿Deseas ir a iniciar sesión?')) {
+        if (err.response?.status === 422 && err.response?.data?.email_exists) {
+            emailError.value = err.response.data.message;
+            if (confirm(err.response.data.message + '\n\n¿EJECUTAR LOGIN?')) {
                 window.location.href = route('login');
             }
-        } else if (error.response?.data?.errors) {
-            const errors = error.response.data.errors;
-            emailError.value = errors.email ? errors.email[0] : 'Error en la solicitud';
+        } else if (err.response?.data?.errors) {
+            const errors = err.response.data.errors;
+            emailError.value = errors.email ? errors.email[0] : 'ERROR EN LA SOLICITUD';
         } else {
-            emailError.value = error.response?.data?.message || 'Error al procesar la compra';
+            emailError.value = err.response?.data?.message || 'ERROR AL PROCESAR TRANSACCIÓN';
         }
     } finally {
         loading.value = false;
     }
 };
 
-// Placeholder actualizado al Dark Theme
+
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
-    if (!parent.querySelector('.placeholder-institutional')) {
+    if (!parent.querySelector('.placeholder-img')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-[#111920]';
-        placeholder.innerHTML = `<span class="font-['Cormorant_Garamond'] text-4xl italic opacity-20 text-[#EEE9DF]">f33</span>`;
+        placeholder.className = 'placeholder-img w-full h-full min-h-[300px] flex items-center justify-center bg-gray-900 border border-red-600/30';
+        placeholder.innerHTML = `<span class="font-mono text-xs text-red-600 uppercase tracking-widest">[ ERROR DE LECTURA ]</span>`;
         parent.appendChild(placeholder);
     }
 };
 </script>
 
 <template>
-    <Head :title="`Foto ${photo.unique_id}`" />
+    <Head :title="`ID_${photo.unique_id} — F33`" />
 
     <AppLayout>
-        <div class="min-h-screen bg-[#111920] font-['Syne']">
+        <div class="min-h-screen bg-black text-white font-sans selection:bg-red-600 selection:text-white">
 
-            <div class="border-b border-[#C9C1B1]/10 bg-[#111920]/95 backdrop-blur-md sticky top-0 z-30 pt-24 md:pt-0">
-                <div class="max-w-7xl mx-auto px-8 md:px-16 h-20 flex items-center justify-between">
+            <div class="border-b border-white/20 bg-black/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
+                <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
                     <Link :href="route('gallery.index')"
-                        class="text-[10px] font-bold uppercase tracking-widest text-[#C9C1B1] hover:text-[#FFB162] flex items-center gap-3 transition-colors">
-                        <ArrowLeftIcon class="w-4 h-4" /> Volver a la galería
+                        class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
+                        <ArrowLeftIcon class="w-3.5 h-3.5" /> [ CATÁLOGO ]
                     </Link>
 
                     <Link v-if="isAuthenticated" :href="route('cart.index')"
-                        class="text-[#C9C1B1] hover:text-[#FFB162] transition-colors flex items-center gap-2 group">
-                        <ShoppingCartIcon class="w-5 h-5 group-hover:scale-110 transition-transform" />
-                        <span class="text-[10px] font-bold uppercase tracking-widest">Carrito</span>
+                        class="text-white hover:text-black hover:bg-white transition-none flex items-center gap-2 border border-white px-3 py-1">
+                        <ShoppingCartIcon class="w-4 h-4" />
+                        <span>COLA DE DESCARGAS</span>
                     </Link>
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-8 md:px-16 py-12 md:py-20">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-12 md:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
 
                     <div class="lg:col-span-8">
-                        <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-4 md:p-8 flex items-center justify-center shadow-2xl relative group cursor-zoom-in"
+                        <div class="bg-gray-950 border-[6px] border-black hover:border-red-600 p-2 flex items-center justify-center relative group cursor-crosshair transition-none"
                             @click="showFullImage = true">
+                            
+                            <div class="absolute top-4 left-4 z-20 bg-red-600 text-black font-mono text-[9px] font-bold px-2 py-1 tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
+                                CLICK PARA EXPANDIR
+                            </div>
+
                             <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                                class="max-w-full max-h-[75vh] object-contain shadow-[0_0_40px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.02]"
+                                class="w-full max-h-[80vh] object-contain grayscale-[0.3] group-hover:grayscale-0 transition-none"
                                 @error="handleImageError" />
                             
-                            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#111920]/80 backdrop-blur-md border border-[#FFB162]/20 text-[#FFB162] text-[9px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none">
-                                <InformationCircleIcon class="w-4 h-4" /> Vista previa con marca de agua
+                            <div class="absolute bottom-4 right-4 bg-black border border-white text-white text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
+                                MUESTRA CON PROTECCIÓN
                             </div>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-4 flex flex-col">
+                    <div class="lg:col-span-4 flex flex-col font-mono">
 
-                        <div class="mb-10">
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#FFB162]">ID: #{{ photo.unique_id }}</span>
-                                <div class="h-px flex-1 bg-[#C9C1B1]/10"></div>
+                        <div class="mb-8">
+                            <div class="flex items-center justify-between border-b border-white/20 pb-4 mb-6">
+                                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-red-600 bg-red-600/10 px-2 py-1 border border-red-600">ID_REF: {{ photo.unique_id }}</span>
                             </div>
                             
-                            <h1 class="text-4xl md:text-5xl font-['Cormorant_Garamond'] text-[#EEE9DF] mb-6 leading-tight">
-                                {{ photo.title || 'Fotografía Artística' }}
+                            <h1 class="font-black font-sans text-5xl md:text-6xl text-white mb-6 leading-[0.85] tracking-tighter uppercase">
+                                {{ photo.title || 'FRAME CAPTURADO' }}
                             </h1>
 
-                            <div class="flex flex-wrap gap-3 mb-10">
-                                <span v-if="photo.event"
-                                    class="text-[9px] font-bold uppercase tracking-widest bg-[#1B2632] border border-[#C9C1B1]/20 text-[#C9C1B1] px-3 py-1.5 shadow-sm">
-                                    {{ photo.event.name }}
-                                </span>
-                                <span class="text-[9px] font-bold uppercase tracking-widest bg-[#1B2632] border border-[#C9C1B1]/20 text-[#C9C1B1] px-3 py-1.5 shadow-sm">
-                                    {{ photo.width }} x {{ photo.height }} px
-                                </span>
+                            <div class="flex flex-col gap-2 mb-8 text-[10px] tracking-widest text-gray-400 uppercase">
+                                <div class="flex justify-between border-b border-white/10 pb-2">
+                                    <span>RESOLUCIÓN NATIVA:</span>
+                                    <span class="text-white">{{ photo.width }} x {{ photo.height }} PX</span>
+                                </div>
+                                <div v-if="photo.event" class="flex justify-between border-b border-white/10 pb-2">
+                                    <span>EVENTO / LOCACIÓN:</span>
+                                    <span class="text-red-600 truncate ml-4">{{ photo.event.name }}</span>
+                                </div>
                             </div>
 
-                            <div class="border-y border-[#C9C1B1]/10 py-8 mb-8 flex items-end justify-between">
-                                <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C9C1B1] mb-1">Licencia Digital</span>
-                                <span class="text-5xl font-['Cormorant_Garamond'] text-[#FFB162] leading-none">${{ photo.price }}</span>
+                            <div class="border-t-[4px] border-white pt-6 mb-8 flex items-end justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">VALOR DE LICENCIA</span>
+                                <span class="text-5xl font-black font-sans text-white leading-none tracking-tighter">${{ photo.price }}</span>
                             </div>
 
                             <button @click="handlePurchaseClick" :disabled="loading || addingToCart"
-                                class="w-full bg-[#FFB162] hover:bg-[#EEE9DF] text-[#1B2632] text-[11px] font-bold uppercase tracking-[0.25em] py-5 transition-all duration-300 shadow-[0_0_20px_rgba(255,177,98,0.2)] hover:shadow-[0_0_30px_rgba(238,233,223,0.3)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group">
-
+                                class="w-full bg-red-600 hover:bg-white text-black text-[12px] font-black uppercase tracking-[0.25em] py-5 border-[4px] border-red-600 hover:border-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
                                 <template v-if="isAuthenticated">
-                                    <PlusIcon v-if="!addingToCart" class="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                    <span v-if="addingToCart">Procesando...</span>
-                                    <span v-else>Añadir al Carrito</span>
+                                    <PlusIcon v-if="!addingToCart" class="w-5 h-5" />
+                                    <span v-if="addingToCart">EJECUTANDO...</span>
+                                    <span v-else>ENCOLAR A CARRITO</span>
                                 </template>
-
                                 <template v-else>
-                                    <ShoppingCartIcon v-if="!loading" class="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                    <span v-if="loading">Iniciando...</span>
-                                    <span v-else>Comprar Ahora</span>
+                                    <ShoppingCartIcon v-if="!loading" class="w-5 h-5" />
+                                    <span v-if="loading">INICIALIZANDO...</span>
+                                    <span v-else>ADQUIRIR AHORA</span>
                                 </template>
                             </button>
 
-                            <p class="text-[10px] text-[#C9C1B1]/50 text-center mt-5 leading-relaxed tracking-wider uppercase font-bold">
+                            <p class="text-[9px] text-gray-600 mt-4 leading-relaxed tracking-widest uppercase font-bold text-center">
                                 <template v-if="isAuthenticated">
-                                    Añade al carrito y paga todo junto
+                                    SISTEMA DE PAGOS EN LOTE ACTIVO.
                                 </template>
                                 <template v-else>
-                                    Pago seguro a través de Mercado Pago. <br> Entrega inmediata vía email.
+                                    PASARELA SEGURA. DESCARGA VÍA PROTOCOLO DE EMAIL.
                                 </template>
                             </p>
                         </div>
 
-                        <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8 mt-auto">
-                            <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
-                                Curaduría Visual Por
+                        <div class="border border-white/20 p-6 mt-auto bg-gray-950 hover:border-white transition-none">
+                            <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-4 border-b border-white/10 pb-2">
+                                OPERADOR / CREADOR
                             </h3>
-                            <div class="flex items-center gap-5">
-                                <div class="w-14 h-14 bg-[#111920] border border-[#FFB162]/20 rounded-full overflow-hidden flex-shrink-0">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-black border border-red-600 flex-shrink-0 flex items-center justify-center">
                                     <ProtectedImage v-if="photo.photographer?.profile_photo_url"
                                         :src="photo.photographer.profile_photo_url"
-                                        class="w-full h-full object-cover grayscale-[0.3]" />
-                                    <div v-else
-                                        class="w-full h-full flex items-center justify-center text-[#FFB162] font-['Cormorant_Garamond'] text-2xl">
-                                        {{ photo.photographer?.business_name?.charAt(0) || 'f' }}
+                                        class="w-full h-full object-cover grayscale" />
+                                    <div v-else class="text-red-600 font-black text-xl font-sans">
+                                        {{ photo.photographer?.business_name?.charAt(0) || 'F' }}
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-[#EEE9DF] mb-1">{{ photo.photographer?.business_name || 'Fotógrafo Oficial' }}</p>
+                                    <p class="text-xs font-bold text-white mb-1 uppercase tracking-widest">{{ photo.photographer?.business_name || 'OPERADOR F33' }}</p>
                                     <Link v-if="photo.photographer?.slug"
                                         :href="route('photographers.show', photo.photographer.slug)"
-                                        class="text-[10px] uppercase tracking-[0.2em] font-bold text-[#FFB162] hover:text-[#EEE9DF] border-b border-[#FFB162]/50 hover:border-[#EEE9DF] pb-0.5 transition-colors">
-                                        Ver portafolio
+                                        class="text-[9px] uppercase tracking-[0.2em] font-bold text-red-600 hover:text-white border-b border-red-600 hover:border-white transition-none">
+                                        [ INSPECCIONAR CATÁLOGO ]
                                     </Link>
                                 </div>
                             </div>
@@ -275,24 +273,27 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-                <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-32 border-t border-[#C9C1B1]/10 pt-20">
-                    <div class="flex items-center justify-between mb-10">
-                        <h2 class="text-4xl font-['Cormorant_Garamond'] text-[#EEE9DF]">Obras <em class="italic text-[#C9C1B1]">Similares</em></h2>
-                    </div>
+                <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-24 md:mt-32 pt-16 border-t border-white/20">
+                    <h2 class="text-4xl md:text-6xl font-black font-sans text-white uppercase tracking-tighter mb-10">
+                        ARCHIVOS <span class="text-red-600">RELACIONADOS</span>
+                    </h2>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <div class="columns-2 md:columns-4 lg:columns-5 gap-2 space-y-2 masonry-grid">
                         <Link v-for="related in relatedPhotos" :key="related.id"
-                            :href="route('gallery.show', related.unique_id)" class="group block relative overflow-hidden bg-[#1B2632] border border-[#C9C1B1]/5 hover:border-[#FFB162]/30 transition-colors">
-                            <div class="aspect-[3/4] relative overflow-hidden">
+                            :href="route('gallery.show', related.unique_id)" 
+                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none cursor-crosshair">
+                            
+                            <div class="relative w-full h-auto">
                                 <ProtectedImage :src="related.thumbnail_url"
-                                    class="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105 saturate-[0.5] group-hover:saturate-100"
+                                    class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
                                     @error="handleImageError" />
                                 
-                                <div class="absolute inset-0 bg-gradient-to-t from-[#111920]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-4">
-                                    <div class="flex justify-between items-center translate-y-2 group-hover:translate-y-0 transition-transform">
-                                        <span class="text-[9px] font-mono text-[#FFB162] uppercase tracking-widest">#{{ related.unique_id }}</span>
-                                        <span class="text-sm font-bold text-[#EEE9DF] font-['Cormorant_Garamond']">${{ related.price }}</span>
-                                    </div>
+                                <div class="absolute top-2 left-2 bg-black border border-white px-2 py-1 text-[9px] font-mono text-white tracking-widest pointer-events-none">
+                                    ${{ related.price }}
+                                </div>
+                                
+                                <div class="absolute bottom-2 right-2 bg-red-600 text-black px-1.5 py-0.5 text-[8px] font-mono font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
+                                    {{ related.unique_id }}
                                 </div>
                             </div>
                         </Link>
@@ -301,100 +302,106 @@ const handleImageError = (e) => {
             </div>
         </div>
 
-        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 font-['Syne']">
-            <div class="absolute inset-0 bg-[#111920]/90 backdrop-blur-md transition-opacity" @click="showEmailModal = false"></div>
+        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 font-mono">
+            <div class="absolute inset-0 bg-black/90" @click="showEmailModal = false"></div>
 
-            <div class="relative bg-[#1B2632] border border-[#FFB162]/20 shadow-2xl w-full max-w-md overflow-hidden">
-                <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-[#FFB162] to-transparent"></div>
+            <div class="relative bg-black border-[4px] border-white w-full max-w-md shadow-[10px_10px_0_rgba(220,38,38,1)] overflow-hidden">
+                <div class="bg-white text-black px-4 py-2 flex justify-between items-center font-bold text-xs uppercase tracking-widest">
+                    <span>F33 // TERMINAL DE PAGO</span>
+                    <button @click="showEmailModal = false" class="hover:text-red-600 transition-none">[X]</button>
+                </div>
 
-                <div class="p-10">
-                    <div class="flex justify-between items-start mb-8 border-b border-[#C9C1B1]/10 pb-6">
+                <div class="p-8">
+                    <form @submit.prevent="submitPurchase" class="space-y-6">
                         <div>
-                            <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#FFB162] block mb-2">Checkout Rápido</span>
-                            <h3 class="text-3xl font-['Cormorant_Garamond'] text-[#EEE9DF]">Datos de Entrega</h3>
-                        </div>
-                        <button @click="showEmailModal = false" class="text-[#C9C1B1] hover:text-[#FFB162] transition-colors p-1">
-                            <XMarkIcon class="w-6 h-6" />
-                        </button>
-                    </div>
-
-                    <form @submit.prevent="submitPurchase" class="space-y-8">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest text-[#C9C1B1] mb-3 flex items-center gap-2">
-                                <EnvelopeIcon class="w-4 h-4 text-[#FFB162]" /> Correo Electrónico
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">
+                                > ENTRADA DE CORREO_
                             </label>
                             <input v-model="guestEmail" type="email" required
-                                class="w-full bg-[#111920] border border-[#C9C1B1]/20 focus:border-[#FFB162] focus:ring-0 text-[#EEE9DF] text-[13px] py-4 px-4 placeholder-[#C9C1B1]/30 transition-colors outline-none"
-                                placeholder="ejemplo@email.com">
-                            <p v-if="emailError" class="text-[#A35139] text-[10px] uppercase tracking-widest font-bold mt-3 flex items-center gap-1.5">
-                                <InformationCircleIcon class="w-4 h-4" /> {{ emailError }}
+                                class="w-full bg-gray-950 border border-gray-600 focus:border-red-600 focus:ring-0 text-white font-mono text-xs py-3 px-4 outline-none transition-none"
+                                placeholder="usuario@nodo.com">
+                            <p v-if="emailError" class="text-red-600 text-[9px] uppercase tracking-widest font-bold mt-2">
+                                ! {{ emailError }}
                             </p>
                         </div>
 
-                        <label class="flex items-start cursor-pointer group p-5 border border-[#C9C1B1]/10 bg-[#111920]/50 hover:border-[#FFB162]/50 transition-colors">
-                            <div class="flex items-center h-5 mt-0.5">
+                        <label class="flex items-start cursor-pointer group p-4 border border-gray-800 bg-gray-950 hover:border-white transition-none">
+                            <div class="flex items-center h-4 mt-0.5">
                                 <input id="createAccount" v-model="createAccount" type="checkbox"
-                                    class="focus:ring-[#FFB162] h-4 w-4 text-[#FFB162] border-[#C9C1B1]/30 bg-transparent rounded-sm cursor-pointer">
+                                    class="focus:ring-0 focus:ring-offset-0 h-4 w-4 text-red-600 border-gray-600 bg-black rounded-none cursor-pointer">
                             </div>
-                            <div class="ml-4">
-                                <span class="block text-[10px] font-bold uppercase tracking-[0.2em] text-[#EEE9DF] group-hover:text-[#FFB162] transition-colors">
-                                    Crear cuenta automáticamente
+                            <div class="ml-3">
+                                <span class="block text-[9px] font-bold uppercase tracking-widest text-white group-hover:text-red-600 transition-none">
+                                    [ GENERAR USUARIO ]
                                 </span>
-                                <span class="block text-[11px] text-[#C9C1B1]/60 font-light mt-2 leading-relaxed">
-                                    Guardaremos esta compra en su historial para futuras descargas. Se le enviará una contraseña temporal.
+                                <span class="block text-[9px] text-gray-500 mt-1 leading-relaxed">
+                                    SE ALMACENARÁ EL HISTORIAL. RECIBIRÁ CREDENCIALES TEMPORALES VÍA EMAIL.
                                 </span>
                             </div>
                         </label>
 
-                        <div class="pt-6 flex flex-col gap-4">
+                        <div class="pt-4 flex flex-col gap-3">
                             <button type="submit" :disabled="loading"
-                                class="w-full py-5 bg-[#FFB162] text-[#1B2632] text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[#EEE9DF] transition-all shadow-[0_0_20px_rgba(255,177,98,0.15)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
-                                <span v-if="loading">Procesando...</span>
-                                <span v-else>Continuar al Pago Seguro</span>
-                                <span v-if="!loading" class="text-lg leading-none">&rarr;</span>
+                                class="w-full py-4 bg-red-600 text-black text-[11px] font-black uppercase tracking-[0.25em] hover:bg-white transition-none disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span v-if="loading">EJECUTANDO...</span>
+                                <span v-else>INICIAR TRANSACCIÓN</span>
                             </button>
-
                             <button type="button" @click="showEmailModal = false"
-                                class="w-full py-4 text-[#C9C1B1] text-[10px] font-bold uppercase tracking-widest hover:text-[#EEE9DF] transition-colors">
-                                Cancelar
+                                class="w-full py-3 text-gray-500 text-[9px] font-bold uppercase tracking-widest hover:text-white transition-none border border-transparent hover:border-gray-500">
+                                [ ABORTAR ]
                             </button>
                         </div>
                     </form>
                 </div>
-
-                <div class="bg-[#111920] border-t border-[#C9C1B1]/10 px-10 py-6 flex justify-center items-center gap-3">
-                    <span class="text-[9px] text-[#C9C1B1] uppercase tracking-[0.2em] font-bold">¿Ya eres miembro?</span>
-                    <Link :href="route('login')"
-                        class="text-[9px] font-bold uppercase tracking-[0.2em] text-[#FFB162] border-b border-[#FFB162]/50 pb-0.5 hover:text-[#EEE9DF] hover:border-[#EEE9DF] transition-colors">
-                        Iniciar Sesión
-                    </Link>
-                </div>
             </div>
         </div>
 
-        <Transition enter-active-class="transition-opacity duration-300" enter-from-class="opacity-0"
-            enter-to-class="opacity-100" leave-active-class="transition-opacity duration-300"
+        <Transition enter-active-class="transition-none" enter-from-class="opacity-0"
+            enter-to-class="opacity-100" leave-active-class="transition-none"
             leave-from-class="opacity-100" leave-to-class="opacity-0">
             
-            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-[#111920]/98 backdrop-blur-xl"
+            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-black cursor-zoom-out flex flex-col"
                 @click="showFullImage = false">
                 
-                <button @click="showFullImage = false"
-                    class="absolute top-6 right-6 md:top-8 md:right-10 text-[#C9C1B1] hover:text-[#FFB162] transition-colors z-10 p-2"
-                    aria-label="Cerrar">
-                    <XMarkIcon class="w-10 h-10 md:w-12 md:h-12" />
-                </button>
-
-                <div class="w-full h-full flex items-center justify-center p-8 md:p-16">
-                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                        class="max-h-[85vh] mx-auto max-w-[90vw] object-contain shadow-[0_0_50px_rgba(0,0,0,0.8)]" @click.stop />
+                <div class="p-4 flex justify-end">
+                    <button @click="showFullImage = false" class="text-white border-2 border-white hover:bg-white hover:text-black font-mono font-bold text-xs uppercase tracking-widest px-4 py-2 transition-none">
+                        [ CERRAR VISOR ]
+                    </button>
                 </div>
 
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#C9C1B1]/50 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] pointer-events-none">
-                    Presiona ESC o click fuera para cerrar
+                <div class="flex-1 flex items-center justify-center p-4 md:p-12 overflow-hidden">
+                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
+                        class="max-h-full max-w-full object-contain border-4 border-white" @click.stop />
+                </div>
+
+                <div class="p-4 border-t border-white/20 text-center font-mono text-[10px] text-gray-500 uppercase tracking-[0.3em]">
+                    SISTEMA DE REVISIÓN F33 // MARCA DE AGUA ACTIVA
                 </div>
             </div>
         </Transition>
 
     </AppLayout>
 </template>
+
+<style scoped>
+
+.masonry-grid {
+    column-fill: balance;
+}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #000000;
+    border-left: 1px solid #333;
+}
+::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #dc2626;
+}
+</style>
