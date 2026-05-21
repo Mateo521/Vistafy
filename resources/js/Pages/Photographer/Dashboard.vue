@@ -18,209 +18,225 @@ defineProps({
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
         year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/\//g, '.');
 };
-
 
 const getImageUrl = (photo) => {
-
     return photo.watermarked_url || photo.thumbnail_url || null;
 };
-
 
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
-  
     if (parent) {
-        parent.classList.add('bg-slate-100'); 
+        parent.classList.add('bg-zinc-900', 'border', 'border-white/10'); 
     }
 };
 </script>
 
 <template>
-    <Head title="Panel Profesional" />
+    <Head title="Terminal Comando f33" />
 
     <AuthenticatedLayout>
         
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-12 bg-black min-h-screen text-white selection:bg-red-600 selection:text-white">
+            
+            <div class="fixed inset-0 pointer-events-none bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:32px_32px] z-0"></div>
 
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-6 gap-4">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-10">
+
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-red-600 pb-6 gap-4">
                     <div>
-                        <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
-                            Área Profesional
-                        </span>
-                        <h1 class="text-3xl font-sans font-bold text-slate-900">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-3 h-3 bg-red-600 animate-pulse"></div>
+                            <span class="text-[10px] font-mono font-bold tracking-[0.2em] text-red-600 uppercase">
+                                Enlace Activo // Nivel de Acceso: PROFESIONAL
+                            </span>
+                        </div>
+                        <h1 class="text-4xl md:text-5xl font-sans font-black text-white uppercase tracking-tighter">
                             {{ photographer.business_name || photographer.user.name }}
                         </h1>
                     </div>
                     <div class="flex gap-3">
                         <Link :href="route('photographer.photos.create')" 
-                            class="px-6 py-3 bg-white border border-slate-300 text-slate-700 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 hover:border-slate-900 hover:text-slate-900 transition rounded-sm">
-                            Subir Fotos
+                            class="px-6 py-3 bg-black border border-white text-white text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors rounded-none flex items-center gap-2">
+                            <PhotoIcon class="w-4 h-4" /> [ Cargar Datos ]
                         </Link>
                         <Link :href="route('photographer.events.create')" 
-                            class="px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition rounded-sm shadow-sm">
-                            Nuevo Evento
+                            class="px-6 py-3 bg-red-600 border border-red-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-red-600 transition-colors rounded-none flex items-center gap-2">
+                            <CalendarIcon class="w-4 h-4" /> [ Nuevo Objetivo ]
                         </Link>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
-                        <div class="flex justify-between items-start">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Total Archivo</span>
-                            <PhotoIcon class="w-5 h-5 text-slate-300" />
+                    
+                    <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        
+                        <div class="flex justify-between items-start relative z-10">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Total Archivo</span>
+                            <PhotoIcon class="w-4 h-4 text-gray-700 group-hover:text-red-600" />
                         </div>
-                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_photos }}</span>
+                        <span class="text-5xl font-sans font-black text-white tracking-tighter relative z-10">{{ stats.total_photos }}</span>
                     </div>
 
-                    <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
-                        <div class="flex justify-between items-start">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Públicas</span>
-                            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+
+                        <div class="flex justify-between items-start relative z-10">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Públicas</span>
+                            <div class="w-2 h-2 rounded-full bg-white group-hover:bg-red-600 animate-pulse"></div>
                         </div>
-                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.active_photos }}</span>
+                        <span class="text-5xl font-sans font-black text-white tracking-tighter relative z-10">{{ stats.active_photos }}</span>
                     </div>
 
-                    <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
-                        <div class="flex justify-between items-start">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Descargas</span>
-                            <ArrowDownTrayIcon class="w-5 h-5 text-slate-300" />
+                    <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+
+                        <div class="flex justify-between items-start relative z-10">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Extracciones</span>
+                            <ArrowDownTrayIcon class="w-4 h-4 text-gray-700 group-hover:text-red-600" />
                         </div>
-                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_downloads }}</span>
+                        <span class="text-5xl font-sans font-black text-white tracking-tighter relative z-10">{{ stats.total_downloads }}</span>
                     </div>
 
-                    <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm flex flex-col justify-between h-32 group hover:border-slate-300 transition-colors">
-                        <div class="flex justify-between items-start">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Eventos</span>
-                            <CalendarIcon class="w-5 h-5 text-slate-300" />
+                    <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+
+                        <div class="flex justify-between items-start relative z-10">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Misiones / Eventos</span>
+                            <CalendarIcon class="w-4 h-4 text-gray-700 group-hover:text-red-600" />
                         </div>
-                        <span class="text-4xl font-sans font-medium text-slate-900">{{ stats.total_events }}</span>
+                        <span class="text-5xl font-sans font-black text-white tracking-tighter relative z-10">{{ stats.total_events }}</span>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     
                     <div class="lg:col-span-2">
-                        <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-                            <h3 class="text-lg font-sans font-bold text-slate-900">Eventos recientes</h3>
+                        <div class="flex items-center justify-between mb-6 border-b border-white/20 pb-2">
+                            <h3 class="text-xl font-sans font-black uppercase tracking-tighter text-white">Eventos Recientes</h3>
                             <Link :href="route('photographer.events.index')" 
-                                class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1">
-                                Ver Todo
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                class="text-[10px] font-mono font-bold uppercase tracking-widest text-red-600 hover:text-white transition flex items-center gap-1">
+                                [ Ver Registro ]
                             </Link>
                         </div>
 
                         <div v-if="recentEvents && recentEvents.length > 0" class="space-y-6">
-                            <Link v-for="event in recentEvents" :key="event.id" 
+                            <Link v-for="(event, index) in recentEvents" :key="event.id" 
                                 :href="route('photographer.events.show', event.id)"
-                                class="group flex flex-col md:flex-row bg-white border border-gray-200 hover:border-slate-400 transition-all duration-300 rounded-sm overflow-hidden">
+                                class="group flex flex-col md:flex-row bg-zinc-950 border border-white/10 hover:border-red-600 transition-all duration-300 rounded-none overflow-hidden relative">
                                 
-                                <div class="w-full md:w-48 h-48 md:h-auto relative overflow-hidden bg-gray-100 flex-shrink-0">
+                                <div class="w-full md:w-48 h-48 md:h-auto relative overflow-hidden bg-black flex-shrink-0">
                                     <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale-[0.5] group-hover:grayscale-0"
+                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale contrast-125 group-hover:grayscale-0"
                                         @error="handleImageError" />
-                                    <div v-else class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">
-                                        <PhotoIcon class="w-10 h-10" />
+                                    <div v-else class="w-full h-full flex items-center justify-center text-gray-800">
+                                        <span class="font-brush text-5xl opacity-30">f33</span>
                                     </div>
                                     
-                                    <div class="absolute top-0 left-0 p-3">
+                                    <div class="absolute inset-0 bg-black/40 pointer-events-none group-hover:bg-transparent transition-colors"></div>
+                                    <div class="absolute top-2 left-2 px-2 py-0.5 bg-black border border-white/20">
                                         <span :class="[
-                                            'px-2 py-1 text-[9px] font-bold uppercase tracking-widest border',
-                                            event.is_private 
-                                                ? 'bg-white text-slate-900 border-slate-900' 
-                                                : 'bg-slate-900 text-white border-transparent'
+                                            'text-[8px] font-mono font-bold uppercase tracking-widest',
+                                            event.is_private ? 'text-red-600' : 'text-white'
                                         ]">
-                                            {{ event.is_private ? 'Privado' : 'Público' }}
+                                            {{ event.is_private ? 'CLASIFICADO' : 'PÚBLICO' }}
                                         </span>
+                                    </div>
+                                    <div class="absolute bottom-2 right-2 text-[8px] font-mono text-white/50">
+                                        REC // 0{{ index + 1 }}
                                     </div>
                                 </div>
 
-                                <div class="p-6 flex flex-col justify-between flex-1">
+                                <div class="p-6 flex flex-col justify-between flex-1 bg-gradient-to-r from-transparent to-black/20">
                                     <div>
                                         <div class="flex justify-between items-start mb-2">
-                                            <h4 class="text-xl font-sans font-bold text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-1">
+                                            <h4 class="text-2xl font-sans font-black text-white uppercase tracking-tighter group-hover:text-red-600 transition-colors line-clamp-1">
                                                 {{ event.name }}
                                             </h4>
-                                            <span class="text-xs font-mono text-slate-400 whitespace-nowrap ml-2">
+                                            <span class="text-[10px] font-mono text-gray-500 whitespace-nowrap ml-2 border-b border-gray-700">
                                                 {{ formatDate(event.event_date) }}
                                             </span>
                                         </div>
-                                        <p v-if="event.description" class="text-sm text-slate-500 font-light line-clamp-2 mb-4">
+                                        <p v-if="event.description" class="text-xs text-gray-400 font-mono tracking-wide line-clamp-2 mb-4">
                                             {{ event.description }}
                                         </p>
                                     </div>
 
-                                    <div class="flex items-end justify-between pt-4 border-t border-gray-100">
-                                        <div class="flex items-center gap-4 text-xs text-slate-500 uppercase tracking-wide">
+                                    <div class="flex items-end justify-between pt-4 border-t border-white/10">
+                                        <div class="flex items-center gap-4 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
                                             <span class="flex items-center">
-                                                <PhotoIcon class="w-3 h-3 mr-1" />
-                                                {{ event.photos_count || 0 }} Fotos
+                                                <PhotoIcon class="w-3.5 h-3.5 mr-1 text-red-600" />
+                                                {{ event.photos_count || 0 }} DATA
                                             </span>
                                             <span v-if="event.location" class="flex items-center truncate max-w-[150px]">
-                                                <MapPinIcon class="w-3 h-3 mr-1" />
+                                                <MapPinIcon class="w-3.5 h-3.5 mr-1 text-red-600" />
                                                 {{ event.location }}
                                             </span>
                                         </div>
-                                        <span class="text-xs font-bold uppercase tracking-widest text-slate-900 group-hover:underline">Gestionar</span>
+                                        <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-white group-hover:text-red-600">> Ingresar</span>
                                     </div>
                                 </div>
                             </Link>
                         </div>
 
-                        <div v-else class="text-center py-16 border border-dashed border-gray-300 rounded-sm bg-white">
-                            <p class="text-slate-400 font-sans mb-4">No hay eventos activos.</p>
+                        <div v-else class="text-center py-16 border border-white/10 bg-zinc-950">
+                            <p class="text-gray-500 font-mono text-sm uppercase tracking-widest mb-4">Sin operaciones activas.</p>
                             <Link :href="route('photographer.events.create')" 
-                                class="text-xs font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-1 hover:text-slate-600 hover:border-slate-600 transition">
-                                Crear primer evento
+                                class="text-[10px] font-mono font-bold uppercase tracking-widest text-white border-b border-white pb-1 hover:text-red-600 hover:border-red-600 transition">
+                                Iniciar primera misión
                             </Link>
                         </div>
                     </div>
 
                     <div>
-                        <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-2">
-                            <h3 class="text-lg font-sans font-bold text-slate-900">Últimas Cargas</h3>
+                        <div class="flex items-center justify-between mb-6 border-b border-white/20 pb-2">
+                            <h3 class="text-xl font-sans font-black uppercase tracking-tighter text-white">Últimos Datos</h3>
                             <Link :href="route('photographer.photos.index')" 
-                                class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition flex items-center gap-1">
-                                Ver Todo
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                class="text-[10px] font-mono font-bold uppercase tracking-widest text-red-600 hover:text-white transition flex items-center gap-1">
+                                [ Ver Todo ]
                             </Link>
                         </div>
 
-                        <div v-if="recentPhotos && recentPhotos.length > 0" class="grid grid-cols-2 gap-4">
+                        <div v-if="recentPhotos && recentPhotos.length > 0" class="grid grid-cols-2 gap-2">
                             <div v-for="photo in recentPhotos" :key="photo.id"
-                                class="aspect-square bg-gray-100 rounded-sm overflow-hidden relative group border border-gray-200">
+                                class="aspect-square bg-black overflow-hidden relative group border border-white/10 hover:border-red-600 cursor-crosshair">
                                 
                                 <img 
                                     v-if="getImageUrl(photo)"
                                     :src="getImageUrl(photo)" 
                                     :alt="photo.unique_id"
-                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 filter grayscale-[0.3] group-hover:grayscale-0"
+                                    class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 filter grayscale contrast-125 group-hover:grayscale-0 opacity-70 group-hover:opacity-100"
                                     @error="handleImageError" 
                                 />
                                 
-                                <div v-else class="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300">
-                                    <PhotoIcon class="w-8 h-8" />
+                                <div v-else class="w-full h-full flex items-center justify-center text-gray-800 bg-zinc-950">
+                                    <span class="font-brush text-3xl opacity-20">f33</span>
                                 </div>
                                 
-                                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <Link :href="route('photographer.photos.show', photo.id)"
-                                        class="text-white border border-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 transition">
-                                        Ver
-                                    </Link>
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2 pointer-events-none">
+                                    <span class="text-red-600 font-mono text-[9px] uppercase tracking-widest border border-red-600 px-2 py-1 bg-black/80">
+                                        ID:{{ photo.unique_id.substring(0,6) }}
+                                    </span>
                                 </div>
+
+                                <Link :href="route('photographer.photos.show', photo.id)" class="absolute inset-0 z-10"></Link>
                             </div>
                         </div>
 
-                        <div v-else class="text-center py-12 border border-dashed border-gray-300 rounded-sm bg-white">
-                            <p class="text-slate-400 text-xs mb-4">Sin fotografías recientes.</p>
+                        <div v-else class="text-center py-16 border border-white/10 bg-zinc-950">
+                            <p class="text-gray-500 font-mono text-xs uppercase tracking-widest mb-4">No hay datos<br>transmitidos.</p>
                             <Link :href="route('photographer.photos.create')" 
-                                class="text-[10px] font-bold uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-0.5 hover:text-slate-600 hover:border-slate-600 transition">
-                                Subir material
+                                class="text-[10px] font-mono font-bold uppercase tracking-widest text-white border-b border-white pb-0.5 hover:text-red-600 hover:border-red-600 transition">
+                                Iniciar carga
                             </Link>
                         </div>
                     </div>

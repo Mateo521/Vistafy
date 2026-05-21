@@ -106,6 +106,15 @@ class WebhookController extends Controller
                 Log::warning(' Pago aprobado pero sin email registrado para la orden: '.$purchase->id);
             }
 
+            if ($purchase->items && $purchase->items->count() > 0) {
+                foreach ($purchase->items as $item) {
+                    if ($item->photo) {
+                        $item->photo->increment('downloads');
+                        Log::info(" Descarga sumada a la foto ID: " . $item->photo->id);
+                    }
+                }
+            }
+
             if ($purchase->user) {
                 $purchase->user->cartItems()->delete();
             }
