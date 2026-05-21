@@ -148,7 +148,7 @@ watch(() => props.events, () => {
 </script>
 
 <template>
-    <div class="relative w-full h-[60vh] min-h-[400px] bg-black">
+    <div class="relative w-full h-[100vh] min-h-[400px] bg-black">
         <div ref="mapContainer" class="w-full h-full z-0 outline-none map-future-events"></div>
 
         <transition enter-active-class="transition-opacity duration-300"
