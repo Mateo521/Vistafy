@@ -20,7 +20,7 @@
                         <td
                             style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 40px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0 0 10px 0; font-size: 28px; font-weight: bold;">
-                                 ¡Compra Exitosa!
+                                 ¡Compra dxitosa!
                             </h1>
                             <p
                                 style="color: #94a3b8; margin: 0; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase;">

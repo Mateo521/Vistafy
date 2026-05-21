@@ -247,7 +247,6 @@ class PaymentController extends Controller
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
-        // 3. CASO A: Si es una sola foto, redirigimos al link seguro de la nube
         if ($items->count() === 1) {
             $photo = $items->first()->photo;
             $filePath = $photo->original_path;
@@ -256,14 +255,16 @@ class PaymentController extends Controller
                 abort(404, 'El archivo original no se encuentra disponible en la nube.');
             }
 
-            // Generamos un link que dura 60 minutos para que el cliente lo descargue
-            $url = $disk->temporaryUrl($filePath, now()->addMinutes(60));
+            $fileName = $photo->original_name ?? ('foto_' . $photo->unique_id . '.jpg');
+
             
-            // Redirigimos al navegador a descargar el archivo
+            $url = $disk->temporaryUrl($filePath, now()->addMinutes(60), [
+                'ResponseContentDisposition' => 'attachment; filename="' . $fileName . '"'
+            ]);
+            
             return redirect()->away($url);
         }
 
-        // 3. CASO B: Varias fotos (ZIP). Tenemos que traerlas de B2 al servidor, comprimirlas y enviarlas.
         $zipFileName = 'vistafy_orden_' . $purchase->id . '.zip';
         $tempDir = storage_path('app/public/temp');
         
