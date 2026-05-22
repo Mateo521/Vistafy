@@ -777,9 +777,7 @@ const paginationPages = computed(() => {
                                 <div v-if="faceDetectionResults[index]"
                                     class="absolute top-1 right-1 px-1.5 py-0.5 font-mono text-[8px] border"
                                     :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black border-white' : 'bg-black text-gray-500 border-gray-700'">
-                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count +
-                                    'BIO': '0
-                                    BIO' }}
+                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count +'BIO': '0 BIO' }}
                                 </div>
 
                                 <div
