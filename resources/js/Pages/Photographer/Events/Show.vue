@@ -536,7 +536,7 @@ const paginationPages = computed(() => {
                             </h3>
 
                             <div class="flex flex-col gap-3 relative z-10">
-                                <Link :href="route('events.photographers', event.slug)"
+                                <Link :href="route('photographer.events.edit', event.slug)"
                                     class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
                                     <span class="flex items-center gap-2">
                                         + GESTIONAR OPERADORES
@@ -544,7 +544,7 @@ const paginationPages = computed(() => {
                                     <span class="font-mono text-xs font-bold">></span>
                                 </Link>
 
-                                <Link :href="route('events.upload', event.slug)"
+                                <Link :href="route('photographer.events.upload', event.slug)"
                                     class="w-full flex items-center justify-between border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
                                     <span class="flex items-center gap-2">
                                         ↑ SUBIR FRAGMENTOS (FOTOS)
@@ -552,6 +552,10 @@ const paginationPages = computed(() => {
                                     <span class="font-mono text-xs font-bold">></span>
                                 </Link>
                             </div>
+
+
+
+
                         </div>
 
 
