@@ -495,17 +495,17 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center">
                                     <span>Total Archivos</span>
                                     <span class="text-xl font-sans font-black text-white">{{ stats.total_photos
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span>Públicas</span>
                                     <span class="text-xl font-sans font-black text-white">{{ stats.active_photos
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span>Extracciones</span>
                                     <span class="text-xl font-sans font-black text-white">{{ stats.total_downloads
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
                         </div>
@@ -544,13 +544,13 @@ const paginationPages = computed(() => {
                                     <span class="font-mono text-xs font-bold">></span>
                                 </Link>
 
-                                <Link :href="route('photographer.events.upload', event.slug)"
+                                <button @click="showUploadModal = true"
                                     class="w-full flex items-center justify-between border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
                                     <span class="flex items-center gap-2">
                                         ↑ SUBIR FRAGMENTOS (FOTOS)
                                     </span>
                                     <span class="font-mono text-xs font-bold">></span>
-                                </Link>
+                                </button>
                             </div>
 
 
@@ -722,7 +722,7 @@ const paginationPages = computed(() => {
                                 <div v-if="faceDetectionResults[index]"
                                     class="absolute top-1 right-1 px-1.5 py-0.5 font-mono text-[8px] border"
                                     :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black border-white' : 'bg-black text-gray-500 border-gray-700'">
-                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count + 'BIO' : '0 BIO' }}
+                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count + 'BIO': '0 BIO' }}
                                 </div>
 
                                 <div
