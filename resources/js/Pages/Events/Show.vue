@@ -1,8 +1,8 @@
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLeftIcon, FunnelIcon, MagnifyingGlassIcon, HashtagIcon } from '@heroicons/vue/24/outline';
+import { ArrowLeftIcon, FunnelIcon, MagnifyingGlassIcon, HashtagIcon, MapPinIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     event: Object,
@@ -32,111 +32,162 @@ const filterByPhotographer = () => {
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric'
     });
 };
 
-
+// Placeholder Brutalista
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
-    if (!parent.querySelector('.placeholder-institutional')) {
+    if (!parent.querySelector('.placeholder-img')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder-institutional w-full h-full flex items-center justify-center bg-[#111920]';
-        placeholder.innerHTML = `
-            <span class="font-['Cormorant_Garamond'] text-4xl italic opacity-20 text-[#EEE9DF]">f33</span>
-        `;
+        placeholder.className = 'placeholder-img w-full h-full min-h-[250px] flex items-center justify-center bg-gray-950 border-[4px] border-red-600/30';
+        placeholder.innerHTML = `<span class="font-mono text-[10px] text-red-600 uppercase tracking-widest">[ SEÑAL PERDIDA ]</span>`;
         parent.appendChild(placeholder);
     }
 };
+
+// Inicializador del Glitch
+const initGlitch = () => {
+    const glitchContainers = document.querySelectorAll('.glitch-image-container');
+    glitchContainers.forEach(container => {
+        const imgUrl = container.getAttribute('data-img');
+        if (!imgUrl) return;
+
+        const height = container.clientHeight || 220;
+        const width = container.clientWidth;
+        let i = 0;
+        let html = '';
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        while (i < height) {
+            const stripHeight = Math.floor(Math.random() * 6) + 2;
+            const actualHeight = (i + stripHeight < height) ? stripHeight : (height - i);
+            const gx1 = random(-25, 25).toFixed(1) + 'px';
+            const gx2 = random(-25, 25).toFixed(1) + 'px';
+            const gh1 = random(-30, 30).toFixed(1) + 'deg';
+            const gh2 = random(-30, 30).toFixed(1) + 'deg';
+            const duration = random(3, 8).toFixed(1) + 's';
+            const delay = random(0, 3).toFixed(1) + 's';
+
+            html += `
+                <div class="glitch-strip" 
+                     style="
+                        height: ${actualHeight}px; 
+                        background-image: url('${imgUrl}');
+                        background-size: ${width}px ${height}px; 
+                        background-position: 0px -${i}px;
+                        --glitch-x-1: ${gx1};
+                        --glitch-x-2: ${gx2};
+                        --glitch-hue-1: ${gh1};
+                        --glitch-hue-2: ${gh2};
+                        animation-duration: ${duration};
+                        animation-delay: -${delay};
+                     ">
+                </div>`;
+            i += actualHeight;
+        }
+        container.innerHTML = html;
+    });
+};
+
+onMounted(() => {
+    initGlitch();
+});
 </script>
 
 <template>
-
-    <Head :title="event.name" />
+    <Head :title="event.name + ' — F33'" />
 
     <AppLayout>
-        <div class="relative h-[60vh] min-h-[500px] bg-[#111920] overflow-hidden font-['Syne']">
-            <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                class="absolute inset-0 w-full h-full object-cover opacity-50 saturate-[0.6]"
-                @error="handleImageError" />
-
-            <div class="absolute inset-0 bg-gradient-to-t from-[#111920] via-[#111920]/40 to-transparent"></div>
-
-            <div class="absolute top-32 left-0 w-full px-8 md:px-16 max-w-7xl mx-auto z-10 left-0 right-0">
+        
+        <div class="border-b border-white/20 bg-black/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center font-mono text-[10px] uppercase tracking-widest">
                 <Link :href="route('events.index')"
-                    class="inline-flex items-center text-[#C9C1B1] hover:text-[#FFB162] text-[10px] font-bold uppercase tracking-[0.2em] transition-colors group">
-                    <ArrowLeftIcon class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Volver al Archivo
+                    class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
+                    <ArrowLeftIcon class="w-3.5 h-3.5" /> [ LÍNEA DE TIEMPO ]
                 </Link>
             </div>
+        </div>
 
-            <div class="absolute bottom-0 left-0 w-full px-8 md:px-16 pb-16">
-                <div class="max-w-7xl mx-auto">
-                    <span class="text-[10px] font-bold tracking-[0.3em] text-[#FFB162] uppercase mb-4 block flex items-center gap-3 after:content-[''] after:h-px after:w-12 after:bg-[#A35139]">
-                        {{ formatDate(event.event_date) }}
-                    </span>
-                    <h1 class="text-5xl md:text-7xl font-['Cormorant_Garamond'] font-light text-[#EEE9DF] mb-6 max-w-5xl leading-[0.95]">
+        <div class="relative bg-black pt-20 pb-16 md:pt-32 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
+            <div v-if="event.cover_image_url" class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30 grayscale contrast-125" :data-img="event.cover_image_url"></div>
+            <div v-else class="absolute inset-0 w-full h-full bg-gray-950 -z-10"></div>
+            
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
+                <div class="pointer-events-none">
+                    <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 border-l-2 border-red-600 pl-3">
+                        REPORTE DE INCIDENCIA // {{ formatDate(event.event_date) }}
+                    </p>
+                    <h1 class="font-black text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mix-blend-difference mb-6">
                         {{ event.name }}
                     </h1>
-                    <div class="flex flex-wrap items-center gap-6 text-[#C9C1B1] text-[11px] font-bold uppercase tracking-[0.2em]">
-                        <span v-if="event.location">{{ event.location }}</span>
-                        <span class="w-1 h-1 bg-[#C9C1B1]/30 rounded-full"></span>
-                        <span class="text-[#FFB162]">{{ event.photos_count }} Fotografías</span>
+                    
+                    <div class="flex flex-wrap items-center gap-6 font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-8">
+                        <span v-if="event.location" class="flex items-center gap-2 border border-white/20 px-3 py-1.5 bg-black/50">
+                            <MapPinIcon class="w-3.5 h-3.5 text-red-600" /> {{ event.location }}
+                        </span>
+                        <span class="border border-white/20 px-3 py-1.5 bg-black/50 text-white">
+                            VOLUMEN: <span class="text-red-600">{{ event.photos_count }}</span> FRAMES
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="min-h-screen bg-[#111920] font-['Syne'] pb-24">
-            <div class="max-w-7xl mx-auto px-8 md:px-16 pt-16">
+        <div class="min-h-screen bg-black text-white font-sans pb-24">
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8 pt-16">
 
-                <div class="flex flex-col lg:flex-row gap-16 mb-16 border-b border-[#C9C1B1]/10 pb-16">
+                <div class="flex flex-col lg:flex-row gap-12 lg:gap-16 mb-16 border-b border-white/20 pb-16">
 
                     <div class="lg:w-7/12">
-                        <h3 class="text-[9px] font-bold uppercase tracking-[0.35em] text-[#FFB162] mb-6">Sobre el Evento</h3>
-                        <p class="text-[#C9C1B1] leading-relaxed font-light text-base md:text-lg mb-6">
-                            {{ event.description }}
+                        <h3 class="font-mono text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500 mb-6 border-b border-white/10 pb-2">
+                            / REPORTE DESCRIPTIVO
+                        </h3>
+                        <p class="font-mono text-sm text-gray-400 uppercase tracking-widest leading-relaxed mb-6">
+                            {{ event.description || 'SIN DATOS DESCRIPTIVOS ASIGNADOS AL EVENTO.' }}
                         </p>
-                        <p v-if="event.long_description" class="text-[#C9C1B1]/70 leading-relaxed text-[13px] font-light">
+                        <p v-if="event.long_description" class="font-mono text-[11px] text-gray-600 uppercase tracking-widest leading-relaxed">
                             {{ event.long_description }}
                         </p>
                     </div>
 
-                    <div class="lg:w-5/12 flex flex-col gap-8">
+                    <div class="lg:w-5/12 flex flex-col gap-6">
                         
-                        <div class="bg-[#1B2632] p-8 border border-[#C9C1B1]/10 shadow-2xl relative overflow-hidden">
-                            <div class="absolute -right-4 -bottom-4 text-[#FFB162] opacity-[0.03] pointer-events-none">
-                                <FunnelIcon class="w-32 h-32" />
+                        <div class="bg-gray-950 border-[4px] border-white/20 p-6 relative overflow-hidden transition-none group hover:border-white">
+                            <div class="absolute -right-8 -bottom-8 text-white/5 pointer-events-none group-hover:text-red-600/5 transition-none">
+                                <FunnelIcon class="w-48 h-48" />
                             </div>
 
-                            <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EEE9DF] mb-6 flex items-center gap-2">
-                                <FunnelIcon class="w-4 h-4 text-[#FFB162]" /> 
-                                Curaduría Visual
+                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-6 border-b border-white/10 pb-2">
+                                [ FILTRAR POR OPERADOR ]
                             </h3>
 
-                            <div class="space-y-4 relative z-10">
-                                <label class="flex items-center cursor-pointer group">
-                                    <input type="radio" v-model="selectedPhotographer" value="all" @change="filterByPhotographer" class="peer sr-only">
-                                    <div class="w-4 h-4 rounded-full border border-[#C9C1B1]/30 mr-4 peer-checked:border-[#FFB162] flex items-center justify-center transition-colors">
-                                        <div class="w-2 h-2 bg-[#FFB162] rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            <div class="space-y-3 relative z-10 font-mono text-[10px] tracking-widest uppercase">
+                                <label class="flex items-center cursor-pointer group/label">
+                                    <input type="radio" v-model="selectedPhotographer" value="all" @change="filterByPhotographer" class="sr-only">
+                                    <div class="w-4 h-4 border-2 mr-3 flex items-center justify-center transition-none"
+                                         :class="selectedPhotographer === 'all' ? 'border-red-600' : 'border-gray-600 group-hover/label:border-white'">
+                                        <div v-if="selectedPhotographer === 'all'" class="w-2 h-2 bg-red-600"></div>
                                     </div>
-                                    <span class="text-[11px] font-bold uppercase tracking-widest text-[#C9C1B1] peer-checked:text-[#EEE9DF] transition-colors">
-                                        Mostrar Todo el Material
+                                    <span class="font-bold transition-none" :class="selectedPhotographer === 'all' ? 'text-white' : 'text-gray-500 group-hover/label:text-white'">
+                                        MOSTRAR TODO EL VOLUMEN
                                     </span>
                                 </label>
 
-                                <label v-for="photographer in photographers" :key="photographer.id" class="flex items-center cursor-pointer group">
-                                    <input type="radio" v-model="selectedPhotographer" :value="photographer.id" @change="filterByPhotographer" class="peer sr-only">
-                                    <div class="w-4 h-4 rounded-full border border-[#C9C1B1]/30 mr-4 peer-checked:border-[#FFB162] flex items-center justify-center transition-colors">
-                                        <div class="w-2 h-2 bg-[#FFB162] rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                <label v-for="photographer in photographers" :key="photographer.id" class="flex items-center cursor-pointer group/label">
+                                    <input type="radio" v-model="selectedPhotographer" :value="photographer.id" @change="filterByPhotographer" class="sr-only">
+                                    <div class="w-4 h-4 border-2 mr-3 flex items-center justify-center transition-none"
+                                         :class="selectedPhotographer === photographer.id ? 'border-red-600' : 'border-gray-600 group-hover/label:border-white'">
+                                        <div v-if="selectedPhotographer === photographer.id" class="w-2 h-2 bg-red-600"></div>
                                     </div>
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#C9C1B1] peer-checked:text-[#EEE9DF] transition-colors">
+                                    <div class="flex items-center gap-3 w-full">
+                                        <span class="font-bold truncate transition-none" :class="selectedPhotographer === photographer.id ? 'text-white' : 'text-gray-500 group-hover/label:text-white'">
                                             {{ photographer.business_name || photographer.user.name }}
                                         </span>
-                                        <span class="text-[9px] text-[#C9C1B1]/50 bg-[#111920] border border-[#C9C1B1]/10 px-1.5 py-0.5 rounded-sm font-mono">
+                                        <span class="ml-auto text-[9px] text-gray-500 bg-black border border-white/20 px-1.5 py-0.5">
                                             {{ photographer.photos_count }}
                                         </span>
                                     </div>
@@ -144,17 +195,21 @@ const handleImageError = (e) => {
                             </div>
                         </div>
 
-                        <div class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-3">
                             <Link :href="route('events.face-search', event.slug)"
-                                class="inline-flex items-center justify-center gap-3 bg-[#FFB162] text-[#1B2632] hover:bg-[#EEE9DF] font-bold text-[10px] uppercase tracking-[0.2em] px-6 py-4 transition-colors shadow-lg group">
-                                <MagnifyingGlassIcon class="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                <span>Búsqueda Biométrica</span>
+                                class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white transition-none px-6 py-4 font-black font-sans text-xl uppercase tracking-tighter group">
+                                <span class="flex items-center gap-3">
+                                    <MagnifyingGlassIcon class="w-6 h-6" /> ESCÁNER BIOMÉTRICO
+                                </span>
+                                <span class="font-mono text-xs opacity-50 group-hover:translate-x-2 transition-transform">→</span>
                             </Link>
 
                             <Link :href="route('events.bib-search', event.slug)"
-                                class="inline-flex items-center justify-center gap-3 bg-transparent border border-[#FFB162] text-[#FFB162] hover:bg-[#FFB162] hover:text-[#1B2632] font-bold text-[10px] uppercase tracking-[0.2em] px-6 py-4 transition-colors shadow-lg group">
-                                <HashtagIcon class="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                <span>Búsqueda por Dorsal</span>
+                                class="w-full flex items-center justify-between bg-black border-2 border-white text-white hover:bg-white hover:text-black transition-none px-6 py-4 font-black font-sans text-xl uppercase tracking-tighter group">
+                                <span class="flex items-center gap-3">
+                                    <HashtagIcon class="w-6 h-6" /> ANÁLISIS OCR (DORSAL)
+                                </span>
+                                <span class="font-mono text-xs opacity-50 group-hover:translate-x-2 transition-transform">→</span>
                             </Link>
                         </div>
 
@@ -162,67 +217,63 @@ const handleImageError = (e) => {
                 </div>
 
                 <div v-if="photos.data && photos.data.length > 0">
-                    <div class="columns-2 md:columns-3 lg:columns-4 gap-4 mb-16">
+                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-2 space-y-2 masonry-grid mb-16">
                         
-                        
-                        <div v-for="(photo, index) in photos.data" :key="photo.id"
+                        <div v-for="photo in photos.data" :key="photo.id"
                             @click="router.visit(route('gallery.show', photo.unique_id))"
                             @contextmenu.prevent
-                            class="group relative overflow-hidden bg-[#1B2632] block break-inside-avoid mb-4 cursor-pointer"
-                            :class="(index % 4 === 0 || index % 7 === 0) ? 'aspect-[4/5]' : ((index % 3 === 0) ? 'aspect-[3/4]' : 'aspect-[2/3]')">
+                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none cursor-crosshair w-full h-auto">
                             
                             <img :src="photo.watermarked_url" :alt="photo.unique_id"
                                 draggable="false"
                                 @contextmenu.prevent
-                                class="w-full h-full object-cover transition-transform duration-[800ms] group-hover:scale-105 saturate-[0.5] group-hover:saturate-100 select-none pointer-events-none"
+                                class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
                                 loading="lazy" 
                                 @error="handleImageError" />
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#111920]/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-5 pointer-events-none">
-                                <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-400">
-                                    <span class="text-[9px] font-bold text-[#FFB162] uppercase tracking-[0.2em] mb-1 block">
-                                        Ver Detalles
-                                    </span>
-                                    <span class="text-[11px] text-[#EEE9DF] font-mono tracking-widest">
-                                        ID: {{ photo.unique_id }}
-                                    </span>
-                                </div>
+                            <div class="absolute inset-0 bg-red-600 mix-blend-overlay opacity-0 group-hover:opacity-20 transition-none pointer-events-none"></div>
+
+                            <div class="absolute top-2 left-2 pointer-events-none">
+                                <span class="bg-black border border-white text-white font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-1 shadow-lg block mb-1 w-max opacity-0 group-hover:opacity-100 transition-none">
+                                    [ INSPECCIONAR ]
+                                </span>
+                                <span class="bg-black text-red-600 font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-1 w-max">
+                                    #{{ photo.unique_id }}
+                                </span>
                             </div>
 
-                            <div class="absolute top-3 right-3 bg-[#111920]/80 backdrop-blur-md border border-[#C9C1B1]/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[#EEE9DF] opacity-0 group-hover:opacity-100 transition-opacity duration-400 transform translate-y-2 group-hover:translate-y-0 pointer-events-none">
+                            <div class="absolute bottom-2 right-2 bg-black text-white px-2 py-1 text-[9px] font-mono font-bold uppercase tracking-widest border border-white/20 opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
                                 {{ photo.photographer_name }}
                             </div>
                         </div>
 
-
-
                     </div>
 
-                    <div v-if="photos.last_page > 1" class="flex justify-center gap-2 pt-8 border-t border-[#C9C1B1]/10">
-                        <div class="flex items-center gap-2 bg-[#1B2632] p-2 border border-[#C9C1B1]/10 shadow-xl">
+                    <div v-if="photos.last_page > 1" class="flex justify-center pt-8 border-t border-white/20">
+                        <div class="flex flex-wrap gap-2">
                             <template v-for="(link, index) in photos.links" :key="index">
                                 <Link v-if="link.url" :href="link.url"
                                     v-html="link.label"
-                                    class="min-w-[40px] h-10 flex items-center justify-center px-4 text-[11px] font-bold transition-colors"
-                                    :class="link.active ? 'bg-[#FFB162] text-[#1B2632]' : 'text-[#C9C1B1] hover:bg-[#2C3B4D] hover:text-[#EEE9DF]'" />
-                                <span v-else v-html="link.label" class="min-w-[40px] h-10 flex items-center justify-center px-4 text-[11px] font-bold text-[#C9C1B1]/30"></span>
+                                    class="min-w-[40px] h-10 flex items-center justify-center px-4 font-mono text-[11px] font-bold transition-none border-2 border-white/20 hover:border-white"
+                                    :class="link.active ? 'bg-red-600 text-black border-red-600 hover:border-red-600' : 'bg-black text-gray-400 hover:text-white'" />
+                                <span v-else v-html="link.label" class="min-w-[40px] h-10 flex items-center justify-center px-4 font-mono text-[11px] font-bold text-gray-700 border-2 border-transparent"></span>
                             </template>
                         </div>
                     </div>
                 </div>
 
-                <div v-else class="text-center py-32 border border-dashed border-[#C9C1B1]/20 bg-[#1B2632]">
-                    <div class="mx-auto h-16 w-16 text-[#FFB162] opacity-50 mb-6">
+                <div v-else class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 bg-gray-950 text-center">
+                    <div class="w-16 h-16 text-gray-600 mb-6">
                         <FunnelIcon class="w-full h-full" />
                     </div>
-                    <h3 class="text-3xl font-['Cormorant_Garamond'] text-[#EEE9DF] mb-3">Material no encontrado</h3>
-                    <p class="text-[#C9C1B1] text-[13px] font-light max-w-md mx-auto mb-8">
-                        No hay fotografías disponibles con el fotógrafo seleccionado para este evento.
+                    <h3 class="font-black text-4xl md:text-6xl text-gray-700 tracking-tighter mb-4 uppercase">NULO.</h3>
+                    <p class="font-mono text-xs text-gray-500 tracking-widest uppercase mb-8">
+                        EL OPERADOR SELECCIONADO NO REGISTRA ARCHIVOS EN ESTE EVENTO.
                     </p>
                     <button v-if="selectedPhotographer !== 'all'"
                         @click="selectedPhotographer = 'all'; filterByPhotographer()"
-                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FFB162] border-b border-[#FFB162] pb-1 hover:text-[#EEE9DF] hover:border-[#EEE9DF] transition-colors">
-                        Restablecer Filtros y Ver Todo
+                        class="border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
+                        [ PURGAR FILTRO Y VER TODO ]
                     </button>
                 </div>
 
@@ -230,3 +281,55 @@ const handleImageError = (e) => {
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+
+.masonry-grid {
+    column-fill: balance;
+}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #000000;
+    border-left: 1px solid #333;
+}
+::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #dc2626;
+}
+
+/* Efectos Glitch Generales */
+@keyframes precise-glitch {
+    0%, 33.33%, 43.33%, 66.67%, 76.67%, 100% {
+        transform: none;
+        filter: hue-rotate(0) drop-shadow(0 0 0 transparent);
+    }
+    33.43%, 43.23% {
+        transform: translateX(var(--glitch-x-1));
+        filter: hue-rotate(var(--glitch-hue-1)) drop-shadow(3px 0 0 rgba(220, 38, 38, 0.6));
+    }
+    66.77%, 76.57% {
+        transform: translateX(var(--glitch-x-2));
+        filter: hue-rotate(var(--glitch-hue-2)) drop-shadow(-3px 0 0 rgba(255, 255, 255, 0.4));
+    }
+}
+
+:deep(.glitch-strip) {
+    width: 100%;
+    background-repeat: no-repeat;
+    animation-name: precise-glitch;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: paused; 
+}
+
+.group:hover :deep(.glitch-strip) {
+    animation-play-state: running;
+}
+</style>
