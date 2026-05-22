@@ -8,6 +8,8 @@ import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
 
+
+
 import {
     CalendarIcon,
     MapPinIcon,
@@ -32,13 +34,17 @@ const props = defineProps({
 
 const { confirm } = useConfirm();
 const { success } = useToast();
+const copyEventUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    success('ENLACE EN PORTAPAPELES');
+};
 
 const modelsLoaded = ref(false);
 const processingFaces = ref(false);
 const faceDetectionResults = ref([]);
 const processingBibs = ref(false);
 const bibDetectionResults = ref([]);
-const uploadMode = ref('upload'); 
+const uploadMode = ref('upload');
 const selectedExistingPhotos = ref([]);
 
 // NUEVO: Bandera para activar/desactivar OCR
@@ -156,7 +162,7 @@ const compressImage = async (file) => {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                const maxSize = 2500; 
+                const maxSize = 2500;
 
                 if (width > height && width > maxSize) {
                     height = Math.round((height * maxSize) / width);
@@ -176,7 +182,7 @@ const compressImage = async (file) => {
                         type: 'image/jpeg',
                         lastModified: Date.now()
                     });
-                    
+
                     resolve({
                         file: compressedFile,
                         preview: canvas.toDataURL('image/jpeg', 0.8)
@@ -191,17 +197,17 @@ const compressImage = async (file) => {
 
 const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
-    
-    
+
+
     selectedFiles.value = [];
     previewUrls.value = [];
     faceDetectionResults.value = [];
     bibDetectionResults.value = [];
 
-    
+
     const compressingPromises = files.map(file => compressImage(file));
     const processedFiles = await Promise.all(compressingPromises);
-    
+
     selectedFiles.value = processedFiles.map(pf => pf.file);
     uploadForm.photos = selectedFiles.value;
     previewUrls.value = processedFiles.map(pf => pf.preview);
@@ -212,7 +218,7 @@ const handleFileSelect = async (e) => {
             await detectFacesInImages();
             processingFaces.value = false;
 
-            
+
             if (readBibs.value) {
                 processingBibs.value = true;
                 await detectBibNumbers(faceDetectionResults.value);
@@ -238,10 +244,10 @@ const cropTorsoFromFace = async (imageUrl, faceBox) => {
             let roiX, roiY, roiW, roiH;
 
             if (faceBox) {
-                roiW = faceBox.width * 2.2; 
-                roiH = faceBox.height * 2.5; 
+                roiW = faceBox.width * 2.2;
+                roiH = faceBox.height * 2.5;
                 roiX = faceBox.x - (roiW - faceBox.width) / 2;
-                roiY = faceBox.y + (faceBox.height * 1.1); 
+                roiY = faceBox.y + (faceBox.height * 1.1);
             } else {
                 roiW = img.width * 0.5;
                 roiH = img.height * 0.4;
@@ -274,14 +280,14 @@ const preprocessForOCR = async (imageUrl) => {
             const padding = 20;
             canvas.width = img.width + (padding * 2);
             canvas.height = img.height + (padding * 2);
-            ctx.fillStyle = "#FFFFFF"; 
+            ctx.fillStyle = "#FFFFFF";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, padding, padding);
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
             for (let i = 0; i < data.length; i += 4) {
-                const g = data[i + 1]; 
+                const g = data[i + 1];
                 const val = g > 130 ? 255 : 0;
                 data[i] = data[i + 1] = data[i + 2] = val;
             }
@@ -319,7 +325,7 @@ const detectBibNumbers = async (facesData) => {
                     if (found) found.forEach(num => { if (num.length >= 2) uniqueNumbers.add(num); });
                 }
             } else {
-                const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], null); 
+                const roiDataUrl = await cropTorsoFromFace(previewUrls.value[i], null);
                 const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
                 const result = await worker.recognize(cleanedDataUrl);
                 const text = result.data.text;
@@ -420,27 +426,35 @@ const paginationPages = computed(() => {
 </script>
 
 <template>
+
     <Head :title="event.name" />
 
     <AuthenticatedLayout>
-        
+
         <div class="relative h-80 bg-black overflow-hidden border-b border-red-600">
-            <img v-if="event.cover_image_url" :src="event.cover_image_url" class="absolute inset-0 w-full h-full object-cover opacity-40 filter grayscale contrast-125" />
+            <img v-if="event.cover_image_url" :src="event.cover_image_url"
+                class="absolute inset-0 w-full h-full object-cover opacity-40 filter grayscale contrast-125" />
             <div v-else class="absolute inset-0 bg-zinc-900 flex items-center justify-center opacity-50">
                 <PhotoIcon class="w-24 h-24 text-zinc-800" />
             </div>
-            
-            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
+
+            <div
+                class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none">
+            </div>
 
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end pb-10 z-10">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <div class="flex items-center gap-3 mb-3 text-[10px] font-mono font-bold uppercase tracking-widest text-red-600">
-                            <Link :href="route('photographer.events.index')" class="hover:text-white transition">Eventos</Link>
+                        <div
+                            class="flex items-center gap-3 mb-3 text-[10px] font-mono font-bold uppercase tracking-widest text-red-600">
+                            <Link :href="route('photographer.events.index')" class="hover:text-white transition">Eventos
+                            </Link>
                             <span>/</span>
                             <span class="text-white">{{ event.name }}</span>
                         </div>
-                        <h1 class="text-4xl md:text-5xl font-sans font-black text-white uppercase tracking-tighter mb-2">{{ event.name }}</h1>
+                        <h1
+                            class="text-4xl md:text-5xl font-sans font-black text-white uppercase tracking-tighter mb-2">
+                            {{ event.name }}</h1>
                         <div class="flex items-center gap-6 text-xs font-mono text-gray-400">
                             <span class="flex items-center gap-2" v-if="event.event_date">
                                 <CalendarIcon class="w-4 h-4 text-red-600" /> {{ formatDate(event.event_date) }}
@@ -452,10 +466,12 @@ const paginationPages = computed(() => {
                     </div>
 
                     <div class="flex gap-3">
-                        <Link :href="route('photographer.events.edit', event.id)" class="px-5 py-3 border border-white text-white text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors rounded-none">
+                        <Link :href="route('photographer.events.edit', event.id)"
+                            class="px-5 py-3 border border-white text-white text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors rounded-none">
                             [ Editar ]
                         </Link>
-                        <button @click="showUploadModal = true" class="px-5 py-3 bg-red-600 border border-red-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-red-600 transition-colors rounded-none flex items-center gap-2">
+                        <button @click="showUploadModal = true"
+                            class="px-5 py-3 bg-red-600 border border-red-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-red-600 transition-colors rounded-none flex items-center gap-2">
                             <CloudArrowUpIcon class="w-4 h-4" /> Subir Fotos
                         </button>
                     </div>
@@ -467,86 +483,158 @@ const paginationPages = computed(() => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-10">
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
+
                     <div class="lg:col-span-1 space-y-8">
+
+
                         <div class="bg-zinc-950 border border-white/10 p-6">
-                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-red-600 border-b border-white/10 pb-2 mb-6">Métricas de Operación</h3>
+                            <h3
+                                class="font-mono text-[10px] font-bold uppercase tracking-widest text-red-600 border-b border-white/10 pb-2 mb-6">
+                                Métricas de Operación</h3>
                             <div class="space-y-6 font-mono text-xs uppercase tracking-widest text-gray-400">
                                 <div class="flex justify-between items-center">
                                     <span>Total Archivos</span>
-                                    <span class="text-xl font-sans font-black text-white">{{ stats.total_photos }}</span>
+                                    <span class="text-xl font-sans font-black text-white">{{ stats.total_photos
+                                    }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span>Públicas</span>
-                                    <span class="text-xl font-sans font-black text-white">{{ stats.active_photos }}</span>
+                                    <span class="text-xl font-sans font-black text-white">{{ stats.active_photos
+                                    }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span>Extracciones</span>
-                                    <span class="text-xl font-sans font-black text-white">{{ stats.total_downloads }}</span>
+                                    <span class="text-xl font-sans font-black text-white">{{ stats.total_downloads
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap gap-4">
+                            <button @click="copyEventUrl"
+                                class="border-2 border-white bg-black hover:bg-white text-white hover:text-black transition-none px-6 py-3 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
+                                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+                                    </path>
+                                </svg>
+                                [ COPIAR ENLACE DEL NODO ]
+                            </button>
+                        </div>
+
+                        <div v-if="$page.props.auth.user"
+                            class="bg-gray-950 border-[4px] border-red-600 p-6 relative overflow-hidden transition-none group mb-6">
+                            <div class="absolute -right-4 -top-4 text-red-600 opacity-10 pointer-events-none">
+                                <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z" />
+                                </svg>
+                            </div>
+
+                            <h3
+                                class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 mb-6 border-b border-red-600/30 pb-2">
+                                [ ACCESO RESTRINGIDO // GESTIÓN ]
+                            </h3>
+
+                            <div class="flex flex-col gap-3 relative z-10">
+                                <Link :href="route('events.photographers', event.slug)"
+                                    class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
+                                    <span class="flex items-center gap-2">
+                                        + GESTIONAR OPERADORES
+                                    </span>
+                                    <span class="font-mono text-xs font-bold">></span>
+                                </Link>
+
+                                <Link :href="route('events.upload', event.slug)"
+                                    class="w-full flex items-center justify-between border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
+                                    <span class="flex items-center gap-2">
+                                        ↑ SUBIR FRAGMENTOS (FOTOS)
+                                    </span>
+                                    <span class="font-mono text-xs font-bold">></span>
+                                </Link>
+                            </div>
+                        </div>
+
+
                     </div>
 
                     <div class="lg:col-span-2">
-                        <div v-if="!photos.data || photos.data.length === 0" class="text-center py-24 border border-white/10 bg-zinc-950">
+                        <div v-if="!photos.data || photos.data.length === 0"
+                            class="text-center py-24 border border-white/10 bg-zinc-950">
                             <PhotoIcon class="h-12 w-12 mx-auto text-gray-600 mb-4" />
-                            <h4 class="font-sans font-black text-white uppercase tracking-tighter mb-1">Bóveda Vacía</h4>
-                            <p class="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-6">No hay datos en esta operación.</p>
-                            <button @click="showUploadModal = true" class="text-[10px] font-mono font-bold uppercase tracking-widest text-white border-b border-white hover:text-red-600 hover:border-red-600 pb-0.5 transition">
+                            <h4 class="font-sans font-black text-white uppercase tracking-tighter mb-1">Bóveda Vacía
+                            </h4>
+                            <p class="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-6">No hay datos
+                                en esta operación.</p>
+                            <button @click="showUploadModal = true"
+                                class="text-[10px] font-mono font-bold uppercase tracking-widest text-white border-b border-white hover:text-red-600 hover:border-red-600 pb-0.5 transition">
                                 Iniciar Carga
                             </button>
                         </div>
 
                         <div v-else>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-8">
-                                <div v-for="photo in photos.data" :key="photo.id" class="group relative aspect-square bg-zinc-950 border border-white/10 overflow-hidden cursor-crosshair">
-                                    <img :src="photo.thumbnail_url" :alt="photo.unique_id" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-125 group-hover:grayscale-0 opacity-80 group-hover:opacity-100" />
-                                    
-                                    <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 p-4">
+                                <div v-for="photo in photos.data" :key="photo.id"
+                                    class="group relative aspect-square bg-zinc-950 border border-white/10 overflow-hidden cursor-crosshair">
+                                    <img :src="photo.thumbnail_url" :alt="photo.unique_id"
+                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-125 group-hover:grayscale-0 opacity-80 group-hover:opacity-100" />
+
+                                    <div
+                                        class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 p-4">
                                         <div class="flex gap-2">
-                                            <button @click="updateCoverImage(photo.id)" title="Usar como portada" class="p-2 border border-white text-white hover:bg-white hover:text-black transition">
+                                            <button @click="updateCoverImage(photo.id)" title="Usar como portada"
+                                                class="p-2 border border-white text-white hover:bg-white hover:text-black transition">
                                                 <PhotoIcon class="w-4 h-4" />
                                             </button>
-                                            <button @click="deletePhoto(photo.id)" title="Eliminar" class="p-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition">
+                                            <button @click="deletePhoto(photo.id)" title="Eliminar"
+                                                class="p-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition">
                                                 <TrashIcon class="w-4 h-4" />
                                             </button>
                                         </div>
-                                        <div class="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-2">{{ photo.unique_id }}</div>
+                                        <div class="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-2">
+                                            {{ photo.unique_id }}</div>
                                     </div>
-                                    
-                                    <div v-if="photo.downloads > 0" class="absolute bottom-1 right-1 bg-black text-red-600 border border-red-600 text-[9px] font-mono px-1.5 py-0.5 flex items-center gap-1">
+
+                                    <div v-if="photo.downloads > 0"
+                                        class="absolute bottom-1 right-1 bg-black text-red-600 border border-red-600 text-[9px] font-mono px-1.5 py-0.5 flex items-center gap-1">
                                         <ArrowDownTrayIcon class="w-3 h-3" /> {{ photo.downloads }}
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div v-if="photos.last_page > 1" class="flex items-center justify-center gap-2 pt-6 border-t border-white/10">
-                                <Link v-if="photos.prev_page_url" :href="photos.prev_page_url" class="h-8 px-3 flex items-center justify-center font-mono text-xs text-white border border-white/20 hover:border-red-600 hover:text-red-600 transition-colors">
+
+                            <div v-if="photos.last_page > 1"
+                                class="flex items-center justify-center gap-2 pt-6 border-t border-white/10">
+                                <Link v-if="photos.prev_page_url" :href="photos.prev_page_url"
+                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-white border border-white/20 hover:border-red-600 hover:text-red-600 transition-colors">
                                     [ ATRÁS ]
                                 </Link>
-                                <span v-else class="h-8 px-3 flex items-center justify-center font-mono text-xs text-gray-600 border border-white/5 cursor-not-allowed">
+                                <span v-else
+                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-gray-600 border border-white/5 cursor-not-allowed">
                                     [ ATRÁS ]
                                 </span>
 
                                 <div class="flex items-center gap-2">
                                     <template v-for="(page, index) in paginationPages" :key="index">
-                                        <span v-if="page === photos.current_page" class="h-8 w-8 flex items-center justify-center font-mono text-xs font-bold bg-white text-black">
+                                        <span v-if="page === photos.current_page"
+                                            class="h-8 w-8 flex items-center justify-center font-mono text-xs font-bold bg-white text-black">
                                             {{ page }}
                                         </span>
-                                        <span v-else-if="page === '...'" class="h-8 w-8 flex items-center justify-center font-mono text-xs text-gray-500">
+                                        <span v-else-if="page === '...'"
+                                            class="h-8 w-8 flex items-center justify-center font-mono text-xs text-gray-500">
                                             ...
                                         </span>
-                                        <Link v-else :href="photos.path + '?page=' + page" class="h-8 w-8 flex items-center justify-center font-mono text-xs text-gray-400 border border-white/10 hover:border-white hover:text-white transition-colors">
+                                        <Link v-else :href="photos.path + '?page=' + page"
+                                            class="h-8 w-8 flex items-center justify-center font-mono text-xs text-gray-400 border border-white/10 hover:border-white hover:text-white transition-colors">
                                             {{ page }}
                                         </Link>
                                     </template>
                                 </div>
 
-                                <Link v-if="photos.next_page_url" :href="photos.next_page_url" class="h-8 px-3 flex items-center justify-center font-mono text-xs text-white border border-white/20 hover:border-red-600 hover:text-red-600 transition-colors">
+                                <Link v-if="photos.next_page_url" :href="photos.next_page_url"
+                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-white border border-white/20 hover:border-red-600 hover:text-red-600 transition-colors">
                                     [ SIGUIENTE ]
                                 </Link>
-                                <span v-else class="h-8 px-3 flex items-center justify-center font-mono text-xs text-gray-600 border border-white/5 cursor-not-allowed">
+                                <span v-else
+                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-gray-600 border border-white/5 cursor-not-allowed">
                                     [ SIGUIENTE ]
                                 </span>
                             </div>
@@ -560,8 +648,9 @@ const paginationPages = computed(() => {
 
         <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" @click="closeModal"></div>
-            <div class="relative bg-zinc-950 border border-white/20 shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col text-white font-sans">
-                
+            <div
+                class="relative bg-zinc-950 border border-white/20 shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col text-white font-sans">
+
                 <div class="border-b border-white/10 bg-zinc-900">
                     <div class="p-6 pb-0 flex justify-between items-start mb-4">
                         <h3 class="font-sans font-black text-xl uppercase tracking-tighter">Agregar Datos</h3>
@@ -571,25 +660,31 @@ const paginationPages = computed(() => {
                     </div>
 
                     <div class="flex px-6 gap-4">
-                        <button @click="uploadMode = 'upload'" :class="['pb-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2', uploadMode === 'upload' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-white']">
+                        <button @click="uploadMode = 'upload'"
+                            :class="['pb-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2', uploadMode === 'upload' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-white']">
                             [ Carga Local ]
                         </button>
-                        <button @click="uploadMode = 'existing'" :class="['pb-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2', uploadMode === 'existing' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-white']">
+                        <button @click="uploadMode = 'existing'"
+                            :class="['pb-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2', uploadMode === 'existing' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-white']">
                             [ Archivo Interno ]
                         </button>
                     </div>
                 </div>
 
                 <div class="p-6 overflow-y-auto flex-1 scrollbar-hide">
-                    
+
                     <div v-if="uploadMode === 'upload'" class="space-y-6">
-                        
+
                         <div class="flex items-center gap-3 border-b border-white/10 pb-4">
-                            <input type="checkbox" id="read_bibs" v-model="readBibs" class="bg-black border-gray-600 text-red-600 focus:ring-red-600 rounded-sm">
-                            <label for="read_bibs" class="font-mono text-[10px] uppercase tracking-widest text-gray-300">Activar detección de dorsales (OCR)</label>
+                            <input type="checkbox" id="read_bibs" v-model="readBibs"
+                                class="bg-black border-gray-600 text-red-600 focus:ring-red-600 rounded-sm">
+                            <label for="read_bibs"
+                                class="font-mono text-[10px] uppercase tracking-widest text-gray-300">Activar
+                                detección de dorsales (OCR)</label>
                         </div>
 
-                        <div v-if="processingFaces || processingBibs" class="bg-zinc-900 border border-white/10 p-4 space-y-3 font-mono text-xs uppercase tracking-widest">
+                        <div v-if="processingFaces || processingBibs"
+                            class="bg-zinc-900 border border-white/10 p-4 space-y-3 font-mono text-xs uppercase tracking-widest">
                             <div v-if="processingFaces" class="flex items-center gap-3 text-white">
                                 <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
                                 Analizando biometría: {{ faceDetectionResults.length }}/{{ previewUrls.length }}
@@ -600,50 +695,78 @@ const paginationPages = computed(() => {
                             </div>
                         </div>
 
-                        <div v-if="selectedFiles.length === 0" class="border border-dashed border-gray-700 bg-zinc-900 p-12 text-center hover:border-red-600 transition-colors">
-                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="hidden" id="file-upload">
+                        <div v-if="selectedFiles.length === 0"
+                            class="border border-dashed border-gray-700 bg-zinc-900 p-12 text-center hover:border-red-600 transition-colors">
+                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="hidden"
+                                id="file-upload">
                             <label for="file-upload" class="cursor-pointer block h-full">
                                 <CloudArrowUpIcon class="w-12 h-12 mx-auto text-gray-600 mb-4" />
-                                <span class="font-sans font-black uppercase text-white tracking-tighter block mb-2 text-xl">Seleccionar Archivos</span>
-                                <span class="font-mono text-[10px] uppercase tracking-widest text-gray-500">JPG, PNG • Máx 10MB</span>
+                                <span
+                                    class="font-sans font-black uppercase text-white tracking-tighter block mb-2 text-xl">Seleccionar
+                                    Archivos</span>
+                                <span class="font-mono text-[10px] uppercase tracking-widest text-gray-500">JPG, PNG •
+                                    Máx
+                                    10MB</span>
                             </label>
                         </div>
 
                         <div v-else class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                            <div v-for="(url, index) in previewUrls" :key="index" class="relative aspect-square bg-black overflow-hidden border border-white/10 group">
+                            <div v-for="(url, index) in previewUrls" :key="index"
+                                class="relative aspect-square bg-black overflow-hidden border border-white/10 group">
                                 <img :src="url" class="w-full h-full object-cover grayscale contrast-125" />
-                                
-                                <div v-if="faceDetectionResults[index]" class="absolute top-1 right-1 px-1.5 py-0.5 font-mono text-[8px] border" :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black border-white' : 'bg-black text-gray-500 border-gray-700'">
-                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count + ' BIO' : '0 BIO' }}
+
+                                <div v-if="faceDetectionResults[index]"
+                                    class="absolute top-1 right-1 px-1.5 py-0.5 font-mono text-[8px] border"
+                                    :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black border-white' : 'bg-black text-gray-500 border-gray-700'">
+                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count + '
+                                    BIO' : '0
+                                    BIO' }}
                                 </div>
 
-                                <div class="absolute bottom-0 left-0 w-full p-1 bg-black/80 flex gap-1 flex-wrap items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div
+                                    class="absolute bottom-0 left-0 w-full p-1 bg-black/80 flex gap-1 flex-wrap items-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <template v-if="bibDetectionResults[index]?.numbers?.length">
-                                        <div v-for="number in bibDetectionResults[index].numbers" :key="number" class="flex items-center gap-1 font-mono text-[8px] bg-red-600 text-white px-1 py-0.5">
+                                        <div v-for="number in bibDetectionResults[index].numbers" :key="number"
+                                            class="flex items-center gap-1 font-mono text-[8px] bg-red-600 text-white px-1 py-0.5">
                                             <span>{{ number }}</span>
-                                            <button @click.stop="removeBibTag(index, number)" class="hover:text-black"><XMarkIcon class="w-2.5 h-2.5" /></button>
+                                            <button @click.stop="removeBibTag(index, number)" class="hover:text-black">
+                                                <XMarkIcon class="w-2.5 h-2.5" />
+                                            </button>
                                         </div>
                                     </template>
-                                    <input type="text" placeholder="+" @keydown.enter.prevent="addBibTag(index, $event)" @keydown.backspace="handleBackspace(index, $event)" class="w-full bg-transparent border-none text-white font-mono text-[8px] focus:ring-0 p-0" />
+                                    <input type="text" placeholder="+" @keydown.enter.prevent="addBibTag(index, $event)"
+                                        @keydown.backspace="handleBackspace(index, $event)"
+                                        class="w-full bg-transparent border-none text-white font-mono text-[8px] focus:ring-0 p-0" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div v-else-if="uploadMode === 'existing'">
-                        <div v-if="unassignedPhotos.length === 0" class="text-center py-12 border border-white/10 bg-zinc-900">
+                        <div v-if="unassignedPhotos.length === 0"
+                            class="text-center py-12 border border-white/10 bg-zinc-900">
                             <PhotoIcon class="w-12 h-12 mx-auto text-gray-600 mb-3" />
                             <p class="font-mono text-xs uppercase text-gray-400">Sin datos residuales.</p>
                         </div>
                         <div v-else>
-                            <p class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-4">Selección manual ({{ selectedExistingPhotos.length }})</p>
+                            <p class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-4">Selección
+                                manual ({{
+                                    selectedExistingPhotos.length }})</p>
                             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                                <div v-for="photo in unassignedPhotos" :key="photo.id" @click="togglePhotoSelection(photo.id)" class="relative aspect-square bg-black border cursor-pointer transition-all grayscale contrast-125" :class="selectedExistingPhotos.includes(photo.id) ? 'border-red-600 grayscale-0' : 'border-white/10'">
+                                <div v-for="photo in unassignedPhotos" :key="photo.id"
+                                    @click="togglePhotoSelection(photo.id)"
+                                    class="relative aspect-square bg-black border cursor-pointer transition-all grayscale contrast-125"
+                                    :class="selectedExistingPhotos.includes(photo.id) ? 'border-red-600 grayscale-0' : 'border-white/10'">
                                     <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
-                                    <div v-if="selectedExistingPhotos.includes(photo.id)" class="absolute inset-0 bg-red-600/20 flex items-center justify-center">
-                                        <div class="w-6 h-6 bg-red-600 text-white flex items-center justify-center"><CheckIcon class="w-4 h-4" /></div>
+                                    <div v-if="selectedExistingPhotos.includes(photo.id)"
+                                        class="absolute inset-0 bg-red-600/20 flex items-center justify-center">
+                                        <div class="w-6 h-6 bg-red-600 text-white flex items-center justify-center">
+                                            <CheckIcon class="w-4 h-4" />
+                                        </div>
                                     </div>
-                                    <div class="absolute bottom-1 left-1 bg-black text-white font-mono text-[8px] px-1 py-0.5">#{{ photo.unique_id.substring(0,4) }}</div>
+                                    <div
+                                        class="absolute bottom-1 left-1 bg-black text-white font-mono text-[8px] px-1 py-0.5">
+                                        #{{ photo.unique_id.substring(0, 4) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -656,11 +779,17 @@ const paginationPages = computed(() => {
                         <span v-else>{{ selectedExistingPhotos.length }} DATOS</span>
                     </div>
                     <div class="flex gap-3">
-                        <button @click="closeModal" class="px-5 py-2 border border-white text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition">Abortar</button>
-                        <button v-if="uploadMode === 'upload'" @click="uploadPhotos" :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces || processingBibs" class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">
-                            {{ processingFaces || processingBibs ? 'Procesando...' : (uploadForm.processing ? 'Transfiriendo...' : 'Transmitir') }}
+                        <button @click="closeModal"
+                            class="px-5 py-2 border border-white text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition">Abortar</button>
+                        <button v-if="uploadMode === 'upload'" @click="uploadPhotos"
+                            :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces || processingBibs"
+                            class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">
+                            {{ processingFaces || processingBibs ? 'Procesando...' : (uploadForm.processing ?
+                                'Transfiriendo...'
+                                : 'Transmitir') }}
                         </button>
-                        <button v-else @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0" class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">
+                        <button v-else @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0"
+                            class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">
                             Asignar
                         </button>
                     </div>
@@ -675,6 +804,7 @@ const paginationPages = computed(() => {
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
