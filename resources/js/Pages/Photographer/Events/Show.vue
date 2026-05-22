@@ -484,8 +484,9 @@ const paginationPages = computed(() => {
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    <div class="lg:col-span-1 space-y-8">
 
+
+                    <div class="lg:col-span-1 space-y-8">
 
                         <div class="bg-zinc-950 border border-white/10 p-6">
                             <h3
@@ -508,18 +509,18 @@ const paginationPages = computed(() => {
                                         }}</span>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap gap-4">
-                            <button @click="copyEventUrl"
-                                class="border-2 border-white bg-black hover:bg-white text-white hover:text-black transition-none px-6 py-3 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
-                                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-                                    </path>
-                                </svg>
-                                [ COPIAR ENLACE DEL NODO ]
-                            </button>
+                            <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap gap-4">
+                                <button @click="copyEventUrl"
+                                    class="w-full border-2 border-white bg-black hover:bg-white text-white hover:text-black transition-none px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
+                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+                                        </path>
+                                    </svg>
+                                    [ COPIAR ENLACE DEL NODO ]
+                                </button>
+                            </div>
                         </div>
 
                         <div v-if="$page.props.auth.user"
@@ -536,7 +537,7 @@ const paginationPages = computed(() => {
                             </h3>
 
                             <div class="flex flex-col gap-3 relative z-10">
-                                <Link :href="route('photographer.events.edit', event.slug)"
+                                <Link :href="route('photographer.events.edit', event.id)"
                                     class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
                                     <span class="flex items-center gap-2">
                                         + GESTIONAR OPERADORES
@@ -552,14 +553,68 @@ const paginationPages = computed(() => {
                                     <span class="font-mono text-xs font-bold">></span>
                                 </button>
                             </div>
-
-
-
-
                         </div>
 
+                        <div class="bg-zinc-950 border border-white/10 p-6">
+                            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-2">
+                                <h3
+                                    class="text-[10px] font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2">
+                                    [ OPERADORES ASIGNADOS ]
+                                </h3>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 bg-black flex items-center justify-center text-white text-xs font-sans border border-red-600">
+                                        {{ event.photographer?.business_name?.charAt(0) || 'YO' }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-white truncate uppercase">
+                                            {{ event.photographer?.business_name || 'Tú' }}
+                                        </p>
+                                        <p class="text-[9px] font-mono text-red-600 uppercase tracking-wider">COMANDANTE
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div v-if="event.collaborators && event.collaborators.length > 0"
+                                    v-for="collab in event.collaborators" :key="collab.id"
+                                    class="flex items-center gap-3 pt-3 border-t border-white/5">
+
+                                    <img v-if="collab.profile_photo_url" :src="collab.profile_photo_url"
+                                        class="w-8 h-8 object-cover border border-white/20 filter grayscale">
+                                    <div v-else
+                                        class="w-8 h-8 bg-black flex items-center justify-center text-gray-500 text-xs font-sans border border-white/20">
+                                        {{ collab.business_name.charAt(0) }}
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-gray-300 truncate uppercase">{{
+                                            collab.business_name }}</p>
+                                        <p class="text-[9px] font-mono text-gray-500 uppercase tracking-wider">OPERATIVO
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div v-else class="pt-2">
+                                    <p class="text-[10px] font-mono text-gray-600 uppercase tracking-widest">
+                                        Sin operativos secundarios.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="event.description" class="bg-zinc-950 border border-white/10 p-6">
+                            <h3
+                                class="font-mono text-[10px] font-bold uppercase tracking-widest text-red-600 mb-4 border-b border-white/10 pb-2">
+                                [ REPORTE DE MISIÓN ]
+                            </h3>
+                            <p class="text-xs font-mono text-gray-400 leading-relaxed">{{ event.description }}</p>
+                        </div>
 
                     </div>
+
 
                     <div class="lg:col-span-2">
                         <div v-if="!photos.data || photos.data.length === 0"
@@ -722,7 +777,9 @@ const paginationPages = computed(() => {
                                 <div v-if="faceDetectionResults[index]"
                                     class="absolute top-1 right-1 px-1.5 py-0.5 font-mono text-[8px] border"
                                     :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black border-white' : 'bg-black text-gray-500 border-gray-700'">
-                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count + 'BIO': '0 BIO' }}
+                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count +
+                                    'BIO': '0
+                                    BIO' }}
                                 </div>
 
                                 <div
