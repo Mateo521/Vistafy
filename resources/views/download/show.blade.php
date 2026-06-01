@@ -12,7 +12,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    <h1 class="text-3xl font-bold mb-2">¡Pago Exitoso!</h1>
+                    <h1 class="text-3xl font-bold mb-2">¡Pago exitoso!</h1>
                     <p class="text-green-100">Tu foto está lista para descargar</p>
                 </div>
 
@@ -69,7 +69,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
-                            <span>Descargar Foto en Alta Resolución</span>
+                            <span>Descargar foto en alta resolución</span>
                         </div>
                     </a>
 

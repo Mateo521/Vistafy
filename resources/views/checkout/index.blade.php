@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mx-auto p-6">
         <div class="max-w-2xl mx-auto">
-            <h1 class="text-3xl font-bold mb-6">Comprar Foto #{{ $photo->id }}</h1>
+            <h1 class="text-3xl font-bold mb-6">Comprar foto #{{ $photo->id }}</h1>
 
             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
                 <img src="{{ Storage::url($photo->path) }}" alt="Foto" class="w-full rounded mb-4">

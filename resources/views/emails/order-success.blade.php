@@ -19,7 +19,7 @@
                             style="background-color: #09090b; padding: 40px; text-align: center; border-bottom: 2px solid #dc2626;">
                             <h1
                                 style="color: #ffffff; margin: 0 0 10px 0; font-size: 28px; font-weight: 900; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: -1px;">
-                                Transacción <span style="color: #dc2626;">Exitosa</span>
+                                Transacción <span style="color: #dc2626;">exitosa</span>
                             </h1>
                             <p
                                 style="color: #71717a; margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;">
@@ -58,7 +58,7 @@
                                 style="background-color: #09090b; border: 1px solid #27272a; padding: 20px; margin: 0 0 30px 0;">
                                 <h3
                                     style="margin: 0 0 15px 0; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-family: Arial, sans-serif;">
-                                    Resumen del objetivo
+                                    Resumen
                                 </h3>
                                 <table width="100%" cellpadding="5" cellspacing="0"
                                     style="color: #a1a1aa; font-size: 13px;">

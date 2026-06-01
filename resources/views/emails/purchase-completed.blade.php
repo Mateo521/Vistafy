@@ -87,7 +87,7 @@
                             <!-- Photos List -->
                             <h3
                                 style="margin: 0 0 15px 0; color: #0f172a; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                Fotografías Adquiridas
+                                Fotografías adquiridas
                             </h3>
 
                             <table width="100%" cellpadding="8" cellspacing="0" style="margin: 0 0 30px 0;">
@@ -114,7 +114,7 @@
                             <div style="text-align: center; margin: 40px 0;">
                                 <a href="{{ route('purchases.index') }}"
                                     style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                                    📥 Descargar mis Fotos
+                                     Descargar mis Fotos
                                 </a>
                             </div>
 
@@ -122,8 +122,8 @@
                             <div
                                 style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 30px 0 0 0; border-radius: 4px;">
                                 <p style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.5;">
-                                    <strong> ¿Necesitas ayuda?</strong><br>
-                                    Puedes descargar tus fotos ilimitadamente desde tu cuenta. Si tienes alguna
+                                    <strong> ¿Necesitás ayuda?</strong><br>
+                                    Podés descargar tus fotos ilimitadamente desde tu cuenta. Si tenés alguna
                                     pregunta, contáctanos en
                                     <a href="mailto:soporte@f33.com"
                                         style="color: #92400e; text-decoration: underline;">soporte@f33.com</a>
@@ -137,7 +137,7 @@
                         <td
                             style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="color: #94a3b8; font-size: 12px; margin: 0 0 10px 0; line-height: 1.5;">
-                                Este email fue enviado porque completaste una compra en f33 Lorem ipsum....
+                                Este email fue enviado porque completaste una compra en f33....
                             </p>
                             <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
                                 © {{ date('Y') }} f33 Lorem ipsum.... Todos los derechos reservados.
