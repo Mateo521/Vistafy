@@ -37,9 +37,9 @@ class RegisteredUserController extends Controller
         ]);
 
         try {
-
-            Mail::raw("¡Hola {$user->name}! Bienvenido a f33. Tu cuenta fué creada y ya podés empezar a adquirir fotografías", function ($msg) use ($user) {
-                $msg->to($user->email)->subject('¡Bienvenido a f33!');
+            
+            Mail::send('emails.customer-welcome', ['user' => $user], function ($msg) use ($user) {
+                $msg->to($user->email)->subject('[F33 STUDIO] Acceso Concedido');
             });
         } catch (\Exception $e) {
             \Log::error('Error enviando correo a cliente nuevo: '.$e->getMessage());

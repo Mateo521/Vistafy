@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitud Recibida - f33</title>
+    <title>Bienvenido a f33 - f33</title>
 </head>
 <body style="font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0; background-color: #000000;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #000000; padding: 40px 20px;">
@@ -17,7 +17,7 @@
                                 F33 <span style="color: #dc2626;"></span>
                             </h1>
                             <p style="color: #71717a; margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;">
-                                [ Solicitud Recibida ]
+                                [ Lorem ipsum dolor sit amet ] 
                             </p>
                         </td>
                     </tr>
@@ -28,18 +28,26 @@
                                 SALUDOS <strong>{{ $user->name }}</strong>,
                             </p>
                             <p style="color: #a1a1aa; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0;">
-                                Hemos recibido tus credenciales de operador. Para mantener la integridad de la red, tu perfil está siendo sometido a curaduría.
+                                Tus credenciales fueron validadas. Ya tenés autorización para operar en la plataforma y extraer material fotográfico.
                             </p>
 
-                            <div style="background-color: #000000; border-left: 4px solid #f59e0b; padding: 20px; margin: 0 0 30px 0;">
-                                <h3 style="margin: 0 0 10px 0; color: #f59e0b; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">
-                                    [ Estado Actual ]
+                            <div style="background-color: #000000; border-left: 4px solid #dc2626; padding: 20px; margin: 0 0 30px 0;">
+                                <h3 style="margin: 0 0 10px 0; color: #dc2626; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;">
+                                    [ Credenciales ]
                                 </h3>
-                                <p style="color: #fcd34d; font-size: 13px; font-weight: bold; margin: 0;">EN REVISIÓN</p>
+                                <p style="color: #a1a1aa; font-size: 13px; margin: 0 0 5px 0;">ID Operativo: <strong>{{ $user->email }}</strong></p>
+                                <p style="color: #a1a1aa; font-size: 13px; margin: 0;">Nivel de Acceso: <strong>CLIENTE GENERAL</strong></p>
                             </div>
 
-                            <p style="color: #a1a1aa; font-size: 13px; line-height: 1.6; margin: 0 0 30px 0;">
-                                El comando central emitirá un nuevo reporte a tu correo en un plazo de 24 a 48 horas hábiles confirmando o denegando tu acceso a las operaciones.
+                            <div style="text-align: center; margin: 40px 0;">
+                                <a href="{{ route('home') }}" style="display: inline-block; background-color: #dc2626; color: #ffffff; text-decoration: none; padding: 16px 40px; font-weight: bold; font-size: 12px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.1em;">
+                                    [ INGRESAR ]
+                                </a>
+                            </div>
+                            
+                            <p style="text-align: center; color: #52525b; font-size: 10px; margin-top: 20px;">
+                                Si el enlace falla, accede manualmente a:<br>
+                                <a href="{{ route('home') }}" style="color: #a1a1aa;">{{ route('home') }}</a>
                             </p>
                         </td>
                     </tr>
