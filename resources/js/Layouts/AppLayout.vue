@@ -313,7 +313,7 @@ const navigationItems = [
                             Carrito
                             <span v-if="cartCount > 0"
                                 class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{
-                                cartCount }}</span>
+                                    cartCount }}</span>
                         </Link>
 
                         <div class="h-px w-1/3 mx-auto bg-white/20 my-4"></div>
@@ -357,14 +357,10 @@ const navigationItems = [
                 <div
                     class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-10 md:space-y-0">
 
-                    <div class="text-center md:text-left">
-                        <span class="font-sans text-4xl font-black tracking-tighter block text-white">
-                            f<em class="text-red-600 not-italic">3</em>3
-                        </span>
-                        <span class="text-[0.60rem] uppercase tracking-[0.4em] text-gray-500 block mt-2">
-                            Photography & Art
-                        </span>
-                    </div>
+                    <Link href="/" class="group z-50 relative flex items-center">
+                        <img src="/images/logo-dark.png" alt="f33 Photography"
+                            class="h-10 w-auto transition-opacity duration-300 group-hover:opacity-80" />
+                    </Link>
 
                     <div
                         class="flex flex-wrap justify-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
@@ -376,7 +372,7 @@ const navigationItems = [
 
                 <div
                     class="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[11px] tracking-wider text-gray-500">
-                    <p>© {{ new Date().getFullYear() }} f33 Photography. Todos los derechos reservados.</p>
+                    <p>© {{ new Date().getFullYear() }} f33. Todos los derechos reservados.</p>
                     <div class="flex space-x-8 mt-6 md:mt-0 uppercase tracking-widest text-[9px]">
                         <a href="#" class="hover:text-white transition-colors">Privacidad</a>
                         <a href="#" class="hover:text-white transition-colors">Términos</a>
