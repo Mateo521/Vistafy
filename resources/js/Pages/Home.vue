@@ -89,18 +89,55 @@ const getEventCoverForPhoto = (photo) => {
                 </Swiper>
 
 
+
+
+                <section id="eventos" class="w-full pt-20 pb-0 bg-[#050505]">
+                    <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
+                        <div>
+                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span class="text-[#FF0000]">.</span></h2>
+                            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">Seleccioná un evento para ver su colección de fotos</p>
+                        </div>
+                    </div>
+
+                    <div class="masonry-container px-1" v-if="recentEvents.length > 0">
+                        <Link v-for="event in recentEvents" :key="event.id" :href="route('events.show', event.slug || event.id)" class="masonry-item relative group overflow-hidden bg-[#09090b] block cursor-crosshair">
+                            
+                            <img :src="event.cover_image_url" class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
+
+                            <div class="absolute inset-0 bg-[#050505]/80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
+                                <span class="text-[#FF0000] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#FF0000] px-3 py-1">
+                                    {{ event.is_private ? 'Privado' : 'Público' }}
+                                </span>
+                                <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name }}</h3>
+                                <p v-if="event.description" class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
+                                    {{ event.description }}
+                                </p>
+                                <span class="text-white font-mono text-lg border-b-2 border-[#FF0000] hover:text-[#FF0000] transition-colors">
+                                    Ver Archivos
+                                </span>
+                            </div>
+                        </Link>
+                    </div>
+
+                    <div v-else class="text-center py-32 border border-white/10 mx-6 bg-[#09090b]">
+                        <p class="font-mono text-gray-500 uppercase tracking-widest">Aún no hay eventos registrados.</p>
+                    </div>
+                </section>
+
+
+                
                 <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden bg-[#050505]">
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">
-                                Últimos <span class="text-[#FF0000]">Registros</span>
+                                Últimas <span class="text-[#FF0000]">fotos</span>
                             </h2>
                             <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">
-                                Transmisiones recientes de nuestros operativos
+                                Colecciones de fotos de nuestros fotógrafos
                             </p>
                         </div>
                         <Link :href="route('gallery.index')" class="hidden md:block text-[#FF0000] font-mono font-bold uppercase tracking-widest border-b border-[#FF0000] pb-1 hover:text-white hover:border-white transition-colors">
-                            [ Ver Archivo Completo ]
+                            [ Ver más ]
                         </Link>
                     </div>
 
@@ -143,39 +180,6 @@ const getEventCoverForPhoto = (photo) => {
                     </div>
                 </section>
 
-
-                <section id="eventos" class="w-full pt-20 pb-0 bg-[#050505]">
-                    <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
-                        <div>
-                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span class="text-[#FF0000]">.</span></h2>
-                            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">Seleccioná un evento para ver su archivo</p>
-                        </div>
-                    </div>
-
-                    <div class="masonry-container px-1" v-if="recentEvents.length > 0">
-                        <Link v-for="event in recentEvents" :key="event.id" :href="route('events.show', event.slug || event.id)" class="masonry-item relative group overflow-hidden bg-[#09090b] block cursor-crosshair">
-                            
-                            <img :src="event.cover_image_url" class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
-
-                            <div class="absolute inset-0 bg-[#050505]/80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
-                                <span class="text-[#FF0000] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#FF0000] px-3 py-1">
-                                    {{ event.is_private ? 'Privado' : 'Público' }}
-                                </span>
-                                <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name }}</h3>
-                                <p v-if="event.description" class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
-                                    {{ event.description }}
-                                </p>
-                                <span class="text-white font-mono text-lg border-b-2 border-[#FF0000] hover:text-[#FF0000] transition-colors">
-                                    Ver Archivos
-                                </span>
-                            </div>
-                        </Link>
-                    </div>
-
-                    <div v-else class="text-center py-32 border border-white/10 mx-6 bg-[#09090b]">
-                        <p class="font-mono text-gray-500 uppercase tracking-widest">Aún no hay eventos registrados.</p>
-                    </div>
-                </section>
 
             </main>
         </div>
