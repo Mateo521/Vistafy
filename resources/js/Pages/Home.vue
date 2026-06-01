@@ -59,8 +59,8 @@ const getEventCoverForPhoto = (photo) => {
                         </video>
                         <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-[-1]"></div>
                         <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32">
-                            <span class="text-[#FF0000] font-mono font-bold tracking-widest mb-4 flex items-center gap-4">
-                                <span class="w-12 h-[2px] bg-[#FF0000]"></span> 1
+                            <span class="text-[#E30613] font-mono font-bold tracking-widest mb-4 flex items-center gap-4">
+                                <span class="w-12 h-[2px] bg-[#E30613]"></span> 1
                             </span>
                             <h1 class="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] uppercase">
                                 Visiones <br><span class="text-transparent" style="-webkit-text-stroke: 2px white;">Nocturnas</span>
@@ -75,11 +75,11 @@ const getEventCoverForPhoto = (photo) => {
                         <img :src="recentEvents[0].cover_image_url" class="absolute inset-0 w-full h-full object-cover grayscale opacity-60 z-[-2]">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-[-1]"></div>
                         <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32">
-                            <span class="text-[#FF0000] font-mono font-bold tracking-widest mb-4 flex items-center gap-4">
-                                <span class="w-12 h-[2px] bg-[#FF0000]"></span> 2
+                            <span class="text-[#E30613] font-mono font-bold tracking-widest mb-4 flex items-center gap-4">
+                                <span class="w-12 h-[2px] bg-[#E30613]"></span> 2
                             </span>
                             <h1 class="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] uppercase">
-                                Captura <br><span class="text-[#FF0000]">Raw</span>
+                                Captura <br><span class="text-[#E30613]">Raw</span>
                             </h1>
                             <p class="mt-8 max-w-xl text-lg text-gray-300 font-light pl-6">
                                 Sin filtros artificiales. Inmortalizamos la energía cruda y real de cada momento en {{ recentEvents[0].name }}.
@@ -94,7 +94,7 @@ const getEventCoverForPhoto = (photo) => {
                 <section id="eventos" class="w-full pt-20 pb-0 bg-[#050505]">
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span class="text-[#FF0000]">.</span></h2>
+                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span class="text-[#E30613]">.</span></h2>
                             <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">Seleccioná un evento para ver su colección de fotos</p>
                         </div>
                     </div>
@@ -105,15 +105,15 @@ const getEventCoverForPhoto = (photo) => {
                             <img :src="event.cover_image_url" class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
 
                             <div class="absolute inset-0 bg-[#050505]/80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
-                                <span class="text-[#FF0000] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#FF0000] px-3 py-1">
+                                <span class="text-[#E30613] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#E30613] px-3 py-1">
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
                                 <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name }}</h3>
                                 <p v-if="event.description" class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
                                     {{ event.description }}
                                 </p>
-                                <span class="text-white font-mono text-lg border-b-2 border-[#FF0000] hover:text-[#FF0000] transition-colors">
-                                    Ver Archivos
+                                <span class="text-white font-mono text-lg border-b-2 border-[#E30613] hover:text-[#E30613] transition-colors">
+                                    Ver más
                                 </span>
                             </div>
                         </Link>
@@ -130,13 +130,13 @@ const getEventCoverForPhoto = (photo) => {
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">
-                                Últimas <span class="text-[#FF0000]">fotos</span>
+                                Últimas <span class="text-[#E30613]">fotos</span>
                             </h2>
                             <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">
                                 Colecciones de fotos de nuestros fotógrafos
                             </p>
                         </div>
-                        <Link :href="route('gallery.index')" class="hidden md:block text-[#FF0000] font-mono font-bold uppercase tracking-widest border-b border-[#FF0000] pb-1 hover:text-white hover:border-white transition-colors">
+                        <Link :href="route('gallery.index')" class="hidden md:block text-[#E30613] font-mono font-bold uppercase tracking-widest border-b border-[#E30613] pb-1 hover:text-white hover:border-white transition-colors">
                             [ Ver más ]
                         </Link>
                     </div>
@@ -168,7 +168,7 @@ const getEventCoverForPhoto = (photo) => {
                                             <p class="text-white font-black text-sm uppercase tracking-tighter truncate">
                                                 {{ photo.event_name || 'Operación X' }}
                                             </p>
-                                            <p class="text-[#FF0000] font-mono text-[9px] font-bold tracking-widest mt-0.5">
+                                            <p class="text-[#E30613] font-mono text-[9px] font-bold tracking-widest mt-0.5">
                                                 ID: {{ photo.unique_id }}
                                             </p>
                                         </div>
@@ -216,8 +216,8 @@ const getEventCoverForPhoto = (photo) => {
 }
 
 .f33-theme .swiper-pagination-bullet-active {
-    background-color: #FF0000;
-    border-color: #FF0000;
+    background-color: #E30613;
+    border-color: #E30613;
     opacity: 1;
     width: 30px;
     border-radius: 10px;
@@ -237,7 +237,7 @@ const getEventCoverForPhoto = (photo) => {
 
 .f33-theme .swiper-button-next:hover,
 .f33-theme .swiper-button-prev:hover {
-    color: #FF0000 !important;
+    color: #E30613 !important;
     opacity: 1 !important;
 }
 
