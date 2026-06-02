@@ -84,14 +84,14 @@ const formatEventTitle = (name) => {
 
                         <img v-if="getHeroBackgroundImage(event) || event.cover_image_url"
                             :src="getHeroBackgroundImage(event) || event.cover_image_url"
-                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-50 z-[-2]">
+                            class="absolute inset-0 w-full h-full object-cover object-bottom  opacity-50 z-[-2]"> 
                         <video v-else autoplay muted loop playsinline
-                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-50 z-[-2]">
+                            class="absolute inset-0 w-full h-full object-cover  opacity-50 z-[-2]">
                             <source :src="currentVideo" type="video/mp4">
-                        </video>
+                        </video> c 
 
                         <div
-                            class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent z-[-1]">
+                            class="absolute inset-0 bg-gradient-to-t from-[#050505]/60 via-[#050505]/70 to-transparent z-[-1]">
                         </div>
 
                         <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32 relative">
@@ -116,7 +116,7 @@ const formatEventTitle = (name) => {
                             </div>
 
                             <h1
-                                class="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] uppercase">
+                                class="text-2xl md:text-4xl lg:text-[8rem] font-black tracking-tighter leading-[0.85] uppercase">
                                 {{ formatEventTitle(event.name).first }} <br>
                                 <span :class="index % 2 === 0 ? 'text-transparent' : 'text-[#E30613]'"
                                     :style="index % 2 === 0 ? '-webkit-text-stroke: 2px white;' : ''">
