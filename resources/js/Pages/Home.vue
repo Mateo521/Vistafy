@@ -46,7 +46,7 @@ const formatEventTitle = (name) => {
 
 <template>
 
-    <Head title="F33 | Premium Event Photography" />
+    <Head title="F33.click" />
 
     <AppLayout>
         <div class="f33-theme relative w-full min-h-screen">

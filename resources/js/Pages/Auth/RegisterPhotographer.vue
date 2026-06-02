@@ -62,7 +62,7 @@ const submit = () => {
                         </div>
 
                         <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
-                            Únite a <br><span class="text-transparent"
+                            Unite a <br><span class="text-transparent"
                                 style="-webkit-text-stroke: 2px #E30613;">f33</span>
                         </h1>
 
