@@ -28,18 +28,16 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'customer',
         ]);
-
         try {
             
             Mail::send('emails.customer-welcome', ['user' => $user], function ($msg) use ($user) {
-                $msg->to($user->email)->subject('[F33 STUDIO] Acceso Concedido');
+                $msg->to($user->email)->subject('[F33 STUDIO] Acceso');
             });
         } catch (\Exception $e) {
             \Log::error('Error enviando correo a cliente nuevo: '.$e->getMessage());
