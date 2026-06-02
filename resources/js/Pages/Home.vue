@@ -18,6 +18,10 @@ const props = defineProps({
     videoList: { type: Array, default: () => [] }
 });
 
+const getHeroBackgroundImage = (eventId) => {
+    const photo = props.recentPhotos.find(p => p.event_id === eventId);
+    return photo ? (photo.watermarked_url || photo.thumbnail_url) : null;
+};
 
 const currentVideo = ref(props.videoList?.length > 0 ? props.videoList[Math.floor(Math.random() * props.videoList.length)] : '/40c665d047c7afa27213c22c2c7b6308_720w.mp4');
 
@@ -64,25 +68,43 @@ const formatEventTitle = (name) => {
                     :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 6000, disableOnInteraction: false }"
                     :pagination="{ clickable: true }" :navigation="true" :loop="true" class="swiper-main">
 
+
+
                     <SwiperSlide v-for="(event, index) in recentEvents.slice(0, 3)" :key="event.id"
                         class="relative flex items-center justify-center">
 
-                        <img v-if="event.cover_image_url" :src="event.cover_image_url"
-                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-60 z-[-2]">
+                        <img v-if="getHeroBackgroundImage(event.id) || event.cover_image_url"
+                            :src="getHeroBackgroundImage(event.id) || event.cover_image_url"
+                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-50 z-[-2]">
                         <video v-else autoplay muted loop playsinline
-                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-60 z-[-2]">
+                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-50 z-[-2]">
                             <source :src="currentVideo" type="video/mp4">
                         </video>
 
                         <div
-                            class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-[-1]">
+                            class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent z-[-1]">
                         </div>
 
-                        <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32">
-                            <span
-                                class="text-[#E30613] font-mono font-bold tracking-widest mb-4 flex items-center gap-4">
-                                <span class="w-12 h-[2px] bg-[#E30613]"></span> 0{{ index + 1 }}
-                            </span>
+                        <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32 relative">
+
+                            
+                            <div class="flex items-end justify-between mb-4">
+                                <span
+                                    class="text-[#E30613] font-mono font-bold tracking-widest flex items-center gap-4">
+                                    <span class="w-12 h-[2px] bg-[#E30613]"></span> 0{{ index + 1 }}
+                                </span>
+
+                                
+                                <div v-if="event.cover_image_url"
+                                    class="hidden sm:block w-20 h-20 md:w-28 md:h-28 bg-[#09090b] border border-white/20 p-1.5 shadow-2xl relative">
+                                    <div
+                                        class="absolute -top-2 -right-2 bg-[#E30613] text-white text-[8px] font-mono font-bold px-1 uppercase tracking-widest z-10">
+                                        ID: {{ event.id }}
+                                    </div>
+                                    <img :src="event.cover_image_url"
+                                        class="w-full h-full object-cover grayscale contrast-125" alt="Logo Evento">
+                                </div>
+                            </div>
 
                             <h1
                                 class="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] uppercase">
@@ -94,7 +116,7 @@ const formatEventTitle = (name) => {
                             </h1>
 
                             <p class="mt-8 max-w-xl text-lg text-gray-300 font-light pl-6 line-clamp-2">
-                                {{ event.description || 'Cobertura. Captura para revivir la energía del momento.' }}
+                                {{ event.description || 'Cobertura inmersiva. Captura cruda para revivir la energía del momento.' }}
                             </p>
 
                             <div class="mt-8 pl-6">
@@ -106,29 +128,6 @@ const formatEventTitle = (name) => {
                         </div>
                     </SwiperSlide>
 
-                    <SwiperSlide v-if="recentEvents.length === 0" class="relative flex items-center justify-center">
-                        <video autoplay muted loop playsinline
-                            class="absolute inset-0 w-full h-full object-cover grayscale opacity-60 z-[-2]">
-                            <source :src="currentVideo" type="video/mp4">
-                        </video>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-[-1]">
-                        </div>
-                        <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32">
-                            <span
-                                class="text-[#E30613] font-mono font-bold tracking-widest mb-4 flex items-center gap-4">
-                                <span class="w-12 h-[2px] bg-[#E30613]"></span> 1
-                            </span>
-                            <h1
-                                class="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] uppercase">
-                                Bóveda <br><span class="text-transparent"
-                                    style="-webkit-text-stroke: 2px white;">vacía</span>
-                            </h1>
-                            <p class="mt-8 max-w-xl text-lg text-gray-300 font-light pl-6">
-                                Aún no se han subido eventos.
-                            </p>
-                        </div>
-                    </SwiperSlide>
                 </Swiper>
 
 
@@ -160,7 +159,7 @@ const formatEventTitle = (name) => {
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
                                 <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name
-                                }}</h3>
+                                    }}</h3>
                                 <p v-if="event.description"
                                     class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
                                     {{ event.description }}
