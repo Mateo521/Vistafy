@@ -58,18 +58,17 @@ const submit = () => {
                         </Link>
 
                         <div class="font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-[#E30613] mb-6">
-                            [ Portal de Operadores ]
+                            [ Portal de fotógrafos ]
                         </div>
 
                         <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
-                            Únete al <br><span class="text-transparent"
-                                style="-webkit-text-stroke: 2px #E30613;">Comando</span>
+                            Únite a <br><span class="text-transparent"
+                                style="-webkit-text-stroke: 2px #E30613;">f33</span>
                         </h1>
 
                         <p
                             class="text-gray-400 font-mono text-[11px] leading-relaxed max-w-sm mb-12 uppercase tracking-wider">
-                            Buscamos capturadores visuales excepcionales. Tu solicitud será evaluada bajo estrictos
-                            estándares técnicos y estéticos.
+                            Buscamos fotografos visuales. Tu solicitud será evaluada bajo estándares técnicos y estéticos.
                         </p>
 
                         <div
@@ -78,8 +77,7 @@ const submit = () => {
                                 Curaduría</h4>
                             <p class="font-mono text-[10px] text-gray-500 leading-relaxed uppercase tracking-widest">
                                 Al enviar los datos, tu perfil quedará en estado <span
-                                    class="text-[#E30613] font-bold">EN ESPERA</span>. Resolución del nodo central en
-                                48hs hábiles.
+                                    class="text-[#E30613] font-bold">EN ESPERA</span>.  48hs hábiles.
                             </p>
                         </div>
                     </div>
@@ -91,7 +89,7 @@ const submit = () => {
                         <div>
                             <h3
                                 class="font-mono text-xs font-bold uppercase tracking-widest text-[#E30613] mb-6 border-b border-white/10 pb-2">
-                                01. Credenciales de Acceso
+                                1. Acceso
                             </h3>
 
                             <div class="space-y-4">
@@ -143,7 +141,7 @@ const submit = () => {
                         <div>
                             <h3
                                 class="font-mono text-xs font-bold uppercase tracking-widest text-[#E30613] mb-6 border-b border-white/10 pb-2">
-                                02. Identidad Operativa
+                                2. Identidad
                             </h3>
 
                             <div class="space-y-4">
@@ -246,7 +244,7 @@ const submit = () => {
                         <div>
                             <h3
                                 class="font-mono text-xs font-bold uppercase tracking-widest text-[#E30613] mb-6 border-b border-white/10 pb-2">
-                                03. Coordenadas de Red
+                                03. Ubicación
                             </h3>
 
                             <div class="space-y-4">
@@ -304,10 +302,10 @@ const submit = () => {
                         class="mt-24 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
                         <p
                             class="text-gray-400 font-mono text-[10px] uppercase tracking-widest flex items-center gap-2">
-                            ¿Operador Activo?
+                            ¿Ya tenés una cuenta?
                             <Link :href="route('login')"
                                 class="text-white hover:text-[#E30613] border-b border-white/30 hover:border-[#E30613] pb-0.5 transition-colors">
-                                Iniciar Conexión
+                                Iniciar sesión
                             </Link>
                         </p>
                         <Link :href="route('register')"
