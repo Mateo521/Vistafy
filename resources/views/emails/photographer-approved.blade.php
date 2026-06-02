@@ -72,10 +72,10 @@
                     <tr>
                         <td style="background-color: #09090b; padding: 30px; text-align: center; border-top: 1px solid #27272a;">
                             <p style="color: #52525b; font-size: 11px; margin: 0 0 10px 0; line-height: 1.5; text-transform: uppercase;">
-                                Transmisión automática de F33 STUDIO.
+                                correo automático de F33.
                             </p>
                             <p style="color: #3f3f46; font-size: 10px; margin: 0;">
-                                © {{ date('Y') }} F33 STUDIO. TODOS LOS DERECHOS RESERVADOS.
+                                © {{ date('Y') }} F33. TODOS LOS DERECHOS RESERVADOS.
                             </p>
                         </td>
                     </tr>
