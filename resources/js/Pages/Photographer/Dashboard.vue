@@ -75,7 +75,7 @@ const handleImageError = (e) => {
                     
                     <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
-                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2  border-white/10 group-hover:border-red-600 transition-colors"></div>
                         
                         <div class="flex justify-between items-start relative z-10">
                             <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Total Archivo</span>
@@ -86,7 +86,7 @@ const handleImageError = (e) => {
 
                     <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
-                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2  border-white/10 group-hover:border-red-600 transition-colors"></div>
 
                         <div class="flex justify-between items-start relative z-10">
                             <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Públicas</span>
@@ -97,7 +97,7 @@ const handleImageError = (e) => {
 
                     <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
-                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2  border-white/10 group-hover:border-red-600 transition-colors"></div>
 
                         <div class="flex justify-between items-start relative z-10">
                             <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Extracciones</span>
@@ -108,7 +108,7 @@ const handleImageError = (e) => {
 
                     <div class="bg-zinc-950 p-6 border border-white/10 flex flex-col justify-between h-32 group hover:border-red-600 transition-colors relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
-                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/10 group-hover:border-red-600 transition-colors"></div>
+                        <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2  border-white/10 group-hover:border-red-600 transition-colors"></div>
 
                         <div class="flex justify-between items-start relative z-10">
                             <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Misiones / Eventos</span>

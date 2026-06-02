@@ -118,7 +118,7 @@ onMounted(() => {
             
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="pointer-events-none">
-                    <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 border-l-2 border-red-600 pl-3">
+                    <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
                         REPORTE DE INCIDENCIA // {{ formatDate(event.event_date) }}
                     </p>
                     <h1 class="font-black text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mix-blend-difference mb-6">

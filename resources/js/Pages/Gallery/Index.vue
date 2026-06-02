@@ -273,21 +273,26 @@ const totalResults = () => {
 </script>
 
 <template>
+
     <Head title="Archivo Vivo — F33.CLICK" />
 
     <AppLayout>
 
-        <div class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
-            <div class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30" data-img="/05a8862db26a1bed8ac22cdbf6944145.jpg"></div>
-            
+        <div
+            class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
+            <div class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30"
+                data-img="/05a8862db26a1bed8ac22cdbf6944145.jpg"></div>
+
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 pointer-events-none">
                     <div>
-                        <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 border-l-2 border-red-600 pl-3">
-                            Catálogo Central F33
+                        <p
+                            class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
+                            Catálogo F33
                         </p>
-                        <h1 class="font-black text-[15vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
-                            ARCHIVO<br>VIVO.
+                        <h1
+                            class="font-black text-[15vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
+                            ARCHIVOS.
                         </h1>
                     </div>
 
@@ -306,31 +311,42 @@ const totalResults = () => {
         <div class="min-h-screen bg-black text-white">
             <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-10">
 
-                <div v-if="showingFaceResults" class="bg-red-600 text-black border-[4px] border-white p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono uppercase tracking-widest">
+                <div v-if="showingFaceResults"
+                    class="bg-red-600 text-black border-[4px] border-white p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono uppercase tracking-widest">
                     <div>
-                        <h3 class="font-black text-2xl tracking-tighter mb-1"><SparklesIcon class="inline w-6 h-6 mr-2" /> RECONOCIMIENTO ACTIVO</h3>
-                        <p class="text-xs"><strong>{{ faceSearchResults.count }}</strong> COINCIDENCIAS BIOMÉTRICAS LOCALIZADAS</p>
+                        <h3 class="font-black text-2xl tracking-tighter mb-1">
+                            <SparklesIcon class="inline w-6 h-6 mr-2" /> RECONOCIMIENTO ACTIVO
+                        </h3>
+                        <p class="text-xs"><strong>{{ faceSearchResults.count }}</strong> COINCIDENCIAS BIOMÉTRICAS
+                            LOCALIZADAS</p>
                     </div>
-                    <button @click="clearFaceSearch" class="border-2 border-black px-4 py-2 hover:bg-black hover:text-red-600 transition-none font-bold text-[10px]">
+                    <button @click="clearFaceSearch"
+                        class="border-2 border-black px-4 py-2 hover:bg-black hover:text-red-600 transition-none font-bold text-[10px]">
                         [ PURGAR RESULTADOS ]
                     </button>
                 </div>
 
-                <div v-if="showingBibResults" class="bg-white text-black border-[4px] border-black p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono uppercase tracking-widest">
+                <div v-if="showingBibResults"
+                    class="bg-white text-black border-[4px] border-black p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono uppercase tracking-widest">
                     <div>
-                        <h3 class="font-black text-2xl tracking-tighter mb-1"><HashtagIcon class="inline w-6 h-6 mr-2" /> DORSAL ENCONTRADO: #{{ bibNumber }}</h3>
+                        <h3 class="font-black text-2xl tracking-tighter mb-1">
+                            <HashtagIcon class="inline w-6 h-6 mr-2" /> DORSAL ENCONTRADO: #{{ bibNumber }}
+                        </h3>
                         <p class="text-xs"><strong>{{ bibSearchResults.count }}</strong> REGISTROS OCR COINCIDENTES</p>
                     </div>
-                    <button @click="clearBibSearch" class="border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-none font-bold text-[10px]">
+                    <button @click="clearBibSearch"
+                        class="border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-none font-bold text-[10px]">
                         [ PURGAR RESULTADOS ]
                     </button>
                 </div>
 
                 <div class="bg-black border border-white/20 mb-12">
                     <form @submit.prevent="applyFilters">
-                        <div class="flex flex-col md:flex-row gap-0 border-b border-white/20 font-mono text-xs uppercase tracking-widest">
+                        <div
+                            class="flex flex-col md:flex-row gap-0 border-b border-white/20 font-mono text-xs uppercase tracking-widest">
                             <div class="flex-1 relative">
-                                <MagnifyingGlassIcon class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                                <MagnifyingGlassIcon
+                                    class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                                 <input v-model="filterForm.search" type="text"
                                     placeholder="Buscar por ID, fotógrafo o evento..."
                                     class="w-full pl-12 pr-5 py-5 bg-transparent text-white placeholder-gray-600 border-0 focus:ring-0 focus:outline-none" />
@@ -344,77 +360,111 @@ const totalResults = () => {
                                     FILTROS
                                     <span v-if="showFilters" class="w-2 h-2 bg-red-600 ml-2"></span>
                                 </button>
-                                <button type="submit" class="px-8 py-5 bg-red-600 hover:bg-white text-black font-black transition-none whitespace-nowrap">
+                                <button type="submit"
+                                    class="px-8 py-5 bg-red-600 hover:bg-white text-black font-black transition-none whitespace-nowrap">
                                     EJECUTAR
                                 </button>
                             </div>
                         </div>
 
                         <div v-show="showFilters" class="p-8 border-b border-white/20 bg-gray-950">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[10px] tracking-widest uppercase">
+                            <div
+                                class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[10px] tracking-widest uppercase">
                                 <div>
                                     <label class="block text-red-600 mb-2">/ REGIÓN</label>
-                                    <select v-model="filterForm.region" class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
+                                    <select v-model="filterForm.region"
+                                        class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
                                         <option value="all">TODAS LAS ZONAS</option>
-                                        <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
+                                        <option v-for="region in regions" :key="region" :value="region">{{ region }}
+                                        </option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-red-600 mb-2">/ EVENTO</label>
-                                    <select v-model="filterForm.event" class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
+                                    <select v-model="filterForm.event"
+                                        class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
                                         <option value="">TODOS LOS EVENTOS</option>
-                                        <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
+                                        <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name
+                                            }}</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="mt-8 pt-8 border-t border-dashed border-white/20 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div class="border border-white/20 p-6 bg-black hover:border-red-600 transition-none group relative">
+                            <div
+                                class="mt-8 pt-8 border-t border-dashed border-white/20 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div
+                                    class="border border-white/20 p-6 bg-black hover:border-red-600 transition-none group relative">
                                     <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                                        <div class="w-8 h-8 border border-red-600 bg-red-600/10 flex items-center justify-center"><SparklesIcon class="w-4 h-4 text-red-600" /></div>
-                                        <h3 class="font-black text-xl uppercase tracking-tighter">ANÁLISIS BIOMÉTRICO</h3>
+                                        <div
+                                            class="w-8 h-8 border border-red-600 bg-red-600/10 flex items-center justify-center">
+                                            <SparklesIcon class="w-4 h-4 text-red-600" />
+                                        </div>
+                                        <h3 class="font-black text-xl uppercase tracking-tighter">ANÁLISIS BIOMÉTRICO
+                                        </h3>
                                     </div>
 
-                                    <div v-if="isLoadingModels" class="py-8 text-center text-red-600 font-mono text-[10px] animate-pulse">
+                                    <div v-if="isLoadingModels"
+                                        class="py-8 text-center text-red-600 font-mono text-[10px] animate-pulse">
                                         {{ progressMessage }}
                                     </div>
 
                                     <div v-else class="space-y-4">
-                                        <div v-if="!previewUrl" class="border border-dashed border-gray-600 hover:border-white cursor-pointer py-10 text-center transition-none" @click="$refs.faceFileInput.click()">
-                                            <FaceSmileIcon class="w-8 h-8 text-gray-500 group-hover:text-white mx-auto mb-2" />
+                                        <div v-if="!previewUrl"
+                                            class="border border-dashed border-gray-600 hover:border-white cursor-pointer py-10 text-center transition-none"
+                                            @click="$refs.faceFileInput.click()">
+                                            <FaceSmileIcon
+                                                class="w-8 h-8 text-gray-500 group-hover:text-white mx-auto mb-2" />
                                             <p class="font-mono text-xs text-gray-400">CARGAR REFERENCIA FACIAL</p>
-                                            <input ref="faceFileInput" type="file" accept="image/*" class="hidden" @change="handleFileSelect">
+                                            <input ref="faceFileInput" type="file" accept="image/*" class="hidden"
+                                                @change="handleFileSelect">
                                         </div>
                                         <div v-else class="relative border border-white/20 p-2">
                                             <img :src="previewUrl" class="w-full h-40 object-cover grayscale" />
-                                            <button @click="selectedFile = null; previewUrl = null" class="absolute top-4 right-4 bg-red-600 text-black px-2 py-1 font-mono text-[10px] hover:bg-white transition-none">[X]</button>
+                                            <button @click="selectedFile = null; previewUrl = null"
+                                                class="absolute top-4 right-4 bg-red-600 text-black px-2 py-1 font-mono text-[10px] hover:bg-white transition-none">[X]</button>
                                         </div>
 
-                                        <button @click="performFaceSearch" :disabled="isSearching" class="w-full bg-white text-black font-black py-3 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-none disabled:opacity-50 flex items-center justify-center gap-2">
+                                        <button @click="performFaceSearch" :disabled="isSearching"
+                                            class="w-full bg-white text-black font-black py-3 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-none disabled:opacity-50 flex items-center justify-center gap-2">
                                             {{ isSearching ? progressMessage : 'EJECUTAR MOTOR IA' }}
                                         </button>
-                                        <p v-if="errorMessage" class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ errorMessage }}</p>
+                                        <p v-if="errorMessage"
+                                            class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ errorMessage }}
+                                        </p>
                                     </div>
                                 </div>
 
                                 <div class="border border-white/20 p-6 bg-black hover:border-white transition-none">
                                     <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                                        <div class="w-8 h-8 border border-white bg-white/10 flex items-center justify-center"><HashtagIcon class="w-4 h-4 text-white" /></div>
-                                        <h3 class="font-black text-xl uppercase tracking-tighter">ANÁLISIS OCR (DORSAL)</h3>
+                                        <div
+                                            class="w-8 h-8 border border-white bg-white/10 flex items-center justify-center">
+                                            <HashtagIcon class="w-4 h-4 text-white" />
+                                        </div>
+                                        <h3 class="font-black text-xl uppercase tracking-tighter">ANÁLISIS OCR (DORSAL)
+                                        </h3>
                                     </div>
                                     <div class="space-y-4">
-                                        <label class="block font-mono text-[10px] text-gray-500 uppercase tracking-widest">INGRESAR IDENTIFICADOR NUMÉRICO</label>
-                                        <input v-model="bibNumber" type="text" placeholder="EJ: 529" class="w-full px-4 py-4 bg-transparent border border-gray-600 focus:border-white focus:ring-0 text-2xl font-mono text-center text-white placeholder-gray-800" @keyup.enter="performBibSearch" />
-                                        <button @click="performBibSearch" :disabled="isSearchingBib || !bibNumber.trim()" class="w-full border-2 border-white text-white font-black py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-none disabled:opacity-50">
+                                        <label
+                                            class="block font-mono text-[10px] text-gray-500 uppercase tracking-widest">INGRESAR
+                                            IDENTIFICADOR NUMÉRICO</label>
+                                        <input v-model="bibNumber" type="text" placeholder="EJ: 529"
+                                            class="w-full px-4 py-4 bg-transparent border border-gray-600 focus:border-white focus:ring-0 text-2xl font-mono text-center text-white placeholder-gray-800"
+                                            @keyup.enter="performBibSearch" />
+                                        <button @click="performBibSearch"
+                                            :disabled="isSearchingBib || !bibNumber.trim()"
+                                            class="w-full border-2 border-white text-white font-black py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-none disabled:opacity-50">
                                             {{ isSearchingBib ? 'PROCESANDO...' : 'EJECUTAR MOTOR OCR' }}
                                         </button>
-                                        <p v-if="bibErrorMessage" class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ bibErrorMessage }}</p>
+                                        <p v-if="bibErrorMessage"
+                                            class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ bibErrorMessage
+                                            }}</p>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-6 flex justify-end">
-                                <button type="button" @click="clearFilters" class="font-mono text-[10px] text-red-600 hover:text-white uppercase tracking-[0.2em] transition-none border-b border-red-600 hover:border-white pb-1">
+                                <button type="button" @click="clearFilters"
+                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase tracking-[0.2em] transition-none border-b border-red-600 hover:border-white pb-1">
                                     [ REINICIAR PARÁMETROS ]
                                 </button>
                             </div>
@@ -422,7 +472,8 @@ const totalResults = () => {
                     </form>
                 </div>
 
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4 border-b border-white/20 pb-4">
+                <div
+                    class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4 border-b border-white/20 pb-4">
                     <div class="flex flex-wrap gap-2">
                         <button v-for="option in sortOptions" :key="option.value" @click="changeSort(option.value)"
                             :class="[
@@ -441,25 +492,31 @@ const totalResults = () => {
                         <div v-for="photo in allPhotos" :key="photo.id"
                             @click="router.visit(route('gallery.show', photo.unique_id))" @contextmenu.prevent
                             class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[6px] border-black hover:border-red-600 transition-none cursor-crosshair">
-                            
+
                             <div class="relative w-full h-auto">
                                 <img :src="photo.thumbnail_url" :alt="photo.unique_id" draggable="false"
                                     class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
                                     loading="lazy" @error="handleImageError" />
 
-                                <div class="absolute top-3 left-3 bg-black border border-white px-2 py-1 text-[9px] font-mono text-white tracking-widest pointer-events-none">
+                                <div
+                                    class="absolute top-3 left-3 bg-black border border-white px-2 py-1 text-[9px] font-mono text-white tracking-widest pointer-events-none">
                                     ${{ photo.price }}
                                 </div>
 
-                                <div v-if="showingFaceResults && photo.similarity" class="absolute bottom-3 left-3 bg-red-600 text-black px-2 py-1 font-bold text-[9px] font-mono tracking-widest pointer-events-none">
+                                <div v-if="showingFaceResults && photo.similarity"
+                                    class="absolute bottom-3 left-3 bg-red-600 text-black px-2 py-1 font-bold text-[9px] font-mono tracking-widest pointer-events-none">
                                     MATCH: {{ Math.round(photo.similarity * 100) }}%
                                 </div>
-                                <div v-if="showingBibResults && photo.bib_numbers" class="absolute bottom-3 left-3 bg-white text-black px-2 py-1 font-bold text-[9px] font-mono tracking-widest pointer-events-none">
+                                <div v-if="showingBibResults && photo.bib_numbers"
+                                    class="absolute bottom-3 left-3 bg-white text-black px-2 py-1 font-bold text-[9px] font-mono tracking-widest pointer-events-none">
                                     #{{ photo.bib_numbers.join(', ') }}
                                 </div>
-                                
-                                <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-none pointer-events-none bg-black text-white p-1 border border-white">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-width="2" d="M7 17L17 7M17 7H7M17 7v10" /></svg>
+
+                                <div
+                                    class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-none pointer-events-none bg-black text-white p-1 border border-white">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="square" stroke-width="2" d="M7 17L17 7M17 7H7M17 7v10" />
+                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -473,10 +530,13 @@ const totalResults = () => {
                     </div>
                 </div>
 
-                <div v-else class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 text-center bg-gray-950">
+                <div v-else
+                    class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 text-center bg-gray-950">
                     <h3 class="font-black text-6xl text-gray-700 tracking-tighter mb-4 uppercase">VACÍO.</h3>
-                    <p class="font-mono text-xs text-gray-500 tracking-widest mb-8 uppercase">NO EXISTEN REGISTROS EN LA BASE DE DATOS.</p>
-                    <button @click="clearFilters" class="border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
+                    <p class="font-mono text-xs text-gray-500 tracking-widest mb-8 uppercase">NO EXISTEN REGISTROS EN LA
+                        BASE DE DATOS.</p>
+                    <button @click="clearFilters"
+                        class="border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
                         [ REINICIAR CATÁLOGO ]
                     </button>
                 </div>
@@ -487,7 +547,6 @@ const totalResults = () => {
 </template>
 
 <style scoped>
-
 .masonry-grid {
     column-fill: balance;
 }
@@ -496,29 +555,42 @@ const totalResults = () => {
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-track {
     background: #000000;
     border-left: 1px solid #333;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #ffffff;
     border-radius: 0;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: #dc2626;
 }
 
 
 @keyframes precise-glitch {
-    0%, 33.33%, 43.33%, 66.67%, 76.67%, 100% {
+
+    0%,
+    33.33%,
+    43.33%,
+    66.67%,
+    76.67%,
+    100% {
         transform: none;
         filter: hue-rotate(0) drop-shadow(0 0 0 transparent);
     }
-    33.43%, 43.23% {
+
+    33.43%,
+    43.23% {
         transform: translateX(var(--glitch-x-1));
         filter: hue-rotate(var(--glitch-hue-1)) drop-shadow(3px 0 0 rgba(220, 38, 38, 0.6));
     }
-    66.77%, 76.57% {
+
+    66.77%,
+    76.57% {
         transform: translateX(var(--glitch-x-2));
         filter: hue-rotate(var(--glitch-hue-2)) drop-shadow(-3px 0 0 rgba(255, 255, 255, 0.4));
     }
@@ -530,7 +602,7 @@ const totalResults = () => {
     animation-name: precise-glitch;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
-    animation-play-state: paused; 
+    animation-play-state: paused;
 }
 
 .group:hover :deep(.glitch-strip) {

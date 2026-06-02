@@ -162,9 +162,9 @@ watch(() => props.events, () => {
             </div>
         </transition>
         
-        <div class="absolute left-[4vw] top-[8vh] z-10 h-16 w-16 border-l-2 border-t-2 border-white pointer-events-none opacity-50"></div>
+        <div class="absolute left-[4vw] top-[8vh] z-10 h-16 w-16  border-t-2 border-white pointer-events-none opacity-50"></div>
         <div class="absolute right-[4vw] top-[8vh] z-10 h-16 w-16 border-r-2 border-t-2 border-red-600 pointer-events-none opacity-50"></div>
-        <div class="absolute bottom-[8vh] left-[4vw] z-10 h-16 w-16 border-b-2 border-l-2 border-red-600 pointer-events-none opacity-50"></div>
+        <div class="absolute bottom-[8vh] left-[4vw] z-10 h-16 w-16 border-b-2  border-red-600 pointer-events-none opacity-50"></div>
         <div class="absolute bottom-[8vh] right-[4vw] z-10 h-16 w-16 border-b-2 border-r-2 border-white pointer-events-none opacity-50"></div>
     </div>
 </template>

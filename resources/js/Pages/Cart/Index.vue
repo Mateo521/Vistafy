@@ -129,7 +129,7 @@ const handleImageError = (e) => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-12 md:py-20">
 
                 <div class="mb-12 border-b-[12px] border-white pb-8">
-                    <span class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 block border-l-2 border-red-600 pl-3">
+                    <span class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 block  border-red-600 pl-3">
                         Memoria temporal // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
                     </span>
                     <h1 class="font-black text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
