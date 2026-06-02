@@ -18,9 +18,18 @@ const props = defineProps({
     videoList: { type: Array, default: () => [] }
 });
 
-const getHeroBackgroundImage = (eventId) => {
-    const photo = props.recentPhotos.find(p => p.event_id === eventId);
-    return photo ? (photo.watermarked_url || photo.thumbnail_url) : null;
+const getHeroBackgroundImage = (event) => {
+    if (event.photos && event.photos.length > 0) {
+        const photo = event.photos[0];
+        return photo.watermarked_url || photo.thumbnail_url;
+    }
+
+    const photoFromGlobal = props.recentPhotos.find(p => p.event_id == event.id);
+    if (photoFromGlobal) {
+        return photoFromGlobal.watermarked_url || photoFromGlobal.thumbnail_url;
+    }
+
+    return null;
 };
 
 const currentVideo = ref(props.videoList?.length > 0 ? props.videoList[Math.floor(Math.random() * props.videoList.length)] : '/40c665d047c7afa27213c22c2c7b6308_720w.mp4');
@@ -73,8 +82,8 @@ const formatEventTitle = (name) => {
                     <SwiperSlide v-for="(event, index) in recentEvents.slice(0, 3)" :key="event.id"
                         class="relative flex items-center justify-center">
 
-                        <img v-if="getHeroBackgroundImage(event.id) || event.cover_image_url"
-                            :src="getHeroBackgroundImage(event.id) || event.cover_image_url"
+                        <img v-if="getHeroBackgroundImage(event) || event.cover_image_url"
+                            :src="getHeroBackgroundImage(event) || event.cover_image_url"
                             class="absolute inset-0 w-full h-full object-cover grayscale opacity-50 z-[-2]">
                         <video v-else autoplay muted loop playsinline
                             class="absolute inset-0 w-full h-full object-cover grayscale opacity-50 z-[-2]">
@@ -87,14 +96,14 @@ const formatEventTitle = (name) => {
 
                         <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32 relative">
 
-                            
+
                             <div class="flex items-end justify-between mb-4">
                                 <span
                                     class="text-[#E30613] font-mono font-bold tracking-widest flex items-center gap-4">
                                     <span class="w-12 h-[2px] bg-[#E30613]"></span> 0{{ index + 1 }}
                                 </span>
 
-                                
+
                                 <div v-if="event.cover_image_url"
                                     class="hidden sm:block w-20 h-20 md:w-28 md:h-28 bg-[#09090b] border border-white/20 p-1.5 shadow-2xl relative">
                                     <div
@@ -159,7 +168,7 @@ const formatEventTitle = (name) => {
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
                                 <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name
-                                    }}</h3>
+                                }}</h3>
                                 <p v-if="event.description"
                                     class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
                                     {{ event.description }}

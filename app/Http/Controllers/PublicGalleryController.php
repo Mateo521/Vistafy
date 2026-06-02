@@ -63,7 +63,7 @@ class PublicGalleryController extends Controller
             return [
                 'id' => $photo->id,
                 'unique_id' => $photo->unique_id,
-                
+                'event_id' => $photo->event_id,
                 
                 'original_url' => $photo->original_url,
                 'thumbnail_url' => $photo->thumbnail_url,
