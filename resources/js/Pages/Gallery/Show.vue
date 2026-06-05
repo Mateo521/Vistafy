@@ -360,23 +360,24 @@ const handleImageError = (e) => {
             enter-to-class="opacity-100" leave-active-class="transition-none"
             leave-from-class="opacity-100" leave-to-class="opacity-0">
             
-            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-black cursor-zoom-out flex flex-col"
+            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md cursor-zoom-out flex items-center justify-center"
                 @click="showFullImage = false">
                 
-                <div class="p-4 flex justify-end">
-                    <button @click="showFullImage = false" class="text-white border-2 border-white hover:bg-white hover:text-black font-mono font-bold text-xs uppercase tracking-widest px-4 py-2 transition-none">
-                        [ CERRAR VISOR ]
-                    </button>
-                </div>
+                <button @click="showFullImage = false" 
+                    class="absolute top-4 right-4 md:top-8 md:right-8 z-50 bg-black text-white border-2 border-white hover:bg-white hover:text-black font-mono font-bold text-[10px] md:text-xs uppercase tracking-widest px-4 py-2 transition-none cursor-pointer">
+                    [ CERRAR VISOR ]
+                </button>
 
-                <div class="flex-1 flex items-center justify-center p-4 md:p-12 overflow-hidden">
+                <div class="w-full h-full p-6 pt-20 pb-16 md:p-16 flex items-center justify-center">
                     <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                        class="max-h-full max-w-full object-contain border-4 border-white" @click.stop />
+                        class="max-w-full max-h-full object-contain border-[4px] border-white shadow-2xl cursor-default" 
+                        @click.stop />
                 </div>
 
-                <div class="p-4 border-t border-white/20 text-center font-mono text-[10px] text-gray-500 uppercase ">
-                    REVISIÓN F33 //
+                <div class="absolute bottom-4 left-0 w-full text-center font-mono text-[10px] text-gray-500 uppercase pointer-events-none">
+                    REVISIÓN F33 // ID: {{ photo.unique_id }}
                 </div>
+                
             </div>
         </Transition>
 
