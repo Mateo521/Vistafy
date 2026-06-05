@@ -98,13 +98,13 @@ const formatEventTitle = (name) => {
                         <div class="w-full px-6 md:px-12 flex flex-col justify-end h-full pb-32 relative z-20 pointer-events-none">
 
                             <div class="flex items-end justify-between mb-4">
-                                <span class="text-[#E30613] font-mono font-bold tracking-widest flex items-center gap-4">
+                                <span class="text-[#E30613] font-flux font-bold tracking-widest flex items-center gap-4">
                                     <span class="w-12 h-[2px] bg-[#E30613]"></span> 0{{ index + 1 }}
                                 </span>
 
                                 <div v-if="event.cover_image_url"
                                     class="hidden sm:block w-20 h-20 md:w-28 md:h-28 bg-[#09090b] border border-white/20 p-1.5 shadow-2xl relative">
-                                    <div class="absolute -top-2 -right-2 bg-[#E30613] text-white text-[8px] font-mono font-bold px-1 uppercase tracking-widest z-10">
+                                    <div class="absolute -top-2 -right-2 bg-[#E30613] text-white text-[8px] font-flux font-bold px-1 uppercase tracking-widest z-10">
                                         ID: {{ event.id }}
                                     </div>
                                     <img :src="event.cover_image_url"
@@ -112,7 +112,7 @@ const formatEventTitle = (name) => {
                                 </div>
                             </div>
 
-                            <h1 class="text-4xl md:text-6xl lg:text-[8rem] font-black tracking-tighter leading-[0.85] uppercase">
+                            <h1 class="text-4xl md:text-6xl lg:text-[8rem] font-bebas tracking-tighter leading-[0.85] uppercase">
                                 {{ formatEventTitle(event.name).first }} <br>
                                 <span :class="index % 2 === 0 ? 'text-transparent' : 'text-[#E30613]'"
                                     :style="index % 2 === 0 ? '-webkit-text-stroke: 2px white;' : ''">
@@ -120,13 +120,13 @@ const formatEventTitle = (name) => {
                                 </span>
                             </h1>
 
-                            <p class="mt-8 max-w-xl text-lg text-gray-300 font-light pl-6 line-clamp-2">
+                            <p class="mt-8 max-w-xl text-lg text-gray-300 font-lato pl-6 line-clamp-2">
                                 {{ event.description || 'Cobertura inmersiva. Captura cruda para revivir la energía del momento.' }}
                             </p>
 
                             <div class="mt-8 pl-6 pointer-events-auto w-max">
                                 <Link :href="route('events.show', event.slug || event.id)"
-                                    class="inline-block bg-[#E30613] border border-[#E30613] text-white font-mono text-[10px] font-bold uppercase tracking-widest px-8 py-4 hover:bg-white hover:text-black hover:border-white transition-colors duration-300">
+                                    class="inline-block bg-[#E30613] border border-[#E30613] text-white font-flux text-[10px] font-bold uppercase tracking-widest px-8 py-4 hover:bg-white hover:text-black hover:border-white transition-colors duration-300">
                                     [ Ver Archivo ]
                                 </Link>
                             </div>
@@ -139,7 +139,7 @@ const formatEventTitle = (name) => {
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span class="text-[#E30613]">.</span></h2>
-                            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">Seleccioná un evento para ver su colección de fotos</p>
+                            <p class="text-gray-400 font-flux text-sm tracking-widest uppercase">Seleccioná un evento para ver su colección de fotos</p>
                         </div>
                     </div>
 
@@ -152,14 +152,14 @@ const formatEventTitle = (name) => {
                                 class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
 
                             <div class="absolute inset-0 bg-[#050505]/80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
-                                <span class="text-[#E30613] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#E30613] px-3 py-1">
+                                <span class="text-[#E30613] font-flux text-xs font-bold tracking-widest uppercase mb-3 border border-[#E30613] px-3 py-1">
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
                                 <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name }}</h3>
                                 <p v-if="event.description" class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
                                     {{ event.description }}
                                 </p>
-                                <span class="text-white font-mono text-lg border-b-2 border-[#E30613] hover:text-[#E30613] transition-colors">
+                                <span class="text-white font-flux text-lg border-b-2 border-[#E30613] hover:text-[#E30613] transition-colors">
                                     Ver más
                                 </span>
                             </div>
@@ -167,7 +167,7 @@ const formatEventTitle = (name) => {
                     </div>
 
                     <div v-else class="text-center py-32 border border-white/10 mx-6 bg-[#09090b]">
-                        <p class="font-mono text-gray-500 uppercase tracking-widest">Aún no hay eventos registrados.</p>
+                        <p class="font-flux text-gray-500 uppercase tracking-widest">Aún no hay eventos registrados.</p>
                     </div>
                 </section>
 
@@ -178,12 +178,12 @@ const formatEventTitle = (name) => {
                             <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">
                                 Últimas <span class="text-[#E30613]">fotos</span>
                             </h2>
-                            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">
+                            <p class="text-gray-400 font-flux text-sm tracking-widest uppercase">
                                 Colecciones de fotos de nuestros fotógrafos
                             </p>
                         </div>
                         <Link :href="route('gallery.index')"
-                            class="hidden md:block text-[#E30613] font-mono font-bold uppercase tracking-widest border-b border-[#E30613] pb-1 hover:text-white hover:border-white transition-colors">
+                            class="hidden md:block text-[#E30613] font-flux font-bold uppercase tracking-widest border-b border-[#E30613] pb-1 hover:text-white hover:border-white transition-colors">
                             [ Ver más ]
                         </Link>
                     </div>
@@ -211,7 +211,7 @@ const formatEventTitle = (name) => {
                                             <p class="text-white font-black text-sm uppercase tracking-tighter truncate">
                                                 {{ photo.event_name || 'Operación X' }}
                                             </p>
-                                            <p class="text-[#E30613] font-mono text-[9px] font-bold tracking-widest mt-0.5">
+                                            <p class="text-[#E30613] font-flux text-[9px] font-bold tracking-widest mt-0.5">
                                                 ID: {{ photo.unique_id }}
                                             </p>
                                         </div>
@@ -228,15 +228,28 @@ const formatEventTitle = (name) => {
 </template>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700;900&display=swap');
+
+@font-face {
+    font-family: 'FluxischElse';
+    src: url('/fonts/FluxischElse-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; 
+}
+
+.font-lato { font-family: 'Lato', sans-serif; }
+.font-bebas { font-family: 'Bebas Neue', cursive; }
+.font-flux { font-family: 'FluxischElse', sans-serif; }
+
 
 .f33-theme {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Lato', sans-serif;
     background-color: #050505;
     color: #ffffff;
 }
 
-.f33-theme .font-mono {
+.f33-theme .font-flux {
     font-family: 'JetBrains Mono', monospace;
 }
 

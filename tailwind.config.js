@@ -13,7 +13,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                lato: ['Lato', ...defaultTheme.fontFamily.sans],
+                bebas: ['"Bebas Neue"', 'cursive'],
+                flux: ['FluxischElse', 'sans-serif'],
             },
         },
     },
