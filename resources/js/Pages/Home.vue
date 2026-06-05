@@ -235,9 +235,7 @@ const formatEventTitle = (name) => {
     color: #ffffff;
 }
 
-.f33-theme .font-flux {
-    font-family: 'JetBrains Mono', monospace;
-}
+
 
 .swiper-main {
     width: 100%;
