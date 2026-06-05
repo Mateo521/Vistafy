@@ -4,7 +4,9 @@ import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { ShoppingCartIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 import ToastContainer from '@/Components/ToastContainer.vue';
+/*
 import CustomCursor from '@/Components/CustomCursor.vue';
+*/
 import { useConfirm } from '@/Composables/useConfirm';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
@@ -118,7 +120,8 @@ const navigationItems = [
 </script>
 
 <template>
-    <CustomCursor />
+   
+
 
     <div class="min-h-screen bg-black font-sans text-white selection:bg-red-600 selection:text-white">
 

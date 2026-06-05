@@ -4,7 +4,9 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { UserCircleIcon, ArrowRightOnRectangleIcon, Cog6ToothIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import ToastContainer from '@/Components/ToastContainer.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+/*
 import CustomCursor from '@/Components/CustomCursor.vue';
+*/
 import { useConfirm } from '@/Composables/useConfirm';
 
 const showingNavigationDropdown = ref(false);
@@ -13,7 +15,7 @@ const page = usePage();
 const user = computed(() => page.props.auth.user);
 const { confirmState, handleConfirm, handleCancel } = useConfirm();
 
-// Obtener foto de perfil
+
 const profilePhotoUrl = computed(() => {
     if (user.value.role === 'photographer' && user.value.photographer?.profile_photo_url) {
         return user.value.photographer.profile_photo_url;
@@ -21,23 +23,23 @@ const profilePhotoUrl = computed(() => {
     return null;
 });
 
-// Obtener iniciales
+
 const userInitials = computed(() => {
     return user.value.name.charAt(0).toUpperCase();
 });
 
-// Determinar la ruta del dashboard según el rol
+
 const dashboardRoute = computed(() => {
     if (user.value.role === 'photographer') {
         return route('photographer.dashboard');
     } else if (user.value.role === 'admin') {
         return route('admin.dashboard');
     } else {
-        return route('home'); // O un dashboard de usuario cliente si existe
+        return route('home'); 
     }
 });
 
-// Helper para clases de link activo (Estilo minimalista)
+
 const navLinkClasses = (active) => {
     return [
         'inline-flex items-center px-1 pt-1 border-b-2 text-xs font-bold uppercase tracking-widest transition-all duration-300 h-full',
@@ -58,7 +60,7 @@ const mobileNavLinkClasses = (active) => {
 </script>
 
 <template>
-    <CustomCursor />
+ 
     <div class="min-h-screen bg-white font-sans text-slate-900">
 
         <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">

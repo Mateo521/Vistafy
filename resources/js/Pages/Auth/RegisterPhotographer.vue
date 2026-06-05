@@ -1,7 +1,9 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
+/*
 import CustomCursor from '@/Components/CustomCursor.vue';
+*/
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowRightIcon, PhotoIcon } from '@heroicons/vue/24/outline';
 
@@ -40,7 +42,7 @@ const submit = () => {
 </script>
 
 <template>
-    <CustomCursor />
+   
     <GuestLayout>
 
         <Head title="Alta de Operador" />
