@@ -11,12 +11,16 @@ export default {
     ],
 
     theme: {
+        fontFamily: {
+            sans: ['Lato', ...defaultTheme.fontFamily.sans],
+            bebas: ['"Bebas Neue"', 'cursive'],
+
+            mono: ['FluxischElse', 'monospace'],
+            flux: ['FluxischElse', 'sans-serif'],
+        },
+
         extend: {
-            fontFamily: {
-                lato: ['Lato', ...defaultTheme.fontFamily.sans],
-                bebas: ['"Bebas Neue"', 'cursive'],
-                flux: ['FluxischElse', 'sans-serif'],
-            },
+
         },
     },
 

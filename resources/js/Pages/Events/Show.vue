@@ -107,7 +107,7 @@ onMounted(() => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center font-mono text-[10px] uppercase tracking-widest">
                 <Link :href="route('events.index')"
                     class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
-                    <ArrowLeftIcon class="w-3.5 h-3.5" /> [ LÍNEA DE TIEMPO ]
+                    <ArrowLeftIcon class="w-3.5 h-3.5" /> [ Archivos ]
                 </Link>
             </div>
         </div>
@@ -119,7 +119,7 @@ onMounted(() => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="pointer-events-none">
                     <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
-                        REPORTE DE INCIDENCIA // {{ formatDate(event.event_date) }}
+                         // {{ formatDate(event.event_date) }}
                     </p>
                     <h1 class="font-black text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mix-blend-difference mb-6">
                         {{ event.name }}

@@ -117,7 +117,7 @@ onMounted(() => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="pointer-events-none">
                     <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
-                        Línea de Tiempo Operativa
+                        Línea de Tiempo
                     </p>
                     <h1 class="font-black text-[14vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
                         ARCHIVO DE<br><span class="text-red-600 mix-blend-screen">EVENTOS.</span>
