@@ -540,7 +540,7 @@ const paginationPages = computed(() => {
                                 <Link :href="route('photographer.events.edit', event.id)"
                                     class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
                                     <span class="flex items-center gap-2">
-                                        + GESTIONAR OPERADORES
+                                        + GESTIONAR Fotógrafos
                                     </span>
                                     <span class="font-mono text-xs font-bold">></span>
                                 </Link>
@@ -559,7 +559,7 @@ const paginationPages = computed(() => {
                             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-2">
                                 <h3
                                     class="text-[10px] font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2">
-                                    [ OPERADORES ASIGNADOS ]
+                                    [ Fotógrafos ASIGNADOS ]
                                 </h3>
                             </div>
 

@@ -59,7 +59,7 @@ const submit = () => {
                             F33 <span class="text-[#E30613]">STUDIO</span>
                         </Link>
 
-                        <div class="font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-[#E30613] mb-6">
+                        <div class="font-mono text-[10px] font-bold  uppercase text-[#E30613] mb-6">
                             [ Portal de fotógrafos ]
                         </div>
 

@@ -162,7 +162,7 @@ onMounted(() => {
                             </div>
 
                             <h3 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-6 border-b border-white/10 pb-2">
-                                [ FILTRAR POR OPERADOR ]
+                                [ FILTRAR POR FOTÓGRAFO ]
                             </h3>
 
                             <div class="space-y-3 relative z-10 font-mono text-[10px] tracking-widest uppercase">
@@ -268,7 +268,7 @@ onMounted(() => {
                     </div>
                     <h3 class="font-black text-4xl md:text-6xl text-gray-700 tracking-tighter mb-4 uppercase">NULO.</h3>
                     <p class="font-mono text-xs text-gray-500 tracking-widest uppercase mb-8">
-                        EL OPERADOR SELECCIONADO NO REGISTRA ARCHIVOS EN ESTE EVENTO.
+                        EL FOTÓGRAFO SELECCIONADO NO REGISTRA ARCHIVOS EN ESTE EVENTO.
                     </p>
                     <button v-if="selectedPhotographer !== 'all'"
                         @click="selectedPhotographer = 'all'; filterByPhotographer()"

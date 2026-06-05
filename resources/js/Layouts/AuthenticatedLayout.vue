@@ -73,7 +73,7 @@ const mobileNavLinkClasses = (active) => {
                                 <div class="flex flex-col">
                                     <span
                                         class="font-sans font-bold text-xl tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">f33</span>
-                                    <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400">
+                                    <span class="text-[9px] uppercase  text-slate-400">
                                         {{ user.role === 'admin' ? 'Administration' : (user.role === 'photographer' ?
                                             'Professional' : 'Client Area') }}
                                     </span>

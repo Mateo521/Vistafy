@@ -163,7 +163,7 @@ onMounted(() => {
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[10px] tracking-widest uppercase">
                                 
                                 <div>
-                                    <label class="block text-red-600 mb-2">/ MARCA TEMPORAL (FECHA)</label>
+                                    <label class="block text-red-600 mb-2">/  FECHA</label>
                                     <input 
                                         v-model="form.date"
                                         type="date" 
@@ -172,12 +172,12 @@ onMounted(() => {
                                 </div>
 
                                 <div>
-                                    <label class="block text-red-600 mb-2">/ OPERADOR (FOTÓGRAFO)</label>
+                                    <label class="block text-red-600 mb-2">/ FOTÓGRAFO</label>
                                     <select 
                                         v-model="form.photographer_id"
                                         class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none outline-none transition-none"
                                     >
-                                        <option value="">TODOS LOS OPERADORES</option>
+                                        <option value="">TODOS LOS FOTÓGRAFOS</option>
                                         <option v-for="photographer in photographers" :key="photographer.id" :value="photographer.id">
                                             {{ photographer.business_name || photographer.user?.name }}
                                         </option>

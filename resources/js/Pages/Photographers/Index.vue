@@ -108,7 +108,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Staff y Operadores — F33.CLICK" />
+    <Head title="Staff y Fotógrafos — F33.CLICK" />
 
     <AppLayout>
 
@@ -121,7 +121,7 @@ onMounted(() => {
                         Directorio Base
                     </p>
                     <h1 class="font-black text-[14vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
-                        STAFF DE<br><span class="text-red-600 mix-blend-screen">OPERADORES.</span>
+                        STAFF DE<br><span class="text-red-600 mix-blend-screen">Fotógrafos.</span>
                     </h1>
                 </div>
             </div>
@@ -144,7 +144,7 @@ onMounted(() => {
                             <div class="flex-1 relative">
                                 <MagnifyingGlassIcon class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                                 <input v-model="search" @keyup.enter="handleSearch" type="text"
-                                    placeholder="BUSCAR OPERADOR O ESPECIALIDAD..."
+                                    placeholder="BUSCAR FOTÓGRAFO O ESPECIALIDAD..."
                                     class="w-full pl-12 pr-5 py-5 bg-transparent text-white placeholder-gray-600 border-0 focus:ring-0 focus:outline-none transition-none" />
                             </div>
 
@@ -214,7 +214,7 @@ onMounted(() => {
 
                 <div v-if="photographers.data.length === 0" class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 bg-gray-950 text-center">
                     <h3 class="font-black text-6xl text-gray-700 tracking-tighter mb-4 uppercase">VACÍO.</h3>
-                    <p class="font-mono text-xs text-gray-500 tracking-widest mb-8 uppercase">NINGÚN OPERADOR COINCIDE CON LA BÚSQUEDA.</p>
+                    <p class="font-mono text-xs text-gray-500 tracking-widest mb-8 uppercase">NINGÚN FOTÓGRAFO COINCIDE CON LA BÚSQUEDA.</p>
                     <button @click="clearFilters" class="border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
                         [ REINICIAR DIRECTORIO ]
                     </button>

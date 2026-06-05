@@ -199,11 +199,11 @@ const handleImageError = (e) => {
 
                         <div class="mb-8">
                             <div class="flex items-center justify-between border-b border-white/20 pb-4 mb-6">
-                                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-red-600 bg-red-600/10 px-2 py-1 border border-red-600">ID_REF: {{ photo.unique_id }}</span>
+                                <span class="text-[10px] font-bold uppercase  text-red-600 bg-red-600/10 px-2 py-1 border border-red-600">ID_REF: {{ photo.unique_id }}</span>
                             </div>
                             
                             <h1 class="font-black font-sans text-5xl md:text-6xl text-white mb-6 leading-[0.85] tracking-tighter uppercase">
-                                {{ photo.title || 'FRAME CAPTURADO' }}
+                                {{ photo.title || 'Fotografía' }}
                             </h1>
 
                             <div class="flex flex-col gap-2 mb-8 text-[10px] tracking-widest text-gray-400 uppercase">
@@ -247,8 +247,8 @@ const handleImageError = (e) => {
                         </div>
 
                         <div class="border border-white/20 p-6 mt-auto bg-gray-950 hover:border-white transition-none">
-                            <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-4 border-b border-white/10 pb-2">
-                                OPERADOR / CREADOR
+                            <h3 class="text-[9px] font-bold uppercase  text-gray-500 mb-4 border-b border-white/10 pb-2">
+                                FOTÓGRAFO / CREADOR
                             </h3>
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 bg-black border border-red-600 flex-shrink-0 flex items-center justify-center">
@@ -260,7 +260,7 @@ const handleImageError = (e) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold text-white mb-1 uppercase tracking-widest">{{ photo.photographer?.business_name || 'OPERADOR F33' }}</p>
+                                    <p class="text-xs font-bold text-white mb-1 uppercase tracking-widest">{{ photo.photographer?.business_name || 'FOTÓGRAFO F33' }}</p>
                                     <Link v-if="photo.photographer?.slug"
                                         :href="route('photographers.show', photo.photographer.slug)"
                                         class="text-[9px] uppercase tracking-[0.2em] font-bold text-red-600 hover:text-white border-b border-red-600 hover:border-white transition-none">
@@ -374,8 +374,8 @@ const handleImageError = (e) => {
                         class="max-h-full max-w-full object-contain border-4 border-white" @click.stop />
                 </div>
 
-                <div class="p-4 border-t border-white/20 text-center font-mono text-[10px] text-gray-500 uppercase tracking-[0.3em]">
-                    SISTEMA DE REVISIÓN F33 // MARCA DE AGUA ACTIVA
+                <div class="p-4 border-t border-white/20 text-center font-mono text-[10px] text-gray-500 uppercase ">
+                    REVISIÓN F33 //
                 </div>
             </div>
         </Transition>

@@ -170,7 +170,7 @@ const handleImageError = (e) => {
                             <div class="flex-1 flex flex-col font-mono relative">
                                 <div class="flex justify-between items-start gap-4">
                                     <div>
-                                        <p class="text-[9px] font-bold uppercase tracking-[0.3em] text-red-600 mb-1">
+                                        <p class="text-[9px] font-bold uppercase  text-red-600 mb-1">
                                             ID_REF: #{{ item.photo.unique_id }}
                                         </p>
                                         <Link :href="route('gallery.show', item.photo.unique_id)"
@@ -208,7 +208,7 @@ const handleImageError = (e) => {
                     <div class="lg:col-span-4">
                         <div class="bg-black border-[4px] border-white p-8 sticky top-24 shadow-[8px_8px_0_rgba(220,38,38,1)]">
 
-                            <h2 class="font-mono text-xs font-bold uppercase tracking-[0.3em] text-gray-400 mb-6 border-b border-white/20 pb-4">
+                            <h2 class="font-mono text-xs font-bold uppercase  text-gray-400 mb-6 border-b border-white/20 pb-4">
                                 // BALANCE DE TRANSACCIÓN
                             </h2>
 

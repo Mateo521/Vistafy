@@ -37,7 +37,7 @@ import { Link } from '@inertiajs/vue3';
             </div>
             
             <div class="mt-16 text-center">
-                <p class="font-mono text-[9px] text-gray-600 uppercase tracking-[0.3em] font-bold">
+                <p class="font-mono text-[9px] text-gray-600 uppercase  font-bold">
                     &copy; {{ new Date().getFullYear() }} F33. TODOS LOS DERECHOS RESERVADOS.
                 </p>
             </div>

@@ -180,7 +180,7 @@ const handleImageError = (e) => {
                         <div class="sticky top-32 space-y-6">
                             
                             <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8">
-                                <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
+                                <h3 class="text-[9px] font-bold uppercase  text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
                                     Organizado Por
                                 </h3>
                                 <div class="flex items-start gap-4">
@@ -206,7 +206,7 @@ const handleImageError = (e) => {
                             </div>
 
                             <div class="bg-[#1B2632] border border-[#C9C1B1]/10 p-8">
-                                <h3 class="text-[9px] font-bold uppercase tracking-[0.3em] text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
+                                <h3 class="text-[9px] font-bold uppercase  text-[#C9C1B1] mb-6 border-b border-[#C9C1B1]/10 pb-4">
                                     Detalles del Evento
                                 </h3>
                                 <div class="space-y-6">

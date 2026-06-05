@@ -294,7 +294,7 @@ const navigationItems = [
                         </Link>
 
                         <div class="flex flex-col space-y-4">
-                            <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-red-600">Eventos</span>
+                            <span class="text-[10px] font-bold uppercase  text-red-600">Eventos</span>
                             <Link :href="route('events.index')"
                                 class="text-sm tracking-widest text-gray-400 hover:text-white">
                                 Vigentes</Link>
@@ -324,10 +324,10 @@ const navigationItems = [
                         <template v-if="!user">
                             <Link :href="route('login')"
                                 class="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-white">
-                                Iniciar Sesión</Link>
+                                Iniciar sesión</Link>
                             <Link :href="route('register')"
                                 class="text-xs font-bold tracking-widest uppercase text-red-600 border border-red-600 py-3 mx-10 rounded-sm hover:bg-red-600 hover:text-white transition-colors">
-                                Crear Cuenta</Link>
+                                Crear cuenta</Link>
                         </template>
 
                         <template v-else>
