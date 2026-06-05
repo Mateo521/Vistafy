@@ -112,7 +112,7 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="relative bg-black pt-20 pb-16 md:pt-32 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
+        <div class="relative bg-black pt-20 pb-16 md:pt-32 md:pb-24 border-b-[12px] border-white group  overflow-hidden">
             <div v-if="event.cover_image_url" class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30 grayscale contrast-125" :data-img="event.cover_image_url"></div>
             <div v-else class="absolute inset-0 w-full h-full bg-gray-950 -z-10"></div>
             
@@ -222,7 +222,7 @@ onMounted(() => {
                         <div v-for="photo in photos.data" :key="photo.id"
                             @click="router.visit(route('gallery.show', photo.unique_id))"
                             @contextmenu.prevent
-                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none cursor-crosshair w-full h-auto">
+                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none  w-full h-auto">
                             
                             <img :src="photo.watermarked_url" :alt="photo.unique_id"
                                 draggable="false"

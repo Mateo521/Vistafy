@@ -111,7 +111,7 @@ onMounted(() => {
 
     <AppLayout>
         
-        <div class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
+        <div class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group  overflow-hidden">
             <div class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-40" data-img="/31b1d6803505497c6bbc636a9134d68d.jpg"></div>
             
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
@@ -215,7 +215,7 @@ onMounted(() => {
 
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <Link v-for="event in events.data" :key="event.id" :href="route('events.show', event.slug)"
-                        class="group flex flex-col bg-black border-[4px] border-white/10 hover:border-white transition-none overflow-hidden relative cursor-crosshair">
+                        class="group flex flex-col bg-black border-[4px] border-white/10 hover:border-white transition-none overflow-hidden relative ">
                         
                         <div class="relative h-72 overflow-hidden bg-gray-950">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"

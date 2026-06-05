@@ -279,7 +279,7 @@ const totalResults = () => {
     <AppLayout>
 
         <div
-            class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
+            class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group  overflow-hidden">
             <div class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30"
                 data-img="/05a8862db26a1bed8ac22cdbf6944145.jpg"></div>
 
@@ -491,7 +491,7 @@ const totalResults = () => {
                     <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-2 space-y-2 masonry-grid">
                         <div v-for="photo in allPhotos" :key="photo.id"
                             @click="router.visit(route('gallery.show', photo.unique_id))" @contextmenu.prevent
-                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[6px] border-black hover:border-red-600 transition-none cursor-crosshair">
+                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[6px] border-black hover:border-red-600 transition-none ">
 
                             <div class="relative w-full h-auto">
                                 <img :src="photo.thumbnail_url" :alt="photo.unique_id" draggable="false"

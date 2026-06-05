@@ -633,7 +633,7 @@ const paginationPages = computed(() => {
                         <div v-else>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-8">
                                 <div v-for="photo in photos.data" :key="photo.id"
-                                    class="group relative aspect-square bg-zinc-950 border border-white/10 overflow-hidden cursor-crosshair">
+                                    class="group relative aspect-square bg-zinc-950 border border-white/10 overflow-hidden ">
                                     <img :src="photo.thumbnail_url" :alt="photo.unique_id"
                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-125 group-hover:grayscale-0 opacity-80 group-hover:opacity-100" />
 

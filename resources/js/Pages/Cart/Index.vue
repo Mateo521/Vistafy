@@ -110,7 +110,7 @@ const handleImageError = (e) => {
     <Head title="Terminal de Descargas — F33" />
 
     <AppLayout>
-        <div class="min-h-screen bg-black text-white font-sans selection:bg-red-600 selection:text-white cursor-crosshair">
+        <div class="min-h-screen bg-black text-white font-sans selection:bg-red-600 selection:text-white ">
 
             <div class="border-b border-white/20 bg-black/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
                 <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
@@ -175,7 +175,7 @@ const handleImageError = (e) => {
                                         </p>
                                         <Link :href="route('gallery.show', item.photo.unique_id)"
                                             class="font-sans font-black text-2xl md:text-3xl text-white uppercase tracking-tighter leading-none hover:text-red-600 transition-none line-clamp-2">
-                                            {{ item.photo.title || 'FRAME CAPTURADO' }}
+                                            {{ item.photo.title || 'Fotografía' }}
                                         </Link>
                                     </div>
                                     <button @click="removeItem(item.photo_id)" :disabled="removingItems.has(item.photo_id)"

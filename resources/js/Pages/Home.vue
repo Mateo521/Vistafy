@@ -146,7 +146,7 @@ const formatEventTitle = (name) => {
                     <div class="masonry-container px-1" v-if="recentEvents.length > 0">
                         <Link v-for="event in recentEvents" :key="event.id"
                             :href="route('events.show', event.slug || event.id)"
-                            class="masonry-item relative group overflow-hidden bg-[#09090b] block cursor-crosshair">
+                            class="masonry-item relative group overflow-hidden bg-[#09090b] block ">
 
                             <img :src="event.cover_image_url"
                                 class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
@@ -196,7 +196,7 @@ const formatEventTitle = (name) => {
 
                             <SwiperSlide v-for="photo in recentPhotos.slice(0, 5)" :key="photo.id">
                                 <div @click="router.visit(route('gallery.show', photo.unique_id))"
-                                    class="relative aspect-[3/4] bg-[#09090b] group overflow-hidden border border-white/10 cursor-crosshair block w-full h-full">
+                                    class="relative aspect-[3/4] bg-[#09090b] group overflow-hidden border border-white/10  block w-full h-full">
 
                                     <img :src="photo.watermarked_url || photo.thumbnail_url"
                                         class="w-full h-full object-cover filter grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 pointer-events-none select-none" />

@@ -178,7 +178,7 @@ const handleImageError = (e) => {
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
 
                     <div class="lg:col-span-8">
-                        <div class="bg-gray-950 border-[6px] border-black hover:border-red-600 p-2 flex items-center justify-center relative group cursor-crosshair transition-none"
+                        <div class="bg-gray-950 border-[6px] border-black hover:border-red-600 p-2 flex items-center justify-center relative group  transition-none"
                             @click="showFullImage = true">
                             
                             <div class="absolute top-4 left-4 z-20 bg-red-600 text-black font-mono text-[9px] font-bold px-2 py-1 tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
@@ -226,22 +226,22 @@ const handleImageError = (e) => {
                                 class="w-full bg-red-600 hover:bg-white text-black text-[12px] font-black uppercase tracking-[0.25em] py-5 border-[4px] border-red-600 hover:border-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
                                 <template v-if="isAuthenticated">
                                     <PlusIcon v-if="!addingToCart" class="w-5 h-5" />
-                                    <span v-if="addingToCart">EJECUTANDO...</span>
+                                    <span v-if="addingToCart">Procesando...</span>
                                     <span v-else>ENCOLAR A CARRITO</span>
                                 </template>
                                 <template v-else>
                                     <ShoppingCartIcon v-if="!loading" class="w-5 h-5" />
                                     <span v-if="loading">INICIALIZANDO...</span>
-                                    <span v-else>ADQUIRIR AHORA</span>
+                                    <span v-else>Comprar</span>
                                 </template>
                             </button>
 
                             <p class="text-[9px] text-gray-600 mt-4 leading-relaxed tracking-widest uppercase font-bold text-center">
                                 <template v-if="isAuthenticated">
-                                    SISTEMA DE PAGOS EN LOTE ACTIVO.
+                                    SISTEMA DE PAGOS
                                 </template>
                                 <template v-else>
-                                    PASARELA SEGURA. DESCARGA VÍA PROTOCOLO DE EMAIL.
+                                    PASARELA SEGURA
                                 </template>
                             </p>
                         </div>
@@ -281,7 +281,7 @@ const handleImageError = (e) => {
                     <div class="columns-2 md:columns-4 lg:columns-5 gap-2 space-y-2 masonry-grid">
                         <Link v-for="related in relatedPhotos" :key="related.id"
                             :href="route('gallery.show', related.unique_id)" 
-                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none cursor-crosshair">
+                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none ">
                             
                             <div class="relative w-full h-auto">
                                 <ProtectedImage :src="related.thumbnail_url"

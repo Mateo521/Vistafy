@@ -208,7 +208,7 @@ const handleImageError = (e) => {
 
                         <div v-if="recentPhotos && recentPhotos.length > 0" class="grid grid-cols-2 gap-2">
                             <div v-for="photo in recentPhotos" :key="photo.id"
-                                class="aspect-square bg-black overflow-hidden relative group border border-white/10 hover:border-red-600 cursor-crosshair">
+                                class="aspect-square bg-black overflow-hidden relative group border border-white/10 hover:border-red-600 ">
                                 
                                 <img 
                                     v-if="getImageUrl(photo)"

@@ -112,7 +112,7 @@ onMounted(() => {
 
     <AppLayout>
 
-        <div class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group cursor-crosshair overflow-hidden">
+        <div class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group  overflow-hidden">
             <div class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30" data-img="/0fcce5d4573ebd79df2e147d7f87af35.jpg"></div>
             
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
@@ -223,7 +223,7 @@ onMounted(() => {
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <Link v-for="photographer in photographers.data" :key="photographer.id"
                         :href="route('photographers.show', photographer.slug)"
-                        class="group flex flex-col bg-black border-[4px] border-white/10 hover:border-white transition-none overflow-hidden relative cursor-crosshair">
+                        class="group flex flex-col bg-black border-[4px] border-white/10 hover:border-white transition-none overflow-hidden relative ">
 
                         <div class="h-48 overflow-hidden bg-gray-950 relative border-b-[4px] border-white/10 group-hover:border-white transition-none">
                             <img v-if="photographer.banner_photo_url" :src="photographer.banner_photo_url"
