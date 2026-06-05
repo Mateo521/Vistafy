@@ -35,17 +35,17 @@ const submit = () => {
 <template>
  
     <GuestLayout>
-        <Head title="Acceso Seguro" />
+        <Head title="Acceso" />
 
         <div class="text-center mb-10">
             <span class="text-xs font-bold tracking-[0.2em] text-white/60 uppercase mb-3 block">
                 Portal de Usuarios
             </span>
             <h1 class="text-3xl md:text-4xl font-sans font-bold text-white mb-4">
-                Credenciales de Acceso
+                 Acceso
             </h1>
             <p class="text-white/60 text-sm font-light max-w-xs mx-auto leading-relaxed">
-                Ingrese sus datos para acceder al panel de gestión y galerías privadas.
+                Ingresá tus datos para acceder.
             </p>
         </div>
 
@@ -56,7 +56,7 @@ const submit = () => {
         <form @submit.prevent="submit" class="space-y-6">
             <div>
                 <label for="email" class="block text-[10px] font-bold uppercase tracking-widest text-white/70 mb-2">
-                    Correo Electrónico
+                    Correo electrónico
                 </label>
                 <TextInput
                     id="email"
@@ -151,7 +151,7 @@ const submit = () => {
         <template #footer>
             <div class="text-center mt-8">
                 <p class="text-white/50 text-xs font-light">
-                    ¿Aún no tiene cuenta?
+                    Todavía no tenés cuenta?
                     <Link :href="route('register')" class="text-white font-bold hover:underline ml-1 transition">
                         Solicitar registro
                     </Link>

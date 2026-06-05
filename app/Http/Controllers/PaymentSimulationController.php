@@ -22,9 +22,7 @@ class PaymentSimulationController extends Controller
         $this->mpService = $mpService;
     }
 
-    /**
-     * 📄 Mostrar página de simulación de pago
-     */
+   
     public function show(Purchase $purchase)
     {
         if (!config('services.mercadopago.simulation_mode')) {
@@ -67,9 +65,7 @@ class PaymentSimulationController extends Controller
         ]);
     }
 
-    /**
-     * 💰 Procesar simulación de pago
-     */
+  
     public function process(Request $request, Purchase $purchase)
     {
         if (!config('services.mercadopago.simulation_mode')) {
@@ -83,35 +79,35 @@ class PaymentSimulationController extends Controller
         $simulatedStatus = $request->status;
 
         try {
-            // Actualizar estado de la compra
+          
             $purchase->update([
                 'mp_payment_id' => 'SIM-' . time(),
                 'mp_payment_status' => $simulatedStatus,
                 'status' => $simulatedStatus,
             ]);
 
-            Log::info('🎭 Pago simulado', [
+            Log::info(' Pago simulado', [
                 'purchase_id' => $purchase->id,
                 'status' => $simulatedStatus,
                 'total' => $purchase->total_amount,
             ]);
 
-            //  Si fue aprobado, procesar post-pago
+          
             if ($simulatedStatus === 'approved') {
-                //  Crear cuenta si es necesario
+               
                 $this->handleAccountCreation($purchase);
 
-                //  Enviar notificación de compra completada
+               
                 $this->sendPurchaseNotification($purchase);
 
-                // 3️⃣ Limpiar carrito si es usuario autenticado
+              
                 if ($purchase->user) {
                     $purchase->user->cartItems()->delete();
                     Log::info(' Carrito limpiado', ['user_id' => $purchase->user->id]);
                 }
             }
 
-            // Redirigir según el resultado
+         
             switch ($simulatedStatus) {
                 case 'approved':
                     return redirect()
@@ -145,9 +141,7 @@ class PaymentSimulationController extends Controller
         }
     }
 
-    /**
-     *  Crear cuenta automática después del pago simulado
-     */
+   
     protected function handleAccountCreation($purchase)
     {
         $pendingAccount = session('pending_account');
@@ -166,14 +160,13 @@ class PaymentSimulationController extends Controller
                     'role' => 'customer',
                 ]);
 
-                //  Vincular la compra al nuevo usuario
+              
                 $purchase->update([
                     'user_id' => $user->id,
                     'buyer_name' => $user->name,
                     'buyer_email' => $user->email,
                 ]);
-
-                // Enviar email con credenciales
+ 
                 try {
                     \Mail::send('emails.account-created', [
                         'email' => $email,
@@ -200,9 +193,7 @@ class PaymentSimulationController extends Controller
         }
     }
 
-    /**
-     * 📧 Enviar notificación de compra completada
-     */
+ 
     protected function sendPurchaseNotification($purchase)
     {
         try {

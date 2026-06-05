@@ -30,9 +30,7 @@ class PaymentController extends Controller
         $this->cartService = $cartService;
     }
 
-    /**
-     * Iniciar compra desde el carrito (usuarios autenticados)
-     */
+   
     public function initiateCartPurchase(Request $request)
     {
         if (!Auth::check()) {
@@ -75,7 +73,7 @@ class PaymentController extends Controller
                 ]);
             }
             
-            // Llamamos al servicio (ahora usa Marketplace)
+         
             $preferenceResult = $this->mpService->createCartPreference($photos, $user->email, $purchase);
 
             if (!$preferenceResult['success']) {
@@ -98,9 +96,7 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * Compra individual (para invitados o usuarios autenticados)
-     */
+    
     public function initiatePurchase(Request $request, Photo $photo)
     {
         $validated = $request->validate([
@@ -151,7 +147,7 @@ class PaymentController extends Controller
                 ]);
             }
 
-            // Cargamos la relación del fotógrafo necesaria para el Marketplace
+          
             $photo->load('photographer');
             $result = $this->mpService->createPhotoPreference($photo, $guestEmail ?: $user->email);
 
@@ -173,12 +169,7 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * Crear cuenta automática después del pago
-     */
   
-
- 
 
      public function success(Request $request)
     {
@@ -196,10 +187,7 @@ class PaymentController extends Controller
             'purchase' => $purchase,
         ]);
     }
-
-    /**
-     *  Failure page
-     */
+ 
     public function failure(Request $request)
     {
         $purchaseId = $request->query('purchase_id');
@@ -209,10 +197,7 @@ class PaymentController extends Controller
             'message' => 'El pago fue rechazado o cancelado',
         ]);
     }
-
-    /**
-     *  Pending page
-     */
+ 
     public function pending(Request $request)
     {
         $purchaseId = $request->query('purchase_id');
@@ -226,11 +211,7 @@ class PaymentController extends Controller
 
     
 
-    
-
-    /**
-     * Descargar fotos compradas (Originales desde Backblaze B2)
-     */
+   
     public function download($token)
     {
         $purchase = Purchase::with('items.photo')->where('order_token', $token)->firstOrFail();
@@ -281,11 +262,11 @@ class PaymentController extends Controller
                 $cloudPath = $photo->original_path;
                 
                 if ($disk->exists($cloudPath)) {
-                    // Descargamos el archivo temporalmente de B2 a tu servidor
+                   
                     $fileContent = $disk->get($cloudPath);
                     $fileName = $photo->original_name ?? ('foto_' . $photo->unique_id . '.jpg');
                     
-                    // Lo agregamos al ZIP en memoria
+                  
                     $zip->addFromString($fileName, $fileContent);
                 }
             }
@@ -294,7 +275,7 @@ class PaymentController extends Controller
             abort(500, 'No se pudo crear el archivo ZIP con tus fotos.');
         }
 
-        // Enviamos el ZIP al cliente y lo borramos del servidor local para no gastar espacio
+     
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }

@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        //  REDIRECCIÓN INTELIGENTE SEGÚN ROL
+        
         return $this->redirectBasedOnRole();
     }
 
@@ -51,29 +51,27 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 
-    /**
-     *  NUEVA FUNCIÓN: Redirigir según el rol del usuario
-     */
+    
     protected function redirectBasedOnRole(): RedirectResponse
     {
         $user = auth()->user();
 
-        //  Si es ADMIN → Panel de Admin
+       
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
 
-        //  Si es FOTÓGRAFO → Verificar estado
+         
         if ($user->role === 'photographer') {
             $photographer = $user->photographer;
 
             if (!$photographer) {
-                // No tiene perfil de fotógrafo (caso extraño)
+                
                 return redirect()->route('home')
                     ->with('error', 'No se encontró tu perfil de fotógrafo. Contacta a soporte.');
             }
 
-            // Verificar estado del fotógrafo
+           
             switch ($photographer->status) {
                 case 'pending':
                     return redirect()->route('photographer.pending')
@@ -95,12 +93,12 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        // 3️⃣ Si es CLIENTE u otro rol → Dashboard normal o Home
+        
         if ($user->role === 'client') {
             return redirect()->route('home');
         }
 
-        // 4️⃣ Fallback → Home
+        
         return redirect()->route('home');
     }
 }

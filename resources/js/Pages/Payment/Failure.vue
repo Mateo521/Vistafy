@@ -16,14 +16,14 @@ const props = defineProps({
     }
 });
 
-// Helper para obtener la foto (soporta estructura antigua y nueva de items)
+ 
 const photo = computed(() => {
     if (!props.purchase) return null;
-    // Si tiene items (nueva estructura carrito), toma la primera foto
+   
     if (props.purchase.items && props.purchase.items.length > 0) {
         return props.purchase.items[0].photo;
     }
-    // Fallback a relación directa
+  
     return props.purchase.photo || null;
 });
 

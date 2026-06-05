@@ -88,15 +88,7 @@ class PhotoController extends Controller
 
     public function store(Request $request)
     {
-        //  LOG PARA VER QUÉ LLEGA
-        \Log::info(' Inicio de subida de fotos', [
-            'has_photos' => $request->hasFile('photos'),
-            'photos_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
-            'event_id' => $request->event_id,
-            'price' => $request->price,
-            'has_face_data' => $request->has('face_data'),
-            'photographer_id' => auth()->user()->photographer->id ?? 'NO_PHOTOGRAPHER',
-        ]);
+        
 
         if (! auth()->user()->photographer) {
             \Log::error(' Usuario no tiene perfil de fotógrafo');

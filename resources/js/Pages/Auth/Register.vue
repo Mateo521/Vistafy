@@ -150,7 +150,7 @@ const submit = () => {
         <template #footer>
             <div class="text-center mt-8">
                 <p class="text-white/50 text-xs font-light">
-                    ¿Ya tiene una cuenta?
+                    ¿Ya tenés una cuenta?
                     <Link :href="route('login')" class="text-white font-bold hover:underline ml-1 transition">
                         Iniciar Sesión
                     </Link>

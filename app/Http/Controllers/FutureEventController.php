@@ -10,11 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class FutureEventController extends Controller
 {
-    /**
-     *  Listar eventos futuros para el Home
-     * - Público: 6 eventos
-     * - Fotógrafos: Todos los eventos (paginados)
-     */
+  
     public function index(Request $request)
     {
         try {
@@ -22,10 +18,10 @@ class FutureEventController extends Controller
             $isPhotographer = $user && $user->role === 'photographer';
             $isAuthenticated = $user !== null;
 
-            // Modo de uso de la API: 'default' (home/listado) o 'map'
+         
             $mode = $request->query('mode', 'default');
 
-            // Query base - SOLO EVENTOS CON COORDENADAS
+          
             $baseQuery = FutureEvent::with('photographer.user')
                 ->upcoming()
                 ->whereNotNull('latitude')
@@ -70,7 +66,7 @@ class FutureEventController extends Controller
                 ]);
             }
 
-            // Usuario normal → solo 6 (para secciones tipo Home, grilla limitada)
+         
             $futureEvents = $baseQuery->take(6)->get()->map(fn($event) => $this->mapEventData($event));
 
             return response()->json([
@@ -105,10 +101,7 @@ class FutureEventController extends Controller
     }
 
 
-    /**
-     *  Helper: Mapear datos de un evento (INCLUYENDO COORDENADAS)
-     */
-
+   
     public function page()
     {
         return Inertia::render('FutureEvents/Index');
@@ -144,15 +137,13 @@ class FutureEventController extends Controller
         ];
     }
 
-    /**
-     *  Ver detalle de un evento futuro
-     */
+  
     public function show($id)
     {
         $event = FutureEvent::with(['photographer.user'])
             ->findOrFail($id);
 
-        // Si ya pasó el evento, redirigir al evento convertido
+     
         if ($event->converted_event_id) {
             $convertedEvent = \App\Models\Event::find($event->converted_event_id);
             if ($convertedEvent) {
