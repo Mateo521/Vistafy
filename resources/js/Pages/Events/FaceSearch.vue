@@ -207,10 +207,10 @@ onMounted(async () => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-12 md:py-20">
 
                 <div class="mb-12 border-b-[12px] border-white pb-8">
-                    <span class="font-mono text-xs uppercase tracking-[0.45em] text-[#E30613] mb-4 block border-l-4 border-[#E30613] pl-3">
+                    <span class="font-mono text-xs uppercase text-[#E30613] mb-4 block  pl-3">
                          RECONOCIMIENTO FACIAL // {{ event.name }}
                     </span>
-                    <h1 class="font-black text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white font-bebas">
+                    <h1 class="font-black text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white font-flux">
                         ESCÁNER<br><span class="text-[#E30613]">.</span>
                     </h1>
                 </div>
@@ -271,11 +271,11 @@ onMounted(async () => {
                                 <span v-if="processingStage === 'detecting'">ANALIZANDO MATRIZ...</span>
                                 <span v-else-if="processingStage === 'searching'">COMPARANDO REGISTROS...</span>
                                 <span v-else-if="modelsLoading">SISTEMA OFFLINE</span>
-                                <span v-else>EJECUTAR ESCÁNER</span>
+                                <span v-else>INICIAR ESCÁNER</span>
                             </button>
 
                             <div class="mt-8 bg-black border border-white/10 p-4 font-mono text-[9px] tracking-widest uppercase text-gray-500 space-y-2">
-                                <p class="text-white border-b border-white/10 pb-2 mb-2 font-bold">> PARÁMETROS ÓPTIMOS_</p>
+                                <p class="text-white border-b border-white/10 pb-2 mb-2 font-bold">> PARÁMETROS_</p>
                                 <p>+ ROSTRO VISIBLE Y FRONTAL</p>
                                 <p>+ ILUMINACIÓN NATURAL</p>
                                 <p>+ UN SOLO SUJETO EN CÁMARA</p>

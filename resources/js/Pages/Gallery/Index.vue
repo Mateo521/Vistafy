@@ -287,7 +287,7 @@ const totalResults = () => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 pointer-events-none">
                     <div>
-                        <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
+                        <p class="font-mono text-xs uppercase text-red-600 mb-4  border-red-600 pl-3">
                             Catálogo F33
                         </p>
                         <h1

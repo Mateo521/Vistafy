@@ -133,7 +133,7 @@ const handleImageError = (e) => {
 
                 <div class="mb-12 border-b-[12px] border-white pb-8">
                     <span
-                        class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 block  border-red-600 pl-3">
+                        class="font-mono text-xs uppercase text-red-600 mb-4 block  border-red-600 pl-3">
                         // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
                     </span>
                     <h1

@@ -123,7 +123,7 @@ onMounted(() => {
 
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="pointer-events-none">
-                    <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
+                    <p class="font-mono text-xs uppercase text-red-600 mb-4  border-red-600 pl-3">
                         // {{ formatDate(event.event_date) }}
                     </p>
                     <h1
