@@ -67,26 +67,42 @@ const formatEventTitle = (name) => {
                     <SwiperSlide v-for="(event, index) in recentEvents.slice(0, 3)" :key="event.id"
                         class="relative bg-[#050505] overflow-hidden">
 
-                        <div class="absolute inset-0 w-full h-full z-0">
+                        
+                        <div class="absolute inset-0 w-full h-full z-0 bg-black">
+                            
                             <Swiper v-if="getEventPhotos(event).length > 0" :modules="[Pagination, Autoplay]"
                                 :nested="true" :autoplay="{ delay: 2500, disableOnInteraction: false }"
                                 :pagination="{ clickable: true, el: '.inner-pagination-' + event.id }"
                                 class="w-full h-full inner-swiper">
-                                <SwiperSlide v-for="photo in getEventPhotos(event)" :key="photo.id">
+                                
+                                <SwiperSlide v-for="photo in getEventPhotos(event)" :key="photo.id" class="relative w-full h-full">
+                                    
                                     <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="w-full h-full object-cover object-center opacity-50">
+                                        class="absolute inset-0 w-full h-full object-cover object-center blur-[60px] scale-125 opacity-30 z-0">
+                                    
+                                    <img :src="photo.watermarked_url || photo.thumbnail_url"
+                                        class="absolute inset-0 w-full h-full object-contain object-center opacity-60 z-10 p-4 pb-32 md:p-12 md:pb-12">
+                                        
                                 </SwiperSlide>
 
                                 <div :class="'swiper-pagination inner-pagination-' + event.id"></div>
                             </Swiper>
 
-                            <img v-else-if="event.cover_image_url" :src="event.cover_image_url"
-                                class="w-full h-full object-cover object-center opacity-50">
+                            <div v-else-if="event.cover_image_url" class="relative w-full h-full">
+                                <img :src="event.cover_image_url"
+                                    class="absolute inset-0 w-full h-full object-cover object-center blur-[60px] scale-125 opacity-30 z-0">
+                                <img :src="event.cover_image_url"
+                                    class="absolute inset-0 w-full h-full object-contain object-center opacity-60 z-10 p-4 pb-32 md:p-12 md:pb-12">
+                            </div>
 
                             <video v-else autoplay muted loop playsinline class="w-full h-full object-cover opacity-50">
                                 <source :src="currentVideo" type="video/mp4">
                             </video>
                         </div>
+
+
+
+
 
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-[#050505]/40 to-transparent z-10 pointer-events-none">
