@@ -4,9 +4,6 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { UserCircleIcon, ArrowRightOnRectangleIcon, Cog6ToothIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import ToastContainer from '@/Components/ToastContainer.vue';
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
-/*
-import CustomCursor from '@/Components/CustomCursor.vue';
-*/
 import { useConfirm } from '@/Composables/useConfirm';
 
 const showingNavigationDropdown = ref(false);
@@ -15,7 +12,6 @@ const page = usePage();
 const user = computed(() => page.props.auth.user);
 const { confirmState, handleConfirm, handleCancel } = useConfirm();
 
-
 const profilePhotoUrl = computed(() => {
     if (user.value.role === 'photographer' && user.value.photographer?.profile_photo_url) {
         return user.value.photographer.profile_photo_url;
@@ -23,11 +19,9 @@ const profilePhotoUrl = computed(() => {
     return null;
 });
 
-
 const userInitials = computed(() => {
     return user.value.name.charAt(0).toUpperCase();
 });
-
 
 const dashboardRoute = computed(() => {
     if (user.value.role === 'photographer') {
@@ -42,158 +36,132 @@ const dashboardRoute = computed(() => {
 
 const navLinkClasses = (active) => {
     return [
-        'inline-flex items-center px-1 pt-1 border-b-2 text-xs font-bold uppercase tracking-widest transition-all duration-300 h-full',
+        'inline-flex items-center px-1 pt-1 border-b-[4px] font-mono text-[10px] font-bold uppercase tracking-widest transition-none h-full',
         active
-            ? 'border-slate-900 text-slate-900'
-            : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+            ? 'border-[#E30613] text-white'
+            : 'border-transparent text-gray-500 hover:text-white hover:border-white/50'
     ];
 };
 
+
 const mobileNavLinkClasses = (active) => {
     return [
-        'block pl-3 pr-4 py-3 border-l-4 text-sm font-medium transition-colors',
+        'block pl-3 pr-4 py-3 border-l-[4px] font-mono text-[11px] font-bold uppercase tracking-widest transition-none',
         active
-            ? 'border-slate-900 text-slate-900 bg-slate-50'
-            : 'border-transparent text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300'
+            ? 'border-[#E30613] text-white bg-[#E30613]/10'
+            : 'border-transparent text-gray-500 hover:text-white hover:bg-white/5 hover:border-white/30'
     ];
 };
 </script>
 
 <template>
- 
-    <div class="min-h-screen bg-white font-sans text-slate-900">
+    <div class="min-h-screen bg-[#050505] font-sans text-white selection:bg-[#E30613] selection:text-white">
 
-        <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="bg-[#09090b] border-b-[4px] border-white/10 sticky top-0 z-50">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-20">
 
                     <div class="flex">
                         <div class="shrink-0 flex items-center">
-                            <Link :href="dashboardRoute" class="group">
-                                <div class="flex flex-col">
-                                    <span
-                                        class="font-sans font-bold text-xl tracking-tight text-slate-900 group-hover:opacity-80 transition-opacity">f33</span>
-                                    <span class="text-[9px] uppercase  text-slate-400">
-                                        {{ user.role === 'admin' ? 'Administration' : (user.role === 'photographer' ?
-                                            'Professional' : 'Client Area') }}
+                            <Link :href="dashboardRoute" class="group flex items-center gap-3">
+                                <div class="flex flex-col justify-center">
+                                    <span class="font-bebas text-4xl leading-none tracking-tighter text-white group-hover:text-[#E30613] transition-none">F33</span>
+                                    <span class="font-mono text-[9px] font-bold uppercase tracking-widest text-[#E30613]">
+                                        {{ user.role === 'admin' ? 'ADMIN_NODE' : (user.role === 'photographer' ? 'PRO_NODE' : 'CLIENT_NODE') }}
                                     </span>
                                 </div>
                             </Link>
                         </div>
 
                         <div class="hidden space-x-8 sm:-my-px sm:ml-12 md:flex">
-
                             <Link :href="dashboardRoute"
                                 :class="navLinkClasses($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))">
-                                Mi panel
+                                [ Panel ]
                             </Link>
 
                             <Link v-if="user.role === 'photographer'" :href="route('photographer.events.index')"
                                 :class="navLinkClasses($page.url.includes('/eventos'))">
-                                Mis Eventos
+                                [ Eventos ]
                             </Link>
 
                             <Link v-if="user.role === 'photographer'" :href="route('photographer.photos.index')"
                                 :class="navLinkClasses($page.url.includes('/fotos'))">
-                                Mis Fotos
+                                [ Archivos ]
                             </Link>
 
                             <Link v-if="user.role === 'photographer'" :href="route('photographer.opportunities.index')"
                                 :class="navLinkClasses($page.url.includes('/oportunidades'))">
-                                Oportunidades
+                                [ Ofertas ]
                             </Link>
 
                             <Link v-if="user.role === 'admin'" :href="route('admin.photographers.index')"
                                 :class="navLinkClasses($page.url.includes('/admin/fotografos'))">
-                                Fotógrafos
+                                [ Fotógrafos ]
                             </Link>
                         </div>
-
-
-
-
                     </div>
 
                     <div class="hidden md:flex md:items-center md:ml-6">
-
+                        
                         <Link href="/"
-                            class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mr-8 transition-colors flex items-center gap-1">
-                            <GlobeAltIcon class="w-4 h-4" />
-                            <span>Volver al sitio</span>
+                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white mr-8 transition-none flex items-center gap-2 border-b border-transparent hover:border-white pb-1">
+                            <GlobeAltIcon class="w-3.5 h-3.5" />
+                            <span>SITIO PÚBLICO</span>
                         </Link>
 
                         <div class="relative ml-3">
                             <div class="relative" @click="showingNavigationDropdown = !showingNavigationDropdown">
-                                <button type="button"
-                                    class="flex items-center gap-3 text-sm focus:outline-none transition group cursor-pointer">
+                                <button type="button" class="flex items-center gap-4 focus:outline-none transition-none group cursor-pointer border border-transparent hover:border-white/20 p-1">
                                     <div class="text-right hidden lg:block">
-                                        <div class="font-bold text-slate-900 group-hover:text-slate-700">{{ user.name }}
+                                        <div class="font-sans font-black text-sm text-white group-hover:text-[#E30613] uppercase tracking-tight">
+                                            {{ user.name }}
                                         </div>
-                                        <div class="text-[10px] uppercase tracking-wider text-slate-400 text-right">{{
-                                            user.role }}</div>
+                                        <div class="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-500 text-right">
+                                            {{ user.role }}
+                                        </div>
                                     </div>
 
-                                    <div
-                                        class="h-9 w-9 rounded-sm overflow-hidden bg-slate-100 border border-gray-200 group-hover:border-slate-400 transition-colors">
+                                    <div class="h-10 w-10 bg-black border-2 border-white/20 group-hover:border-[#E30613] overflow-hidden transition-none flex items-center justify-center">
                                         <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
-                                            class="h-full w-full object-cover" />
-                                        <div v-else
-                                            class="h-full w-full flex items-center justify-center bg-slate-900 text-white font-sans">
+                                            class="h-full w-full object-cover grayscale contrast-125" />
+                                        <div v-else class="h-full w-full flex items-center justify-center font-mono font-bold text-lg text-white">
                                             {{ userInitials }}
                                         </div>
                                     </div>
                                 </button>
 
                                 <div v-show="showingNavigationDropdown"
-                                    class="absolute right-0 mt-3 w-48 bg-white rounded-sm shadow-xl border border-gray-100 py-1 origin-top-right z-50 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                    class="absolute right-0 mt-2 w-56 bg-[#09090b] border-[2px] border-white/20 shadow-[8px_8px_0_rgba(227,6,19,1)] py-2 z-50"
                                     @mouseleave="showingNavigationDropdown = false">
 
-                                    <div class="px-4 py-3 border-b border-gray-50 lg:hidden">
-                                        <p class="text-sm font-medium text-slate-900">{{ user.name }}</p>
-                                        <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
-                                    </div>
-
                                     <Link :href="route('profile.edit')"
-                                        class="block px-4 py-2 text-xs uppercase tracking-wider text-slate-600 hover:bg-gray-50 hover:text-slate-900 w-full text-left">
-                                        Configuración
+                                        class="block px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-white hover:text-black transition-none w-full text-left">
+                                        > CONFIGURACIÓN
                                     </Link>
 
                                     <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')"
-                                        class="block px-4 py-2 text-xs uppercase tracking-wider text-slate-600 hover:bg-gray-50 hover:text-slate-900 w-full text-left">
-                                        Perfil Público
+                                        class="block px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-white hover:text-black transition-none w-full text-left">
+                                        > PERFIL PÚBLICO
                                     </Link>
 
-                                    <div class="border-t border-gray-50 my-1"></div>
+                                    <div class="border-t border-white/10 my-1"></div>
 
                                     <Link :href="route('logout')" method="post" as="button"
-                                        class="block px-4 py-2 text-xs uppercase tracking-wider text-red-600 hover:bg-red-50 w-full text-left">
-                                        Cerrar Sesión
+                                        class="block px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] hover:bg-[#E30613] hover:text-black transition-none w-full text-left">
+                                        [ DESCONECTAR_NODO ]
                                     </Link>
-
-
-
-
-
                                 </div>
                             </div>
-
-                            <div v-show="showingNavigationDropdown" @click="showingNavigationDropdown = false"
-                                class="fixed inset-0 z-40 cursor-default"></div>
+                            <div v-show="showingNavigationDropdown" @click="showingNavigationDropdown = false" class="fixed inset-0 z-40 cursor-default"></div>
                         </div>
                     </div>
 
                     <div class="-mr-2 flex items-center md:hidden">
                         <button @click="showingNavigationDropdown = !showingNavigationDropdown"
-                            class="inline-flex items-center justify-center p-2 rounded-sm text-slate-400 hover:text-slate-500 hover:bg-gray-100 focus:outline-none transition duration-150 ease-in-out">
+                            class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 focus:outline-none transition-none">
                             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                <path
-                                    :class="{ 'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
-                                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16" />
-                                <path
-                                    :class="{ 'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
-                                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
+                                <path :class="{ 'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }" stroke-linecap="square" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                <path :class="{ 'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }" stroke-linecap="square" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
@@ -201,101 +169,93 @@ const mobileNavLinkClasses = (active) => {
             </div>
 
             <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
-                class="md:hidden border-b border-gray-200 bg-white">
+                class="md:hidden border-t-[4px] border-white/10 bg-[#050505]">
                 <div class="pt-2 pb-3 space-y-1">
-                    <Link :href="dashboardRoute"
-                        :class="mobileNavLinkClasses($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))">
-                        Mi panel
+                    <Link :href="dashboardRoute" :class="mobileNavLinkClasses($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))">
+                        [ PANEL PRINCIPAL ]
                     </Link>
 
                     <template v-if="user.role === 'photographer'">
-                        <Link :href="route('photographer.events.index')"
-                            :class="mobileNavLinkClasses($page.url.includes('/eventos'))">
-                            Mis Eventos
+                        <Link :href="route('photographer.events.index')" :class="mobileNavLinkClasses($page.url.includes('/eventos'))">
+                            [ EVENTOS ]
                         </Link>
-                        <Link :href="route('photographer.photos.index')"
-                            :class="mobileNavLinkClasses($page.url.includes('/fotos'))">
-                            Mis Fotos
+                        <Link :href="route('photographer.photos.index')" :class="mobileNavLinkClasses($page.url.includes('/fotos'))">
+                            [ ARCHIVOS ]
                         </Link>
-
-
-                        <Link :href="route('photographer.opportunities.index')"
-                            :class="mobileNavLinkClasses($page.url.includes('/oportunidades'))">
-                            Oportunidades
+                        <Link :href="route('photographer.opportunities.index')" :class="mobileNavLinkClasses($page.url.includes('/oportunidades'))">
+                            [ OPORTUNIDADES ]
                         </Link>
                     </template>
 
                     <template v-if="user.role === 'admin'">
-                        <Link :href="route('admin.photographers.index')"
-                            :class="mobileNavLinkClasses($page.url.includes('/admin/fotografos'))">
-                            Fotógrafos
+                        <Link :href="route('admin.photographers.index')" :class="mobileNavLinkClasses($page.url.includes('/admin/fotografos'))">
+                            [ FOTÓGRAFOS ]
                         </Link>
                     </template>
                 </div>
 
-                <div class="pt-4 pb-1 border-t border-gray-200">
-                    <div class="flex items-center px-4 mb-3">
+                <div class="pt-4 pb-4 border-t border-white/10 bg-[#09090b]">
+                    <div class="flex items-center px-4 mb-4">
                         <div class="shrink-0">
-                            <div
-                                class="h-10 w-10 rounded-sm bg-slate-900 flex items-center justify-center text-white font-sans text-lg">
+                            <div class="h-10 w-10 border-2 border-[#E30613] bg-black flex items-center justify-center text-[#E30613] font-mono font-bold text-lg">
                                 {{ userInitials }}
                             </div>
                         </div>
                         <div class="ml-3">
-                            <div class="font-medium text-base text-slate-800">{{ user.name }}</div>
-                            <div class="font-medium text-sm text-slate-500">{{ user.email }}</div>
+                            <div class="font-sans font-black uppercase text-base text-white tracking-tighter">{{ user.name }}</div>
+                            <div class="font-mono text-[9px] tracking-widest text-gray-500 uppercase">{{ user.email }}</div>
                         </div>
                     </div>
 
                     <div class="mt-3 space-y-1">
                         <Link :href="route('profile.edit')"
-                            class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Configuración
+                            class="block pl-3 pr-4 py-2 border-l-[4px] border-transparent font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5">
+                            > CONFIGURACIÓN
                         </Link>
 
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.profile.edit')"
-                            class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Mi Perfil Público
+                            class="block pl-3 pr-4 py-2 border-l-[4px] border-transparent font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5">
+                            > PERFIL PÚBLICO
                         </Link>
 
                         <Link href="/"
-                            class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-gray-50 hover:border-gray-300">
-                            Volver al sitio
+                            class="block pl-3 pr-4 py-2 border-l-[4px] border-transparent font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5">
+                            > VOLVER AL SITIO
                         </Link>
 
                         <Link :href="route('logout')" method="post" as="button"
-                            class="w-full text-left block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 hover:border-red-300">
-                            Cerrar Sesión
+                            class="w-full text-left block pl-3 pr-4 py-2 border-l-[4px] border-transparent font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] hover:text-white hover:bg-[#E30613]">
+                            [ CERRAR SESIÓN ]
                         </Link>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <header v-if="$slots.header" class="bg-gray-50 border-b border-gray-100">
-            <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <header v-if="$slots.header" class="bg-[#050505] border-b border-white/10">
+            <div class="max-w-[1500px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 <slot name="header" />
             </div>
         </header>
 
-        <main class="bg-gray-50 min-h-[calc(100vh-160px)]">
+        <main class="bg-[#050505] min-h-[calc(100vh-160px)] relative z-10">
             <slot />
         </main>
 
-        <footer class="bg-white border-t border-gray-200 py-6">
-            <div
-                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center text-[10px] uppercase tracking-widest text-slate-400">
-                <span>© {{ new Date().getFullYear() }} f33.</span>
-                <span>
-                    {{ user.role === 'admin' ? 'Administrator Access' : 'Professional Access' }}
+        <footer class="bg-[#09090b] border-t-[4px] border-white/10 py-8">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-gray-500">
+                <span>© {{ new Date().getFullYear() }} F33. ALL RIGHTS RESERVED.</span>
+                <span class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-[#E30613] animate-pulse"></div>
+                    {{ user.role === 'admin' ? 'SYS_ADMIN ACCESS' : 'PROFESSIONAL ACCESS' }}
                 </span>
             </div>
         </footer>
+
         <ToastContainer />
+        
         <ConfirmDialog :show="confirmState.show" :title="confirmState.title" :message="confirmState.message"
             :confirm-text="confirmState.confirmText" :cancel-text="confirmState.cancelText" :type="confirmState.type"
             @confirm="handleConfirm" @cancel="handleCancel" @close="handleCancel" />
     </div>
-
-
 </template>
