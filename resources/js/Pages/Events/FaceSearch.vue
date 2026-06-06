@@ -26,22 +26,22 @@ const results = ref([]);
 const faceDescriptor = ref(null);
 const processingStage = ref('');
 
-//  DEFINIR FUNCIÓN ANTES DE onMounted
+
 async function loadModels() {
     if (modelsLoaded.value) return;
 
     modelsLoading.value = true;
-    
+
     try {
-      
-        
-        // Verificar que faceapi esté disponible
+
+
+         
         if (typeof window.faceapi === 'undefined') {
             throw new Error('face-api.js no está disponible. Espera un momento...');
         }
 
         const MODEL_URL = '/models';
-        
+
         await Promise.all([
             window.faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
             window.faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
@@ -49,7 +49,7 @@ async function loadModels() {
         ]);
 
         modelsLoaded.value = true;
-    
+
     } catch (err) {
         console.error(' Error cargando modelos:', err);
         faceError.value = 'Error cargando modelos de IA: ' + err.message;
@@ -58,7 +58,7 @@ async function loadModels() {
     }
 }
 
-//  DEFINIR FUNCIONES AUXILIARES
+
 async function handleImageSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -88,7 +88,7 @@ async function handleImageSelect(event) {
 
 async function searchByFace() {
     if (!uploadedImageUrl.value) return;
-    
+
     if (!modelsLoaded.value) {
         alert('Los modelos aún no están cargados. Espera un momento.');
         return;
@@ -100,19 +100,19 @@ async function searchByFace() {
 
     try {
         const img = document.getElementById('uploaded-preview');
-        
+
         if (!img || !img.complete) {
             throw new Error('La imagen no se cargó correctamente');
         }
 
-   
+
 
         const detections = await window.faceapi
             .detectAllFaces(img, new window.faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
             .withFaceLandmarks()
             .withFaceDescriptors();
 
-     
+
         if (detections.length === 0) {
             faceError.value = 'No se detectó ningún rostro en la imagen';
             alert('No se detectó ningún rostro. Intenta con otra foto más clara.');
@@ -128,11 +128,11 @@ async function searchByFace() {
         faceDescriptor.value = Array.from(detections[0].descriptor);
         processingStage.value = 'searching';
 
-     
+
 
         const response = await axios.post(
             route('events.face-search.submit', props.event.slug),
-            { 
+            {
                 face_descriptor: faceDescriptor.value,
                 threshold: 0.6
             }
@@ -141,7 +141,7 @@ async function searchByFace() {
         results.value = response.data.results || [];
         processingStage.value = 'done';
 
-   
+
 
         if (results.value.length === 0) {
             faceError.value = 'No se encontraron coincidencias';
@@ -166,9 +166,9 @@ function resetSearch() {
     faceError.value = null;
 }
 
-//  onMounted AL FINAL
+
 onMounted(async () => {
-    // Esperar a que AppLayout inicialice faceapi
+
     let attempts = 0;
     while (typeof window.faceapi === 'undefined' && attempts < 50) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -181,203 +181,190 @@ onMounted(async () => {
         return;
     }
 
-   
+
     await loadModels();
 });
 </script>
 
 <template>
-    <Head :title="`Buscar por Rostro - ${event.name}`" />
+    <Head :title="`Escáner Biométrico - ${event.name}`" />
 
     <AppLayout>
-        <div class="min-h-screen bg-gray-50 py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <!-- Header -->
-                <div class="mb-8">
-                    <Link 
-                        :href="route('events.show', event.slug)"
-                        class="text-sm text-slate-500 hover:text-slate-900 mb-4 inline-flex items-center gap-2"
-                    >
-                        ← Volver al evento
+        <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#E30613] selection:text-white">
+
+            <div class="border-b border-white/20 bg-[#050505]/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
+                <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
+                    <Link :href="route('events.show', event.slug)"
+                        class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
+                        <ArrowLeftIcon class="w-3.5 h-3.5" /> [ CANCELAR ESCÁNER ]
                     </Link>
-                    <h1 class="text-4xl font-sans font-bold text-slate-900 mb-2">
-                        Búsqueda por Reconocimiento facial
+                    <span class="text-[#E30613] font-bold hidden sm:block">
+                        // F33
+                    </span>
+                </div>
+            </div>
+
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-12 md:py-20">
+
+                <div class="mb-12 border-b-[12px] border-white pb-8">
+                    <span class="font-mono text-xs uppercase tracking-[0.45em] text-[#E30613] mb-4 block border-l-4 border-[#E30613] pl-3">
+                         RECONOCIMIENTO FACIAL // {{ event.name }}
+                    </span>
+                    <h1 class="font-black text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white font-bebas">
+                        ESCÁNER<br><span class="text-[#E30613]">.</span>
                     </h1>
-                    <p class="text-slate-600">
-                        Subí una foto de tu rostro y vamos a encontrar todas las fotos donde apareces en 
-                        <strong>{{ event.name }}</strong>
-                    </p>
                 </div>
 
-                <!-- Alert de modelos cargando -->
-                <div v-if="modelsLoading" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-                        <span class="text-sm text-blue-800">Cargando modelos de inteligencia artificial...</span>
-                    </div>
+                <div v-if="modelsLoading" class="bg-black border-2 border-white/20 p-4 mb-8 font-mono text-[10px] uppercase tracking-widest flex items-center gap-4">
+                    <div class="animate-pulse bg-white text-black px-2 py-1 font-bold">PROCESANDO</div>
+                    <span class="text-gray-400">CARGANDO MODELOS...</span>
                 </div>
 
-                <!-- Modelos listos -->
-                <div v-else-if="modelsLoaded" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <CheckCircleIcon class="w-5 h-5 text-green-600" />
-                        <span class="text-sm text-green-800">Sistema de Reconocimiento facial listo</span>
-                    </div>
+                <div v-else-if="modelsLoaded && !faceError" class="bg-black border-2 border-[#E30613] p-4 mb-8 font-mono text-[10px] uppercase tracking-widest flex items-center gap-4">
+                    <div class="bg-[#E30613] text-black px-2 py-1 font-bold">ONLINE</div>
+                    <span class="text-white">IA CARGADO. LISTO PARA RECIBIR DATOS.</span>
                 </div>
 
-                <!-- Error -->
-                <div v-if="faceError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <ExclamationTriangleIcon class="w-5 h-5 text-red-500" />
-                        <span class="text-sm text-red-800">{{ faceError }}</span>
-                    </div>
+                <div v-if="faceError" class="bg-[#09090b] border-[4px] border-[#E30613] p-4 mb-8 font-mono text-[10px] uppercase tracking-widest flex items-center gap-4">
+                    <ExclamationTriangleIcon class="w-6 h-6 text-[#E30613] flex-shrink-0" />
+                    <span class="text-[#E30613] font-bold">ERROR DE SISTEMA: {{ faceError }}</span>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
-                    <!-- Panel de carga -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
-                            <h3 class="text-lg font-bold text-slate-900 mb-4">1. Subí tu foto</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
 
-                            <!-- Preview -->
-                            <div v-if="uploadedImageUrl" class="mb-4 relative">
-                                <img 
-                                    :src="uploadedImageUrl" 
-                                    id="uploaded-preview"
-                                    class="w-full rounded-lg border border-gray-200"
-                                    crossorigin="anonymous"
-                                    @load="console.log(' Imagen cargada en el DOM')"
-                                />
-                                <button 
-                                    @click="resetSearch"
-                                    class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
-                                >
-                                    <XMarkIcon class="w-4 h-4" />
+                    <div class="lg:col-span-4 flex flex-col gap-6">
+                        <div class="bg-[#09090b] border-[4px] border-white p-6 sticky top-24 shadow-[8px_8px_0_rgba(255,255,255,1)]">
+                            
+                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-4">
+                                [ FASE 1: ENTRADA ]
+                            </h3>
+
+                            <div v-if="uploadedImageUrl" class="mb-6 relative border-2 border-white bg-black p-1 group">
+                                <img :src="uploadedImageUrl" id="uploaded-preview"
+                                    class="w-full h-auto aspect-square object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500" crossorigin="anonymous" />
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+                                
+                                <button @click="resetSearch" class="absolute top-3 right-3 bg-black border border-white text-white hover:bg-[#E30613] hover:border-[#E30613] font-mono text-[9px] uppercase tracking-widest px-2 py-1 transition-none z-10">
+                                    [ PURGAR ]
                                 </button>
-                            </div>
-
-                            <!-- Upload input -->
-                            <div v-else class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-slate-400 transition">
-                                <input 
-                                    type="file" 
-                                    @change="handleImageSelect"
-                                    accept="image/*"
-                                    class="hidden"
-                                    id="face-upload-input"
-                                />
-                                <label 
-                                    for="face-upload-input"
-                                    class="cursor-pointer flex flex-col items-center"
-                                >
-                                    <PhotoIcon class="w-12 h-12 text-gray-400 mb-3" />
-                                    <span class="text-sm font-medium text-slate-900">Seleccionar imagen</span>
-                                    <span class="text-xs text-slate-500 mt-1">JPG, PNG (máx. 5MB)</span>
-                                </label>
-                            </div>
-
-                            <!-- Botón buscar -->
-                            <button 
-                                v-if="uploadedImageUrl"
-                                @click="searchByFace"
-                                :disabled="searching || modelsLoading || !modelsLoaded"
-                                class="w-full mt-4 bg-slate-900 text-white py-3 rounded-lg font-medium hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                            >
-                                <MagnifyingGlassIcon v-if="!searching" class="w-5 h-5" />
-                                <div v-else class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                                <span v-if="processingStage === 'detecting'">Detectando rostro...</span>
-                                <span v-else-if="processingStage === 'searching'">Buscando coincidencias...</span>
-                                <span v-else-if="modelsLoading">Cargando modelos...</span>
-                                <span v-else>Buscar mis fotos</span>
-                            </button>
-
-                            <!-- Tips -->
-                            <div class="mt-6 bg-gray-50 rounded-lg p-4">
-                                <p class="text-xs font-bold uppercase tracking-wide text-slate-700 mb-2">
-                                     Consejos
-                                </p>
-                                <ul class="text-xs text-slate-600 space-y-1">
-                                    <li>✓ Usa una foto clara de tu rostro</li>
-                                    <li>✓ Evita fotos con muchas personas</li>
-                                    <li>✓ Mejor con buena iluminación</li>
-                                    <li>✓ Sin lentes oscuros o sombreros</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Resultados -->
-                    <div class="lg:col-span-2">
-                        <div v-if="results.length > 0" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-lg font-bold text-slate-900">
-                                    Encontramos {{ results.length }} {{ results.length === 1 ? 'foto' : 'fotos' }}
-                                </h3>
-                                <div class="flex items-center gap-2 text-green-600">
-                                    <CheckCircleIcon class="w-5 h-5" />
-                                    <span class="text-sm font-medium">Búsqueda completada</span>
+                                
+                                <div class="absolute bottom-3 left-3 text-[#E30613] font-mono text-[9px] font-bold tracking-widest pointer-events-none">
+                                    > IDENTIFICADO
                                 </div>
                             </div>
 
-                            <!-- Grid de resultados -->
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                <Link 
-                                    v-for="result in results" 
-                                    :key="result.id"
-                                    :href="route('gallery.show', result.unique_id)"
-                                    class="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-slate-900 transition"
-                                >
-                                    <ProtectedImage 
-                                        :src="result.thumbnail_url"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                    />
-                                    
-                                    <!-- Badge de similitud -->
-                                    <div class="absolute top-2 right-2 bg-black/70 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                        {{ Math.round(result.similarity * 100) }}%
-                                    </div>
+                            <div v-else class="border-2 border-dashed border-white/30 hover:border-white bg-black p-8 text-center transition-none mb-6 group cursor-pointer relative overflow-hidden">
+                                <input type="file" @change="handleImageSelect" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" id="face-upload-input" />
+                                <PhotoIcon class="w-12 h-12 text-white/50 mx-auto mb-4 group-hover:text-white transition-none" />
+                                <h4 class="font-sans font-black text-xl uppercase tracking-tighter text-white mb-2 group-hover:text-[#E30613]">SELECCIONAR FOTOGRAFÍA</h4>
+                                <p class="font-mono text-[9px] uppercase tracking-widest text-gray-500">JPG, PNG / MÁXIMO 5MB</p>
+                            </div>
 
-                                    <!-- Overlay -->
-                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center">
-                                        <span class="text-white text-sm font-bold opacity-0 group-hover:opacity-100 transition">
-                                            Ver foto
-                                        </span>
-                                    </div>
-                                </Link>
+                            <button v-if="uploadedImageUrl" @click="searchByFace"
+                                :disabled="searching || modelsLoading || !modelsLoaded"
+                                class="w-full bg-[#E30613] border-[4px] border-[#E30613] text-black font-black text-sm uppercase tracking-[0.25em] py-5 hover:bg-white hover:border-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
+                                
+                                <MagnifyingGlassIcon v-if="!searching && !modelsLoading" class="w-5 h-5" />
+                                <div v-if="searching || modelsLoading" class="w-4 h-4 bg-black animate-ping"></div>
+
+                                <span v-if="processingStage === 'detecting'">ANALIZANDO MATRIZ...</span>
+                                <span v-else-if="processingStage === 'searching'">COMPARANDO REGISTROS...</span>
+                                <span v-else-if="modelsLoading">SISTEMA OFFLINE</span>
+                                <span v-else>EJECUTAR ESCÁNER</span>
+                            </button>
+
+                            <div class="mt-8 bg-black border border-white/10 p-4 font-mono text-[9px] tracking-widest uppercase text-gray-500 space-y-2">
+                                <p class="text-white border-b border-white/10 pb-2 mb-2 font-bold">> PARÁMETROS ÓPTIMOS_</p>
+                                <p>+ ROSTRO VISIBLE Y FRONTAL</p>
+                                <p>+ ILUMINACIÓN NATURAL</p>
+                                <p>+ UN SOLO SUJETO EN CÁMARA</p>
+                                <p class="text-[#E30613]">- EVITAR GAFAS O ACCESORIOS</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-8">
+                        
+                        <div v-if="results.length > 0" class="flex flex-col md:flex-row md:items-end justify-between border-b border-white/20 pb-4 mb-8">
+                            <div>
+                                <h2 class="font-sans font-black text-4xl md:text-5xl uppercase tracking-tighter text-white">
+                                    COINCIDENCIAS <span class="text-[#E30613]">DETECTADAS</span>
+                                </h2>
+                            </div>
+                            <div class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] bg-[#E30613]/10 border border-[#E30613] px-3 py-1.5 w-max mt-4 md:mt-0">
+                                {{ results.length }} {{ results.length === 1 ? 'REGISTRO' : 'REGISTROS' }}
                             </div>
                         </div>
 
-                        <!-- Estado vacío -->
-                        <div v-else-if="!uploadedImageUrl" class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                            <MagnifyingGlassIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 class="text-lg font-medium text-slate-900 mb-2">
-                                Comienza subiendo tu foto
-                            </h3>
-                            <p class="text-sm text-slate-500">
-                                Usa el panel de la izquierda para cargar una imagen
+                        <div v-if="results.length > 0" class="columns-2 md:columns-3 xl:columns-4 gap-2 space-y-2 masonry-grid">
+                            <Link v-for="result in results" :key="result.id"
+                                :href="route('gallery.show', result.unique_id)"
+                                class="break-inside-avoid block group relative bg-[#09090b] overflow-hidden border-[4px] border-black hover:border-[#E30613] transition-none w-full h-auto">
+
+                                <div class="relative w-full h-auto">
+                                    <ProtectedImage :src="result.thumbnail_url" :alt="result.unique_id"
+                                        class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
+                                        loading="lazy" />
+
+                                    <div class="absolute inset-0 bg-[#E30613] mix-blend-overlay opacity-0 group-hover:opacity-20 transition-none pointer-events-none"></div>
+
+                                    <div class="absolute top-2 left-2 pointer-events-none">
+                                        <span class="bg-[#E30613] text-black font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-1 shadow-lg block">
+                                            MATCH: {{ Math.round(result.similarity * 100) }}%
+                                        </span>
+                                    </div>
+
+                                    <div class="absolute bottom-2 right-2 bg-black text-white px-2 py-1 text-[9px] font-mono font-bold uppercase tracking-widest border border-white/20 opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
+                                        [ INSPECCIONAR ]
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+
+                        <div v-else-if="!uploadedImageUrl" class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-white/10 bg-black text-center h-full">
+                            <MagnifyingGlassIcon class="w-16 h-16 text-gray-800 mb-6" />
+                            <h3 class="font-black font-sans text-4xl md:text-6xl text-gray-600 tracking-tighter mb-4 uppercase">ESPERANDO DATOS.</h3>
+                            <p class="font-mono text-xs text-gray-500 tracking-widest uppercase">
+                                INGRESÁ UN PATRÓN FACIAL EN EL PANEL IZQUIERDO PARA INICIAR EL ESCÁNER.
                             </p>
                         </div>
 
-                        <!-- Sin resultados -->
-                        <div v-else-if="processingStage === 'done' && results.length === 0" class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                            <ExclamationTriangleIcon class="w-16 h-16 text-amber-400 mx-auto mb-4" />
-                            <h3 class="text-lg font-medium text-slate-900 mb-2">
-                                No encontramos coincidencias
-                            </h3>
-                            <p class="text-sm text-slate-500 mb-4">
-                                Intenta con otra foto o verifica que estés en el evento correcto
+                        <div v-else-if="processingStage === 'done' && results.length === 0" class="flex flex-col items-center justify-center py-32 border-4 border-[#E30613] bg-black text-center h-full">
+                            <ExclamationTriangleIcon class="w-16 h-16 text-[#E30613] mb-6" />
+                            <h3 class="font-black font-sans text-4xl md:text-6xl text-white tracking-tighter mb-4 uppercase">BÚSQUEDA FALLIDA.</h3>
+                            <p class="font-mono text-xs text-gray-400 tracking-widest uppercase mb-8 max-w-lg">
+                                NO SE ENCONTRARON COINCIDENCIAS
                             </p>
-                            <button 
-                                @click="resetSearch"
-                                class="text-sm text-slate-600 hover:text-slate-900 underline"
-                            >
-                                Intentar con otra foto
+                            <button @click="resetSearch" class="border-2 border-white bg-white text-black hover:bg-black hover:text-white px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
+                                [  REINTENTAR ]
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+.masonry-grid {
+    column-fill: balance;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #000000;
+    border-left: 1px solid #333;
+}
+::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #E30613;
+}
+</style>
