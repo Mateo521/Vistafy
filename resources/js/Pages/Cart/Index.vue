@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ProtectedImage from '@/Components/ProtectedImage.vue';
 import { ref, computed } from 'vue';
 import {
     ArrowLeftIcon,
