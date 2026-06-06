@@ -837,7 +837,7 @@ const paginationPages = computed(() => {
                     </div>
                     <div class="flex gap-3">
                         <button @click="closeModal"
-                            class="px-5 py-2 border border-white text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition">Abortar</button>
+                            class="px-5 py-2 border border-white text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition">CANCELAR</button>
                         <button v-if="uploadMode === 'upload'" @click="uploadPhotos"
                             :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces || processingBibs"
                             class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">

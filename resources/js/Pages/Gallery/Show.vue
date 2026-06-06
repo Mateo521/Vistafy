@@ -307,7 +307,7 @@ const handleImageError = (e) => {
 
             <div class="relative bg-black border-[4px] border-white w-full max-w-md shadow-[10px_10px_0_rgba(220,38,38,1)] overflow-hidden">
                 <div class="bg-white text-black px-4 py-2 flex justify-between items-center font-bold text-xs uppercase tracking-widest">
-                    <span>F33 // TERMINAL DE PAGO</span>
+                    <span>F33 // PAGO</span>
                     <button @click="showEmailModal = false" class="hover:text-red-600 transition-none">[X]</button>
                 </div>
 
@@ -315,7 +315,7 @@ const handleImageError = (e) => {
                     <form @submit.prevent="submitPurchase" class="space-y-6">
                         <div>
                             <label class="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">
-                                > ENTRADA DE CORREO_
+                                >  CORREO_
                             </label>
                             <input v-model="guestEmail" type="email" required
                                 class="w-full bg-gray-950 border border-gray-600 focus:border-red-600 focus:ring-0 text-white font-mono text-xs py-3 px-4 outline-none transition-none"
@@ -332,7 +332,7 @@ const handleImageError = (e) => {
                             </div>
                             <div class="ml-3">
                                 <span class="block text-[9px] font-bold uppercase tracking-widest text-white group-hover:text-red-600 transition-none">
-                                    [ GENERAR USUARIO ]
+                                    [ CREAR USUARIO ]
                                 </span>
                                 <span class="block text-[9px] text-gray-500 mt-1 leading-relaxed">
                                     SE ALMACENARÁ EL HISTORIAL. RECIBIRÁ CREDENCIALES TEMPORALES VÍA EMAIL.
@@ -344,11 +344,11 @@ const handleImageError = (e) => {
                             <button type="submit" :disabled="loading"
                                 class="w-full py-4 bg-red-600 text-black text-[11px] font-black uppercase tracking-[0.25em] hover:bg-white transition-none disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span v-if="loading">EJECUTANDO...</span>
-                                <span v-else>INICIAR TRANSACCIÓN</span>
+                                <span v-else>COMPRAR</span>
                             </button>
                             <button type="button" @click="showEmailModal = false"
                                 class="w-full py-3 text-gray-500 text-[9px] font-bold uppercase tracking-widest hover:text-white transition-none border border-transparent hover:border-gray-500">
-                                [ ABORTAR ]
+                                [ CANCELAR ]
                             </button>
                         </div>
                     </form>
@@ -360,21 +360,22 @@ const handleImageError = (e) => {
             enter-to-class="opacity-100" leave-active-class="transition-none"
             leave-from-class="opacity-100" leave-to-class="opacity-0">
             
-            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md cursor-zoom-out flex items-center justify-center"
+            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md cursor-zoom-out"
                 @click="showFullImage = false">
                 
-                <button @click="showFullImage = false" 
-                    class="absolute top-4 right-4 md:top-8 md:right-8 z-50 bg-black text-white border-2 border-white hover:bg-white hover:text-black font-mono font-bold text-[10px] md:text-xs uppercase tracking-widest px-4 py-2 transition-none cursor-pointer">
+                <button @click.stop="showFullImage = false" 
+                    class="absolute top-6 right-6 md:top-8 md:right-8 z-[150] bg-black text-white border-2 border-white hover:bg-white hover:text-black font-mono font-bold text-[10px] md:text-xs uppercase tracking-widest px-4 py-2 transition-none cursor-pointer shadow-2xl">
                     [ CERRAR VISOR ]
                 </button>
 
-                <div class="w-full h-full p-6 pt-20 pb-16 md:p-16 flex items-center justify-center">
+                <div class="absolute inset-0 flex items-center justify-center p-8 pt-24 pb-20 md:p-20 pointer-events-none z-[110]">
                     <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                        class="max-w-full max-h-full object-contain border-[4px] border-white shadow-2xl cursor-default" 
+                        class="w-auto h-auto object-contain border-[4px] border-white shadow-[0_0_50px_rgba(0,0,0,0.8)] pointer-events-auto cursor-default" 
+                        style="max-width: 100%; max-height: 100%;"
                         @click.stop />
                 </div>
 
-                <div class="absolute bottom-4 left-0 w-full text-center font-mono text-[10px] text-gray-500 uppercase pointer-events-none">
+                <div class="absolute bottom-6 left-0 w-full text-center font-mono text-[10px] text-gray-500 uppercase pointer-events-none z-[120]">
                     REVISIÓN F33 // ID: {{ photo.unique_id }}
                 </div>
                 

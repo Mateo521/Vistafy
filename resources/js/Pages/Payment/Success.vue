@@ -195,7 +195,7 @@ onMounted(() => {
                         class="bg-zinc-900 px-8 py-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <Link :href="route('home')"
                             class="font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white flex items-center gap-2 transition-colors">
-                            <HomeIcon class="w-4 h-4" /> Abortar al inicio
+                            <HomeIcon class="w-4 h-4" /> CANCELAR al inicio
                         </Link>
 
                         <a href="mailto:soporte@f33.click"
