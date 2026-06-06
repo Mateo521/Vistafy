@@ -504,7 +504,7 @@ const paginationPages = computed(() => {
                                         }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span>Extracciones</span>
+                                    <span>Descargas</span>
                                     <span class="text-xl font-sans font-black text-white">{{ stats.total_downloads
                                         }}</span>
                                 </div>

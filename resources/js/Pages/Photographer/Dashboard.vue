@@ -62,11 +62,11 @@ const handleImageError = (e) => {
                     <div class="flex gap-3">
                         <Link :href="route('photographer.photos.create')" 
                             class="px-6 py-3 bg-black border border-white text-white text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors rounded-none flex items-center gap-2">
-                            <PhotoIcon class="w-4 h-4" /> [ Cargar Datos ]
+                            <PhotoIcon class="w-4 h-4" /> [ Cargar fotos ]
                         </Link>
                         <Link :href="route('photographer.events.create')" 
                             class="px-6 py-3 bg-red-600 border border-red-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-red-600 transition-colors rounded-none flex items-center gap-2">
-                            <CalendarIcon class="w-4 h-4" /> [ Nuevo Objetivo ]
+                            <CalendarIcon class="w-4 h-4" /> [ Nuevo evento ]
                         </Link>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ const handleImageError = (e) => {
                         <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2  border-white/10 group-hover:border-red-600 transition-colors"></div>
 
                         <div class="flex justify-between items-start relative z-10">
-                            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Extracciones</span>
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-gray-500 group-hover:text-red-600 transition-colors">Descargas</span>
                             <ArrowDownTrayIcon class="w-4 h-4 text-gray-700 group-hover:text-red-600" />
                         </div>
                         <span class="text-5xl font-sans font-black text-white tracking-tighter relative z-10">{{ stats.total_downloads }}</span>
