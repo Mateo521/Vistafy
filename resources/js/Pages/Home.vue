@@ -113,7 +113,7 @@ const formatEventTitle = (name) => {
                             </div>
 
                             <h1
-                                class="text-4xl md:text-6xl lg:text-[8rem] font-bebas tracking-tighter leading-[0.85] uppercase">
+                                class="text-4xl md:text-6xl lg:text-[8rem] font-flux tracking-tighter leading-[0.85] uppercase">
                                 {{ formatEventTitle(event.name).first }} <br>
                                 <span :class="index % 2 === 0 ? 'text-transparent' : 'text-[#E30613]'"
                                     :style="index % 2 === 0 ? '-webkit-text-stroke: 2px white;' : ''">
