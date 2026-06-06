@@ -133,7 +133,7 @@ const handleImageError = (e) => {
                 <div class="mb-12 border-b-[12px] border-white pb-8">
                     <span
                         class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4 block  border-red-600 pl-3">
-                        Memoria temporal // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
+                        // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
                     </span>
                     <h1
                         class="font-black text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
@@ -147,10 +147,11 @@ const handleImageError = (e) => {
                         <ShoppingBagIcon class="w-10 h-10 text-red-600" />
                     </div>
                     <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase mb-4">
-                        SISTEMA VACÍO.
+                        VACÍO.
                     </h2>
                     <p class="font-mono text-xs text-gray-500 tracking-widest uppercase mb-10">
-                        NO HAY FRAGMENTOS ASIGNADOS AL BUFFER DE DESCARGA.
+                        NO HAY ARCHIVOS EN LA COLA DE DESCARGAS. AGREGÁ FOTOGRAFÍAS DESDE EL CATÁLOGO PARA PROCESAR TU
+                        COMPRA.
                     </p>
                     <Link :href="route('gallery.index')"
                         class="border-2 border-white bg-black text-white hover:bg-white hover:text-black font-black uppercase tracking-widest px-8 py-4 flex items-center gap-3 transition-none">
@@ -223,7 +224,7 @@ const handleImageError = (e) => {
 
                             <h2
                                 class="font-mono text-xs font-bold uppercase  text-gray-400 mb-6 border-b border-white/20 pb-4">
-                                // BALANCE DE TRANSACCIÓN
+                                // BALANCE
                             </h2>
 
                             <div class="font-mono space-y-4 mb-8">
@@ -246,7 +247,7 @@ const handleImageError = (e) => {
                             <button @click="checkout" :disabled="processing || itemCount === 0"
                                 class="w-full bg-white text-black font-black text-sm uppercase tracking-[0.25em] py-5 border-[4px] border-white hover:bg-black hover:text-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
                                 <span v-if="processing" class="animate-pulse">PROCESANDO...</span>
-                                <span v-else>EJECUTAR TRANSACCIÓN</span>
+                                <span v-else>COMPRAR</span>
                                 <span v-if="!processing"
                                     class="text-lg leading-none group-hover:translate-x-2 transition-transform duration-300">→</span>
                             </button>
@@ -255,7 +256,7 @@ const handleImageError = (e) => {
                                 class="mt-6 font-mono text-[9px] uppercase tracking-widest text-gray-500 font-bold space-y-3">
                                 <p class="flex items-start gap-2">
                                     <ShieldCheckIcon class="w-4 h-4 text-white flex-shrink-0" />
-                                    PASARELA ENCRIPTADA MEDIANTE MERCADO PAGO.
+                                    PASARELA CON MERCADO PAGO.
                                 </p>
                                 <p class="flex items-start gap-2">
                                     <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor"
@@ -263,7 +264,7 @@ const handleImageError = (e) => {
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
-                                    DESCARGA INMEDIATA AL ACREDITAR PAGO.
+                                    DESCARGA INMEDIATA AL ACREDITAR.
                                 </p>
                             </div>
                         </div>
