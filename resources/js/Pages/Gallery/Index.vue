@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { ref, onMounted, nextTick } from 'vue';
+import ProtectedImage from '@/Components/ProtectedImage.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {
     MagnifyingGlassIcon,
@@ -286,8 +287,7 @@ const totalResults = () => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 pointer-events-none">
                     <div>
-                        <p
-                            class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
+                        <p class="font-mono text-xs uppercase tracking-[0.45em] text-red-600 mb-4  border-red-600 pl-3">
                             Catálogo F33
                         </p>
                         <h1
@@ -385,7 +385,7 @@ const totalResults = () => {
                                         class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
                                         <option value="">TODOS LOS EVENTOS</option>
                                         <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name
-                                            }}</option>
+                                        }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -494,7 +494,7 @@ const totalResults = () => {
                             class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[6px] border-black hover:border-red-600 transition-none ">
 
                             <div class="relative w-full h-auto">
-                                <img :src="photo.thumbnail_url" :alt="photo.unique_id" draggable="false"
+                                <ProtectedImage :src="photo.thumbnail_url" :alt="photo.unique_id"
                                     class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
                                     loading="lazy" @error="handleImageError" />
 
@@ -519,6 +519,9 @@ const totalResults = () => {
                                     </svg>
                                 </div>
                             </div>
+
+
+
                         </div>
                     </div>
 
