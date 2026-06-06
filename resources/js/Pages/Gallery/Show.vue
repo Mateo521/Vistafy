@@ -72,15 +72,15 @@ const addToCart = async () => {
         const response = await axios.post(route('cart.add', props.photo.id));
 
         if (response.data.success) {
-            success('FOTOGRAFÍA ENCOLADA AL CARRITO');
+            success('FOTOGRAFÍA AGREGADA AL CARRITO');
             window.dispatchEvent(new Event('cart-updated'));
         } else {
-            error('FOTOGRAFÍA YA EXISTENTE EN COLA');
+            error('FOTOGRAFÍA YA EXISTENTE EN EL CARRITO');
         }
     } catch (err) {
         console.error('Error agregando al carrito:', err);
         if (err.response) {
-            error('ERROR AL ENCOLAR DATO');
+            error('ERROR AL AGREGAR AL CARRITO');
         } else {
             error('ERROR DE CONEXIÓN DEL NODO');
         }
@@ -169,7 +169,7 @@ const handleImageError = (e) => {
                     <Link v-if="isAuthenticated" :href="route('cart.index')"
                         class="text-white hover:text-black hover:bg-white transition-none flex items-center gap-2 border border-white px-3 py-1">
                         <ShoppingCartIcon class="w-4 h-4" />
-                        <span>COLA DE DESCARGAS</span>
+                        <span>CARRITO DE COMPRAS</span>
                     </Link>
                 </div>
             </div>
@@ -227,11 +227,11 @@ const handleImageError = (e) => {
                                 <template v-if="isAuthenticated">
                                     <PlusIcon v-if="!addingToCart" class="w-5 h-5" />
                                     <span v-if="addingToCart">Procesando...</span>
-                                    <span v-else>ENCOLAR A CARRITO</span>
+                                    <span v-else>AGREGAR AL CARRITO</span>
                                 </template>
                                 <template v-else>
                                     <ShoppingCartIcon v-if="!loading" class="w-5 h-5" />
-                                    <span v-if="loading">INICIALIZANDO...</span>
+                                    <span v-if="loading">INICIANDO...</span>
                                     <span v-else>Comprar</span>
                                 </template>
                             </button>
