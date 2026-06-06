@@ -166,9 +166,11 @@ const handleImageError = (e) => {
 
                             <Link :href="route('gallery.show', item.photo.unique_id)"
                                 class="block flex-shrink-0 w-full sm:w-40 h-40 bg-black border-[4px] border-black group-hover:border-red-600 overflow-hidden relative transition-none">
-                                <ProtectedImage :src="item.photo.thumbnail_url"
-                                    class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none"
+
+                                <ProtectedImage :src="item.photo.watermarked_url || item.photo.thumbnail_url"
+                                    class="absolute inset-0 w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none"
                                     @error="handleImageError" />
+
                                 <div
                                     class="absolute inset-0 bg-red-600 mix-blend-overlay opacity-0 group-hover:opacity-30 transition-none pointer-events-none">
                                 </div>
