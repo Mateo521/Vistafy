@@ -537,8 +537,8 @@ class PublicGalleryController extends Controller
                 'unique_id' => $photo->unique_id,
                 'title' => $photo->title,
                 'price' => $photo->price,
-                'thumbnail_url' => $photo->thumbnail_url,
-                'watermarked_url' => $photo->watermarked_url,
+                'thumbnail_url' => $photo->getThumbnailUrlAttribute(), 
+                'watermarked_url' => $photo->getWatermarkedUrlAttribute(),
                 'photographer' => [
                     'id' => $photo->photographer->id,
                     'business_name' => $photo->photographer->business_name,

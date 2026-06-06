@@ -30,25 +30,33 @@ class Photo extends Model
         'bib_processed_at' => 'datetime',
     ];
 
-  
     protected $appends = [
         'thumbnail_url',
         'watermarked_url',
         'original_url',
-        // 'view_url',  
+        // 'view_url',
         // 'thumbnail_view_url',
     ];
 
     // Relaciones
-    public function photographer() { return $this->belongsTo(Photographer::class); }
-    public function event() { return $this->belongsTo(Event::class); }
+    public function photographer()
+    {
+        return $this->belongsTo(Photographer::class);
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 
     /**
      * URL de la foto Original (Privada en B2)
      */
-   public function getOriginalUrlAttribute()
+    public function getOriginalUrlAttribute()
     {
-        if (!$this->original_path) return null;
+        if (! $this->original_path) {
+            return null;
+        }
 
         if (\Illuminate\Support\Str::startsWith($this->original_path, ['http://', 'https://'])) {
             return $this->original_path;
@@ -56,33 +64,37 @@ class Photo extends Model
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = \Illuminate\Support\Facades\Storage::disk('b2');
+
         return $disk->temporaryUrl($this->original_path, now()->addMinutes(60));
     }
 
     /**
      * URL del Thumbnail (Pública en B2)
      */
-   public function getThumbnailUrlAttribute()
+    public function getThumbnailUrlAttribute()
     {
-        if (!$this->thumbnail_path) {
+        if (! $this->thumbnail_path) {
             return 'https://via.placeholder.com/400?text=Sin+Imagen';
         }
 
-        if (\Illuminate\Support\Str::startsWith($this->thumbnail_path, ['http://', 'https://'])) {
+        if (Str::startsWith($this->thumbnail_path, ['http://', 'https://'])) {
             return $this->thumbnail_path;
         }
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = \Illuminate\Support\Facades\Storage::disk('b2');
+        $disk = Storage::disk('b2');
+
         return $disk->temporaryUrl($this->thumbnail_path, now()->addMinutes(60));
     }
 
     /**
      * URL con Marca de Agua (Pública en B2)
      */
-  public function getWatermarkedUrlAttribute()
+    public function getWatermarkedUrlAttribute()
     {
-        if (!$this->watermarked_path) return $this->thumbnail_url;
+        if (! $this->watermarked_path) {
+            return $this->thumbnail_url;
+        }
 
         if (\Illuminate\Support\Str::startsWith($this->watermarked_path, ['http://', 'https://'])) {
             return $this->watermarked_path;
@@ -90,8 +102,7 @@ class Photo extends Model
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = \Illuminate\Support\Facades\Storage::disk('b2');
+
         return $disk->temporaryUrl($this->watermarked_path, now()->addMinutes(60));
     }
-
-    
 }
