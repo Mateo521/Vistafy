@@ -426,7 +426,7 @@ const totalResults = () => {
 
                                         <button @click="performFaceSearch" :disabled="isSearching"
                                             class="w-full bg-white text-black font-black py-3 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-none disabled:opacity-50 flex items-center justify-center gap-2">
-                                            {{ isSearching ? progressMessage : 'EJECUTAR MOTOR IA' }}
+                                            {{ isSearching ? progressMessage : 'BUSCAR' }}
                                         </button>
                                         <p v-if="errorMessage"
                                             class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ errorMessage }}
@@ -453,7 +453,7 @@ const totalResults = () => {
                                         <button @click="performBibSearch"
                                             :disabled="isSearchingBib || !bibNumber.trim()"
                                             class="w-full border-2 border-white text-white font-black py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-none disabled:opacity-50">
-                                            {{ isSearchingBib ? 'PROCESANDO...' : 'EJECUTAR MOTOR OCR' }}
+                                            {{ isSearchingBib ? 'PROCESANDO...' : 'BUSCAR' }}
                                         </button>
                                         <p v-if="bibErrorMessage"
                                             class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ bibErrorMessage
