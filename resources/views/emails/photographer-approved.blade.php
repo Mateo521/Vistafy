@@ -14,7 +14,7 @@
                     <tr>
                         <td style="background-color: #09090b; padding: 40px; text-align: center; border-bottom: 2px solid #E30613;">
                             <h1 style="color: #ffffff; margin: 0 0 10px 0; font-size: 28px; font-weight: 900; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: -1px;">
-                                F33 <span style="color: #E30613;">STUDIO</span>
+                                F33 <span style="color: #E30613;">.</span>
                             </h1>
                             <p style="color: #71717a; margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;">
                                 [ Autorización ]

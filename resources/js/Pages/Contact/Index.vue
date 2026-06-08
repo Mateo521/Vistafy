@@ -32,7 +32,7 @@ const submit = () => {
         <div class="bg-white border-b border-gray-100 pt-24 pb-12 md:pt-32 md:pb-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-3xl">
-                    <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                    <span class="text-xs font-bold  text-slate-400 uppercase mb-2 block">
                         Estamos acá para ayudarte
                     </span>
                     <h1 class="text-4xl md:text-5xl font-sans font-bold text-slate-900">

@@ -148,7 +148,7 @@ const navigationItems = [
 
                                 <div v-if="item.hasDropdown" class="relative">
                                     <button @click="eventsMenuOpen = !eventsMenuOpen" :class="[
-                                        'flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 border-b',
+                                        'flex items-center gap-1.5 text-[10px] font-bold uppercase  transition-all duration-300 border-b',
                                         item.active
                                             ? 'text-red-600 border-red-600'
                                             : 'text-gray-400 border-transparent hover:text-white hover:border-white/30'
@@ -178,7 +178,7 @@ const navigationItems = [
                                 </div>
 
                                 <Link v-else :href="item.route" :class="[
-                                    'text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 border-b',
+                                    'text-[10px] font-bold uppercase  transition-all duration-300 border-b',
                                     item.active
                                         ? 'text-red-600 border-red-600'
                                         : 'text-gray-400 border-transparent hover:text-white hover:border-white/30'
@@ -203,15 +203,15 @@ const navigationItems = [
 
                             <template v-if="!user">
                                 <Link :href="route('photographer.register')"
-                                    class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-red-600 transition-colors">
+                                    class="text-[10px] font-bold uppercase  text-gray-400 hover:text-red-600 transition-colors">
                                     Soy fotógrafo
                                 </Link>
                                 <Link :href="route('login')"
-                                    class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-white transition-colors">
+                                    class="text-[10px] font-bold uppercase  text-gray-400 hover:text-white transition-colors">
                                     Ingresar
                                 </Link>
                                 <Link :href="route('register')"
-                                    class="px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] border border-white text-white hover:bg-white hover:text-black transition-all duration-300 rounded-sm">
+                                    class="px-6 py-2.5 text-[10px] font-bold uppercase  border border-white text-white hover:bg-white hover:text-black transition-all duration-300 rounded-sm">
                                     Registrarse
                                 </Link>
                             </template>
@@ -219,13 +219,13 @@ const navigationItems = [
                             <template v-else>
                                 <div class="flex items-center space-x-4">
                                     <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route"
-                                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 hover:text-white transition-colors">
+                                        class="text-[10px] font-bold uppercase  text-red-600 hover:text-white transition-colors">
                                         {{ dashboardInfo.text }}
                                     </Link>
 
                                     <div v-else class="relative">
                                         <button @click="userMenuOpen = !userMenuOpen"
-                                            class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-white transition-colors">
+                                            class="flex items-center gap-2 text-[10px] font-bold uppercase  text-gray-400 hover:text-white transition-colors">
                                             {{ user.name }}
                                             <ChevronDownIcon
                                                 :class="['w-3 h-3 transition-transform duration-300', userMenuOpen ? 'rotate-180 text-red-600' : '']" />
@@ -260,7 +260,7 @@ const navigationItems = [
                                     </div>
 
                                     <Link v-if="dashboardInfo?.single" :href="route('logout')" method="post" as="button"
-                                        class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 hover:text-white transition-colors">
+                                        class="text-[10px] font-bold uppercase  text-red-600 hover:text-white transition-colors">
                                         Salir
                                     </Link>
                                 </div>
@@ -290,7 +290,7 @@ const navigationItems = [
                     <div class="flex flex-col space-y-8 text-center flex-1">
 
                         <Link href="/"
-                            class="text-sm font-bold uppercase tracking-[0.2em] text-white hover:text-red-600">Inicio
+                            class="text-sm font-bold uppercase  text-white hover:text-red-600">Inicio
                         </Link>
 
                         <div class="flex flex-col space-y-4">
@@ -304,14 +304,14 @@ const navigationItems = [
                         </div>
 
                         <Link :href="route('gallery.index')"
-                            class="text-sm font-bold uppercase tracking-[0.2em] text-white hover:text-red-600">Galería
+                            class="text-sm font-bold uppercase  text-white hover:text-red-600">Galería
                         </Link>
                         <Link :href="route('photographers.index')"
-                            class="text-sm font-bold uppercase tracking-[0.2em] text-white hover:text-red-600">
+                            class="text-sm font-bold uppercase  text-white hover:text-red-600">
                             Fotógrafos</Link>
 
                         <Link v-if="user" :href="route('cart.index')"
-                            class="text-sm font-bold uppercase tracking-[0.2em] text-red-600 flex items-center justify-center gap-3">
+                            class="text-sm font-bold uppercase  text-red-600 flex items-center justify-center gap-3">
                             <ShoppingCartIcon class="w-5 h-5" />
                             Carrito
                             <span v-if="cartCount > 0"
@@ -366,7 +366,7 @@ const navigationItems = [
                     </Link>
 
                     <div
-                        class="flex flex-wrap justify-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                        class="flex flex-wrap justify-center gap-8 text-[10px] font-bold uppercase  text-gray-400">
                         <Link :href="route('events.index')" class="hover:text-red-600 transition-colors">Eventos</Link>
                         <Link :href="route('about')" class="hover:text-red-600 transition-colors">Nosotros</Link>
                         <Link :href="route('contact.index')" class="hover:text-red-600 transition-colors">Soporte</Link>

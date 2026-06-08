@@ -235,7 +235,7 @@ onMounted(async () => {
                     <div class="lg:col-span-4 flex flex-col gap-6">
                         <div class="bg-[#09090b] border-[4px] border-white p-6 sticky top-24 shadow-[8px_8px_0_rgba(255,255,255,1)]">
                             
-                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-6 border-b border-white/20 pb-4">
+                            <h3 class="font-mono text-[10px] font-bold uppercase  text-white mb-6 border-b border-white/20 pb-4">
                                 [ FASE 1: ENTRADA ]
                             </h3>
 

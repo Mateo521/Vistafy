@@ -94,7 +94,7 @@ const submit = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
                 <div class="mb-10 border-b border-gray-200 pb-6">
-                    <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                    <span class="text-xs font-bold  text-slate-400 uppercase mb-2 block">
                         Configuración
                     </span>
                     <h1 class="text-3xl font-sans font-bold text-slate-900">

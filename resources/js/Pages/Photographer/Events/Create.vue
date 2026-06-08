@@ -103,7 +103,7 @@ const submit = () => {
                 <form @submit.prevent="submit" class="space-y-8">
 
                     <div class="bg-[#09090b] border-[4px] border-white/10 p-6 md:p-10 transition-none focus-within:border-white/30">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#E30613] mb-8 border-b border-white/10 pb-4">
+                        <h2 class="font-mono text-[10px] font-bold uppercase  text-[#E30613] mb-8 border-b border-white/10 pb-4">
                             Información General
                         </h2>
 
@@ -164,7 +164,7 @@ const submit = () => {
                     </div>
 
                     <div class="bg-[#09090b] border-[4px] border-white/10 p-6 md:p-10 transition-none focus-within:border-white/30">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#E30613] mb-8 border-b border-white/10 pb-4">
+                        <h2 class="font-mono text-[10px] font-bold uppercase  text-[#E30613] mb-8 border-b border-white/10 pb-4">
                             Configuración de Acceso
                         </h2>
 
@@ -210,7 +210,7 @@ const submit = () => {
                     </div>
 
                     <div class="bg-[#09090b] border-[4px] border-white/10 p-6 md:p-10 transition-none focus-within:border-white/30">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#E30613] mb-8 border-b border-white/10 pb-4">
+                        <h2 class="font-mono text-[10px] font-bold uppercase  text-[#E30613] mb-8 border-b border-white/10 pb-4">
                             Identidad Visual
                         </h2>
 
@@ -245,7 +245,7 @@ const submit = () => {
                             Cancelar
                         </Link>
                         <button type="submit" :disabled="form.processing"
-                            class="px-10 py-4 bg-[#E30613] border-2 border-[#E30613] text-black font-black font-sans text-sm uppercase tracking-[0.2em] hover:bg-white hover:border-white transition-none disabled:opacity-50 text-center">
+                            class="px-10 py-4 bg-[#E30613] border-2 border-[#E30613] text-black font-black font-sans text-sm uppercase  hover:bg-white hover:border-white transition-none disabled:opacity-50 text-center">
                             {{ form.processing ? 'PROCESANDO...' : 'CREAR EVENTO' }}
                         </button>
                     </div>

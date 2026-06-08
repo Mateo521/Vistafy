@@ -52,7 +52,7 @@ const getImageUrl = (photo) => {
         
         <div class="mb-12 flex justify-end">
             <button @click="router.visit(route('gallery.index'))" 
-                class="group flex items-center gap-4 bg-black border border-white px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white hover:bg-white hover:text-black transition-colors cursor-pointer">
+                class="group flex items-center gap-4 bg-black border border-white px-6 py-3 font-mono text-[10px] uppercase  text-white hover:bg-white hover:text-black transition-colors cursor-pointer">
                 <span>[ ACCEDER AL ARCHIVO COMPLETO ]</span>
             </button>
         </div>
@@ -89,7 +89,7 @@ const getImageUrl = (photo) => {
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 pointer-events-none">
                     <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                         <div class="flex items-center justify-between mb-2 border-b border-white/20 pb-2">
-                            <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-red-600 font-bold">
+                            <p class="font-mono text-[10px] uppercase  text-red-600 font-bold">
                                 #{{ photo.unique_id }}
                             </p>
                             <p v-if="photo.price" class="font-mono text-[11px] font-bold text-white">

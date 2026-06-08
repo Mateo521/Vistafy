@@ -9,6 +9,7 @@ use App\Http\Controllers\EventFaceSearchController;
 use App\Http\Controllers\FutureEventController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentSimulationController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Photographer\EventController;
 use App\Http\Controllers\Photographer\FutureEventManagementController;
 use App\Http\Controllers\Photographer\MercadoPagoOAuthController;
@@ -24,6 +25,15 @@ use App\Http\Controllers\WebhookController;
 use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+
+
+
+Route::middleware('guest')->group(function () {
+    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+});
+
 
 Route::get(
     'foto/{photographer}/{year}/{month}/{day}/{type}/{filename}',
@@ -134,6 +144,10 @@ Route::post('/webhooks/mercadopago', [WebhookController::class, 'mercadoPago']);
 Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download'])
     ->name('photo.download')
     ->middleware('auth');
+
+
+
+
 
 Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(function () {
     Route::get('/', [PurchaseHistoryController::class, 'index'])->name('index');

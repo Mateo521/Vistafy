@@ -33,7 +33,7 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
             <div class="pointer-events-auto flex items-center gap-3">
 
                 <Link href="/"
-                    class="inline-flex items-center gap-1 text-xs uppercase tracking-[0.2em] text-slate-300 hover:text-white transition">
+                    class="inline-flex items-center gap-1 text-xs uppercase  text-slate-300 hover:text-white transition">
                     <ChevronLeftIcon class="w-4 h-4" />
                     <span>Volver</span>
                 </Link>
@@ -60,7 +60,7 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
         <nav
             class="fixed bottom-0 left-0 right-0 z-30 bg-black/80 backdrop-blur-sm border-t border-slate-800 px-4 sm:px-6 lg:px-8 py-3">
             <div
-                class="max-w-4xl mx-auto flex items-center justify-between gap-4 text-[11px] sm:text-xs uppercase tracking-[0.2em] text-slate-300">
+                class="max-w-4xl mx-auto flex items-center justify-between gap-4 text-[11px] sm:text-xs uppercase  text-slate-300">
 
 
                 <div class="flex items-center gap-5 sm:gap-8">
@@ -101,15 +101,15 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
                             {{ user.name }}
                         </span>
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.dashboard')"
-                            class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-slate-200 transition">
+                            class="text-[10px] sm:text-xs font-bold uppercase  text-white hover:text-slate-200 transition">
                             Panel Pro
                         </Link>
                         <Link v-else-if="user.is_admin" :href="route('admin.dashboard')"
-                            class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-slate-200 transition">
+                            class="text-[10px] sm:text-xs font-bold uppercase  text-white hover:text-slate-200 transition">
                             Admin
                         </Link>
                         <Link :href="route('logout')" method="post" as="button"
-                            class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-red-400 hover:text-red-200 transition">
+                            class="text-[10px] sm:text-xs font-bold uppercase  text-red-400 hover:text-red-200 transition">
                             Salir
                         </Link>
                     </template>
@@ -117,11 +117,11 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
 
                     <template v-else>
                         <Link :href="route('photographer.register')"
-                            class="hidden sm:inline text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-200 hover:text-white transition">
+                            class="hidden sm:inline text-[10px] sm:text-xs font-bold uppercase  text-slate-200 hover:text-white transition">
                             Soy fotógrafo
                         </Link>
                         <Link :href="route('login')"
-                            class="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-slate-200 transition">
+                            class="text-[10px] sm:text-xs font-bold uppercase  text-white hover:text-slate-200 transition">
                             Ingresar
                         </Link>
                     </template>

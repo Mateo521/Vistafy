@@ -39,7 +39,7 @@ onMounted(loadEvents);
             <div v-if="loading" class="w-full h-full flex items-center justify-center bg-slate-950">
                 <div class="flex flex-col items-center gap-3 text-slate-300">
                     <div class="h-10 w-10 border-2 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
-                    <p class="text-xs uppercase tracking-[0.2em]">Cargando mapa...</p>
+                    <p class="text-xs uppercase ">Cargando mapa...</p>
                 </div>
             </div>
 

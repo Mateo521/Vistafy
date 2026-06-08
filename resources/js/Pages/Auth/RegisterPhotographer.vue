@@ -74,7 +74,7 @@ const submit = () => {
                         </p>
 
                         <div
-                            class="bg-zinc-950 border border-white/10 p-6 relative overflow-hidden border-l-4 border-l-[#E30613]">
+                            class="bg-zinc-950 border border-white/10 p-6 relative overflow-hidden  border-l-[#E30613]">
                             <h4 class="font-sans font-black text-white text-xl uppercase tracking-tighter mb-2">
                                 Curaduría</h4>
                             <p class="font-mono text-[10px] text-gray-500 leading-relaxed uppercase tracking-widest">
@@ -109,7 +109,7 @@ const submit = () => {
                                 <div>
                                     <label for="email"
                                         class="block font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Correo
-                                        Base</label>
+                                        electrónico</label>
                                     <input id="email" type="email" v-model="form.email" required
                                         placeholder="contacto@operador.com"
                                         class="w-full bg-zinc-950 border border-white/10 text-white font-mono text-xs p-4 focus:border-[#E30613] focus:ring-1 focus:ring-[#E30613] outline-none transition-colors placeholder:text-gray-700" />
@@ -120,8 +120,7 @@ const submit = () => {
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="password"
-                                            class="block font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Clave
-                                            de Encriptación</label>
+                                            class="block font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Contraseña</label>
                                         <input id="password" type="password" v-model="form.password" required
                                             placeholder="••••••••"
                                             class="w-full bg-zinc-950 border border-white/10 text-white font-mono text-xs p-4 focus:border-[#E30613] focus:ring-1 focus:ring-[#E30613] outline-none transition-colors placeholder:text-gray-700" />
@@ -131,7 +130,7 @@ const submit = () => {
                                     <div>
                                         <label for="password_confirmation"
                                             class="block font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Confirmar
-                                            Clave</label>
+                                            Contraseña</label>
                                         <input id="password_confirmation" type="password"
                                             v-model="form.password_confirmation" required placeholder="••••••••"
                                             class="w-full bg-zinc-950 border border-white/10 text-white font-mono text-xs p-4 focus:border-[#E30613] focus:ring-1 focus:ring-[#E30613] outline-none transition-colors placeholder:text-gray-700" />
@@ -246,7 +245,7 @@ const submit = () => {
                         <div>
                             <h3
                                 class="font-mono text-xs font-bold uppercase tracking-widest text-[#E30613] mb-6 border-b border-white/10 pb-2">
-                                03. Ubicación
+                                3. Ubicación
                             </h3>
 
                             <div class="space-y-4">
@@ -287,14 +286,13 @@ const submit = () => {
                             <button type="submit" :disabled="form.processing"
                                 class="w-full flex justify-center items-center gap-4 bg-[#E30613] border border-[#E30613] text-white font-sans font-black text-lg md:text-xl uppercase tracking-widest py-6 hover:bg-white hover:border-white hover:text-black transition-all duration-300 disabled:opacity-50 group">
                                 <span v-if="form.processing">Transfiriendo...</span>
-                                <span v-else>Transmitir Solicitud</span>
+                                <span v-else>Enviar solicitud</span>
                                 <ArrowRightIcon v-if="!form.processing"
                                     class="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                             </button>
                             <p class="font-mono text-[9px] text-gray-600 text-center mt-4 tracking-widest uppercase">
-                                Al transmitir, asumes las <a href="#"
-                                    class="text-white hover:text-[#E30613] border-b border-white/20 pb-0.5">reglas de
-                                    operación</a> de F33.
+                                Al transmitir, asumís las <a href="#"
+                                    class="text-white hover:text-[#E30613] border-b border-white/20 pb-0.5">reglas</a> de F33.
                             </p>
                         </div>
 
@@ -311,7 +309,7 @@ const submit = () => {
                             </Link>
                         </p>
                         <Link :href="route('register')"
-                            class="font-mono text-[9px] uppercase tracking-[0.2em] text-gray-600 hover:text-white transition-colors">
+                            class="font-mono text-[9px] uppercase  text-gray-600 hover:text-white transition-colors">
                             [ Registro Público / Clientes ]
                         </Link>
                     </div>

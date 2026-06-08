@@ -174,7 +174,7 @@ onMounted(() => {
                             </div>
 
                             <h3
-                                class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-6 border-b border-white/10 pb-2">
+                                class="font-mono text-[10px] font-bold uppercase  text-white mb-6 border-b border-white/10 pb-2">
                                 [ FILTRAR POR FOTÓGRAFO ]
                             </h3>
 

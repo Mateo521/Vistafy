@@ -464,7 +464,7 @@ const totalResults = () => {
 
                             <div class="mt-6 flex justify-end">
                                 <button type="button" @click="clearFilters"
-                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase tracking-[0.2em] transition-none border-b border-red-600 hover:border-white pb-1">
+                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase  transition-none border-b border-red-600 hover:border-white pb-1">
                                     [ REINICIAR PARÁMETROS ]
                                 </button>
                             </div>

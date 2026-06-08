@@ -180,7 +180,7 @@ onMounted(() => {
 
                                     <a v-if="purchase.order_token"
                                         :href="route('payment.download', purchase.order_token)"
-                                        class="group block w-full bg-white hover:bg-red-600 text-black hover:text-white font-sans text-xs font-black uppercase tracking-[0.2em] py-5 text-center transition-all duration-300 border border-white flex items-center justify-center gap-3">
+                                        class="group block w-full bg-white hover:bg-red-600 text-black hover:text-white font-sans text-xs font-black uppercase  py-5 text-center transition-all duration-300 border border-white flex items-center justify-center gap-3">
                                         <ArrowDownTrayIcon
                                             class="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                                         Descargar original

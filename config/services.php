@@ -27,16 +27,19 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
     'mercadopago' => [
         'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
         'client_id' => env('MERCADOPAGO_CLIENT_ID'),
         'client_secret' => env('MERCADOPAGO_CLIENT_SECRET'),
         'public_key' => env('MERCADOPAGO_PUBLIC_KEY'),
         'test_mode' => env('MERCADOPAGO_TEST_MODE', false),
-        'notification_url' => env('MERCADOPAGO_NOTIFICATION_URL', env('APP_URL') . '/webhooks/mercadopago'),
+        'notification_url' => env('MERCADOPAGO_NOTIFICATION_URL', env('APP_URL').'/webhooks/mercadopago'),
     ],
-
 
     'slack' => [
         'notifications' => [

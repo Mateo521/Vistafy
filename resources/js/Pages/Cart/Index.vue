@@ -208,7 +208,7 @@ const handleImageError = (e) => {
                                 </div>
 
                                 <div class="mt-auto border-t border-white/10 pt-4 flex items-end justify-between">
-                                    <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">
+                                    <span class="text-[9px] font-bold uppercase  text-gray-500">
                                         LICENCIA STANDARD
                                     </span>
                                     <span class="font-sans font-black text-3xl text-white leading-none">

@@ -25,7 +25,7 @@ import { Link } from '@inertiajs/vue3';
 
             <div class="bg-zinc-950 border border-white/10 shadow-2xl relative overflow-hidden w-full mx-auto" style="max-width: 100%;">
                 
-                <div class="absolute top-0 left-0 w-full h-[2px] bg-[#E30613]"></div>
+               
                 
                 <div class="px-6 py-10 sm:px-12 md:py-12">
                     <slot />

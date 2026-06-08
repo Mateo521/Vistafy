@@ -51,7 +51,7 @@ const handleImageError = (e) => {
                     <div>
                         <div class="flex items-center gap-3 mb-2">
                             <div class="w-3 h-3 bg-red-600 animate-pulse"></div>
-                            <span class="text-[10px] font-mono font-bold tracking-[0.2em] text-red-600 uppercase">
+                            <span class="text-[10px] font-mono font-bold  text-red-600 uppercase">
                                 Enlace Activo // Nivel de Acceso: PROFESIONAL
                             </span>
                         </div>

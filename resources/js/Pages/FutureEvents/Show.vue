@@ -78,7 +78,7 @@ const handleImageError = (e) => {
 
             <div class="absolute top-32 left-0 w-full px-8 md:px-16 z-10 max-w-7xl mx-auto left-0 right-0">
                 <Link :href="route('home')"
-                    class="inline-flex items-center text-[#C9C1B1] hover:text-[#FFB162] text-[10px] font-bold uppercase tracking-[0.2em] transition-colors group">
+                    class="inline-flex items-center text-[#C9C1B1] hover:text-[#FFB162] text-[10px] font-bold uppercase  transition-colors group">
                     <ArrowLeftIcon class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                     Volver al inicio
                 </Link>
@@ -89,7 +89,7 @@ const handleImageError = (e) => {
                     <div class="max-w-7xl mx-auto">
                         <div class="mb-6">
                             <span :class="[
-                                'inline-flex items-center px-4 py-2 rounded-none border text-[9px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm',
+                                'inline-flex items-center px-4 py-2 rounded-none border text-[9px] font-bold uppercase  backdrop-blur-sm',
                                 getDaysBadgeColor
                             ]">
                                 <ClockIcon class="w-3.5 h-3.5 mr-2" />
@@ -101,7 +101,7 @@ const handleImageError = (e) => {
                             {{ event.title }}
                         </h1>
 
-                        <div class="flex flex-wrap items-center gap-6 text-[#C9C1B1] text-[11px] font-bold uppercase tracking-[0.2em]">
+                        <div class="flex flex-wrap items-center gap-6 text-[#C9C1B1] text-[11px] font-bold uppercase ">
                             <div class="flex items-center gap-2">
                                 <CalendarIcon class="w-4 h-4 text-[#FFB162]" />
                                 <span>{{ event.formatted_date }} <span class="mx-1 text-[#C9C1B1]/30">|</span> {{ event.formatted_time }}hs</span>
@@ -157,18 +157,18 @@ const handleImageError = (e) => {
                             
                             <div class="flex flex-wrap gap-4">
                                 <button v-if="isPhotographer"
-                                    class="inline-flex items-center gap-3 px-8 py-4 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#EEE9DF] transition-colors rounded-sm shadow-lg group">
+                                    class="inline-flex items-center gap-3 px-8 py-4 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase  hover:bg-[#EEE9DF] transition-colors rounded-sm shadow-lg group">
                                     Postularme al Evento
                                     <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </button>
 
                                 <template v-else>
                                     <Link :href="route('photographer.register')"
-                                        class="px-8 py-4 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#EEE9DF] transition-colors rounded-sm shadow-lg text-center">
+                                        class="px-8 py-4 bg-[#FFB162] text-[#1B2632] font-bold text-[10px] uppercase  hover:bg-[#EEE9DF] transition-colors rounded-sm shadow-lg text-center">
                                         Crear cuenta de Fotógrafo
                                     </Link>
                                     <Link :href="route('login')"
-                                        class="px-8 py-4 border border-[#C9C1B1]/30 text-[#C9C1B1] font-bold text-[10px] uppercase tracking-[0.2em] hover:border-[#FFB162] hover:text-[#FFB162] transition-colors rounded-sm text-center">
+                                        class="px-8 py-4 border border-[#C9C1B1]/30 text-[#C9C1B1] font-bold text-[10px] uppercase  hover:border-[#FFB162] hover:text-[#FFB162] transition-colors rounded-sm text-center">
                                         Ya tengo cuenta
                                     </Link>
                                 </template>
@@ -211,7 +211,7 @@ const handleImageError = (e) => {
                                 </h3>
                                 <div class="space-y-6">
                                     <div>
-                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase tracking-[0.2em] mb-1.5">
+                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase  mb-1.5">
                                             <CalendarIcon class="w-3.5 h-3.5" /> Fecha
                                         </div>
                                         <p class="text-[#EEE9DF] text-sm font-medium">
@@ -219,7 +219,7 @@ const handleImageError = (e) => {
                                         </p>
                                     </div>
                                     <div>
-                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase tracking-[0.2em] mb-1.5">
+                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase  mb-1.5">
                                             <ClockIcon class="w-3.5 h-3.5" /> Hora
                                         </div>
                                         <p class="text-[#EEE9DF] text-sm font-medium">
@@ -227,7 +227,7 @@ const handleImageError = (e) => {
                                         </p>
                                     </div>
                                     <div>
-                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase tracking-[0.2em] mb-1.5">
+                                        <div class="flex items-center gap-2 text-[#C9C1B1]/60 text-[9px] uppercase  mb-1.5">
                                             <MapPinIcon class="w-3.5 h-3.5" /> Ubicación
                                         </div>
                                         <p class="text-[#EEE9DF] text-sm font-medium leading-relaxed">

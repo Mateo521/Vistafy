@@ -51,7 +51,7 @@ const formatPrice = (amount) => {
                     <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-900 rounded-sm mb-6 shadow-lg">
                         <BeakerIcon class="w-8 h-8 text-white" />
                     </div>
-                    <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                    <span class="text-xs font-bold  text-slate-400 uppercase mb-2 block">
                         Entorno de Desarrollo
                     </span>
                     <h1 class="text-3xl font-sans font-bold text-slate-900 mb-2">

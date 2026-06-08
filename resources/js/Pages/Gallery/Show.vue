@@ -218,7 +218,7 @@ const handleImageError = (e) => {
                             </div>
 
                             <div class="border-t-[4px] border-white pt-6 mb-8 flex items-end justify-between">
-                                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">VALOR DE LICENCIA</span>
+                                <span class="text-[10px] font-bold uppercase  text-gray-500">VALOR DE LICENCIA</span>
                                 <span class="text-5xl font-black font-sans text-white leading-none tracking-tighter">${{ photo.price }}</span>
                             </div>
 
@@ -263,7 +263,7 @@ const handleImageError = (e) => {
                                     <p class="text-xs font-bold text-white mb-1 uppercase tracking-widest">{{ photo.photographer?.business_name || 'FOTÓGRAFO F33' }}</p>
                                     <Link v-if="photo.photographer?.slug"
                                         :href="route('photographers.show', photo.photographer.slug)"
-                                        class="text-[9px] uppercase tracking-[0.2em] font-bold text-red-600 hover:text-white border-b border-red-600 hover:border-white transition-none">
+                                        class="text-[9px] uppercase  font-bold text-red-600 hover:text-white border-b border-red-600 hover:border-white transition-none">
                                         [ INSPECCIONAR CATÁLOGO ]
                                     </Link>
                                 </div>

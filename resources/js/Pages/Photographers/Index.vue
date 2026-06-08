@@ -195,7 +195,7 @@ onMounted(() => {
 
                             <div class="mt-8 flex justify-end">
                                 <button v-if="hasActiveFilters" type="button" @click="clearFilters" 
-                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase tracking-[0.2em] transition-none border-b border-red-600 hover:border-white pb-1 flex items-center gap-2">
+                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase  transition-none border-b border-red-600 hover:border-white pb-1 flex items-center gap-2">
                                     <XMarkIcon class="w-3.5 h-3.5" /> PURGAR FILTROS
                                 </button>
                             </div>

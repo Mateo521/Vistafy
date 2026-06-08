@@ -532,7 +532,7 @@ const paginationPages = computed(() => {
                             </div>
 
                             <h3
-                                class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 mb-6 border-b border-red-600/30 pb-2">
+                                class="font-mono text-[10px] font-bold uppercase  text-red-600 mb-6 border-b border-red-600/30 pb-2">
                                 [ ACCESO RESTRINGIDO // GESTIÓN ]
                             </h3>
 

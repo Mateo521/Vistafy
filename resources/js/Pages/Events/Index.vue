@@ -188,7 +188,7 @@ onMounted(() => {
 
                             <div class="mt-8 flex justify-end">
                                 <button type="button" @click="clearFilters" 
-                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase tracking-[0.2em] transition-none border-b border-red-600 hover:border-white pb-1 flex items-center gap-2">
+                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase  transition-none border-b border-red-600 hover:border-white pb-1 flex items-center gap-2">
                                     <XMarkIcon class="w-3.5 h-3.5" /> PURGAR FILTROS
                                 </button>
                             </div>
@@ -240,7 +240,7 @@ onMounted(() => {
                                 {{ event.description }}
                             </p>
 
-                            <div class="mt-auto pt-4 border-t border-white/10 flex items-center justify-between text-[9px] font-mono font-bold uppercase tracking-[0.2em]">
+                            <div class="mt-auto pt-4 border-t border-white/10 flex items-center justify-between text-[9px] font-mono font-bold uppercase ">
                                 <div v-if="event.location" class="flex items-center text-gray-400">
                                     <MapPinIcon class="w-3.5 h-3.5 mr-1.5 text-white" />
                                     <span class="truncate max-w-[150px]">{{ event.location }}</span>

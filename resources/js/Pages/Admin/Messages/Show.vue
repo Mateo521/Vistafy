@@ -57,7 +57,7 @@ const formatDate = (date) => {
 
                     <div class="flex items-start justify-between">
                         <div>
-                            <span class="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase mb-2 block">
+                            <span class="text-xs font-bold  text-slate-400 uppercase mb-2 block">
                                 Mensaje de Contacto
                             </span>
                             <h1 class="text-3xl font-sans font-bold text-slate-900">
