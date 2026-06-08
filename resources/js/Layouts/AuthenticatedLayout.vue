@@ -29,7 +29,7 @@ const dashboardRoute = computed(() => {
     } else if (user.value.role === 'admin') {
         return route('admin.dashboard');
     } else {
-        return route('home'); 
+        return route('home');
     }
 });
 
@@ -62,16 +62,26 @@ const mobileNavLinkClasses = (active) => {
                 <div class="flex justify-between h-20">
 
                     <div class="flex">
+
+
                         <div class="shrink-0 flex items-center">
                             <Link :href="dashboardRoute" class="group flex items-center gap-3">
-                                <div class="flex flex-col justify-center">
-                                    <span class="font-bebas text-4xl leading-none tracking-tighter text-white group-hover:text-[#E30613] transition-none">F33</span>
-                                    <span class="font-mono text-[9px] font-bold uppercase tracking-widest text-[#E30613]">
-                                        {{ user.role === 'admin' ? 'ADMIN_NODE' : (user.role === 'photographer' ? 'PRO_NODE' : 'CLIENT_NODE') }}
+                                <div class="flex flex-col justify-center items-center">
+
+                                    <img src="/images/logo.png" alt="F33 Logo"
+                                        class="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+
+                                    <span
+                                        class="font-mono text-[9px] font-bold uppercase tracking-widest text-[#E30613] mt-1">
+                                        {{ user.role === 'admin' ? 'ADMIN_NODE' : (user.role === 'photographer' ?
+                                        'PRO_NODE' : 'CLIENT_NODE') }}
                                     </span>
+
                                 </div>
                             </Link>
                         </div>
+
+
 
                         <div class="hidden space-x-8 sm:-my-px sm:ml-12 md:flex">
                             <Link :href="dashboardRoute"
@@ -102,7 +112,7 @@ const mobileNavLinkClasses = (active) => {
                     </div>
 
                     <div class="hidden md:flex md:items-center md:ml-6">
-                        
+
                         <Link href="/"
                             class="font-mono text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white mr-8 transition-none flex items-center gap-2 border-b border-transparent hover:border-white pb-1">
                             <GlobeAltIcon class="w-3.5 h-3.5" />
@@ -111,20 +121,25 @@ const mobileNavLinkClasses = (active) => {
 
                         <div class="relative ml-3">
                             <div class="relative" @click="showingNavigationDropdown = !showingNavigationDropdown">
-                                <button type="button" class="flex items-center gap-4 focus:outline-none transition-none group cursor-pointer border border-transparent hover:border-white/20 p-1">
+                                <button type="button"
+                                    class="flex items-center gap-4 focus:outline-none transition-none group cursor-pointer border border-transparent hover:border-white/20 p-1">
                                     <div class="text-right hidden lg:block">
-                                        <div class="font-sans font-black text-sm text-white group-hover:text-[#E30613] uppercase tracking-tight">
+                                        <div
+                                            class="font-sans font-black text-sm text-white group-hover:text-[#E30613] uppercase tracking-tight">
                                             {{ user.name }}
                                         </div>
-                                        <div class="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-500 text-right">
+                                        <div
+                                            class="font-mono text-[9px] font-bold uppercase tracking-widest text-gray-500 text-right">
                                             {{ user.role }}
                                         </div>
                                     </div>
 
-                                    <div class="h-10 w-10 bg-black border-2 border-white/20 group-hover:border-[#E30613] overflow-hidden transition-none flex items-center justify-center">
+                                    <div
+                                        class="h-10 w-10 bg-black border-2 border-white/20 group-hover:border-[#E30613] overflow-hidden transition-none flex items-center justify-center">
                                         <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="user.name"
                                             class="h-full w-full object-cover grayscale contrast-125" />
-                                        <div v-else class="h-full w-full flex items-center justify-center font-mono font-bold text-lg text-white">
+                                        <div v-else
+                                            class="h-full w-full flex items-center justify-center font-mono font-bold text-lg text-white">
                                             {{ userInitials }}
                                         </div>
                                     </div>
@@ -152,7 +167,8 @@ const mobileNavLinkClasses = (active) => {
                                     </Link>
                                 </div>
                             </div>
-                            <div v-show="showingNavigationDropdown" @click="showingNavigationDropdown = false" class="fixed inset-0 z-40 cursor-default"></div>
+                            <div v-show="showingNavigationDropdown" @click="showingNavigationDropdown = false"
+                                class="fixed inset-0 z-40 cursor-default"></div>
                         </div>
                     </div>
 
@@ -160,8 +176,12 @@ const mobileNavLinkClasses = (active) => {
                         <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                             class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 focus:outline-none transition-none">
                             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                <path :class="{ 'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }" stroke-linecap="square" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                                <path :class="{ 'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }" stroke-linecap="square" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <path
+                                    :class="{ 'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
+                                    stroke-linecap="square" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                <path
+                                    :class="{ 'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
+                                    stroke-linecap="square" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
@@ -171,24 +191,29 @@ const mobileNavLinkClasses = (active) => {
             <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
                 class="md:hidden border-t-[4px] border-white/10 bg-[#050505]">
                 <div class="pt-2 pb-3 space-y-1">
-                    <Link :href="dashboardRoute" :class="mobileNavLinkClasses($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))">
+                    <Link :href="dashboardRoute"
+                        :class="mobileNavLinkClasses($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))">
                         [ PANEL PRINCIPAL ]
                     </Link>
 
                     <template v-if="user.role === 'photographer'">
-                        <Link :href="route('photographer.events.index')" :class="mobileNavLinkClasses($page.url.includes('/eventos'))">
+                        <Link :href="route('photographer.events.index')"
+                            :class="mobileNavLinkClasses($page.url.includes('/eventos'))">
                             [ EVENTOS ]
                         </Link>
-                        <Link :href="route('photographer.photos.index')" :class="mobileNavLinkClasses($page.url.includes('/fotos'))">
+                        <Link :href="route('photographer.photos.index')"
+                            :class="mobileNavLinkClasses($page.url.includes('/fotos'))">
                             [ ARCHIVOS ]
                         </Link>
-                        <Link :href="route('photographer.opportunities.index')" :class="mobileNavLinkClasses($page.url.includes('/oportunidades'))">
+                        <Link :href="route('photographer.opportunities.index')"
+                            :class="mobileNavLinkClasses($page.url.includes('/oportunidades'))">
                             [ OPORTUNIDADES ]
                         </Link>
                     </template>
 
                     <template v-if="user.role === 'admin'">
-                        <Link :href="route('admin.photographers.index')" :class="mobileNavLinkClasses($page.url.includes('/admin/fotografos'))">
+                        <Link :href="route('admin.photographers.index')"
+                            :class="mobileNavLinkClasses($page.url.includes('/admin/fotografos'))">
                             [ FOTÓGRAFOS ]
                         </Link>
                     </template>
@@ -197,13 +222,16 @@ const mobileNavLinkClasses = (active) => {
                 <div class="pt-4 pb-4 border-t border-white/10 bg-[#09090b]">
                     <div class="flex items-center px-4 mb-4">
                         <div class="shrink-0">
-                            <div class="h-10 w-10 border-2 border-[#E30613] bg-black flex items-center justify-center text-[#E30613] font-mono font-bold text-lg">
+                            <div
+                                class="h-10 w-10 border-2 border-[#E30613] bg-black flex items-center justify-center text-[#E30613] font-mono font-bold text-lg">
                                 {{ userInitials }}
                             </div>
                         </div>
                         <div class="ml-3">
-                            <div class="font-sans font-black uppercase text-base text-white tracking-tighter">{{ user.name }}</div>
-                            <div class="font-mono text-[9px] tracking-widest text-gray-500 uppercase">{{ user.email }}</div>
+                            <div class="font-sans font-black uppercase text-base text-white tracking-tighter">{{
+                                user.name }}</div>
+                            <div class="font-mono text-[9px] tracking-widest text-gray-500 uppercase">{{ user.email }}
+                            </div>
                         </div>
                     </div>
 
@@ -243,7 +271,8 @@ const mobileNavLinkClasses = (active) => {
         </main>
 
         <footer class="bg-[#09090b] border-t-[4px] border-white/10 py-8">
-            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-gray-500">
+            <div
+                class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-gray-500">
                 <span>© {{ new Date().getFullYear() }} F33. ALL RIGHTS RESERVED.</span>
                 <span class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-[#E30613] animate-pulse"></div>
@@ -253,7 +282,7 @@ const mobileNavLinkClasses = (active) => {
         </footer>
 
         <ToastContainer />
-        
+
         <ConfirmDialog :show="confirmState.show" :title="confirmState.title" :message="confirmState.message"
             :confirm-text="confirmState.confirmText" :cancel-text="confirmState.cancelText" :type="confirmState.type"
             @confirm="handleConfirm" @cancel="handleCancel" @close="handleCancel" />

@@ -147,27 +147,27 @@ const getStatusConfig = (status) => {
 
         <Head title="Gestión de Profesionales" />
 
-        <div class="py-12">
+        <div class="min-h-screen bg-black py-12 text-white selection:bg-red-600 selection:text-black">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-                <div
-                    class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-6 gap-4">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b-2 border-zinc-800 pb-8 relative">
+                    <div class="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-red-600 opacity-20 pointer-events-none"></div>
+                    
                     <div>
-                        <span class="text-xs font-bold  text-slate-400 uppercase mb-2 block">
-                            Administración
+                        <span class="font-mono text-xs font-bold text-red-600 uppercase tracking-widest mb-4 block animate-pulse">
+                            [SYS_ADMIN] Administración
                         </span>
-                        <h1 class="text-3xl font-sans font-bold text-slate-900">
-                            Gestión de Fotógrafos
+                        <h1 class="text-5xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">
+                            Gestión de<br>Fotógrafos.
                         </h1>
                     </div>
                     <Link :href="route('admin.dashboard')"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 border-b border-transparent hover:border-slate-900 transition pb-1">
+                        class="mt-6 md:mt-0 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white border-b border-zinc-800 hover:border-white transition-colors pb-1">
                         ← Volver al Panel
                     </Link>
                 </div>
 
-
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12 relative">
                     <button v-for="(stat, key) in {
                         'all': { label: 'Total', count: stats.total },
                         'pending': { label: 'Pendientes', count: stats.pending },
@@ -175,140 +175,123 @@ const getStatusConfig = (status) => {
                         'rejected': { label: 'Rechazados', count: stats.rejected },
                         'suspended': { label: 'Suspendidos', count: stats.suspended }
                     }" :key="key" @click="filterByStatus(key)" :class="[
-                        'p-4 text-left border transition-all duration-200 rounded-sm flex flex-col justify-between h-24 group',
+                        'p-4 text-left border transition-all duration-300 rounded-none flex flex-col justify-between h-28 group relative overflow-hidden',
                         searchForm.status === key
-                            ? 'bg-slate-900 border-slate-900 text-white shadow-md'
-                            : 'bg-white border-gray-200 text-slate-500 hover:border-slate-400 hover:text-slate-900'
+                            ? 'bg-red-600 border-red-600 text-black shadow-[4px_4px_0px_rgba(255,255,255,1)]'
+                            : 'bg-zinc-950 border-zinc-800 text-zinc-500 hover:border-white hover:text-white'
                     ]">
-                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-80">{{ stat.label }}</span>
-                        <span
-                            :class="['text-3xl font-sans font-medium', searchForm.status === key ? 'text-white' : 'text-slate-900']">
+                        <div v-if="searchForm.status !== key" class="absolute top-2 left-2 w-2 h-2 border-t border-l border-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div v-if="searchForm.status !== key" class="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                        <span class="font-mono text-[10px] font-bold uppercase tracking-widest relative z-10">{{ stat.label }}</span>
+                        <span :class="['text-4xl font-black tracking-tighter relative z-10', searchForm.status === key ? 'text-black' : 'text-white']">
                             {{ stat.count }}
                         </span>
                     </button>
                 </div>
 
-                <div class="flex flex-col md:flex-row gap-4 mb-6">
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+                <div class="flex flex-col md:flex-row gap-4 mb-8">
+                    <div class="relative flex-1 group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <MagnifyingGlassIcon class="h-5 w-5 text-zinc-600 group-focus-within:text-red-600 transition-colors" />
                         </div>
                         <input v-model="searchForm.search" @keyup.enter="handleSearch" type="text"
-                            placeholder="Buscar por nombre, email o ID..."
-                            class="block w-full pl-10 pr-3 py-3 border-gray-300 rounded-sm leading-5 bg-white placeholder-gray-400 focus:outline-none focus:placeholder-gray-500 focus:border-slate-900 focus:ring-0 sm:text-sm transition-colors">
+                            placeholder="BUSCAR POR NOMBRE, EMAIL O ID..."
+                            class="block w-full pl-12 pr-4 py-4 bg-black border-2 border-zinc-800 rounded-none text-white font-mono text-sm uppercase placeholder-zinc-700 focus:outline-none focus:border-red-600 focus:ring-0 transition-colors">
                     </div>
                     <button @click="handleSearch"
-                        class="bg-slate-900 text-white px-8 py-3 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition">
+                        class="bg-red-600 text-black px-10 py-4 font-black uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-colors border-2 border-red-600 hover:border-white">
                         Filtrar
                     </button>
                 </div>
 
-                <div class="bg-white border border-gray-200 shadow-sm rounded-sm overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-100">
-                            <thead class="bg-gray-50">
+                <div class="bg-zinc-950 border border-zinc-800 relative">
+                    <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-zinc-600 pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-zinc-600 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-zinc-600 pointer-events-none"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-zinc-600 pointer-events-none"></div>
+
+                    <div class="overflow-x-auto p-1">
+                        <table class="min-w-full text-left border-collapse">
+                            <thead class="bg-black border-b-2 border-zinc-800">
                                 <tr>
-                                    <th scope="col"
-                                        class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        Profesional</th>
-                                    <th scope="col"
-                                        class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        Región</th>
-                                    <th scope="col"
-                                        class="px-6 py-4 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        Estado</th>
-                                    <th scope="col"
-                                        class="px-6 py-4 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        Eventos</th>
-                                    <th scope="col"
-                                        class="px-6 py-4 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        Fotos</th>
-                                    <th scope="col"
-                                        class="px-6 py-4 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                        Gestión</th>
+                                    <th scope="col" class="px-6 py-4 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Profesional</th>
+                                    <th scope="col" class="px-6 py-4 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Región</th>
+                                    <th scope="col" class="px-6 py-4 font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Estado</th>
+                                    <th scope="col" class="px-6 py-4 text-center font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Eventos</th>
+                                    <th scope="col" class="px-6 py-4 text-center font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Fotos</th>
+                                    <th scope="col" class="px-6 py-4 text-right font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Gestión</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
+                            <tbody class="divide-y divide-zinc-900 bg-zinc-950">
                                 <tr v-if="photographers.data.length === 0">
-                                    <td colspan="6" class="px-6 py-12 text-center text-slate-500">
-                                        <p class="font-sans italic">No se encontraron registros que coincidan con la
-                                            búsqueda.</p>
+                                    <td colspan="6" class="px-6 py-20 text-center">
+                                        <p class="font-mono text-sm text-zinc-600 uppercase tracking-widest">No se encontraron registros // ARCHIVO VACÍO</p>
                                     </td>
                                 </tr>
 
                                 <tr v-for="photographer in photographers.data" :key="photographer.id"
-                                    class="hover:bg-gray-50/80 transition-colors">
+                                    class="hover:bg-black transition-colors group">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-10 w-10 bg-slate-100 rounded-sm flex items-center justify-center text-slate-500 font-sans font-bold text-lg border border-gray-200">
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex-shrink-0 h-12 w-12 bg-black border border-zinc-800 rounded-none flex items-center justify-center text-white font-black text-xl group-hover:border-zinc-500 transition-colors">
                                                 {{ photographer.business_name.charAt(0) }}
                                             </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-bold text-slate-900 font-sans">{{
-                                                    photographer.business_name }}</div>
-                                                <div class="text-xs text-slate-500 font-mono">{{ photographer.user.email
-                                                    }}</div>
+                                            <div>
+                                                <div class="text-sm font-black text-white uppercase tracking-tight">{{ photographer.business_name }}</div>
+                                                <div class="text-[10px] text-zinc-500 font-mono mt-1">{{ photographer.user.email }}</div>
                                             </div>
                                         </div>
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-xs text-slate-600 font-medium uppercase tracking-wide">{{
-                                            photographer.region }}</div>
+                                        <div class="font-mono text-xs text-zinc-400 uppercase tracking-widest">{{ photographer.region }}</div>
                                     </td>
 
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <span
-                                                :class="['h-2 w-2 rounded-full mr-2', getStatusConfig(photographer.status).dot]"></span>
-                                            <span
-                                                :class="['text-xs font-bold uppercase tracking-wider', getStatusConfig(photographer.status).class]">
+                                        <div class="flex items-center gap-2">
+                                            <span :class="['h-2 w-2 rounded-none', getStatusConfig(photographer.status).dot]"></span>
+                                            <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-300">
                                                 {{ getStatusConfig(photographer.status).text }}
                                             </span>
                                         </div>
                                     </td>
 
-                                    <td
-                                        class="px-6 py-4 whitespace-nowrap text-center text-sm font-mono text-slate-600">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-black text-white">
                                         {{ photographer.events_count || 0 }}
                                     </td>
-                                    <td
-                                        class="px-6 py-4 whitespace-nowrap text-center text-sm font-mono text-slate-600">
+                                    
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-black text-white">
                                         {{ photographer.photos_count || 0 }}
                                     </td>
 
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end gap-3">
-
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <div class="flex items-center justify-end gap-4 opacity-70 group-hover:opacity-100 transition-opacity">
+                                            
                                             <template v-if="photographer.status === 'pending'">
-                                                <button @click="approvePhotographer(photographer)" title="Aprobar"
-                                                    class="text-emerald-600 hover:text-emerald-900 transition">
-                                                    <CheckCircleIcon class="h-5 w-5" />
+                                                <button @click="approvePhotographer(photographer)" title="Aprobar" class="text-emerald-500 hover:text-emerald-400 transition-colors">
+                                                    <CheckCircleIcon class="h-6 w-6" />
                                                 </button>
-                                                <button @click="openRejectModal(photographer)" title="Rechazar"
-                                                    class="text-red-600 hover:text-red-900 transition">
-                                                    <XCircleIcon class="h-5 w-5" />
+                                                <button @click="openRejectModal(photographer)" title="Rechazar" class="text-red-600 hover:text-red-500 transition-colors">
+                                                    <XCircleIcon class="h-6 w-6" />
                                                 </button>
                                             </template>
 
                                             <template v-if="photographer.status === 'approved'">
-                                                <button @click="openSuspendModal(photographer)" title="Suspender acceso"
-                                                    class="text-amber-500 hover:text-amber-700 transition">
-                                                    <NoSymbolIcon class="h-5 w-5" />
+                                                <button @click="openSuspendModal(photographer)" title="Suspender acceso" class="text-amber-500 hover:text-amber-400 transition-colors">
+                                                    <NoSymbolIcon class="h-6 w-6" />
                                                 </button>
                                             </template>
 
                                             <template v-if="photographer.status === 'suspended'">
-                                                <button @click="reactivatePhotographer(photographer)" title="Reactivar"
-                                                    class="text-blue-600 hover:text-blue-900 transition">
-                                                    <ArrowPathIcon class="h-5 w-5" />
+                                                <button @click="reactivatePhotographer(photographer)" title="Reactivar" class="text-white hover:text-zinc-300 transition-colors">
+                                                    <ArrowPathIcon class="h-6 w-6" />
                                                 </button>
                                             </template>
 
                                             <Link :href="route('admin.photographers.show', photographer.id)"
-                                                class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 border border-transparent hover:border-slate-900 px-2 py-1 transition ml-2">
-                                                Ver
+                                                class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-white border border-zinc-700 hover:border-white px-3 py-1.5 transition-colors ml-2 bg-black">
+                                                Visualizar
                                             </Link>
                                         </div>
                                     </td>
@@ -317,71 +300,63 @@ const getStatusConfig = (status) => {
                         </table>
                     </div>
 
-                    <div v-if="photographers.data.length > 0"
-                        class="bg-white border-t border-gray-200 px-6 py-4 flex items-center justify-between">
-                        <span class="text-xs text-slate-400">
-                            {{ photographers.from }} - {{ photographers.to }} de {{ photographers.total }} registros
+                    <div v-if="photographers.data.length > 0" class="bg-black border-t border-zinc-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <span class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                            INDEX {{ photographers.from }} - {{ photographers.to }} // TOTAL {{ photographers.total }}
                         </span>
                         <div class="flex gap-1">
                             <Link v-for="(link, index) in photographers.links" :key="index" :href="link.url || '#'"
                                 :class="[
-                                    'px-3 py-1 text-xs font-medium transition rounded-sm',
+                                    'px-3 py-1 font-mono text-[10px] font-bold transition-colors rounded-none border',
                                     link.active
-                                        ? 'bg-slate-900 text-white'
-                                        : (link.url ? 'bg-white text-slate-600 hover:bg-gray-100' : 'text-gray-300 cursor-not-allowed')
+                                        ? 'bg-red-600 text-black border-red-600'
+                                        : (link.url ? 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:bg-white hover:text-black hover:border-white' : 'bg-black text-zinc-800 border-zinc-900 cursor-not-allowed')
                                 ]" v-html="link.label" :preserve-scroll="true" :preserve-state="true" />
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
         <div v-if="showRejectModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showRejectModal = false">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-slate-900 opacity-75"></div>
-                </div>
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                <div class="fixed inset-0 bg-black/90 transition-opacity backdrop-blur-sm" aria-hidden="true"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                <div
-                    class="inline-block align-bottom bg-white rounded-sm text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div
-                                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <XCircleIcon class="h-6 w-6 text-red-600" />
+                <div class="inline-block align-bottom bg-zinc-950 border-4 border-red-600 text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-lg rounded-none shadow-[10px_10px_0px_rgba(220,38,38,0.2)]">
+                    <div class="px-6 pt-8 pb-6">
+                        <div class="sm:flex sm:items-start gap-6">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-16 w-16 border-2 border-red-600 bg-black sm:mx-0">
+                                <XCircleIcon class="h-8 w-8 text-red-600" />
                             </div>
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-sans font-bold text-slate-900">
-                                    Rechazar Solicitud
+                            <div class="mt-4 text-center sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-3xl font-black uppercase text-white tracking-tighter leading-none mb-4">
+                                    Rechazar<br>Solicitud
                                 </h3>
                                 <div class="mt-2">
-                                    <p class="text-sm text-gray-500">
-                                        Está a punto de rechazar a <strong>{{ selectedPhotographer?.business_name
-                                            }}</strong>.
-                                        Esta acción notificará al usuario.
+                                    <p class="font-mono text-xs text-zinc-400 mb-6 border-l-2 border-red-600 pl-3">
+                                        TARGET: <strong class="text-white">{{ selectedPhotographer?.business_name }}</strong><br>
+                                        STATUS: Se notificará al usuario.
                                     </p>
                                     <div class="mt-4">
-                                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Motivo del
-                                            rechazo</label>
-                                        <textarea v-model="rejectForm.reason" rows="3"
-                                            class="w-full border-gray-300 rounded-sm text-sm focus:border-slate-900 focus:ring-0 resize-none"></textarea>
-                                        <p v-if="rejectForm.errors.reason" class="text-xs text-red-600 mt-1">{{
-                                            rejectForm.errors.reason }}</p>
+                                        <label class="block font-mono text-[10px] font-bold uppercase text-red-600 mb-2 tracking-widest">Motivo del rechazo</label>
+                                        <textarea v-model="rejectForm.reason" rows="4"
+                                            class="w-full bg-black border-2 border-zinc-800 text-white font-mono text-xs p-3 focus:border-red-600 focus:ring-0 resize-none transition-colors rounded-none placeholder-zinc-700"
+                                            placeholder="INGRESE RAZÓN TÉCNICA O ADMINISTRATIVA..."></textarea>
+                                        <p v-if="rejectForm.errors.reason" class="font-mono text-[10px] text-red-600 mt-2 uppercase">{{ rejectForm.errors.reason }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button @click="rejectPhotographer" :disabled="rejectForm.processing"
-                            class="w-full inline-flex justify-center rounded-sm border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                            Confirmar Rechazo
-                        </button>
+                    <div class="bg-black border-t-2 border-zinc-900 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                         <button @click="showRejectModal = false"
-                            class="mt-3 w-full inline-flex justify-center rounded-sm border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Cancelar
+                            class="w-full inline-flex justify-center border-2 border-zinc-700 px-6 py-3 bg-transparent text-xs font-black uppercase tracking-widest text-zinc-400 hover:bg-white hover:text-black hover:border-white transition-colors sm:w-auto rounded-none">
+                            Abortar
+                        </button>
+                        <button @click="rejectPhotographer" :disabled="rejectForm.processing"
+                            class="w-full inline-flex justify-center border-2 border-red-600 px-6 py-3 bg-red-600 text-xs font-black uppercase tracking-widest text-black hover:bg-white hover:border-white transition-colors sm:w-auto rounded-none disabled:opacity-50">
+                            Confirmar Rechazo
                         </button>
                     </div>
                 </div>
@@ -389,53 +364,49 @@ const getStatusConfig = (status) => {
         </div>
 
         <div v-if="showSuspendModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showSuspendModal = false">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-slate-900 opacity-75"></div>
-                </div>
+            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                <div class="fixed inset-0 bg-black/90 transition-opacity backdrop-blur-sm" aria-hidden="true"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                <div
-                    class="inline-block align-bottom bg-white rounded-sm text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-gray-200">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div
-                                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <NoSymbolIcon class="h-6 w-6 text-amber-600" />
+                <div class="inline-block align-bottom bg-zinc-950 border-4 border-amber-500 text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle w-full max-w-lg rounded-none shadow-[10px_10px_0px_rgba(245,158,11,0.2)]">
+                    <div class="px-6 pt-8 pb-6">
+                        <div class="sm:flex sm:items-start gap-6">
+                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-16 w-16 border-2 border-amber-500 bg-black sm:mx-0">
+                                <NoSymbolIcon class="h-8 w-8 text-amber-500" />
                             </div>
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-sans font-bold text-slate-900">
-                                    Suspender Cuenta
+                            <div class="mt-4 text-center sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-3xl font-black uppercase text-white tracking-tighter leading-none mb-4">
+                                    Suspender<br>Cuenta
                                 </h3>
                                 <div class="mt-2">
-                                    <p class="text-sm text-gray-500">
-                                        Se revocará el acceso a <strong>{{ selectedPhotographer?.business_name
-                                            }}</strong>. Sus
-                                        galerías dejarán de ser visibles públicamente.
+                                    <p class="font-mono text-xs text-zinc-400 mb-6 border-l-2 border-amber-500 pl-3">
+                                        TARGET: <strong class="text-white">{{ selectedPhotographer?.business_name }}</strong><br>
+                                        STATUS: Galerías offline. Acceso revocado.
                                     </p>
                                     <div class="mt-4">
-                                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Motivo
-                                            (Opcional)</label>
-                                        <textarea v-model="suspendForm.reason" rows="3"
-                                            class="w-full border-gray-300 rounded-sm text-sm focus:border-slate-900 focus:ring-0 resize-none"></textarea>
+                                        <label class="block font-mono text-[10px] font-bold uppercase text-amber-500 mb-2 tracking-widest">Motivo (Opcional)</label>
+                                        <textarea v-model="suspendForm.reason" rows="4"
+                                            class="w-full bg-black border-2 border-zinc-800 text-white font-mono text-xs p-3 focus:border-amber-500 focus:ring-0 resize-none transition-colors rounded-none placeholder-zinc-700"
+                                            placeholder="REGISTRO INTERNO / RAZÓN DE SUSPENSIÓN..."></textarea>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button @click="suspendPhotographer" :disabled="suspendForm.processing"
-                            class="w-full inline-flex justify-center rounded-sm border border-transparent shadow-sm px-4 py-2 bg-slate-900 text-base font-medium text-white hover:bg-slate-800 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                            Suspender
-                        </button>
+                    <div class="bg-black border-t-2 border-zinc-900 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                         <button @click="showSuspendModal = false"
-                            class="mt-3 w-full inline-flex justify-center rounded-sm border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Cancelar
+                            class="w-full inline-flex justify-center border-2 border-zinc-700 px-6 py-3 bg-transparent text-xs font-black uppercase tracking-widest text-zinc-400 hover:bg-white hover:text-black hover:border-white transition-colors sm:w-auto rounded-none">
+                            Abortar
+                        </button>
+                        <button @click="suspendPhotographer" :disabled="suspendForm.processing"
+                            class="w-full inline-flex justify-center border-2 border-amber-500 px-6 py-3 bg-amber-500 text-xs font-black uppercase tracking-widest text-black hover:bg-white hover:border-white transition-colors sm:w-auto rounded-none disabled:opacity-50">
+                            Ejecutar Suspensión
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
         <ConfirmDialog :show="showConfirmDialog" :title="confirmDialogData.title" :message="confirmDialogData.message"
             :confirm-text="confirmDialogData.confirmText" :cancel-text="confirmDialogData.cancelText"
             :type="confirmDialogData.type" @confirm="confirmDialogData.onConfirm" @cancel="showConfirmDialog = false" />
