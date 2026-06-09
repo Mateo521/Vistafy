@@ -1,179 +1,124 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import {
+    NoSymbolIcon,
+    ExclamationTriangleIcon,
+    EnvelopeIcon
+} from '@heroicons/vue/24/outline';
 </script>
 
 <template>
-    <AuthenticatedLayout>
-        <Head title="Cuenta Suspendida" />
+    <Head title="Acceso Revocado" />
 
-        <div class="py-12">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Card con tema naranja/rojo -->
-                <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl shadow-2xl p-8 md:p-12 text-center">
-                    <!-- Icono -->
-                    <div class="mb-6">
-                        <div class="inline-flex items-center justify-center w-24 h-24 bg-orange-100 rounded-full">
-                            <svg class="w-12 h-12 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            </svg>
+    <AuthenticatedLayout>
+        <div class="min-h-screen bg-black py-12 text-white selection:bg-red-600 selection:text-black">
+            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+
+                <div class="mb-12 border-l-4 border-red-600 pl-8">
+                    <span class="font-mono text-[10px] font-bold text-red-600 uppercase tracking-widest mb-2 block animate-pulse">
+                        [STATUS: ERROR_403] Restricción de Acceso
+                    </span>
+                    <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">
+                        Cuenta<br>Suspendida.
+                    </h1>
+                    <p class="font-mono text-xs text-zinc-500 mt-6 uppercase tracking-widest max-w-xl">
+                        Los privilegios operativos de este perfil fotográfico han sido revocados temporalmente por el sistema.
+                    </p>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="border-2 border-red-600 bg-red-600/5 p-8 md:p-10 relative overflow-hidden">
+                        <NoSymbolIcon class="absolute -right-8 -top-8 w-48 h-48 text-red-600 opacity-5 pointer-events-none" />
+                        
+                        <h2 class="font-mono text-xs font-bold uppercase tracking-widest text-red-600 mb-6 border-b border-red-600/20 pb-2">
+                            1. Estado actual
+                        </h2>
+                        <ul class="space-y-4 font-mono text-xs text-zinc-300 uppercase tracking-wide">
+                            <li class="flex items-start gap-4">
+                                <span class="text-red-600 font-black">>></span> 
+                                <span>Acceso denegado al panel de administración y métricas.</span>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="text-red-600 font-black">>></span> 
+                                <span>Eventos y galerías fotográficas ocultas al público general.</span>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="text-red-600 font-black">>></span> 
+                                <span>Restricción total para la carga de nuevos activos o creación de eventos.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="border border-zinc-800 bg-zinc-950 p-8">
+                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-2">
+                                Causas Frecuentes de Suspensión
+                            </h3>
+                            <ul class="space-y-3 font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
+                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Violación a los términos de servicio.</li>
+                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Reportes negativos o disputas de clientes.</li>
+                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Material que incumple los estándares de calidad.</li>
+                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Abandono o falta de respuesta comercial.</li>
+                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Detección de tráfico anómalo o fraude.</li>
+                            </ul>
+                        </div>
+
+                        <div class="border border-zinc-800 bg-zinc-950 p-8">
+                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-2">
+                                Recuperación
+                            </h3>
+                            <ol class="space-y-4 font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">01</span> 
+                                    <span>Revisar la notificación de auditoría enviada al correo registrado.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">02</span> 
+                                    <span>Iniciar protocolo de apelación mediante el canal oficial.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">03</span> 
+                                    <span>Adjuntar documentación respaldatoria si es requerida.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">04</span> 
+                                    <span>Aguardar resolución (Tiempo estimado: 24-48 hs hábiles).</span>
+                                </li>
+                            </ol>
                         </div>
                     </div>
 
-                    <!-- Título -->
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                         Cuenta Suspendida
-                    </h1>
-
-                    <!-- Descripción -->
-                    <p class="text-lg text-gray-700 mb-6">
-                        Tu cuenta de fotógrafo ha sido suspendida temporalmente.
-                    </p>
-
-                    <!-- Información importante -->
-                    <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left">
-                        <h2 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                            ¿Qué significa esto?
-                        </h2>
-                        <ul class="space-y-3 text-gray-700">
-                            <li class="flex items-start gap-2">
-                                <span class="text-orange-600">•</span>
-                                <span>No podés acceder a tu panel de fotógrafo.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-orange-600">•</span>
-                                <span>Tus eventos y fotos no están visibles públicamente.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-orange-600">•</span>
-                                <span>No podés subir nuevas fotos ni crear eventos.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-orange-600">•</span>
-                                <span>La suspensión puede ser temporal o permanente.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Razones comunes -->
-                    <div class="bg-red-50 rounded-2xl p-6 mb-8 text-left">
-                        <h3 class="font-bold text-gray-900 mb-3">Razones comunes de suspensión:</h3>
-                        <ul class="space-y-2 text-gray-700 text-sm">
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Violación de los términos de servicio</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Quejas o reportes de clientes</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Contenido inapropiado o de baja calidad</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Falta de respuesta a solicitudes de clientes</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Actividad sospechosa o fraudulenta</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-red-500">•</span>
-                                <span>Incumplimiento de compromisos con clientes</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Qué hacer -->
-                    <div class="bg-blue-50 rounded-2xl p-6 mb-8 text-left">
-                        <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            ¿Qué podés hacer?
-                        </h3>
-                        <p class="text-gray-700 mb-4">
-                            Para resolver esta situación y solicitar la reactivación de tu cuenta:
-                        </p>
-                        <ul class="space-y-3 text-gray-700">
-                            <li class="flex items-start gap-2">
-                                <span class="text-blue-600 font-bold">1.</span>
-                                <span>Revisa el email que te enviamos con los detalles de la suspensión.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-blue-600 font-bold">2.</span>
-                                <span>Contacta inmediatamente a nuestro equipo de soporte.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-blue-600 font-bold">3.</span>
-                                <span>Proporciona cualquier información adicional que se te solicite.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="text-blue-600 font-bold">4.</span>
-                                <span>Espera la respuesta de nuestro equipo (generalmente 24-48 horas).</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Contacto urgente -->
-                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 mb-8 border-2 border-indigo-200">
-                        <h3 class="font-bold text-gray-900 mb-3">📧 Contacto Urgente</h3>
-                        <p class="text-gray-700 mb-3">
-                            Para apelar esta suspensión o solicitar más información:
-                        </p>
-                        <div class="space-y-2">
-                            <a href="mailto:soporte@f33.com" class="block text-indigo-600 font-bold hover:underline text-lg">
-                                📧 soporte@f33.com
-                            </a>
-                            <p class="text-sm text-gray-600">
-                                Asunto sugerido: "Apelación de Suspensión - [Tu Nombre]"
+                    <div class="border-2 border-amber-500 bg-amber-500/5 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <ExclamationTriangleIcon class="w-8 h-8 text-amber-500 flex-shrink-0" />
+                        <div>
+                            <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-500">Advertencia del Sistema</p>
+                            <p class="font-mono text-xs text-zinc-400 uppercase tracking-wide mt-1">
+                                Las suspensiones reiteradas derivarán en la terminación permanente de la cuenta y la purga irrecuperable de todos los activos digitales almacenados.
                             </p>
                         </div>
                     </div>
 
-                    <!-- Advertencia -->
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8 text-left">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-yellow-700">
-                                    <strong>Importante:</strong> Las suspensiones repetidas pueden resultar en la eliminación permanente de tu cuenta.
-                                </p>
-                            </div>
+                    <div class="border border-zinc-800 bg-zinc-950 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div>
+                            <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Canal de Soporte Técnico</p>
+                            <p class="font-mono text-sm text-white flex items-center gap-2">
+                                <EnvelopeIcon class="w-4 h-4 text-zinc-400" /> soporte@f33.click
+                            </p>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                            <Link :href="route('home')"
+                                class="border-2 border-zinc-700 bg-black text-zinc-400 px-8 py-4 font-black uppercase tracking-widest text-[10px] hover:bg-white hover:text-black hover:border-white transition-colors text-center text-nowrap">
+                                Volver al Inicio
+                            </Link>
+                            <a href="mailto:soporte@f33.click?subject=Apelación%20de%20Suspensión"
+                                class="border-2 border-red-600 bg-red-600 text-black px-8 py-4 font-black uppercase tracking-widest text-[10px] hover:bg-white hover:border-white transition-colors text-center text-nowrap">
+                                Iniciar Apelación
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Acciones -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            :href="route('home')"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            Volver al Inicio
-                        </Link>
-
-                        <a
-                            href="mailto:soporte@f33.com?subject=Apelación de Suspensión"
-                            class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition"
-                        >
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            Contactar soporte
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
