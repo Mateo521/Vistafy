@@ -33,6 +33,6 @@ jobs:
             #php artisan migrate --force
             php artisan optimize:clear
             
-            sudo chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/build
+            sudo chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
             
             echo "Despliegue exitoso"
