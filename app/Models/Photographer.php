@@ -209,7 +209,6 @@ class Photographer extends Model
     {
         if (!$this->profile_photo) return null;
 
-    
         if (filter_var($this->profile_photo, FILTER_VALIDATE_URL)) {
             return $this->profile_photo;
         }
@@ -217,8 +216,7 @@ class Photographer extends Model
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
-
-        return $disk->temporaryUrl($this->profile_photo, now()->addMinutes(60));
+        return $disk->url($this->profile_photo);
     }
 
 
@@ -233,7 +231,7 @@ public function getBannerPhotoUrlAttribute()
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
-        return $disk->temporaryUrl($this->banner_photo, now()->addMinutes(60));
+        return $disk->url($this->banner_photo);
     }
 
     /**
