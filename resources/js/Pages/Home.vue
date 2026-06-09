@@ -40,7 +40,7 @@ const getEventCoverForPhoto = (photo) => {
 const formatEventTitle = (name) => {
     if (!name) return { first: 'F33', second: 'EVENT' };
     const words = name.trim().split(' ');
-    if (words.length === 1) return { first: words[0], second: 'RAW' };
+    if (words.length === 1) return { first: words[0], second: '.' };
 
     const mid = Math.ceil(words.length / 2);
     return {

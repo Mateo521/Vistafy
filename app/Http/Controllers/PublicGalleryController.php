@@ -14,10 +14,12 @@ class PublicGalleryController extends Controller
 {
     public function index()
     {
-
         $recentEvents = Event::with(['photographer.user'])
             ->where('is_active', true)
             ->where('is_private', false)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->orderBy('event_date', 'desc')
             ->take(15)
             ->get()
@@ -40,10 +42,11 @@ class PublicGalleryController extends Controller
 
         $recentPhotos = Photo::with(['event', 'photographer.user'])
             ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->where(function ($query) {
-
                 $query->whereNull('event_id')
-
                     ->orWhereHas('event', function ($q) {
                         $q->where('is_active', true)
                             ->where('is_private', false);
@@ -57,11 +60,9 @@ class PublicGalleryController extends Controller
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
                     'event_id' => $photo->event_id,
-
                     'original_url' => $photo->original_url,
                     'thumbnail_url' => $photo->thumbnail_url,
                     'watermarked_url' => $photo->watermarked_url,
-
                     'downloads' => $photo->downloads ?? 0,
                     'created_at' => $photo->created_at->toISOString(),
                     'event_name' => optional($photo->event)->name,
@@ -75,6 +76,9 @@ class PublicGalleryController extends Controller
 
         $futureEvents = \App\Models\FutureEvent::with('photographer.user')
             ->upcoming()
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->orderBy('event_date', 'asc')
             ->get()
             ->map(function ($event) {
@@ -99,18 +103,18 @@ class PublicGalleryController extends Controller
                 ];
             })
             ->filter(function ($event) {
-
                 return $event['latitude'] !== null && $event['longitude'] !== null;
             })
             ->values();
 
         $stats = [
-            'total_photos' => Photo::where('is_active', true)->count(),
-            'total_events' => Event::where('is_active', true)->count()
-                + \App\Models\FutureEvent::upcoming()->count(),
-            'total_photographers' => Photographer::whereHas('user', function ($query) {
-                $query->where('is_active', true);
-            })->count(),
+            'total_photos' => Photo::where('is_active', true)
+                ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count(),
+            'total_events' => Event::where('is_active', true)
+                ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count()
+                + \App\Models\FutureEvent::upcoming()
+                ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count(),
+            'total_photographers' => Photographer::where('status', 'approved')->count(),
         ];
 
         $videoFiles = collect(File::files(public_path('videos')))
@@ -121,7 +125,7 @@ class PublicGalleryController extends Controller
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
-            'futureEvents' => $futureEvents,  //
+            'futureEvents' => $futureEvents,  
             'stats' => $stats,
             'videoList' => $videoFiles,
             'canLogin' => Route::has('login'),
@@ -131,13 +135,13 @@ class PublicGalleryController extends Controller
 
     public function gallery(Request $request)
     {
-
         $query = Photo::with(['photographer', 'event'])
             ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved'); 
+            })
             ->where(function ($q) {
-
                 $q->whereNull('event_id')
-
                     ->orWhereHas('event', function ($eventQuery) {
                         $eventQuery->where('is_active', true)
                             ->where('is_private', false);
@@ -178,7 +182,7 @@ class PublicGalleryController extends Controller
                 $query->latest();
         }
 
-        $photos = $query->paginate(perPage: 25)->withQueryString();
+        $photos = $query->paginate(25)->withQueryString();
 
         $photos->getCollection()->transform(function ($photo) {
             return [
@@ -189,8 +193,6 @@ class PublicGalleryController extends Controller
                 'thumbnail_url' => $photo->thumbnail_url,
                 'watermarked_url' => $photo->watermarked_url,
                 'photographer' => $photo->photographer->business_name,
-
-                //  AGREGAR DATOS DE IA
                 'has_faces' => $photo->has_faces,
                 'bib_numbers' => $photo->bib_numbers
                     ? (is_string($photo->bib_numbers)
@@ -201,7 +203,8 @@ class PublicGalleryController extends Controller
             ];
         });
 
-        $regions = \App\Models\Photographer::whereNotNull('region')
+        $regions = \App\Models\Photographer::where('status', 'approved')
+            ->whereNotNull('region')
             ->distinct()
             ->pluck('region')
             ->sort()
@@ -209,6 +212,9 @@ class PublicGalleryController extends Controller
             ->toArray();
 
         $events = Event::where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved'); 
+            })
             ->where('is_private', false)
             ->select('id', 'name')
             ->orderBy('name')
@@ -235,18 +241,16 @@ class PublicGalleryController extends Controller
 
         $bibNumber = trim($request->bib_number);
 
-        \Log::info(' Búsqueda global por dorsal', [
-            'bib_number' => $bibNumber,
-        ]);
-
         $photos = Photo::where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->where('bib_processed', true)
             ->whereNotNull('bib_numbers')
             ->whereRaw('JSON_CONTAINS(bib_numbers, ?)', [json_encode($bibNumber)])
             ->with(['photographer.user', 'event'])
             ->get()
             ->map(function ($photo) {
-
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
@@ -272,12 +276,6 @@ class PublicGalleryController extends Controller
                 ];
             });
 
-        \Log::info(' Resultados de búsqueda global por dorsal', [
-            'bib_number' => $bibNumber,
-            'total_found' => $photos->count(),
-            'photo_ids' => $photos->pluck('id')->toArray(),
-        ]);
-
         return response()->json([
             'success' => true,
             'count' => $photos->count(),
@@ -299,6 +297,9 @@ class PublicGalleryController extends Controller
         $photos = Photo::where('has_faces', true)
             ->whereNotNull('face_encodings')
             ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->with(['photographer:id,slug,business_name', 'event:id,name,slug'])
             ->get();
 
@@ -345,16 +346,6 @@ class PublicGalleryController extends Controller
         ]);
     }
 
-    /**
-     * Calcular distancia euclidiana entre dos vectores de 128 dimensiones
-     *
-     * Esta función compara dos "huellas dactilares faciales" y devuelve
-     * qué tan diferentes son. Mientras más bajo el número, más parecidos son los rostros.
-     *
-     * @param  array  $vec1  Descriptor facial 1 (128 números)
-     * @param  array  $vec2  Descriptor facial 2 (128 números)
-     * @return float Distancia (0 = idénticos, >0.6 = diferentes)
-     */
     private function euclideanDistance(array $vec1, array $vec2): float
     {
         if (count($vec1) !== count($vec2)) {
@@ -373,6 +364,9 @@ class PublicGalleryController extends Controller
     {
         $photo = Photo::where('unique_id', strtoupper($uniqueId))
             ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->with([
                 'photographer' => function ($query) {
                     $query->select('id', 'user_id', 'business_name', 'slug', 'region', 'bio', 'phone', 'profile_photo');
@@ -382,18 +376,11 @@ class PublicGalleryController extends Controller
             ])
             ->firstOrFail();
 
-        \Log::info('Photo URLs Debug', [
-            'unique_id' => $photo->unique_id,
-            'watermarked_path' => $photo->watermarked_path,
-            'thumbnail_path' => $photo->thumbnail_path,
-            'view_url' => $photo->view_url,
-            'thumbnail_view_url' => $photo->thumbnail_view_url,
-            'watermarked_url (original)' => $photo->watermarked_url,
-            'thumbnail_url (original)' => $photo->thumbnail_url,
-        ]);
-
         $relatedPhotos = Photo::where('is_active', true)
             ->where('id', '!=', $photo->id)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved'); 
+            })
             ->where(function ($q) use ($photo) {
                 $q->where('photographer_id', $photo->photographer_id)
                     ->when($photo->event_id, function ($q) use ($photo) {
@@ -419,14 +406,11 @@ class PublicGalleryController extends Controller
                 'title' => $photo->title,
                 'description' => $photo->description,
                 'price' => $photo->price,
-
                 'watermarked_url' => $photo->view_url ?? $photo->watermarked_url,
                 'thumbnail_url' => $photo->thumbnail_view_url ?? $photo->thumbnail_url,
-
                 'downloads' => $photo->downloads,
                 'width' => $photo->width,
                 'height' => $photo->height,
-
                 'photographer' => [
                     'id' => $photo->photographer->id,
                     'business_name' => $photo->photographer->business_name,
@@ -461,6 +445,9 @@ class PublicGalleryController extends Controller
 
         $photo = Photo::where('unique_id', $uniqueId)
             ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->first();
 
         if ($photo) {
@@ -469,6 +456,9 @@ class PublicGalleryController extends Controller
 
         $similarPhotos = Photo::where('is_active', true)
             ->where('unique_id', 'like', "%{$uniqueId}%")
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->take(10)
             ->get();
 
@@ -480,13 +470,12 @@ class PublicGalleryController extends Controller
             ->with('info', "No se encontró la foto exacta '{$uniqueId}'. Mostrando resultados similares.");
     }
 
-    /**
-     * Lista de todos los eventos públicos
-     */
     public function showEvent(Request $request, $slug)
     {
-
         $event = Event::where('slug', $slug)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->with([
                 'photographer' => function ($query) {
                     $query->select('id', 'business_name', 'region', 'phone', 'profile_photo');
@@ -524,8 +513,9 @@ class PublicGalleryController extends Controller
 
         $photographers = Photographer::select('photographers.id', 'photographers.business_name')
             ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
-            ->where('photos.event_id', $event->id) //  Corregido: usar event_id directo
+            ->where('photos.event_id', $event->id)
             ->where('photos.is_active', true)
+            ->where('photographers.status', 'approved')  
             ->with('user:id,name')
             ->selectRaw('COUNT(photos.id) as photos_count')
             ->groupBy('photographers.id', 'photographers.business_name')
@@ -558,7 +548,7 @@ class PublicGalleryController extends Controller
                 'photos_count' => $event->photos_count,
                 'cover_image_url' => $event->cover_image_url,
                 'downloads' => $event->photos()->sum('downloads'),
-                'is_private' => $event->is_private, //  Agregar para mostrar badge
+                'is_private' => $event->is_private,
                 'photographer' => [
                     'business_name' => $event->photographer->business_name,
                     'region' => $event->photographer->region,
@@ -577,7 +567,7 @@ class PublicGalleryController extends Controller
 
     public function photographers(Request $request)
     {
-        $query = Photographer::where('is_active', true)
+        $query = Photographer::where('status', 'approved')  
             ->with('user:id,name,email')
             ->withCount('photos');
 
@@ -609,7 +599,7 @@ class PublicGalleryController extends Controller
     public function showPhotographer($id)
     {
         $photographer = Photographer::where('id', $id)
-            ->where('is_active', true)
+            ->where('status', 'approved')  
             ->with('user:id,name,email')
             ->withCount('photos')
             ->firstOrFail();
@@ -627,7 +617,6 @@ class PublicGalleryController extends Controller
             ->take(6)
             ->get();
 
-        // Estadísticas
         $stats = [
             'total_photos' => $photographer->photos()->count(),
             'active_photos' => $photographer->photos()->where('is_active', true)->count(),
@@ -645,7 +634,7 @@ class PublicGalleryController extends Controller
                 'website' => $photographer->website,
                 'instagram' => $photographer->instagram,
                 'facebook' => $photographer->facebook,
-                'email' => $photographer->user->email, // Email viene del usuario
+                'email' => $photographer->user->email,
                 'profile_photo_url' => $photographer->profile_photo_url,
                 'cover_photo_url' => $photographer->cover_photo_url,
             ],
@@ -655,13 +644,13 @@ class PublicGalleryController extends Controller
         ]);
     }
 
-    /**
-     * Verificar disponibilidad de una foto
-     */
     public function checkAvailability($uniqueId)
     {
         $photo = Photo::where('unique_id', strtoupper($uniqueId))
             ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved'); // Filtro de suspensión
+            })
             ->first();
 
         return response()->json([
@@ -685,6 +674,9 @@ class PublicGalleryController extends Controller
         ])
             ->where('is_active', true)
             ->where('is_private', false)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved'); // Filtro de suspensión
+            })
             ->withCount('photos');
 
         if ($request->filled('search')) {
@@ -726,9 +718,10 @@ class PublicGalleryController extends Controller
             ];
         });
 
-        $photographers = \App\Models\Photographer::whereHas('events', function ($q) {
-            $q->where('is_active', true)->where('is_private', false);
-        })
+        $photographers = \App\Models\Photographer::where('status', 'approved') // Filtro de suspensión
+            ->whereHas('events', function ($q) {
+                $q->where('is_active', true)->where('is_private', false);
+            })
             ->select('id', 'business_name', 'user_id')
             ->with('user:id,name')
             ->orderBy('business_name')
