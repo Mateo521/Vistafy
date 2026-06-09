@@ -205,7 +205,8 @@ class Photographer extends Model
     /**
      * Obtener URL de la foto de perfil
      */
-   public function getProfilePhotoUrlAttribute()
+
+    public function getProfilePhotoUrlAttribute()
     {
         if (!$this->profile_photo) return null;
 
@@ -213,14 +214,17 @@ class Photographer extends Model
             return $this->profile_photo;
         }
 
+
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
         return $disk->url($this->profile_photo);
     }
 
-
-public function getBannerPhotoUrlAttribute()
+    /**
+     * Obtener URL del Banner
+     */
+    public function getBannerPhotoUrlAttribute()
     {
         if (!$this->banner_photo) return null;
 
@@ -228,12 +232,12 @@ public function getBannerPhotoUrlAttribute()
             return $this->banner_photo;
         }
 
+    
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
         return $disk->url($this->banner_photo);
     }
-
     /**
      * Usar slug por defecto para rutas públicas
      */
