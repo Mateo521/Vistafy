@@ -65,7 +65,7 @@ const formatEventTitle = (name) => {
                     :pagination="{ clickable: true }" :navigation="true" :loop="true" class="swiper-main">
 
                     <SwiperSlide v-for="(event, index) in recentEvents.slice(0, 3)" :key="event.id"
-                        class="relative bg-[#050505] overflow-hidden">
+                        class="relative overflow-hidden"> <!--bg-[#050505] -->
 
                         
                         <div class="absolute inset-0 w-full h-full z-0 bg-black">
@@ -114,7 +114,7 @@ const formatEventTitle = (name) => {
                             <div class="flex items-end justify-between mb-4">
                                 <span
                                     class="text-[#E30613] font-flux font-bold tracking-widest flex items-center gap-4">
-                                    <span class="w-12 h-[2px] bg-[#E30613]"></span> 0{{ index + 1 }}
+                                    <span class="w-12 h-[5px] bg-[#E30613]"></span>{{ index + 1 }}
                                 </span>
 
                                 <div v-if="event.cover_image_url"
@@ -156,7 +156,7 @@ const formatEventTitle = (name) => {
                 </Swiper>
 
 
-                <section id="eventos" class="w-full pt-20 pb-0 bg-[#050505]">
+                <section id="eventos" class="w-full pt-20 pb-0 "> <!-- bg-[#050505]-->
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span
@@ -200,7 +200,7 @@ const formatEventTitle = (name) => {
                 </section>
 
 
-                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden bg-[#050505]">
+                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden"> <!--  bg-[#050505]-->
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">
