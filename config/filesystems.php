@@ -67,7 +67,7 @@ return [
             'bucket' => env('BACKBLAZE_BUCKET'),
             'endpoint' => env('BACKBLAZE_ENDPOINT'),
             'use_path_style_endpoint' => true,
-            'visibility' => 'private',
+            'visibility' => 'public',  
             'throw' => true,
         ],
 

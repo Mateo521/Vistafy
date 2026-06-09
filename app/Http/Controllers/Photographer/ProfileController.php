@@ -69,7 +69,16 @@ class ProfileController extends Controller
             $image->cover(1920, 400);
             $encoded = $image->toJpeg(80);
 
-            Storage::disk('b2')->put($filename, (string) $encoded);
+            try {
+            \Illuminate\Support\Facades\Storage::disk('b2')->put($filename, (string) $encoded);
+        } catch (\League\Flysystem\UnableToWriteFile $e) {
+    
+    $errorReal = $e->getPrevious() ? $e->getPrevious()->getMessage() : $e->getMessage();
+    dd('B2 RECHAZÓ EL ARCHIVO. Motivo exacto: ' . $errorReal);
+}
+
+
+
             $validated['banner_photo'] = $filename;
         } else {
             unset($validated['banner_photo']);
