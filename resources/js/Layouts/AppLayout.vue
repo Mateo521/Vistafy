@@ -269,7 +269,7 @@ const navigationItems = [
                     </div>
 
                     <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none p-2">
-                        <div class="space-y-1.5 relative w-6 h-4">
+                        <div class="relative w-6 h-4">
                             <span
                                 :class="['absolute w-6 h-[2px] bg-white transition-all duration-300', mobileMenuOpen ? 'rotate-45 top-2' : 'top-0']"></span>
                             <span

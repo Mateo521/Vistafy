@@ -1,22 +1,38 @@
 {
-    "name": "F33",
+    "name": "F33 Studio",
     "short_name": "F33",
     "description": "Portal de fotógrafos y eventos visuales.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#000000",
+    "background_color": "#050505",
     "theme_color": "#E30613",
     "orientation": "portrait-primary",
     "icons": [
         {
             "src": "/icons/icon-192x192.png",
             "type": "image/png",
-            "sizes": "192x192"
+            "sizes": "192x192",
+            "purpose": "any maskable"
         },
         {
             "src": "/icons/icon-512x512.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshots/mobile-screenshot.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "/screenshots/desktop-screenshot.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
         }
     ]
 }
