@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PhotographerRegisteredMail;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -56,7 +58,17 @@ class PhotographerRegistrationController extends Controller
         // Subir foto de perfil si existe
         $profilePhotoPath = null;
         if ($request->hasFile('profile_photo')) {
-            $profilePhotoPath = $request->file('profile_photo')->store('photographers/profiles', 'public');
+            $file = $request->file('profile_photo');
+            $filename = 'photographers/profiles/' . Str::random(20) . '.jpg';
+
+            $manager = new ImageManager(new Driver);
+            $image = $manager->read($file);
+            $image->cover(800, 800);
+            $encoded = $image->toJpeg(80);
+
+        
+            \Illuminate\Support\Facades\Storage::disk('b2')->put($filename, (string) $encoded);
+            $profilePhotoPath = $filename;
         }
 
         // Crear perfil de fotógrafo (estado: pending)

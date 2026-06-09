@@ -149,16 +149,20 @@ public function getFutureEventImage($name)
     /**
      * Obtener ruta de imagen de fotógrafo
      */
-  public function getPhotographerImage($index)
+public function getPhotographerImage($index)
     {
         $localPath = "photographers/profiles/photographer_{$index}.jpg";
-        $cloudPath = "seeds/photographers/profiles/photographer_{$index}.jpg";
+        
+
+        $randomFileName = \Illuminate\Support\Str::random(20) . '.jpg';
+
+        $cloudPath = "photographers/profiles/{$randomFileName}";
 
         if (Storage::disk('public')->exists($localPath)) {
-            if (!Storage::disk($this->disk)->exists($cloudPath)) {
-                $content = Storage::disk('public')->get($localPath);
-                Storage::disk($this->disk)->put($cloudPath, $content, 'public');
-            }
+
+            $content = Storage::disk('public')->get($localPath);
+            Storage::disk($this->disk)->put($cloudPath, $content, 'public');
+            
             return $cloudPath;
         }
 
@@ -168,16 +172,18 @@ public function getFutureEventImage($name)
     /**
      * Obtener ruta de imagen de banner de fotógrafo
      */
-   public function getPhotographerBanner($index)
+public function getPhotographerBanner($index)
     {
         $localPath = "photographers/banners/banner_{$index}.jpg";
-        $cloudPath = "seeds/photographers/banners/banner_{$index}.jpg";
+        
+    
+        $randomFileName = \Illuminate\Support\Str::random(20) . '.jpg';
+        $cloudPath = "photographers/banners/{$randomFileName}";
 
         if (Storage::disk('public')->exists($localPath)) {
-            if (!Storage::disk($this->disk)->exists($cloudPath)) {
-                $content = Storage::disk('public')->get($localPath);
-                Storage::disk($this->disk)->put($cloudPath, $content, 'public');
-            }
+            $content = Storage::disk('public')->get($localPath);
+            Storage::disk($this->disk)->put($cloudPath, $content, 'public');
+            
             return $cloudPath;
         }
 

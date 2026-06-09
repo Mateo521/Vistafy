@@ -102,23 +102,17 @@ class FutureEvent extends Model
      */
 public function getCoverImageUrlAttribute()
     {
-        if (!$this->cover_image) {
-            // Placeholder si no hay imagen (este es público, no necesita firma)
-            return 'https://picsum.photos/seed/event-'.$this->id.'/1280/720';
-        }
+        if (!$this->cover_image) return null;
 
-     
-        if (filter_var($this->cover_image, FILTER_VALIDATE_URL)) {
+        if (\Illuminate\Support\Str::startsWith($this->cover_image, ['http://', 'https://'])) {
             return $this->cover_image;
         }
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('b2');
+        $disk = \Illuminate\Support\Facades\Storage::disk('b2');
 
-        // Generamos link temporal de 60 min
-        return $disk->temporaryUrl($this->cover_image, now()->addMinutes(60));
+        return $disk->url($this->cover_image);
     }
-
 
 
     /**

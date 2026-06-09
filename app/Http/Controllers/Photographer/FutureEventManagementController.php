@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class FutureEventManagementController extends Controller
 {
@@ -100,10 +103,19 @@ class FutureEventManagementController extends Controller
         // Subir imagen
         $coverImagePath = null;
         if ($request->hasFile('cover_image')) {
-            $coverImagePath = $request->file('cover_image')->store('eventos-futuros', 'public');
+            $file = $request->file('cover_image');
+            $filename = 'eventos-futuros/' . Str::random(20) . '.jpg';
+
+            $manager = new ImageManager(new Driver);
+            $image = $manager->read($file);
+            $image->cover(1200, 800); 
+            $encoded = $image->toJpeg(80);
+
+            Storage::disk('b2')->put($filename, (string) $encoded);
+            $coverImagePath = $filename;
         }
 
-        //  CONVERSIÓN EXPLÍCITA A FLOAT
+        
         FutureEvent::create([
             'photographer_id' => $photographer->id,
             'title' => $validated['title'],
@@ -181,19 +193,40 @@ class FutureEventManagementController extends Controller
 
         $expiryDate = $eventDateTime->copy()->addDays(7);
 
+
+
+
         $coverImagePath = $opportunity->cover_image;
 
+    
         if ($request->boolean('remove_image') && $coverImagePath) {
-            Storage::disk('public')->delete($coverImagePath);
+            Storage::disk('b2')->delete($coverImagePath);
             $coverImagePath = null;
         }
 
+    
         if ($request->hasFile('cover_image')) {
+            
             if ($coverImagePath) {
-                Storage::disk('public')->delete($coverImagePath);
+                Storage::disk('b2')->delete($coverImagePath);
             }
-            $coverImagePath = $request->file('cover_image')->store('eventos-futuros', 'public');
+            
+            
+            $file = $request->file('cover_image');
+            $filename = 'eventos-futuros/' . Str::random(20) . '.jpg';
+
+            $manager = new ImageManager(new Driver);
+            $image = $manager->read($file);
+            $image->cover(1200, 800);
+            $encoded = $image->toJpeg(80);
+
+            Storage::disk('b2')->put($filename, (string) $encoded);
+            $coverImagePath = $filename;
         }
+
+
+
+
 
         //  CONVERSIÓN EXPLÍCITA A FLOAT
         $opportunity->update([
@@ -223,7 +256,7 @@ class FutureEventManagementController extends Controller
 
         // Eliminar imagen si existe
         if ($opportunity->cover_image) {
-            Storage::disk('public')->delete($opportunity->cover_image);
+            Storage::disk('b2')->delete($opportunity->cover_image);
         }
 
         $opportunity->delete();
