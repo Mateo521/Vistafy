@@ -3,53 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PhotoViewController extends Controller
 {
-    public function show($photographer, $year, $month, $day, $type, $filename)
+    /**
+     * Mostrar la página de visualización de una foto
+     */
+    public function show($photographer, $year, $month, $day, $type, $filename): Response
     {
        
-        $path = "photos/{$photographer}/{$year}/{$month}/{$day}/{$type}/{$filename}";
+        $constructedPath = "photos/{$photographer}/{$year}/{$month}/{$day}/{$type}/{$filename}";
 
-       
+   
+        $column = $type === 'thumbnails' ? 'thumbnail_path' : 'watermarked_path';
+
         $photo = Photo::where('photographer_id', $photographer)
             ->where('is_active', true)
-            ->where(function ($query) use ($type, $filename) {
-                if ($type === 'watermarked') {
-                    $query->where('watermarked_path', 'like', "%/{$filename}");
-                } elseif ($type === 'thumbnails') {
-                    $query->where('thumbnail_path', 'like', "%/{$filename}");
-                }
-            })
+            ->where($column, $constructedPath) 
             ->with(['event', 'photographer.user'])
-            ->first();
+            ->firstOrFail(); 
 
-      
-        if (!$photo) {
-            abort(404, 'Foto no encontrada');
-        }
-
-       
-        $acceptHeader = request()->header('Accept', '');
-        $referer = request()->header('Referer', '');
-
- 
-        $isImageRequest = !str_contains($acceptHeader, 'text/html') || !empty($referer);
-
-        
-        if ($isImageRequest) {
-            if (Storage::disk('public')->exists($path)) {
-                return response()->file(storage_path('app/public/' . $path), [
-                    'Content-Type' => Storage::disk('public')->mimeType($path),
-                    'Cache-Control' => 'public, max-age=31536000',
-                ]);
-            }
-            abort(404, 'Imagen no encontrada');
-        }
-
-        
         return Inertia::render('Photos/View', [
             'photo' => [
                 'id' => $photo->id,
