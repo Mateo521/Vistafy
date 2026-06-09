@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
+
 class ImageProcessingService
 {
     protected $manager;
@@ -41,11 +42,12 @@ class ImageProcessingService
             unset($encodedOriginal);
 
             $watermarkedImage = clone $image;
-            if ($watermarkedImage->width() > 1920 || $watermarkedImage->height() > 1920) {
-                $watermarkedImage->scale(width: 1920, height: 1920);
-            }
+            
+            $watermarkedImage->scaleDown(width: 1080, height: 1080);
+            
             $watermarkedImage = $this->addTiledWatermark($watermarkedImage, $photographerId);
-            $encodedWatermarked = $watermarkedImage->toJpeg(85);
+            
+            $encodedWatermarked = $watermarkedImage->toJpeg(75);
 
             $watermarkedFullPath = "{$basePath}/watermarked/{$uniqueId}_watermarked.jpg";
             Storage::disk($this->disk)->put($watermarkedFullPath, (string) $encodedWatermarked);
