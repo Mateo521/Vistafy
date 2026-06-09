@@ -101,20 +101,20 @@ import {
 
                     <div class="border border-zinc-800 bg-zinc-950 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div>
-                            <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Canal de Soporte Técnico</p>
+                            <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Soporte técnico</p>
                             <p class="font-mono text-sm text-white flex items-center gap-2">
-                                <EnvelopeIcon class="w-4 h-4 text-zinc-400" /> soporte@f33.click
+                                <EnvelopeIcon class="w-4 h-4 text-zinc-400" /> contacto@f33.click
                             </p>
                         </div>
                         
                         <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                             <Link :href="route('home')"
                                 class="border-2 border-zinc-700 bg-black text-zinc-400 px-8 py-4 font-black uppercase tracking-widest text-[10px] hover:bg-white hover:text-black hover:border-white transition-colors text-center text-nowrap">
-                                Volver al Inicio
+                                Volver al inicio
                             </Link>
-                            <a href="mailto:soporte@f33.click?subject=Apelación%20de%20Suspensión"
+                            <a href="mailto:contacto@f33.click?subject=Apelación%20de%20suspensión"
                                 class="border-2 border-red-600 bg-red-600 text-black px-8 py-4 font-black uppercase tracking-widest text-[10px] hover:bg-white hover:border-white transition-colors text-center text-nowrap">
-                                Iniciar Apelación
+                                Iniciar apelación
                             </a>
                         </div>
                     </div>

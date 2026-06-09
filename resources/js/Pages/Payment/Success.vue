@@ -198,7 +198,7 @@ onMounted(() => {
                             <HomeIcon class="w-4 h-4" /> CANCELAR al inicio
                         </Link>
 
-                        <a href="mailto:soporte@f33.click"
+                        <a href="mailto:contacto@f33.click"
                             class="font-mono text-[10px] uppercase tracking-widest text-gray-600 hover:text-red-600 transition-colors">
                             ¿Falla en extracción? Contactar
                         </a>
