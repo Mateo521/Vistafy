@@ -78,7 +78,7 @@ const formatEventTitle = (name) => {
                                 <SwiperSlide v-for="photo in getEventPhotos(event)" :key="photo.id" class="relative w-full h-full">
                                     
                                     <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="absolute inset-0 w-full h-full object-cover object-center blur-[60px] scale-125 opacity-30 z-0">
+                                        class="absolute inset-0 w-full h-full object-cover object-center blur-[60px]  opacity-30 z-0">
                                     
                                     <img :src="photo.watermarked_url || photo.thumbnail_url"
                                         class="absolute inset-0 w-full h-full object-contain object-center opacity-60 z-10 p-4 pb-32 md:p-12 md:pb-12">
@@ -90,7 +90,7 @@ const formatEventTitle = (name) => {
 
                             <div v-else-if="event.cover_image_url" class="relative w-full h-full">
                                 <img :src="event.cover_image_url"
-                                    class="absolute inset-0 w-full h-full object-cover object-center blur-[60px] scale-125 opacity-30 z-0">
+                                    class="absolute inset-0 w-full h-full object-cover object-center blur-[60px]  opacity-30 z-0">
                                 <img :src="event.cover_image_url"
                                     class="absolute inset-0 w-full h-full object-contain object-center opacity-60 z-10 p-4 pb-32 md:p-12 md:pb-12">
                             </div>
@@ -172,7 +172,7 @@ const formatEventTitle = (name) => {
                             class="masonry-item relative group overflow-hidden bg-[#09090b] block ">
 
                             <img :src="event.cover_image_url"
-                                class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
+                                class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700  opacity-80 group-hover:opacity-100">
 
                             <div
                                 class="absolute inset-0 bg-[#050505]/80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
@@ -227,7 +227,7 @@ const formatEventTitle = (name) => {
                                     class="relative aspect-[3/4] bg-[#09090b] group overflow-hidden border border-white/10  block w-full h-full">
 
                                     <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="w-full h-full object-cover filter grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105 pointer-events-none select-none" />
+                                        class="w-full h-full object-cover filter grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700  pointer-events-none select-none" />
 
                                     <div
                                         class="absolute bottom-4 left-4 right-4 flex items-center gap-3 bg-[#050505]/90 p-3 border border-white/10 backdrop-blur-md translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
