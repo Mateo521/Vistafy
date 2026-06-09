@@ -62,7 +62,7 @@ class PhotographerRegistrationController extends Controller
                 $file = $request->file('profile_photo');
                 $filename = 'photographers/profiles/' . Str::random(20) . '.jpg';
 
-                $manager = new ImageManager(new Driver());  
+                $manager = new ImageManager(new Driver());
                 $image = $manager->read($file);
                 $image->cover(800, 800);
                 $encoded = $image->toJpeg(80);
@@ -71,8 +71,13 @@ class PhotographerRegistrationController extends Controller
                 $profilePhotoPath = $filename;
 
             } catch (\Exception $e) {
+                
+                \Illuminate\Support\Facades\Log::error('Fallo en registro de fotógrafo (Imagen): ' . $e->getMessage(), [
+                    'exception' => $e
+                ]);
+
             
-                dd('Error crítico al procesar la imagen: ' . $e->getMessage());
+                abort(500, 'ERROR EN IMAGEN: ' . $e->getMessage());
             }
         }
 
