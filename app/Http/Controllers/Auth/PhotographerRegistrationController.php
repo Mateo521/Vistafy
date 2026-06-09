@@ -44,7 +44,7 @@ class PhotographerRegistrationController extends Controller
             'region' => 'required|string|max:100',
             'phone' => 'required|string|max:20',
             'bio' => 'nullable|string|max:1000',
-            'profile_photo' => 'nullable|image|max:2048', // 2MB max
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
         // Crear usuario
@@ -58,17 +58,22 @@ class PhotographerRegistrationController extends Controller
         // Subir foto de perfil si existe
         $profilePhotoPath = null;
         if ($request->hasFile('profile_photo')) {
-            $file = $request->file('profile_photo');
-            $filename = 'photographers/profiles/' . Str::random(20) . '.jpg';
+            try {
+                $file = $request->file('profile_photo');
+                $filename = 'photographers/profiles/' . Str::random(20) . '.jpg';
 
-            $manager = new ImageManager(new Driver);
-            $image = $manager->read($file);
-            $image->cover(800, 800);
-            $encoded = $image->toJpeg(80);
+                $manager = new ImageManager(new Driver());  
+                $image = $manager->read($file);
+                $image->cover(800, 800);
+                $encoded = $image->toJpeg(80);
 
-        
-            \Illuminate\Support\Facades\Storage::disk('b2')->put($filename, (string) $encoded);
-            $profilePhotoPath = $filename;
+                \Illuminate\Support\Facades\Storage::disk('b2')->put($filename, (string) $encoded);
+                $profilePhotoPath = $filename;
+
+            } catch (\Exception $e) {
+            
+                dd('Error crítico al procesar la imagen: ' . $e->getMessage());
+            }
         }
 
         // Crear perfil de fotógrafo (estado: pending)
