@@ -1,4 +1,5 @@
 {
+    "id": "/",
     "name": "F33 Studio",
     "short_name": "F33",
     "description": "Portal de fotógrafos y eventos visuales.",
@@ -12,24 +13,24 @@
             "src": "/pwa-icons/icon-192x192.png",
             "type": "image/png",
             "sizes": "192x192",
-            "purpose": "any maskable"
+            "purpose": "any"
         },
         {
             "src": "/pwa-icons/icon-512x512.png",
             "type": "image/png",
             "sizes": "512x512",
-            "purpose": "any maskable"
+            "purpose": "any"
         }
     ],
     "screenshots": [
         {
-            "src": "/screenshots/mobile-screenshot.png",
+            "src": "/screenshots/750x1334.png",
             "sizes": "750x1334",
             "type": "image/png",
             "form_factor": "narrow"
         },
         {
-            "src": "/screenshots/desktop-screenshot.png",
+            "src": "/screenshots/1280x720.png",
             "sizes": "1280x720",
             "type": "image/png",
             "form_factor": "wide"
