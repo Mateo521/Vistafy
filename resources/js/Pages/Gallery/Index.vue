@@ -291,7 +291,7 @@ const totalResults = () => {
                             Catálogo F33
                         </p>
                         <h1
-                            class="font-black text-[15vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
+                            class="font-black font-flux text-[15vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
                             ARCHIVOS.
                         </h1>
                     </div>

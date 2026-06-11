@@ -159,7 +159,7 @@ const formatEventTitle = (name) => {
                 <section id="eventos" class="w-full pt-20 pb-0 "> <!-- bg-[#050505]-->
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">Eventos <span
+                            <h2 class="text-4xl md:text-7xl font-black font-flux uppercase tracking-tighter mb-2">Eventos <span
                                     class="text-[#E30613]">.</span></h2>
                             <p class="text-gray-400 font-flux text-sm tracking-widest uppercase">Seleccioná un evento
                                 para ver su colección de fotos</p>
@@ -203,7 +203,7 @@ const formatEventTitle = (name) => {
                 <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden"> <!--  bg-[#050505]-->
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2">
+                            <h2 class="text-4xl md:text-7xl font-black font-flux uppercase tracking-tighter mb-2">
                                 Últimas <span class="text-[#E30613]">fotos</span>
                             </h2>
                             <p class="text-gray-400 font-flux text-sm tracking-widest uppercase">
