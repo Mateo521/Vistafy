@@ -65,7 +65,7 @@ class Photo extends Model
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = \Illuminate\Support\Facades\Storage::disk('b2');
 
-        return $disk->temporaryUrl($this->original_path, now()->addMinutes(60));
+        return $disk->url($this->original_path);
     }
 
     /**
@@ -84,7 +84,7 @@ class Photo extends Model
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
-        return $disk->temporaryUrl($this->thumbnail_path, now()->addMinutes(60));
+        return $disk->url($this->thumbnail_path);
     }
 
     /**
@@ -103,6 +103,6 @@ class Photo extends Model
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = \Illuminate\Support\Facades\Storage::disk('b2');
 
-        return $disk->temporaryUrl($this->watermarked_path, now()->addMinutes(60));
+        return $disk->url($this->watermarked_path);
     }
 }

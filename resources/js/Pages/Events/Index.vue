@@ -119,7 +119,7 @@ onMounted(() => {
                     <p class="font-mono text-xs uppercase text-red-600 mb-4  border-red-600 pl-3">
                         Línea de Tiempo
                     </p>
-                    <h1 class="font-black text-[14vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
+                    <h1 class="font-black font-flux text-[14vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
                         ARCHIVO DE<br><span class="text-red-600 mix-blend-screen">EVENTOS.</span>
                     </h1>
                 </div>

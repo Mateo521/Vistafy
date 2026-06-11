@@ -71,7 +71,7 @@ class Event extends Model
         }
 
         
-        return $path ? $disk->temporaryUrl($path, now()->addMinutes(60)) : null;
+        return $path ? $disk->url($path) : null;
     }
 
 

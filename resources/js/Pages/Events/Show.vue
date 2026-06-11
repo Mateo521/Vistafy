@@ -37,7 +37,7 @@ const formatDate = (dateString) => {
     });
 };
 
-// Placeholder Brutalista
+ 
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
@@ -49,52 +49,75 @@ const handleImageError = (e) => {
     }
 };
 
-// Inicializador del Glitch
+ 
 const initGlitch = () => {
     const glitchContainers = document.querySelectorAll('.glitch-image-container');
+    
     glitchContainers.forEach(container => {
         const imgUrl = container.getAttribute('data-img');
         if (!imgUrl) return;
 
-        const height = container.clientHeight || 220;
-        const width = container.clientWidth;
-        let i = 0;
-        let html = '';
-        const random = (min, max) => Math.random() * (max - min) + min;
+      
+        const imgPreloader = new Image();
+        imgPreloader.src = imgUrl;
 
-        while (i < height) {
-            const stripHeight = Math.floor(Math.random() * 6) + 2;
-            const actualHeight = (i + stripHeight < height) ? stripHeight : (height - i);
-            const gx1 = random(-25, 25).toFixed(1) + 'px';
-            const gx2 = random(-25, 25).toFixed(1) + 'px';
-            const gh1 = random(-30, 30).toFixed(1) + 'deg';
-            const gh2 = random(-30, 30).toFixed(1) + 'deg';
-            const duration = random(3, 8).toFixed(1) + 's';
-            const delay = random(0, 3).toFixed(1) + 's';
+        imgPreloader.onload = () => {
+         
+            const height = container.clientHeight || imgPreloader.height || 400; // Fallback
+            const width = container.clientWidth || imgPreloader.width || window.innerWidth;
+            
+            let i = 0;
+            let html = '';
+            const random = (min, max) => Math.random() * (max - min) + min;
 
-            html += `
-                <div class="glitch-strip" 
-                     style="
-                        height: ${actualHeight}px; 
-                        background-image: url('${imgUrl}');
-                        background-size: ${width}px ${height}px; 
-                        background-position: 0px -${i}px;
-                        --glitch-x-1: ${gx1};
-                        --glitch-x-2: ${gx2};
-                        --glitch-hue-1: ${gh1};
-                        --glitch-hue-2: ${gh2};
-                        animation-duration: ${duration};
-                        animation-delay: -${delay};
-                     ">
-                </div>`;
-            i += actualHeight;
-        }
-        container.innerHTML = html;
+            while (i < height) {
+             
+                const stripHeight = Math.floor(Math.random() * 15) + 5; 
+                const actualHeight = (i + stripHeight < height) ? stripHeight : (height - i);
+                
+                const gx1 = random(-20, 20).toFixed(1) + 'px';
+                const gx2 = random(-20, 20).toFixed(1) + 'px';
+                const gh1 = random(-40, 40).toFixed(1) + 'deg';
+                const gh2 = random(-40, 40).toFixed(1) + 'deg';
+                const duration = random(3, 8).toFixed(1) + 's';
+                const delay = random(0, 4).toFixed(1) + 's';
+
+             
+                const percentY = (i / height) * 100;
+
+                html += `
+                    <div class="glitch-strip absolute w-full left-0" 
+                         style="
+                            top: ${i}px;
+                            height: ${actualHeight}px; 
+                            background-image: url('${imgUrl}');
+                            background-size: 100vw auto; 
+                            background-position: center ${percentY}%;
+                            background-attachment: fixed;
+                            --glitch-x-1: ${gx1};
+                            --glitch-x-2: ${gx2};
+                            --glitch-hue-1: ${gh1};
+                            --glitch-hue-2: ${gh2};
+                            animation-duration: ${duration};
+                            animation-delay: -${delay};
+                         ">
+                    </div>`;
+                i += actualHeight;
+            }
+            container.innerHTML = html;
+        };
+        
+        imgPreloader.onerror = () => {
+            console.error("Fallo al pre-cargar la imagen del Glitch:", imgUrl);
+            container.style.backgroundColor = '#1a1a1a';  
+        };
     });
 };
 
 onMounted(() => {
-    initGlitch();
+    setTimeout(() => {
+        initGlitch();
+    }, 50);
 });
 </script>
 
