@@ -104,50 +104,56 @@ const formatEventTitle = (name) => {
 
 
 
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-[#050505]/40 to-transparent z-10 pointer-events-none">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-[#050505]/20 z-10 pointer-events-none">
                         </div>
 
-                        <div
-                            class="absolute inset-0 w-full h-full px-6 md:px-12 flex flex-col justify-end pb-32 z-20 pointer-events-none">
+                        <div class="absolute inset-0 w-full h-full z-20 pointer-events-none">
 
-                            <div class="flex items-end justify-between mb-4">
-                                <span
-                                    class="text-[#E30613] font-flux font-bold tracking-widest flex items-center gap-4">
-                                    <span class="w-12 h-[5px] bg-[#E30613]"></span>{{ index + 1 }}
+                            <div class="absolute top-20 right-6 md:top-28 md:right-12 flex flex-col items-end gap-6">
+                                
+                                <span class="text-[#E30613] font-flux font-bold text-xl md:text-2xl tracking-widest flex items-center gap-4">
+                                    {{ index + 1 }} <span class="w-16 h-[5px] bg-[#E30613]"></span>
                                 </span>
 
                                 <div v-if="event.cover_image_url"
-                                    class="hidden sm:block w-20 h-20 md:w-28 md:h-28 bg-[#09090b] border border-white/20 p-1.5 shadow-2xl relative">
-                                    <div
-                                        class="absolute -top-2 -right-2 bg-[#E30613] text-white text-[8px] font-flux font-bold px-1 uppercase tracking-widest z-10">
+                                    class="hidden sm:block w-32 h-32 md:w-48 md:h-48 xl:w-56 xl:h-56 bg-black border-2 md:border-4 border-white p-2 shadow-[8px_8px_0px_0px_rgba(227,6,19,1)] relative transition-transform duration-700 hover:scale-105 pointer-events-auto">
+                                    
+                                    <div class="absolute -top-4 -left-4 bg-[#E30613] text-white text-[10px] md:text-xs font-flux font-bold px-3 py-1 uppercase tracking-widest z-10 border-2 border-black">
                                         ID: {{ event.id }}
                                     </div>
+                                    
                                     <img :src="event.cover_image_url"
-                                        class="w-full h-full object-cover grayscale contrast-125" alt="Logo Evento">
+                                        class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500" 
+                                        alt="Thumbnail Evento">
                                 </div>
                             </div>
 
-                            <h1
-                                class="text-4xl md:text-6xl lg:text-[8rem] font-flux tracking-tighter leading-[0.85] uppercase">
-                                {{ formatEventTitle(event.name).first }} <br>
-                                <span :class="index % 2 === 0 ? 'text-transparent' : 'text-[#E30613]'"
-                                    :style="index % 2 === 0 ? '-webkit-text-stroke: 2px white;' : ''">
-                                    {{ formatEventTitle(event.name).second }}
-                                </span>
-                            </h1>
+                            <div class="absolute bottom-12 left-6 md:bottom-20 md:left-12 max-w-3xl xl:max-w-5xl">
+                                
+                                <h1 class="text-5xl md:text-7xl lg:text-[9rem] font-flux tracking-tighter leading-[0.85] uppercase drop-shadow-2xl">
+                                    {{ formatEventTitle(event.name).first }} <br>
+                                    <span :class="index % 2 === 0 ? 'text-transparent' : 'text-[#E30613]'"
+                                        :style="index % 2 === 0 ? '-webkit-text-stroke: 2px white;' : ''">
+                                        {{ formatEventTitle(event.name).second }}
+                                    </span>
+                                </h1>
 
-                            <p class="mt-8 max-w-xl text-lg text-gray-300 font-lato pl-6 line-clamp-2">
-                                {{ event.description || 'Cobertura inmersiva. Captura cruda para revivir la energía del momento.' }}
-                            </p>
+                                <p class="mt-6 md:mt-8 max-w-xl text-sm md:text-lg text-gray-300 font-lato pl-4 md:pl-6 border-l-4 border-[#E30613] line-clamp-3 bg-black/30 backdrop-blur-sm p-4">
+                                    {{ event.description || 'Cobertura inmersiva. Captura cruda para revivir la energía del momento.' }}
+                                </p>
 
-                            <div class="mt-8 pl-6 pointer-events-auto w-max">
-                                <Link :href="route('events.show', event.slug || event.id)"
-                                    class="inline-block bg-[#E30613] border border-[#E30613] text-white font-flux text-[10px] font-bold uppercase tracking-widest px-8 py-4 hover:bg-white hover:text-black hover:border-white transition-colors duration-300">
-                                    [ Ver Archivo ]
-                                </Link>
+                                <div class="mt-8 md:mt-10 pl-4 md:pl-6 pointer-events-auto w-max">
+                                    <Link :href="route('events.show', event.slug || event.id)"
+                                        class="inline-block bg-[#E30613] border border-[#E30613] text-white font-flux text-xs md:text-sm font-bold uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1">
+                                        [ Ver Archivo ]
+                                    </Link>
+                                </div>
                             </div>
+
                         </div>
+
+
+
 
                     </SwiperSlide>
 
