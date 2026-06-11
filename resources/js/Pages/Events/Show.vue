@@ -141,7 +141,7 @@ onMounted(() => {
                         // {{ formatDate(event.event_date) }}
                     </p>
                     <h1
-                        class="font-black text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mb-6 drop-shadow-xl">
+                        class="font-black font-flux text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mb-6 drop-shadow-xl">
                         {{ event.name }}
                     </h1>
 

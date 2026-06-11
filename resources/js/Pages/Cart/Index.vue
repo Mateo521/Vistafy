@@ -137,7 +137,7 @@ const handleImageError = (e) => {
                         // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
                     </span>
                     <h1
-                        class="font-black text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
+                        class="font-black font-flux text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
                         COLA DE<br><span class="text-red-600">DESCARGAS.</span>
                     </h1>
                 </div>

@@ -54,9 +54,7 @@ const handleImageError = (e) => {
                             <h1 class="text-6xl md:text-8xl font-flux text-white leading-none uppercase tracking-tighter mb-4">
                                 Mis Compras
                             </h1>
-                            <p class="font-mono text-xs text-zinc-400 max-w-xl border-l-2 border-[#E30613] pl-4">
-                                Acceso permanente al registro histórico de transacciones y activos digitales adquiridos. Listo para su extracción en alta resolución.
-                            </p>
+                            
                         </div>
 
                         <div class="flex gap-4 self-start">
@@ -80,14 +78,14 @@ const handleImageError = (e) => {
                         <ShoppingBagIcon class="w-10 h-10 text-zinc-600" />
                     </div>
                     <h2 class="text-4xl font-flux uppercase text-white mb-2 tracking-widest">
-                        REGISTRO_VACÍO // 0 COMPRAS
+                         // 0 COMPRAS
                     </h2>
                     <p class="font-mono text-xs text-zinc-500 mb-10">
-                        Aún no existen transacciones comerciales vinculadas a este nodo.
+                        No existen transacciones.
                     </p>
                     <Link :href="route('gallery.index')"
                         class="inline-flex items-center gap-2 bg-[#E30613] hover:bg-white text-black font-mono text-[10px] font-bold uppercase tracking-widest px-8 py-4 border border-[#E30613] hover:border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                        <PhotoIcon class="w-4 h-4" /> Iniciar Exploración
+                        <PhotoIcon class="w-4 h-4" /> Iniciar exploración
                     </Link>
                 </div>
 
