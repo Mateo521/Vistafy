@@ -163,7 +163,7 @@ const mobileNavLinkClasses = (active) => {
 
                                     <Link :href="route('logout')" method="post" as="button"
                                         class="block px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] hover:bg-[#E30613] hover:text-black transition-none w-full text-left">
-                                        [ DESCONECTAR_NODO ]
+                                        [ Cerrar Sesión ]
                                     </Link>
                                 </div>
                             </div>
