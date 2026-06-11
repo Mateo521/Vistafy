@@ -8,7 +8,6 @@ import {
     MagnifyingGlassIcon,
     TrashIcon,
     EyeIcon,
-    FunnelIcon,
     XMarkIcon
 } from '@heroicons/vue/24/outline';
 
@@ -38,14 +37,11 @@ const clearFilters = () => {
 const toggleRead = (message) => {
     router.patch(route('admin.messages.toggle-read', message.id), {}, {
         preserveScroll: true,
-        onSuccess: () => {
-            // Recargar la página actual
-        }
     });
 };
 
 const deleteMessage = (message) => {
-    if (confirm('¿Estás seguro de eliminar este mensaje?')) {
+    if (confirm('¿Estás seguro de purgar este mensaje del sistema?')) {
         router.delete(route('admin.messages.destroy', message.id), {
             preserveScroll: true,
         });
@@ -56,241 +52,218 @@ const formatDate = (date) => {
     return new Date(date).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric',
+        day: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
-    });
+    }).replace(/,/g, ' -').toUpperCase();
 };
 </script>
 
 <template>
     <AuthenticatedLayout>
-        <Head title="Mensajes de Contacto" />
+        <Head title="[ADMIN] Mensajes de Contacto" />
 
-        <div class="py-12">
+        <div class="min-h-screen bg-[#050505] text-white selection:bg-[#E30613] selection:text-black py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 
-                <!-- Header -->
-                <div class="mb-8 flex items-center justify-between">
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-800 pb-6">
                     <div>
-                        <span class="text-xs font-bold  text-slate-400 uppercase mb-2 block">
-                            Centro de Mensajes
+                        <span class="font-mono text-[10px] font-bold text-[#E30613] uppercase tracking-widest mb-2 block flex items-center gap-2">
+                            <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
+                            Módulo de Comunicaciones
                         </span>
-                        <h1 class="text-3xl font-sans font-bold text-slate-900">
+                        <h1 class="text-5xl md:text-6xl font-flux font-black text-white uppercase tracking-tighter leading-none">
                             Mensajes de Contacto
                         </h1>
                     </div>
 
                     <Link :href="route('admin.dashboard')" 
-                        class="px-4 py-2 border border-gray-300 rounded-sm text-xs font-bold uppercase tracking-widest text-slate-600 hover:border-slate-900 hover:text-slate-900 transition">
+                        class="px-6 py-3 border border-zinc-800 bg-transparent text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-400 hover:border-white hover:text-black hover:bg-white transition-colors text-center w-max">
                         ← Volver al Dashboard
                     </Link>
                 </div>
 
-                <!-- Stats Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm">
+                    <div class="bg-[#09090b] p-6 border border-zinc-800 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Total</p>
-                                <p class="text-3xl font-sans text-slate-900">{{ stats.total }}</p>
+                                <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Total Recepciones</p>
+                                <p class="text-5xl font-flux text-white leading-none">{{ stats.total }}</p>
                             </div>
-                            <EnvelopeIcon class="w-10 h-10 text-slate-300" />
+                            <EnvelopeIcon class="w-10 h-10 text-zinc-700" />
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 p-6 border-2 border-blue-200 rounded-sm shadow-sm">
+                    <div class="bg-[#E30613]/5 p-6 border border-[#E30613] shadow-[4px_4px_0px_0px_rgba(227,6,19,1)]">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-2">No Leídos</p>
-                                <p class="text-3xl font-sans text-blue-900">{{ stats.unread }}</p>
+                                <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] mb-2">Requieren Atención</p>
+                                <p class="text-5xl font-flux text-[#E30613] leading-none">{{ stats.unread }}</p>
                             </div>
-                            <EnvelopeIcon class="w-10 h-10 text-blue-300" />
+                            <EnvelopeIcon class="w-10 h-10 text-[#E30613]" />
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 border border-gray-200 rounded-sm shadow-sm">
+                    <div class="bg-black p-6 border border-zinc-800 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Leídos</p>
-                                <p class="text-3xl font-sans text-slate-900">{{ stats.read }}</p>
+                                <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Procesados</p>
+                                <p class="text-5xl font-flux text-zinc-500 leading-none">{{ stats.read }}</p>
                             </div>
-                            <EnvelopeOpenIcon class="w-10 h-10 text-slate-300" />
+                            <EnvelopeOpenIcon class="w-10 h-10 text-zinc-800" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Filtros y Búsqueda -->
-                <div class="bg-white border border-gray-200 rounded-sm shadow-sm p-6 mb-6">
+                <div class="bg-[#09090b] border border-zinc-800 p-6 mb-6">
                     <form @submit.prevent="search" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <!-- Búsqueda -->
+                            
                             <div class="md:col-span-2">
                                 <div class="relative">
                                     <input 
                                         v-model="searchForm.search"
                                         type="text" 
-                                        placeholder="Buscar por nombre, email o asunto..."
-                                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-sm"
+                                        placeholder="BUSCAR POR NOMBRE, EMAIL O ASUNTO..."
+                                        class="w-full pl-10 pr-4 py-3 bg-black border border-zinc-700 text-white font-mono text-xs uppercase placeholder-zinc-600 focus:border-[#E30613] focus:ring-0 rounded-none transition-colors"
                                     />
-                                    <MagnifyingGlassIcon class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" />
+                                    <MagnifyingGlassIcon class="w-5 h-5 text-zinc-500 absolute left-3 top-3.5" />
                                 </div>
                             </div>
 
-                            <!-- Filtro Estado -->
                             <div>
                                 <select 
                                     v-model="searchForm.status"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-sm"
+                                    class="w-full px-4 py-3 bg-black border border-zinc-700 text-zinc-300 font-mono text-xs uppercase focus:border-[#E30613] focus:ring-0 rounded-none transition-colors appearance-none cursor-pointer"
                                 >
-                                    <option value="">Todos los mensajes</option>
-                                    <option value="unread">No leídos</option>
-                                    <option value="read">Leídos</option>
+                                    <option value="">TODOS LOS MENSAJES</option>
+                                    <option value="unread">NO LEÍDOS (NUEVOS)</option>
+                                    <option value="read">LEÍDOS (PROCESADOS)</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="flex gap-3">
+                        <div class="flex gap-4 border-t border-zinc-800 pt-4">
                             <button 
                                 type="submit"
-                                class="px-6 py-2 bg-slate-900 text-white rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition">
-                                Buscar
+                                class="px-8 py-3 bg-[#E30613] text-black border border-[#E30613] rounded-none text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white hover:border-white transition-colors">
+                                Ejecutar Búsqueda
                             </button>
                             <button 
                                 type="button"
                                 @click="clearFilters"
                                 v-if="searchForm.search || searchForm.status"
-                                class="px-6 py-2 border border-gray-300 text-slate-600 rounded-sm text-xs font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition">
-                                Limpiar
+                                class="px-8 py-3 bg-transparent text-zinc-400 border border-zinc-700 rounded-none text-[10px] font-mono font-bold uppercase tracking-widest hover:text-white hover:border-white transition-colors flex items-center gap-2">
+                                <XMarkIcon class="w-3 h-3" /> Purgar Filtros
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Lista de Mensajes -->
-                <div class="bg-white border border-gray-200 rounded-sm shadow-sm overflow-hidden">
+                <div class="bg-[#09090b] border border-zinc-800 overflow-hidden">
                     
-                    <div v-if="messages.data.length === 0" class="p-12 text-center">
-                        <EnvelopeOpenIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">No hay mensajes</h3>
-                        <p class="text-slate-500">No se encontraron mensajes con los filtros aplicados.</p>
+                    <div v-if="messages.data.length === 0" class="p-16 text-center border-dashed border-2 border-zinc-800 m-4">
+                        <EnvelopeOpenIcon class="w-16 h-16 text-zinc-800 mx-auto mb-4" />
+                        <h3 class="font-flux text-3xl uppercase tracking-widest text-zinc-500 mb-2">BANDEJA_VACÍA</h3>
+                        <p class="font-mono text-xs text-zinc-600">No se encontraron registros que coincidan con los parámetros.</p>
                     </div>
 
-                    <div v-else class="divide-y divide-gray-100">
+                    <div v-else class="divide-y divide-zinc-800">
                         <div 
                             v-for="message in messages.data" 
                             :key="message.id"
                             :class="[
-                                'p-6 hover:bg-gray-50 transition-colors',
-                                !message.is_read && 'bg-blue-50/30'
+                                'p-6 transition-all duration-300 border-l-4 group relative',
+                                !message.is_read ? 'bg-[#E30613]/5 border-l-[#E30613] hover:bg-[#E30613]/10' : 'bg-transparent border-l-transparent hover:bg-zinc-900'
                             ]"
                         >
-                            <div class="flex items-start justify-between gap-4">
+                            <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                                 <div class="flex items-start gap-4 flex-1 min-w-0">
-                                    <!-- Indicador de estado -->
-                                    <div class="pt-1">
-                                        <EnvelopeIcon 
-                                            v-if="!message.is_read" 
-                                            class="w-6 h-6 text-blue-600" 
-                                        />
-                                        <EnvelopeOpenIcon 
-                                            v-else 
-                                            class="w-6 h-6 text-slate-300" 
-                                        />
+                                    
+                                    <div class="pt-1 flex-shrink-0">
+                                        <EnvelopeIcon v-if="!message.is_read" class="w-6 h-6 text-[#E30613]" />
+                                        <EnvelopeOpenIcon v-else class="w-6 h-6 text-zinc-600" />
                                     </div>
 
-                                    <!-- Contenido -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <h3 :class="[
-                                                'font-bold text-slate-900',
-                                                !message.is_read && 'text-blue-900'
-                                            ]">
+                                        <div class="flex flex-wrap items-center gap-3 mb-1">
+                                            <h3 :class="['font-flux text-2xl uppercase tracking-wider line-clamp-1', !message.is_read ? 'text-white' : 'text-zinc-400']">
                                                 {{ message.name }}
                                             </h3>
-                                            <span v-if="!message.is_read" 
-                                                class="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider rounded">
-                                                Nuevo
+                                            <span v-if="!message.is_read" class="px-2 py-0.5 bg-[#E30613] text-black text-[9px] font-mono font-bold uppercase tracking-widest">
+                                                NUEVO
                                             </span>
                                         </div>
                                         
-                                        <p class="text-sm text-slate-600 mb-1">
-                                            <a :href="`mailto:${message.email}`" class="hover:text-blue-600 transition">
-                                                {{ message.email }}
+                                        <div class="font-mono text-[10px] text-zinc-500 mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 uppercase tracking-widest">
+                                            <a :href="`mailto:${message.email}`" class="hover:text-white transition-colors text-zinc-300 flex items-center gap-1">
+                                                >_ {{ message.email }}
                                             </a>
-                                            <span v-if="message.phone" class="text-slate-400 ml-2">
-                                                • {{ message.phone }}
+                                            <span v-if="message.phone" class="border-l border-zinc-700 pl-4">
+                                                TEL: {{ message.phone }}
                                             </span>
+                                        </div>
+                                        
+                                        <p class="font-mono text-xs font-bold text-white mb-2 uppercase tracking-wide">
+                                            ASUNTO: {{ message.subject }}
                                         </p>
                                         
-                                        <p class="font-semibold text-slate-900 mb-2">
-                                            {{ message.subject }}
-                                        </p>
-                                        
-                                        <p class="text-sm text-slate-600 line-clamp-2 mb-3">
+                                        <p class="font-sans text-sm text-zinc-400 line-clamp-2 leading-relaxed mb-4">
                                             {{ message.message }}
                                         </p>
 
-                                        <p class="text-xs text-slate-400">
-                                            {{ formatDate(message.created_at) }}
+                                        <p class="font-mono text-[10px] text-zinc-600 font-bold tracking-widest uppercase">
+                                            RECIBIDO: {{ formatDate(message.created_at) }}
                                         </p>
                                     </div>
                                 </div>
 
-                                <!-- Acciones -->
-                                <div class="flex items-center gap-2 flex-shrink-0">
+                                <div class="flex items-center gap-3 lg:flex-col lg:justify-start flex-shrink-0">
                                     <Link 
                                         :href="route('admin.messages.show', message.id)"
-                                        class="p-2 hover:bg-slate-100 rounded transition group"
-                                        title="Ver detalles"
+                                        class="w-10 h-10 flex items-center justify-center border border-zinc-700 bg-black hover:border-white hover:bg-white text-zinc-400 hover:text-black transition-colors"
+                                        title="Ver Detalles"
                                     >
-                                        <EyeIcon class="w-5 h-5 text-slate-400 group-hover:text-slate-900" />
+                                        <EyeIcon class="w-4 h-4" />
                                     </Link>
 
                                     <button 
                                         @click="toggleRead(message)"
-                                        class="p-2 hover:bg-blue-100 rounded transition group"
+                                        class="w-10 h-10 flex items-center justify-center border border-zinc-700 bg-black hover:border-white hover:bg-white text-zinc-400 hover:text-black transition-colors"
                                         :title="message.is_read ? 'Marcar como no leído' : 'Marcar como leído'"
                                     >
-                                        <EnvelopeIcon 
-                                            v-if="message.is_read"
-                                            class="w-5 h-5 text-slate-400 group-hover:text-blue-600" 
-                                        />
-                                        <EnvelopeOpenIcon 
-                                            v-else
-                                            class="w-5 h-5 text-blue-600 group-hover:text-blue-800" 
-                                        />
+                                        <EnvelopeIcon v-if="message.is_read" class="w-4 h-4" />
+                                        <EnvelopeOpenIcon v-else class="w-4 h-4" />
                                     </button>
 
                                     <button 
                                         @click="deleteMessage(message)"
-                                        class="p-2 hover:bg-red-100 rounded transition group"
-                                        title="Eliminar"
+                                        class="w-10 h-10 flex items-center justify-center border border-zinc-700 bg-black hover:border-[#E30613] hover:bg-[#E30613] text-zinc-400 hover:text-black transition-colors"
+                                        title="Purgar Mensaje"
                                     >
-                                        <TrashIcon class="w-5 h-5 text-slate-400 group-hover:text-red-600" />
+                                        <TrashIcon class="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Paginación -->
-                    <div v-if="messages.links.length > 3" class="border-t border-gray-200 px-6 py-4 flex items-center justify-between">
-                        <div class="text-sm text-slate-500">
-                            Mostrando {{ messages.from }} - {{ messages.to }} de {{ messages.total }}
+                    <div v-if="messages.links.length > 3" class="bg-black border-t border-zinc-800 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="font-mono text-[10px] uppercase font-bold tracking-widest text-zinc-500">
+                            MOSTRANDO REGISTROS {{ messages.from }} AL {{ messages.to }} DE {{ messages.total }}
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex flex-wrap gap-2">
                             <Link 
                                 v-for="(link, index) in messages.links" 
                                 :key="index"
                                 :href="link.url"
                                 v-html="link.label"
                                 :class="[
-                                    'px-3 py-2 border rounded-sm text-xs font-bold transition',
+                                    'px-3 py-2 border font-mono text-[10px] font-bold transition-colors uppercase',
                                     link.active 
-                                        ? 'bg-slate-900 text-white border-slate-900' 
-                                        : 'bg-white text-slate-600 border-gray-300 hover:border-slate-900',
-                                    !link.url && 'opacity-50 cursor-not-allowed'
+                                        ? 'bg-[#E30613] text-black border-[#E30613]' 
+                                        : 'bg-black text-zinc-400 border-zinc-800 hover:text-white hover:border-white',
+                                    !link.url && 'opacity-20 cursor-not-allowed pointer-events-none'
                                 ]"
                                 :disabled="!link.url"
                             />
