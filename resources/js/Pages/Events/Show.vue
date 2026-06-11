@@ -37,7 +37,7 @@ const formatDate = (dateString) => {
     });
 };
 
- 
+
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
@@ -49,51 +49,45 @@ const handleImageError = (e) => {
     }
 };
 
- 
+
 const initGlitch = () => {
     const glitchContainers = document.querySelectorAll('.glitch-image-container');
-    
+
     glitchContainers.forEach(container => {
         const imgUrl = container.getAttribute('data-img');
         if (!imgUrl) return;
 
-      
         const imgPreloader = new Image();
         imgPreloader.src = imgUrl;
 
         imgPreloader.onload = () => {
-         
-            const height = container.clientHeight || imgPreloader.height || 400; // Fallback
-            const width = container.clientWidth || imgPreloader.width || window.innerWidth;
-            
+            // Obtenemos el ancho y alto real del contenedor (evitando ceros)
+            const height = container.offsetHeight || 400;
+            const width = container.offsetWidth || window.innerWidth;
+
             let i = 0;
             let html = '';
             const random = (min, max) => Math.random() * (max - min) + min;
 
             while (i < height) {
-             
-                const stripHeight = Math.floor(Math.random() * 15) + 5; 
+                const stripHeight = Math.floor(random(4, 15));
                 const actualHeight = (i + stripHeight < height) ? stripHeight : (height - i);
-                
-                const gx1 = random(-20, 20).toFixed(1) + 'px';
-                const gx2 = random(-20, 20).toFixed(1) + 'px';
-                const gh1 = random(-40, 40).toFixed(1) + 'deg';
-                const gh2 = random(-40, 40).toFixed(1) + 'deg';
-                const duration = random(3, 8).toFixed(1) + 's';
-                const delay = random(0, 4).toFixed(1) + 's';
 
-             
-                const percentY = (i / height) * 100;
+                const gx1 = random(-12, 12).toFixed(1) + 'px';
+                const gx2 = random(-12, 12).toFixed(1) + 'px';
+                const gh1 = random(-30, 30).toFixed(1) + 'deg';
+                const gh2 = random(-30, 30).toFixed(1) + 'deg';
+                const duration = random(3, 6).toFixed(1) + 's';
+                const delay = random(0, 3).toFixed(1) + 's';
 
                 html += `
-                    <div class="glitch-strip absolute w-full left-0" 
+                    <div class="glitch-strip absolute left-0 w-full" 
                          style="
                             top: ${i}px;
                             height: ${actualHeight}px; 
                             background-image: url('${imgUrl}');
-                            background-size: 100vw auto; 
-                            background-position: center ${percentY}%;
-                            background-attachment: fixed;
+                            background-size: ${width}px ${height}px; 
+                            background-position: 0px -${i}px;
                             --glitch-x-1: ${gx1};
                             --glitch-x-2: ${gx2};
                             --glitch-hue-1: ${gh1};
@@ -105,11 +99,6 @@ const initGlitch = () => {
                 i += actualHeight;
             }
             container.innerHTML = html;
-        };
-        
-        imgPreloader.onerror = () => {
-            console.error("Fallo al pre-cargar la imagen del Glitch:", imgUrl);
-            container.style.backgroundColor = '#1a1a1a';  
         };
     });
 };
@@ -138,35 +127,39 @@ onMounted(() => {
         </div>
 
         <div
-            class="relative bg-black pt-20 pb-16 md:pt-32 md:pb-24 border-b-[12px] border-white group  overflow-hidden">
-            <div v-if="event.cover_image_url"
-                class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30 grayscale contrast-125"
-                :data-img="event.cover_image_url"></div>
-            <div v-else class="absolute inset-0 w-full h-full bg-gray-950 -z-10"></div>
+            class="relative bg-black pt-20 pb-16 md:pt-32 md:pb-24 border-b-[12px] border-white group overflow-hidden z-0">
 
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
+            <div v-if="event.cover_image_url"
+                class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden z-0 opacity-40 grayscale contrast-125 mix-blend-screen"
+                :data-img="event.cover_image_url"></div>
+
+            <div v-else class="absolute inset-0 w-full h-full bg-gray-950 z-0"></div>
+
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8 relative z-10">
                 <div class="pointer-events-none">
-                    <p class="font-mono text-xs uppercase text-red-600 mb-4  border-red-600 pl-3">
+                    <p class="font-mono text-xs uppercase text-red-600 mb-4 border-l-2 border-red-600 pl-3">
                         // {{ formatDate(event.event_date) }}
                     </p>
                     <h1
-                        class="font-black text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mix-blend-difference mb-6">
+                        class="font-black text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mb-6 drop-shadow-xl">
                         {{ event.name }}
                     </h1>
 
                     <div
                         class="flex flex-wrap items-center gap-6 font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-8">
                         <span v-if="event.location"
-                            class="flex items-center gap-2 border border-white/20 px-3 py-1.5 bg-black/50">
+                            class="flex items-center gap-2 border border-white/20 px-3 py-1.5 bg-black/80 backdrop-blur-sm">
                             <MapPinIcon class="w-3.5 h-3.5 text-red-600" /> {{ event.location }}
                         </span>
-                        <span class="border border-white/20 px-3 py-1.5 bg-black/50 text-white">
+                        <span class="border border-white/20 px-3 py-1.5 bg-black/80 backdrop-blur-sm text-white">
                             VOLUMEN: <span class="text-red-600">{{ event.photos_count }}</span> FRAMES
                         </span>
                     </div>
                 </div>
             </div>
         </div>
+
+
 
         <div class="min-h-screen bg-black text-white font-sans pb-24">
             <div class="max-w-[1500px] mx-auto px-4 md:px-8 pt-16">
