@@ -160,7 +160,7 @@ const handleImageError = (e) => {
                             </button>
 
                             <p class="text-[9px] text-gray-600 mt-4 leading-relaxed tracking-widest uppercase font-bold text-center">
-                                TRAYECTO DE DESCARGA SEGURO
+                                DESCARGA SEGURA
                             </p>
                         </div>
 
