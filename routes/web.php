@@ -144,7 +144,9 @@ Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download']
 Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(function () {
     Route::get('/', [PurchaseHistoryController::class, 'index'])->name('index');
     Route::get('/{purchase}/descargar/{photo}', [PurchaseHistoryController::class, 'download'])->name('download');
+    /*
     Route::get('/{purchase}/descargar-todas', [PurchaseHistoryController::class, 'downloadAll'])->name('download.all');
+    */
 });
 
 Route::middleware('auth')->group(function () {
