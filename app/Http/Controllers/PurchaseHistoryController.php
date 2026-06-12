@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
 
 class PurchaseHistoryController extends Controller
@@ -60,40 +58,39 @@ class PurchaseHistoryController extends Controller
         ]);
     }
 
-   public function download($purchaseId, $photoId)
+    public function download($purchaseId, $photoId)
     {
         $purchase = Auth::user()->purchases()
             ->where('id', $purchaseId)
             ->where('status', 'approved')
             ->first();
 
-        if (!$purchase) {
-            dd('ERROR 1: La compra ID ' . $purchaseId . ' no le pertenece al usuario logueado (' . Auth::user()->email . ') o no está aprobada.');
+        if (! $purchase) {
+            dd('ERROR 1: La compra ID '.$purchaseId.' no le pertenece al usuario logueado ('.Auth::user()->email.') o no está aprobada.');
         }
 
         $item = $purchase->items()->where('photo_id', $photoId)->first();
-        
-        if (!$item) {
-            dd('ERROR 2: La compra es tuya, pero la foto ID ' . $photoId . ' no está registrada dentro de esta orden.');
+
+        if (! $item) {
+            dd('ERROR 2: La compra es tuya, pero la foto ID '.$photoId.' no está registrada dentro de esta orden.');
         }
 
         $photo = $item->photo;
 
-        if (!Storage::disk('public')->exists($photo->original_path)) {
-            dd('ERROR 3: Todo en la base de datos está perfecto, pero el archivo de la foto NO existe en tu disco. Ruta buscada: storage/app/public/' . $photo->original_path);
+        if (! Storage::disk('b2')->exists($photo->original_path)) {
+            dd('ERROR 3: Todo en la base de datos está perfecto, pero el archivo de la foto original NO existe en el bucket de Backblaze B2. Ruta buscada: '.$photo->original_path);
         }
 
         $photo->increment('downloads');
         $item->increment('download_count');
 
-        $filePath = storage_path('app/public/' . $photo->original_path);
-        $fileName = ($photo->title ?: 'foto-' . $photo->unique_id) . '.jpg';
+        $fileName = ($photo->title ?: 'foto-'.$photo->unique_id).'.jpg';
 
-        return Response::download($filePath, $fileName, [
+        return response()->streamDownload(function () use ($photo) {
+            echo Storage::disk('b2')->get($photo->original_path);
+        }, $fileName, [
             'Content-Type' => 'image/jpeg',
-            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
         ]);
     }
-
-  
 }
