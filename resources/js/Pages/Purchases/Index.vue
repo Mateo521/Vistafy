@@ -122,11 +122,7 @@ const handleImageError = (e) => {
                                         </div>
                                     </div>
                                     
-                                    <a :href="route('purchases.download.all', purchase.id)"
-                                        class="inline-flex items-center justify-center gap-2 bg-transparent hover:bg-[#E30613] text-white hover:text-black font-mono text-[10px] font-bold uppercase tracking-widest px-5 py-4 border border-zinc-700 hover:border-[#E30613] transition-colors h-full">
-                                        <ArchiveBoxIcon class="w-4 h-4" />
-                                        ZIP_FULL
-                                    </a>
+                                    
                                 </div>
                             </div>
                         </div>
