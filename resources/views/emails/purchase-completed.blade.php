@@ -4,106 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra Completada</title>
+    <title>Compra completada | F33</title>
 </head>
 
-<body
-    style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f8fafc;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc;">
+<body style="margin: 0; padding: 0; background-color: #050505; -webkit-font-smoothing: antialiased;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #050505; width: 100%; border-collapse: collapse;">
         <tr>
             <td align="center" style="padding: 40px 20px;">
-                <table width="600" cellpadding="0" cellspacing="0"
-                    style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <!-- Contenedor Principal -->
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #000000; border: 2px solid #3f3f46; border-collapse: collapse; margin: 0 auto;">
 
                     <!-- Header -->
                     <tr>
-                        <td
-                            style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 40px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0 0 10px 0; font-size: 28px; font-weight: bold;">
-                                 ¡Compra dxitosa!
+                        <td style="padding: 40px 30px; text-align: center; border-bottom: 2px solid #E30613; background-color: #09090b;">
+                            <div style="font-family: 'Courier New', Courier, monospace; color: #E30613; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">
+                                >_ CONFIRMACIÓN DE COMPRA
+                            </div>
+                            <h1 style="font-family: Impact, 'Arial Black', Arial, sans-serif; color: #ffffff; margin: 0 0 15px 0; font-size: 36px; text-transform: uppercase; letter-spacing: 1px; font-weight: normal;">
+                                Transacción_OK
                             </h1>
-                            <p
-                                style="color: #94a3b8; margin: 0; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase;">
-                                Orden #{{ $purchase->id }}
-                            </p>
+                            <div style="display: inline-block; background-color: #E30613; color: #000000; font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: bold; padding: 4px 10px; letter-spacing: 1px;">
+                                ORDEN_ID: #{{ $purchase->id }}
+                            </div>
                         </td>
                     </tr>
 
                     <!-- Content -->
                     <tr>
-                        <td style="padding: 40px;">
-                            <p style="color: #334155; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-                                Hola <strong>{{ $purchase->buyer_name ?: 'Cliente' }}</strong>,
+                        <td style="padding: 40px 30px;">
+                            <p style="font-family: 'Courier New', Courier, monospace; color: #ffffff; font-size: 14px; line-height: 1.6; margin: 0 0 20px 0; text-transform: uppercase;">
+                                HOLA, <strong style="color: #E30613;">{{ $purchase->buyer_name ?: 'CLIENTE' }}</strong>.
                             </p>
 
-                            <p style="color: #334155; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                                Tu pago ha sido procesado exitosamente. Ya podés descargar tus fotografías en alta
-                                resolución.
+                            <p style="font-family: 'Courier New', Courier, monospace; color: #a1a1aa; font-size: 13px; line-height: 1.6; margin: 0 0 30px 0;">
+                                Pago exitoso. Las fotografías ya se encuentran para ser descargados en alta resolución.
                             </p>
 
                             <!-- Order Summary -->
-                            <div
-                                style="background-color: #f1f5f9; border-left: 4px solid #0f172a; padding: 20px; margin: 0 0 30px 0; border-radius: 4px;">
-                                <h3
-                                    style="margin: 0 0 15px 0; color: #0f172a; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                    Resumen de tu Compra
-                                </h3>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #09090b; border: 1px solid #27272a; border-left: 4px solid #E30613; margin: 0 0 40px 0; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <h3 style="font-family: 'Courier New', Courier, monospace; margin: 0 0 20px 0; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px dashed #3f3f46; padding-bottom: 10px;">
+                                            Resumen
+                                        </h3>
 
-                                <table width="100%" cellpadding="5" cellspacing="0"
-                                    style="color: #475569; font-size: 14px;">
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-                                            <strong>Fecha:</strong>
-                                        </td>
-                                        <td
-                                            style="padding: 8px 0; text-align: right; border-bottom: 1px solid #e2e8f0;">
-                                            {{ $purchase->created_at->format('d/m/Y H:i') }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-                                            <strong>Fotografías:</strong>
-                                        </td>
-                                        <td
-                                            style="padding: 8px 0; text-align: right; border-bottom: 1px solid #e2e8f0;">
-                                            {{ $purchase->items->count() }}
-                                            {{ $purchase->items->count() === 1 ? 'foto' : 'fotos' }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 12px 0;">
-                                            <strong style="font-size: 16px;">Total:</strong>
-                                        </td>
-                                        <td style="padding: 12px 0; text-align: right;">
-                                            <strong style="font-size: 20px; color: #0f172a;">
-                                                ${{ number_format($purchase->total_amount, 2) }}
-                                                {{ $purchase->currency }}
-                                            </strong>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                                        <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Courier New', Courier, monospace; color: #a1a1aa; font-size: 13px;">
+                                            <tr>
+                                                <td style="padding: 8px 0; text-transform: uppercase;">> Fecha:</td>
+                                                <td style="padding: 8px 0; text-align: right; color: #ffffff;">
+                                                    {{ $purchase->created_at->format('d/m/Y H:i') }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; text-transform: uppercase;">> Fotografías:</td>
+                                                <td style="padding: 8px 0; text-align: right; color: #ffffff;">
+                                                    {{ $purchase->items->count() }} ACTIVOS
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 15px 0 5px 0; text-transform: uppercase; font-weight: bold; color: #ffffff; border-top: 1px dashed #3f3f46; margin-top: 10px;">> Total_Abonado:</td>
+                                                <td style="padding: 15px 0 5px 0; text-align: right; border-top: 1px dashed #3f3f46; margin-top: 10px;">
+                                                    <strong style="font-size: 18px; color: #E30613;">
+                                                        ${{ number_format($purchase->total_amount, 2) }} {{ $purchase->currency }}
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
 
                             <!-- Photos List -->
-                            <h3
-                                style="margin: 0 0 15px 0; color: #0f172a; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                Fotografías adquiridas
+                            <h3 style="font-family: 'Courier New', Courier, monospace; margin: 0 0 15px 0; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">
+                                [ Detalle ]
                             </h3>
 
-                            <table width="100%" cellpadding="8" cellspacing="0" style="margin: 0 0 30px 0;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 40px 0; border-collapse: collapse; font-family: 'Courier New', Courier, monospace;">
                                 @foreach($purchase->items as $item)
-                                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                                        <td style="padding: 12px 0;">
-                                            <div style="color: #0f172a; font-weight: 600; margin-bottom: 4px;">
-                                                {{ $item->photo->title ?: "Foto #{$item->photo->unique_id}" }}
+                                    <tr>
+                                        <td style="padding: 15px 0; border-bottom: 1px solid #27272a;">
+                                            <div style="color: #ffffff; font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 4px;">
+                                                {{ $item->photo->title ?: "ASSET_#{$item->photo->unique_id}" }}
                                             </div>
                                             @if($item->photo->event)
-                                                <div style="color: #64748b; font-size: 12px;">
-                                                     {{ $item->photo->event->name }}
+                                                <div style="color: #71717a; font-size: 11px; text-transform: uppercase;">
+                                                    > EVT: {{ $item->photo->event->name }}
                                                 </div>
                                             @endif
                                         </td>
-                                        <td style="padding: 12px 0; text-align: right; color: #475569; font-weight: 600;">
+                                        <td style="padding: 15px 0; text-align: right; color: #a1a1aa; font-size: 13px; border-bottom: 1px solid #27272a;">
                                             ${{ number_format($item->unit_price, 2) }}
                                         </td>
                                     </tr>
@@ -111,40 +100,46 @@
                             </table>
 
                             <!-- CTA Button -->
-                            <div style="text-align: center; margin: 40px 0;">
-                                <a href="{{ route('purchases.index') }}"
-                                    style="display: inline-block; background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 6px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                                     Descargar mis Fotos
-                                </a>
-                            </div>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 40px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{ route('purchases.index') }}" style="display: inline-block; background-color: #E30613; color: #000000; text-decoration: none; padding: 18px 40px; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border: 1px solid #E30613;">
+                                            Fotografías
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
 
                             <!-- Help Section -->
-                            <div
-                                style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 30px 0 0 0; border-radius: 4px;">
-                                <p style="margin: 0; color: #92400e; font-size: 13px; line-height: 1.5;">
-                                    <strong> ¿Necesitás ayuda?</strong><br>
-                                    Podés descargar tus fotos ilimitadamente desde tu cuenta. Si tenés alguna
-                                    pregunta, contáctanos en
-                                    <a href="mailto:soporte@f33.com"
-                                        style="color: #92400e; text-decoration: underline;">soporte@f33.com</a>
-                                </p>
-                            </div>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #09090b; border: 1px solid #27272a; margin: 30px 0 0 0; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 20px; text-align: center;">
+                                        <p style="margin: 0; color: #a1a1aa; font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.6; text-transform: uppercase;">
+                                            <strong style="color: #ffffff;">¿Fallo en el sistema?</strong><br>
+                                            Podés descargar tus fotos de manera permanente desde tu biblioteca digital. Para soporte técnico, contactar a: <br>
+                                            <a href="mailto:soporte@f33.click" style="color: #E30613; text-decoration: none; font-weight: bold;">soporte@f33.click</a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
 
                     <!-- Footer -->
                     <tr>
-                        <td
-                            style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
-                            <p style="color: #94a3b8; font-size: 12px; margin: 0 0 10px 0; line-height: 1.5;">
-                                Este email fue enviado porque completaste una compra en f33....
+                        <td style="background-color: #050505; padding: 30px; text-align: center; border-top: 1px dashed #3f3f46;">
+                            <p style="font-family: 'Courier New', Courier, monospace; color: #52525b; font-size: 10px; margin: 0 0 10px 0; line-height: 1.5; text-transform: uppercase;">
+                             GENERADO AUTOMÁTICAMENTE. NO RESPONDER A ESTE CORREO.
                             </p>
-                            <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
-                                © {{ date('Y') }} f33 Lorem ipsum.... Todos los derechos reservados.
+                            <p style="font-family: 'Courier New', Courier, monospace; color: #3f3f46; font-size: 10px; margin: 0; letter-spacing: 1px;">
+                                © {{ date('Y') }} F33. TODOS LOS DERECHOS RESERVADOS.
                             </p>
                         </td>
                     </tr>
                 </table>
+                
+                <!-- Spacer for bottom margin -->
+                <div style="height: 40px;"></div>
             </td>
         </tr>
     </table>
