@@ -117,7 +117,7 @@
                                         <p style="margin: 0; color: #a1a1aa; font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.6; text-transform: uppercase;">
                                             <strong style="color: #ffffff;">¿Fallo en el sistema?</strong><br>
                                             Podés descargar tus fotos de manera permanente desde tu biblioteca digital. Para soporte técnico, contactar a: <br>
-                                            <a href="mailto:soporte@f33.click" style="color: #E30613; text-decoration: none; font-weight: bold;">soporte@f33.click</a>
+                                            <a href="mailto:contacto@f33.click" style="color: #E30613; text-decoration: none; font-weight: bold;">contacto@f33.click</a>
                                         </p>
                                     </td>
                                 </tr>
@@ -129,7 +129,7 @@
                     <tr>
                         <td style="background-color: #050505; padding: 30px; text-align: center; border-top: 1px dashed #3f3f46;">
                             <p style="font-family: 'Courier New', Courier, monospace; color: #52525b; font-size: 10px; margin: 0 0 10px 0; line-height: 1.5; text-transform: uppercase;">
-                             GENERADO AUTOMÁTICAMENTE. NO RESPONDER A ESTE CORREO.
+                            GENERADO AUTOMÁTICAMENTE. NO RESPONDER A ESTE CORREO.
                             </p>
                             <p style="font-family: 'Courier New', Courier, monospace; color: #3f3f46; font-size: 10px; margin: 0; letter-spacing: 1px;">
                                 © {{ date('Y') }} F33. TODOS LOS DERECHOS RESERVADOS.
