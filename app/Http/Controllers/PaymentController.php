@@ -31,16 +31,14 @@ class PaymentController extends Controller
     }
 
    
-    public function initiateCartPurchase(Request $request)
+  public function initiateCartPurchase(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'photo_ids' => 'required|array|min:1',
             'photo_ids.*' => 'exists:photos,id',
-            'email' => 'nullable|required_without:user_id|email',
         ]);
 
         $user = Auth::user();
-        $guestEmail = $validated['email'] ?? null;
 
         try {
             $photos = Photo::with('photographer')->whereIn('id', $request->photo_ids)->get();
@@ -51,16 +49,11 @@ class PaymentController extends Controller
 
             DB::beginTransaction();
             
-            $wantsAccount = $request->boolean('create_account');
-            
-            // Definimos el email real
-            $email = $user ? $user->email : $guestEmail;
-
             $purchase = Purchase::create([
-                'user_id' => $user ? $user->id : null,
-                'buyer_email' => $email, 
-                'guest_email' => $wantsAccount ? null : $guestEmail, 
-                'buyer_name' => $user ? $user->name : null,
+                'user_id' => $user->id,
+                'buyer_email' => $user->email,
+                'buyer_name' => $user->name,
+                'guest_email' => null, // Ya no hay invitados
                 'total_amount' => $photos->sum('price'),
                 'currency' => 'ARS',
                 'status' => 'pending',
@@ -75,7 +68,8 @@ class PaymentController extends Controller
                 ]);
             }
             
-            $preferenceResult = $this->mpService->createCartPreference($photos, $guestEmail ?: $user->email, $purchase);
+
+            $preferenceResult = $this->mpService->createCartPreference($photos, $user->email, $purchase);
 
             if (!$preferenceResult['success']) {
                 throw new \Exception('Error al crear preferencia de Mercado Pago');
@@ -88,14 +82,8 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
             Log::error('Error en compra desde carrito', ['error' => $e->getMessage()]);
-            
-            
-            return response()->json([
-                'success' => false, 
-                'message' => 'Error de conexión con la pasarela de pago. Por favor, intenta nuevamente.'
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Error al procesar la compra.'], 500);
         }
     }
 

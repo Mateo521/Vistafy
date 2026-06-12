@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\PhotographerManagementController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\PhotographerRegistrationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\EventFaceSearchController;
 use App\Http\Controllers\FutureEventController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentSimulationController;
-use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Photographer\EventController;
 use App\Http\Controllers\Photographer\FutureEventManagementController;
 use App\Http\Controllers\Photographer\MercadoPagoOAuthController;
@@ -26,14 +26,10 @@ use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
-
-
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
     Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 });
-
 
 Route::get(
     'foto/{photographer}/{year}/{month}/{day}/{type}/{filename}',
@@ -112,7 +108,8 @@ Route::get('/registro-fotografo', [PhotographerRegistrationController::class, 'c
     ->name('photographer.register');
 Route::post('/registro-fotografo', [PhotographerRegistrationController::class, 'store']);
 
-Route::prefix('pago')->name('payment.')->group(function () {
+Route::middleware('auth')->prefix('pago')->name('payment.')->group(function () {
+
     // Iniciar compra
     Route::post('/fotos/{photo}/comprar', [PaymentController::class, 'initiatePurchase'])
         ->name('initiate');
@@ -144,10 +141,6 @@ Route::get('/descargar/{uniqueId}', [PublicGalleryController::class, 'download']
     ->name('photo.download')
     ->middleware('auth');
 
-
-
-
-
 Route::middleware('auth')->prefix('mis-compras')->name('purchases.')->group(function () {
     Route::get('/', [PurchaseHistoryController::class, 'index'])->name('index');
     Route::get('/{purchase}/descargar/{photo}', [PurchaseHistoryController::class, 'download'])->name('download');
@@ -160,13 +153,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::prefix('carrito')->name('cart.')->group(function () {
+Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/agregar/{photo}', [CartController::class, 'add'])->name('add');
     Route::delete('/eliminar/{photoId}', [CartController::class, 'remove'])->name('remove');
     Route::delete('/vaciar', [CartController::class, 'clear'])->name('clear');
     Route::get('/count', [CartController::class, 'count'])->name('count');
 });
+
 Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(function () {
 
     Route::get('/pendiente', function () {

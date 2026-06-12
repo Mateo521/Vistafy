@@ -47,6 +47,12 @@ onUnmounted(() => {
 
 
 const addToCart = async () => {
+    // Si no está logueado, lo enviamos al login
+    if (!isAuthenticated.value) {
+        window.location.href = route('login');
+        return;
+    }
+
     if (addingToCart.value) return;
     addingToCart.value = true;
 
@@ -61,11 +67,7 @@ const addToCart = async () => {
         }
     } catch (err) {
         console.error('Error agregando al carrito:', err);
-        if (err.response) {
-            error('ERROR AL AGREGAR AL CARRITO');
-        } else {
-            error('ERROR DE CONEXIÓN DEL NODO');
-        }
+        error('ERROR DE CONEXIÓN');
     } finally {
         addingToCart.value = false;
     }

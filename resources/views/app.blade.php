@@ -15,7 +15,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#E30613">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/pwa-icons/icon-192x192.png">
 
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
     <meta property="og:title" content="{{ config('app.name') }}">
