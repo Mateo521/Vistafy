@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\OrderSuccessMail;
 use App\Models\Purchase;
 use App\Models\User;
 use App\Notifications\PurchaseCompleted;
@@ -10,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
@@ -93,22 +91,19 @@ class WebhookController extends Controller
 
             $temporaryPassword = $this->handleAccountCreation($purchase);
 
-            $emailToSend = $purchase->buyer_email ?? $purchase->guest_email;
+            
+            $emailToSend = $purchase->buyer_email;
 
             if ($emailToSend) {
                 $this->sendSuccessEmail($purchase, $temporaryPassword);
                 Log::info(' Notificación de éxito enviada a: '.$emailToSend);
-            } else {
-                Log::warning(' Pago aprobado pero sin email registrado para la orden: '.$purchase->id);
             }
-
-
 
             if ($purchase->items && $purchase->items->count() > 0) {
                 foreach ($purchase->items as $item) {
                     if ($item->photo) {
                         $item->photo->increment('downloads');
-                        Log::info(" Descarga sumada a la foto ID: " . $item->photo->id);
+                        Log::info(' Descarga sumada a la foto ID: '.$item->photo->id);
                     }
                 }
             }
@@ -121,7 +116,6 @@ class WebhookController extends Controller
         return response()->json(['status' => 'processed'], 200);
     }
 
-    
     private function fetchPaymentData($paymentId, $accessToken)
     {
         $maxAttempts = 3;
@@ -156,16 +150,16 @@ class WebhookController extends Controller
 
     private function handleAccountCreation($purchase)
     {
+        $wantsAccount = (! $purchase->user_id && is_null($purchase->guest_email));
 
-        if (! $purchase->user_id && $purchase->buyer_email) {
-
+        if ($wantsAccount && $purchase->buyer_email) {
             $user = User::where('email', $purchase->buyer_email)->first();
 
             if (! $user) {
                 $password = Str::random(12);
 
                 $user = User::create([
-                    'name' => $purchase->buyer_name ?? explode('@', $purchase->buyer_email)[0],
+                    'name' => explode('@', $purchase->buyer_email)[0],
                     'email' => $purchase->buyer_email,
                     'password' => Hash::make($password),
                     'role' => 'client',
@@ -174,13 +168,15 @@ class WebhookController extends Controller
                 $purchase->update(['user_id' => $user->id]);
 
                 return $password;
+            } else {
+
+                $purchase->update(['user_id' => $user->id]);
             }
         }
 
-        return null; 
+        return null;
     }
 
-  
     private function sendSuccessEmail($purchase, $temporaryPassword = null)
     {
         $email = $purchase->user ? $purchase->user->email : $purchase->guest_email;

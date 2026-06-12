@@ -52,11 +52,14 @@ class PaymentController extends Controller
             DB::beginTransaction();
             
             $wantsAccount = $request->boolean('create_account');
+            
+            // Definimos el email real
+            $email = $user ? $user->email : $guestEmail;
 
             $purchase = Purchase::create([
                 'user_id' => $user ? $user->id : null,
-                'buyer_email' => $user ? $user->email : ($wantsAccount ? $guestEmail : null),
-                'guest_email' => $guestEmail, 
+                'buyer_email' => $email, 
+                'guest_email' => $wantsAccount ? null : $guestEmail, 
                 'buyer_name' => $user ? $user->name : null,
                 'total_amount' => $photos->sum('price'),
                 'currency' => 'ARS',
@@ -85,8 +88,14 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            
             Log::error('Error en compra desde carrito', ['error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Error al procesar la compra: ' . $e->getMessage()], 500);
+            
+            
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error de conexión con la pasarela de pago. Por favor, intenta nuevamente.'
+            ], 500);
         }
     }
 
