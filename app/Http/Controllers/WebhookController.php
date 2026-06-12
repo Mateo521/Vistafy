@@ -96,7 +96,7 @@ class WebhookController extends Controller
             $emailToSend = $purchase->buyer_email ?? $purchase->guest_email;
 
             if ($emailToSend) {
-                $this->sendSuccessEmail($purchase);
+                $this->sendSuccessEmail($purchase, $temporaryPassword);
                 Log::info(' Notificación de éxito enviada a: '.$emailToSend);
             } else {
                 Log::warning(' Pago aprobado pero sin email registrado para la orden: '.$purchase->id);
@@ -181,12 +181,12 @@ class WebhookController extends Controller
     }
 
   
-    private function sendSuccessEmail($purchase)
+    private function sendSuccessEmail($purchase, $temporaryPassword = null)
     {
         $email = $purchase->user ? $purchase->user->email : $purchase->guest_email;
         if ($email) {
             try {
-                Notification::route('mail', $email)->notify(new PurchaseCompleted($purchase));
+                Notification::route('mail', $email)->notify(new PurchaseCompleted($purchase, $temporaryPassword));
             } catch (\Exception $e) {
                 Log::error('Error enviando notificación de compra', ['error' => $e->getMessage()]);
             }

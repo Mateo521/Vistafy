@@ -51,11 +51,13 @@ class PaymentController extends Controller
 
             DB::beginTransaction();
             
+            $wantsAccount = $request->boolean('create_account');
+
             $purchase = Purchase::create([
                 'user_id' => $user ? $user->id : null,
-                'buyer_email' => $user ? $user->email : $guestEmail,
+                'buyer_email' => $user ? $user->email : ($wantsAccount ? $guestEmail : null),
+                'guest_email' => $guestEmail, 
                 'buyer_name' => $user ? $user->name : null,
-                'guest_email' => $guestEmail,
                 'total_amount' => $photos->sum('price'),
                 'currency' => 'ARS',
                 'status' => 'pending',

@@ -13,10 +13,13 @@ class PurchaseCompleted extends Notification implements ShouldQueue
     use Queueable;
 
     public $purchase;
+    public $password;  
 
-    public function __construct(Purchase $purchase)
+ 
+    public function __construct(Purchase $purchase, $password = null)
     {
         $this->purchase = $purchase->load('items.photo.event');
+        $this->password = $password;
     }
 
     public function via($notifiable): array
@@ -26,11 +29,14 @@ class PurchaseCompleted extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->subject(' ¡Tu compra ha sido completada! - f33 Lorem ipsum...')
+        $mail = (new MailMessage)
+            ->subject('¡Tu compra ha sido completada! - F33')
             ->view('emails.purchase-completed', [
                 'purchase' => $this->purchase,
+                'password' => $this->password,  
             ]);
+
+        return $mail;
     }
 
     public function toArray($notifiable): array
