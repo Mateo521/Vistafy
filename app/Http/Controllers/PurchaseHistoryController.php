@@ -60,29 +60,31 @@ class PurchaseHistoryController extends Controller
         ]);
     }
 
-    /**
-     *  Descargar foto original
-     */
-    public function download($purchaseId, $photoId)
+   public function download($purchaseId, $photoId)
     {
-        // Verificar que la compra pertenece al usuario
         $purchase = Auth::user()->purchases()
             ->where('id', $purchaseId)
             ->where('status', 'approved')
-            ->firstOrFail();
+            ->first();
 
-        // Verificar que la foto está en la compra
-        $item = $purchase->items()->where('photo_id', $photoId)->firstOrFail();
+        if (!$purchase) {
+            dd('ERROR 1: La compra ID ' . $purchaseId . ' no le pertenece al usuario logueado (' . Auth::user()->email . ') o no está aprobada.');
+        }
+
+        $item = $purchase->items()->where('photo_id', $photoId)->first();
+        
+        if (!$item) {
+            dd('ERROR 2: La compra es tuya, pero la foto ID ' . $photoId . ' no está registrada dentro de esta orden.');
+        }
+
         $photo = $item->photo;
 
-        // Incrementar contador de descargas
+        if (!Storage::disk('public')->exists($photo->original_path)) {
+            dd('ERROR 3: Todo en la base de datos está perfecto, pero el archivo de la foto NO existe en tu disco. Ruta buscada: storage/app/public/' . $photo->original_path);
+        }
+
         $photo->increment('downloads');
         $item->increment('download_count');
-
-        // Verificar que el archivo existe
-        if (!Storage::disk('public')->exists($photo->original_path)) {
-            abort(404, 'Archivo no encontrado');
-        }
 
         $filePath = storage_path('app/public/' . $photo->original_path);
         $fileName = ($photo->title ?: 'foto-' . $photo->unique_id) . '.jpg';
@@ -93,46 +95,5 @@ class PurchaseHistoryController extends Controller
         ]);
     }
 
-    /**
-     *  Descargar todas las fotos de una compra como ZIP
-     */
-    public function downloadAll($purchaseId)
-    {
-        $purchase = Auth::user()->purchases()
-            ->where('id', $purchaseId)
-            ->where('status', 'approved')
-            ->with('items.photo')
-            ->firstOrFail();
-
-        $zip = new \ZipArchive();
-        $zipFileName = 'compra-' . $purchase->id . '-' . time() . '.zip';
-        $zipPath = storage_path('app/temp/' . $zipFileName);
-
-        // Crear directorio temporal si no existe
-        if (!file_exists(storage_path('app/temp'))) {
-            mkdir(storage_path('app/temp'), 0755, true);
-        }
-
-        if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
-            foreach ($purchase->items as $item) {
-                $photo = $item->photo;
-                $filePath = storage_path('app/public/' . $photo->original_path);
-
-                if (file_exists($filePath)) {
-                    $fileName = ($photo->title ?: 'foto-' . $photo->unique_id) . '.jpg';
-                    $zip->addFile($filePath, $fileName);
-                    
-                    // Incrementar contador
-                    $photo->increment('downloads');
-                    $item->increment('download_count');
-                }
-            }
-
-            $zip->close();
-
-            return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
-        }
-
-        abort(500, 'Error al crear archivo ZIP');
-    }
+  
 }
