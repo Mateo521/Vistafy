@@ -1,8 +1,8 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import {
     ArrowLeftIcon,
     XMarkIcon,
@@ -19,9 +19,17 @@ const props = defineProps({
 });
 
 const { success, error } = useToast();
+const page = usePage();
 
 const processing = ref(false);
 const removingItems = ref(new Set());
+
+// Estados para el invitado
+const isAuthenticated = computed(() => page.props.auth?.user !== null);
+const showEmailModal = ref(false);
+const guestEmail = ref('');
+const createAccount = ref(false);
+const emailError = ref('');
 
 const itemCount = computed(() => props.items?.length || 0);
 
@@ -33,9 +41,28 @@ const formatPrice = (amount) => {
     return parseFloat(amount || 0).toFixed(2);
 };
 
+// Control del modal con teclado
+const handleKeydown = (e) => {
+    if (e.key === 'Escape') showEmailModal.value = false;
+};
+
+watch(showEmailModal, (showing) => {
+    if (showing) {
+        document.addEventListener('keydown', handleKeydown);
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.removeEventListener('keydown', handleKeydown);
+        document.body.style.overflow = '';
+    }
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeydown);
+    document.body.style.overflow = '';
+});
+
 const removeItem = async (photoId) => {
     if (removingItems.value.has(photoId)) return;
-
     removingItems.value.add(photoId);
 
     try {
@@ -52,7 +79,6 @@ const removeItem = async (photoId) => {
 
 const clearCart = async () => {
     if (!confirm('¿CONFIRMAR PURGA TOTAL DE MEMORIA?')) return;
-
     processing.value = true;
 
     try {
@@ -67,16 +93,40 @@ const clearCart = async () => {
     }
 };
 
-const checkout = async () => {
+
+const handleCheckoutClick = () => {
     if (processing.value || itemCount.value === 0) return;
 
+    if (isAuthenticated.value) {
+        executePayment({});
+    } else {
+        showEmailModal.value = true;
+    }
+};
+
+
+const submitGuestCheckout = () => {
+    if (!guestEmail.value) {
+        emailError.value = 'IDENTIFICADOR DE CORREO REQUERIDO';
+        return;
+    }
+    executePayment({
+        email: guestEmail.value,
+        create_account: createAccount.value
+    });
+};
+
+
+const executePayment = async (extraPayload = {}) => {
     processing.value = true;
+    emailError.value = '';
 
     try {
         const photoIds = props.items.map(item => item.photo_id);
 
         const response = await axios.post(route('payment.initiate.cart'), {
-            photo_ids: photoIds
+            photo_ids: photoIds,
+            ...extraPayload
         });
 
         const paymentUrl = response.data.init_point || response.data.sandbox_init_point;
@@ -84,17 +134,29 @@ const checkout = async () => {
         if (response.data.success && paymentUrl) {
             window.location.href = paymentUrl;
         } else {
+            emailError.value = 'FALLO AL GENERAR PASARELA DE PAGO';
             error('FALLO DE CONEXIÓN CON PASARELA DE PAGO');
+            processing.value = false;
         }
     } catch (err) {
         console.error('Error en checkout:', err);
-        error(err.response?.data?.message || 'ERROR DE TRANSACCIÓN');
-    } finally {
         processing.value = false;
+        
+        if (err.response?.status === 422 && err.response?.data?.email_exists) {
+            emailError.value = err.response.data.message;
+            if (confirm(err.response.data.message + '\n\n¿EJECUTAR LOGIN?')) {
+                window.location.href = route('login');
+            }
+        } else if (err.response?.data?.errors) {
+            const errors = err.response.data.errors;
+            emailError.value = errors.email ? errors.email[0] : 'ERROR EN LA SOLICITUD';
+        } else {
+            emailError.value = err.response?.data?.message || 'ERROR AL PROCESAR TRANSACCIÓN';
+            error(emailError.value);
+        }
     }
 };
 
-// Placeholder Brutalista
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
@@ -108,15 +170,13 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-
     <Head title="Terminal de Descargas — F33" />
 
     <AppLayout>
         <div class="min-h-screen bg-black text-white font-sans selection:bg-red-600 selection:text-white ">
 
             <div class="border-b border-white/20 bg-black/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
-                <div
-                    class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
+                <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
                     <Link :href="route('gallery.index')"
                         class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
                         <ArrowLeftIcon class="w-3.5 h-3.5" /> [ RETORNAR AL CATÁLOGO ]
@@ -132,12 +192,10 @@ const handleImageError = (e) => {
             <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-12 md:py-20">
 
                 <div class="mb-12 border-b-[12px] border-white pb-8">
-                    <span
-                        class="font-mono text-xs uppercase text-red-600 mb-4 block  border-red-600 pl-3">
+                    <span class="font-mono text-xs uppercase text-red-600 mb-4 block  border-red-600 pl-3">
                         // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
                     </span>
-                    <h1
-                        class="font-black font-flux text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
+                    <h1 class="font-black font-flux text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
                         COLA DE<br><span class="text-red-600">DESCARGAS.</span>
                     </h1>
                 </div>
@@ -168,13 +226,10 @@ const handleImageError = (e) => {
 
                             <Link :href="route('gallery.show', item.photo.unique_id)"
                                 class="block flex-shrink-0 w-full sm:w-40 h-40 bg-black border-[4px] border-black group-hover:border-red-600 overflow-hidden relative transition-none">
-
                                 <ProtectedImage :src="item.photo.thumbnail_url" :alt="item.photo.title"
                                     class="absolute inset-0 w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none"
                                     @error="handleImageError" />
-
-                                <div
-                                    class="absolute inset-0 bg-red-600 mix-blend-overlay opacity-0 group-hover:opacity-30 transition-none pointer-events-none">
+                                <div class="absolute inset-0 bg-red-600 mix-blend-overlay opacity-0 group-hover:opacity-30 transition-none pointer-events-none">
                                 </div>
                             </Link>
 
@@ -220,11 +275,9 @@ const handleImageError = (e) => {
                     </div>
 
                     <div class="lg:col-span-4">
-                        <div
-                            class="bg-black border-[4px] border-white p-8 sticky top-24 shadow-[8px_8px_0_rgba(220,38,38,1)]">
+                        <div class="bg-black border-[4px] border-white p-8 sticky top-24 shadow-[8px_8px_0_rgba(220,38,38,1)]">
 
-                            <h2
-                                class="font-mono text-xs font-bold uppercase  text-gray-400 mb-6 border-b border-white/20 pb-4">
+                            <h2 class="font-mono text-xs font-bold uppercase  text-gray-400 mb-6 border-b border-white/20 pb-4">
                                 // BALANCE
                             </h2>
 
@@ -237,15 +290,14 @@ const handleImageError = (e) => {
 
                             <div class="mb-8 border-y-[4px] border-white py-6">
                                 <div class="flex justify-between items-end font-sans">
-                                    <span
-                                        class="text-xl font-black uppercase text-gray-400 tracking-tighter">TOTAL</span>
+                                    <span class="text-xl font-black uppercase text-gray-400 tracking-tighter">TOTAL</span>
                                     <span class="text-5xl font-black text-red-600 leading-none tracking-tighter">
                                         ${{ formattedTotal }}
                                     </span>
                                 </div>
                             </div>
 
-                            <button @click="checkout" :disabled="processing || itemCount === 0"
+                            <button @click="handleCheckoutClick" :disabled="processing || itemCount === 0"
                                 class="w-full bg-white text-black font-black text-sm uppercase tracking-[0.25em] py-5 border-[4px] border-white hover:bg-black hover:text-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
                                 <span v-if="processing" class="animate-pulse">PROCESANDO...</span>
                                 <span v-else>COMPRAR</span>
@@ -253,17 +305,14 @@ const handleImageError = (e) => {
                                     class="text-lg leading-none group-hover:translate-x-2 transition-transform duration-300">→</span>
                             </button>
 
-                            <div
-                                class="mt-6 font-mono text-[9px] uppercase tracking-widest text-gray-500 font-bold space-y-3">
+                            <div class="mt-6 font-mono text-[9px] uppercase tracking-widest text-gray-500 font-bold space-y-3">
                                 <p class="flex items-start gap-2">
                                     <ShieldCheckIcon class="w-4 h-4 text-white flex-shrink-0" />
                                     PASARELA CON MERCADO PAGO.
                                 </p>
                                 <p class="flex items-start gap-2">
-                                    <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                     DESCARGA INMEDIATA AL ACREDITAR.
                                 </p>
@@ -271,9 +320,63 @@ const handleImageError = (e) => {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
+
+        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 font-mono">
+            <div class="absolute inset-0 bg-black/90" @click="showEmailModal = false"></div>
+
+            <div class="relative bg-black border-[4px] border-white w-full max-w-md shadow-[10px_10px_0_rgba(220,38,38,1)] overflow-hidden z-10">
+                <div class="bg-white text-black px-4 py-2 flex justify-between items-center font-bold text-xs uppercase tracking-widest">
+                    <span>F33 // IDENTIFICACIÓN</span>
+                    <button @click="showEmailModal = false" class="hover:text-red-600 transition-none">[X]</button>
+                </div>
+
+                <div class="p-8">
+                    <form @submit.prevent="submitGuestCheckout" class="space-y-6">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">
+                                >  CORREO_DE_ENTREGA
+                            </label>
+                            <input v-model="guestEmail" type="email" required
+                                class="w-full bg-gray-950 border border-gray-600 focus:border-red-600 focus:ring-0 text-white font-mono text-xs py-3 px-4 outline-none transition-none"
+                                placeholder="usuario@nodo.com">
+                            <p v-if="emailError" class="text-red-600 text-[9px] uppercase tracking-widest font-bold mt-2">
+                                ! {{ emailError }}
+                            </p>
+                        </div>
+
+                        <label class="flex items-start cursor-pointer group p-4 border border-gray-800 bg-gray-950 hover:border-white transition-none">
+                            <div class="flex items-center h-4 mt-0.5">
+                                <input id="createAccount" v-model="createAccount" type="checkbox"
+                                    class="focus:ring-0 focus:ring-offset-0 h-4 w-4 text-red-600 border-gray-600 bg-black rounded-none cursor-pointer">
+                            </div>
+                            <div class="ml-3">
+                                <span class="block text-[9px] font-bold uppercase tracking-widest text-white group-hover:text-red-600 transition-none">
+                                    [ CREAR USUARIO ]
+                                </span>
+                                <span class="block text-[9px] text-gray-500 mt-1 leading-relaxed">
+                                    SE ALMACENARÁ EL HISTORIAL. RECIBIRÁ CREDENCIALES TEMPORALES VÍA EMAIL.
+                                </span>
+                            </div>
+                        </label>
+
+                        <div class="pt-4 flex flex-col gap-3">
+                            <button type="submit" :disabled="processing"
+                                class="w-full py-4 bg-red-600 text-black text-[11px] font-black uppercase tracking-[0.25em] hover:bg-white transition-none disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span v-if="processing">PROCESANDO...</span>
+                                <span v-else>IR A PAGAR</span>
+                            </button>
+                            <button type="button" @click="showEmailModal = false"
+                                class="w-full py-3 text-gray-500 text-[9px] font-bold uppercase tracking-widest hover:text-white transition-none border border-transparent hover:border-gray-500">
+                                [ CANCELAR ]
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </AppLayout>
 </template>
 

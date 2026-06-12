@@ -160,14 +160,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
+Route::prefix('carrito')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/agregar/{photo}', [CartController::class, 'add'])->name('add');
     Route::delete('/eliminar/{photoId}', [CartController::class, 'remove'])->name('remove');
     Route::delete('/vaciar', [CartController::class, 'clear'])->name('clear');
     Route::get('/count', [CartController::class, 'count'])->name('count');
 });
-
 Route::middleware(['auth'])->prefix('fotografo')->name('photographer.')->group(function () {
 
     Route::get('/pendiente', function () {
