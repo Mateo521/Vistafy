@@ -33,20 +33,16 @@ class PaymentController extends Controller
    
     public function initiateCartPurchase(Request $request)
     {
-        if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Debes iniciar sesión para usar el carrito'
-            ], 401);
-        }
-
-        $request->validate([
+        $validated = $request->validate([
             'photo_ids' => 'required|array|min:1',
             'photo_ids.*' => 'exists:photos,id',
+            'email' => 'nullable|required_without:user_id|email',
         ]);
 
+        $user = Auth::user();
+        $guestEmail = $validated['email'] ?? null;
+
         try {
-            $user = Auth::user();
             $photos = Photo::with('photographer')->whereIn('id', $request->photo_ids)->get();
 
             if ($photos->isEmpty()) {
@@ -56,9 +52,10 @@ class PaymentController extends Controller
             DB::beginTransaction();
             
             $purchase = Purchase::create([
-                'user_id' => $user->id,
-                'buyer_email' => $user->email,
-                'buyer_name' => $user->name,
+                'user_id' => $user ? $user->id : null,
+                'buyer_email' => $user ? $user->email : $guestEmail,
+                'buyer_name' => $user ? $user->name : null,
+                'guest_email' => $guestEmail,
                 'total_amount' => $photos->sum('price'),
                 'currency' => 'ARS',
                 'status' => 'pending',
@@ -73,8 +70,7 @@ class PaymentController extends Controller
                 ]);
             }
             
-         
-            $preferenceResult = $this->mpService->createCartPreference($photos, $user->email, $purchase);
+            $preferenceResult = $this->mpService->createCartPreference($photos, $guestEmail ?: $user->email, $purchase);
 
             if (!$preferenceResult['success']) {
                 throw new \Exception('Error al crear preferencia de Mercado Pago');
@@ -83,11 +79,7 @@ class PaymentController extends Controller
             $this->cartService->clear();
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'purchase_id' => $purchase->id,
-                'sandbox_init_point' => $preferenceResult['sandbox_init_point'],
-            ]);
+            return response()->json($preferenceResult);
 
         } catch (\Exception $e) {
             DB::rollBack();

@@ -7,10 +7,6 @@ import ProtectedImage from '@/Components/ProtectedImage.vue';
 import {
     ArrowLeftIcon,
     ShoppingCartIcon,
-    XMarkIcon,
-    InformationCircleIcon,
-    EnvelopeIcon,
-    CheckIcon,
     PlusIcon
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
@@ -23,12 +19,7 @@ const props = defineProps({
 });
 
 const showFullImage = ref(false);
-const showEmailModal = ref(false);
-const loading = ref(false);
 const addingToCart = ref(false);
-const guestEmail = ref('');
-const createAccount = ref(false);
-const emailError = ref('');
 
 const page = usePage();
 const isAuthenticated = computed(() => page.props.auth?.user !== null);
@@ -36,12 +27,11 @@ const isAuthenticated = computed(() => page.props.auth?.user !== null);
 const handleKeydown = (e) => {
     if (e.key === 'Escape') {
         showFullImage.value = false;
-        showEmailModal.value = false;
     }
 };
 
-watch([showFullImage, showEmailModal], ([fullImage, emailModal]) => {
-    if (fullImage || emailModal) {
+watch(showFullImage, (fullImage) => {
+    if (fullImage) {
         document.addEventListener('keydown', handleKeydown);
         document.body.style.overflow = 'hidden';
     } else {
@@ -55,14 +45,6 @@ onUnmounted(() => {
     document.body.style.overflow = '';
 });
 
-
-const handlePurchaseClick = () => {
-    if (isAuthenticated.value) {
-        addToCart();
-    } else {
-        showEmailModal.value = true;
-    }
-};
 
 const addToCart = async () => {
     if (addingToCart.value) return;
@@ -89,58 +71,6 @@ const addToCart = async () => {
     }
 };
 
-
-const submitPurchase = async () => {
-    if (loading.value) return;
-
-    if (!isAuthenticated.value && !guestEmail.value) {
-        emailError.value = 'IDENTIFICADOR DE CORREO REQUERIDO';
-        return;
-    }
-
-    loading.value = true;
-    emailError.value = '';
-
-    try {
-        const payload = { create_account: createAccount.value };
-
-        if (!isAuthenticated.value) {
-            payload.email = guestEmail.value;
-        }
-
-        const response = await axios.post(
-            route('payment.initiate', props.photo.id),
-            payload
-        );
-
-        const paymentUrl = response.data.init_point || response.data.sandbox_init_point;
-
-        if (response.data.success && paymentUrl) {
-            window.location.href = paymentUrl;
-        } else {
-            emailError.value = 'FALLO AL GENERAR PASARELA DE PAGO';
-        }
-
-    } catch (err) {
-        console.error('Error en compra:', err);
-
-        if (err.response?.status === 422 && err.response?.data?.email_exists) {
-            emailError.value = err.response.data.message;
-            if (confirm(err.response.data.message + '\n\n¿EJECUTAR LOGIN?')) {
-                window.location.href = route('login');
-            }
-        } else if (err.response?.data?.errors) {
-            const errors = err.response.data.errors;
-            emailError.value = errors.email ? errors.email[0] : 'ERROR EN LA SOLICITUD';
-        } else {
-            emailError.value = err.response?.data?.message || 'ERROR AL PROCESAR TRANSACCIÓN';
-        }
-    } finally {
-        loading.value = false;
-    }
-};
-
-
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
@@ -166,7 +96,7 @@ const handleImageError = (e) => {
                         <ArrowLeftIcon class="w-3.5 h-3.5" /> [ CATÁLOGO ]
                     </Link>
 
-                    <Link v-if="isAuthenticated" :href="route('cart.index')"
+                    <Link :href="route('cart.index')"
                         class="text-white hover:text-black hover:bg-white transition-none flex items-center gap-2 border border-white px-3 py-1">
                         <ShoppingCartIcon class="w-4 h-4" />
                         <span>CARRITO DE COMPRAS</span>
@@ -186,7 +116,7 @@ const handleImageError = (e) => {
                             </div>
 
                             <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                                class="w-full max-h-[80vh] object-contain grayscale-[0.3] group-hover:grayscale-0 transition-none"
+                                class="w-full max-h-[80vh] object-contain grayscale-[0.3] group-hover:grayscale-0 transition-none cursor-zoom-in"
                                 @error="handleImageError" />
                             
                             <div class="absolute bottom-4 right-4 bg-black border border-white text-white text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
@@ -222,27 +152,15 @@ const handleImageError = (e) => {
                                 <span class="text-5xl font-black font-sans text-white leading-none tracking-tighter">${{ photo.price }}</span>
                             </div>
 
-                            <button @click="handlePurchaseClick" :disabled="loading || addingToCart"
+                            <button @click="addToCart" :disabled="addingToCart"
                                 class="w-full bg-red-600 hover:bg-white text-black text-[12px] font-black uppercase tracking-[0.25em] py-5 border-[4px] border-red-600 hover:border-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
-                                <template v-if="isAuthenticated">
-                                    <PlusIcon v-if="!addingToCart" class="w-5 h-5" />
-                                    <span v-if="addingToCart">Procesando...</span>
-                                    <span v-else>AGREGAR AL CARRITO</span>
-                                </template>
-                                <template v-else>
-                                    <ShoppingCartIcon v-if="!loading" class="w-5 h-5" />
-                                    <span v-if="loading">INICIANDO...</span>
-                                    <span v-else>Comprar</span>
-                                </template>
+                                <PlusIcon v-if="!addingToCart" class="w-5 h-5" />
+                                <span v-if="addingToCart">Procesando...</span>
+                                <span v-else>AGREGAR AL CARRITO</span>
                             </button>
 
                             <p class="text-[9px] text-gray-600 mt-4 leading-relaxed tracking-widest uppercase font-bold text-center">
-                                <template v-if="isAuthenticated">
-                                    SISTEMA DE PAGOS
-                                </template>
-                                <template v-else>
-                                    PASARELA SEGURA
-                                </template>
+                                TRAYECTO DE DESCARGA SEGURO
                             </p>
                         </div>
 
@@ -302,60 +220,6 @@ const handleImageError = (e) => {
             </div>
         </div>
 
-        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 font-mono">
-            <div class="absolute inset-0 bg-black/90" @click="showEmailModal = false"></div>
-
-            <div class="relative bg-black border-[4px] border-white w-full max-w-md shadow-[10px_10px_0_rgba(220,38,38,1)] overflow-hidden">
-                <div class="bg-white text-black px-4 py-2 flex justify-between items-center font-bold text-xs uppercase tracking-widest">
-                    <span>F33 // PAGO</span>
-                    <button @click="showEmailModal = false" class="hover:text-red-600 transition-none">[X]</button>
-                </div>
-
-                <div class="p-8">
-                    <form @submit.prevent="submitPurchase" class="space-y-6">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">
-                                >  CORREO_
-                            </label>
-                            <input v-model="guestEmail" type="email" required
-                                class="w-full bg-gray-950 border border-gray-600 focus:border-red-600 focus:ring-0 text-white font-mono text-xs py-3 px-4 outline-none transition-none"
-                                placeholder="usuario@nodo.com">
-                            <p v-if="emailError" class="text-red-600 text-[9px] uppercase tracking-widest font-bold mt-2">
-                                ! {{ emailError }}
-                            </p>
-                        </div>
-
-                        <label class="flex items-start cursor-pointer group p-4 border border-gray-800 bg-gray-950 hover:border-white transition-none">
-                            <div class="flex items-center h-4 mt-0.5">
-                                <input id="createAccount" v-model="createAccount" type="checkbox"
-                                    class="focus:ring-0 focus:ring-offset-0 h-4 w-4 text-red-600 border-gray-600 bg-black rounded-none cursor-pointer">
-                            </div>
-                            <div class="ml-3">
-                                <span class="block text-[9px] font-bold uppercase tracking-widest text-white group-hover:text-red-600 transition-none">
-                                    [ CREAR USUARIO ]
-                                </span>
-                                <span class="block text-[9px] text-gray-500 mt-1 leading-relaxed">
-                                    SE ALMACENARÁ EL HISTORIAL. RECIBIRÁ CREDENCIALES TEMPORALES VÍA EMAIL.
-                                </span>
-                            </div>
-                        </label>
-
-                        <div class="pt-4 flex flex-col gap-3">
-                            <button type="submit" :disabled="loading"
-                                class="w-full py-4 bg-red-600 text-black text-[11px] font-black uppercase tracking-[0.25em] hover:bg-white transition-none disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span v-if="loading">EJECUTANDO...</span>
-                                <span v-else>COMPRAR</span>
-                            </button>
-                            <button type="button" @click="showEmailModal = false"
-                                class="w-full py-3 text-gray-500 text-[9px] font-bold uppercase tracking-widest hover:text-white transition-none border border-transparent hover:border-gray-500">
-                                [ CANCELAR ]
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <Transition enter-active-class="transition-none" enter-from-class="opacity-0"
             enter-to-class="opacity-100" leave-active-class="transition-none"
             leave-from-class="opacity-100" leave-to-class="opacity-0">
@@ -386,11 +250,9 @@ const handleImageError = (e) => {
 </template>
 
 <style scoped>
-
 .masonry-grid {
     column-fill: balance;
 }
-
 
 ::-webkit-scrollbar {
     width: 8px;

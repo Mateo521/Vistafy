@@ -118,7 +118,6 @@ Route::prefix('pago')->name('payment.')->group(function () {
         ->name('initiate');
 
     Route::post('/carrito/comprar', [PaymentController::class, 'initiateCartPurchase'])
-        ->middleware('auth')
         ->name('initiate.cart');
 
     if (app()->environment('local') && config('services.mercadopago.simulation_mode')) {

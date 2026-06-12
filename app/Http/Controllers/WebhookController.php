@@ -96,15 +96,13 @@ class WebhookController extends Controller
             $emailToSend = $purchase->buyer_email ?? $purchase->guest_email;
 
             if ($emailToSend) {
-                try {
-                    Mail::to($emailToSend)->send(new OrderSuccessMail($purchase, $temporaryPassword));
-                    Log::info(' Mail de éxito enviado a: '.$emailToSend);
-                } catch (\Exception $e) {
-                    Log::error(' Error enviando mail por Brevo: '.$e->getMessage());
-                }
+                $this->sendSuccessEmail($purchase);
+                Log::info(' Notificación de éxito enviada a: '.$emailToSend);
             } else {
                 Log::warning(' Pago aprobado pero sin email registrado para la orden: '.$purchase->id);
             }
+
+
 
             if ($purchase->items && $purchase->items->count() > 0) {
                 foreach ($purchase->items as $item) {
