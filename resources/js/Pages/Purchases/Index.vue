@@ -173,7 +173,7 @@ const handleImageError = (e) => {
 
                                         <a :href="route('purchases.download', [purchase.id, item.photo_id])"
                                             class="w-full inline-flex items-center justify-center gap-2 bg-transparent hover:bg-white text-zinc-300 hover:text-black font-mono text-[10px] font-bold uppercase tracking-widest px-4 py-3 border border-zinc-700 hover:border-white transition-colors mt-auto">
-                                            <ArrowDownTrayIcon class="w-3 h-3" /> Extraer
+                                            <ArrowDownTrayIcon class="w-3 h-3" /> Descargar
                                         </a>
                                     </div>
                                 </div>
