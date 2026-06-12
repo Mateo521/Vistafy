@@ -109,7 +109,10 @@ class WebhookController extends Controller
             }
 
             if ($purchase->user) {
-                $purchase->user->cartItems()->delete();
+                $cart = \App\Models\Cart::where('user_id', $purchase->user->id)->first();
+                if ($cart) {
+                    $cart->items()->delete();
+                }
             }
         }
 
