@@ -9,12 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CartService
 {
-    /**
-     * Obtener o crear carrito del usuario actual
-     */
     public function getOrCreateCart()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return null;
         }
 
@@ -23,98 +20,125 @@ class CartService
         );
     }
 
-    /**
-     * Agregar foto al carrito
-     */
     public function addPhoto(Photo $photo)
     {
-        $cart = $this->getOrCreateCart();
+        if (Auth::check()) {
 
-        if (!$cart) {
-            throw new \Exception('Debes iniciar sesión para usar el carrito');
+            $cart = $this->getOrCreateCart();
+
+            $exists = CartItem::where('cart_id', $cart->id)
+                ->where('photo_id', $photo->id)
+                ->exists();
+
+            if ($exists) {
+                return ['success' => false, 'message' => 'Esta foto ya está en tu carrito'];
+            }
+
+            CartItem::create([
+                'cart_id' => $cart->id,
+                'photo_id' => $photo->id,
+                'price' => $photo->price,
+            ]);
+
+        } else {
+
+            $cart = session()->get('guest_cart', []);
+
+            if (in_array($photo->id, $cart)) {
+                return ['success' => false, 'message' => 'Esta foto ya está en tu carrito'];
+            }
+
+            $cart[] = $photo->id;
+            session()->put('guest_cart', $cart);
         }
-
-        // Verificar si ya está en el carrito
-        $exists = CartItem::where('cart_id', $cart->id)
-            ->where('photo_id', $photo->id)
-            ->exists();
-
-        if ($exists) {
-            return ['success' => false, 'message' => 'Esta foto ya está en tu carrito'];
-        }
-
-        CartItem::create([
-            'cart_id' => $cart->id,
-            'photo_id' => $photo->id,
-            'price' => $photo->price,
-        ]);
 
         return ['success' => true, 'message' => 'Foto agregada al carrito'];
     }
 
-    /**
-     * Eliminar foto del carrito
-     */
     public function removePhoto($photoId)
     {
-        $cart = $this->getOrCreateCart();
-
-        if (!$cart) {
-            return ['success' => false];
+        if (Auth::check()) {
+            $cart = $this->getOrCreateCart();
+            if ($cart) {
+                CartItem::where('cart_id', $cart->id)
+                    ->where('photo_id', $photoId)
+                    ->delete();
+            }
+        } else {
+            $cart = session()->get('guest_cart', []);
+            // Filtrar y reindexar el arreglo
+            $cart = array_values(array_filter($cart, function ($id) use ($photoId) {
+                return $id != $photoId;
+            }));
+            session()->put('guest_cart', $cart);
         }
-
-        CartItem::where('cart_id', $cart->id)
-            ->where('photo_id', $photoId)
-            ->delete();
 
         return ['success' => true];
     }
 
-    /**
-     * Vaciar carrito
-     */
     public function clear()
     {
-        $cart = $this->getOrCreateCart();
-
-        if ($cart) {
-            $cart->items()->delete();
+        if (Auth::check()) {
+            $cart = $this->getOrCreateCart();
+            if ($cart) {
+                $cart->items()->delete();
+            }
+        } else {
+            session()->forget('guest_cart');
         }
 
         return ['success' => true];
     }
 
-    /**
-     * Obtener items del carrito con fotos
-     */
     public function getItems()
     {
-        $cart = $this->getOrCreateCart();
+        if (Auth::check()) {
+            $cart = $this->getOrCreateCart();
 
-        if (!$cart) {
-            return collect([]);
+            return $cart ? $cart->items()->with('photo.event', 'photo.photographer')->get() : collect([]);
+        } else {
+            $ids = session()->get('guest_cart', []);
+            if (empty($ids)) {
+                return collect([]);
+            }
+
+            $photos = Photo::with('event', 'photographer')->whereIn('id', $ids)->get();
+
+            return $photos->map(function ($photo) {
+                return (object) [
+                    'id' => 'guest_'.$photo->id,
+                    'photo_id' => $photo->id,
+                    'price' => $photo->price,
+                    'photo' => $photo,
+                ];
+            });
         }
-
-        return $cart->items()
-            ->with('photo.event', 'photo.photographer')
-            ->get();
     }
 
-    /**
-     * Obtener total del carrito
-     */
     public function getTotal()
     {
-        $cart = $this->getOrCreateCart();
-        return $cart ? $cart->total : 0;
+        if (Auth::check()) {
+            $cart = $this->getOrCreateCart();
+
+            return $cart ? $cart->total : 0;
+        } else {
+            $ids = session()->get('guest_cart', []);
+            if (empty($ids)) {
+                return 0;
+            }
+
+            return Photo::whereIn('id', $ids)->sum('price');
+        }
     }
 
-    /**
-     * Contar items
-     */
     public function getCount()
     {
-        $cart = $this->getOrCreateCart();
-        return $cart ? $cart->count : 0;
+        if (Auth::check()) {
+            $cart = $this->getOrCreateCart();
+
+            return $cart ? $cart->count : 0;
+        } else {
+            return count(session()->get('guest_cart', []));
+        }
     }
 }
