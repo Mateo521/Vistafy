@@ -145,7 +145,7 @@ class PhotoController extends Controller
         try {
             foreach ($request->file('photos') as $index => $file) {
                 try {
-                    \Log::info("📷 Procesando foto {$index}", [
+                    \Log::info("Procesando foto {$index}", [
                         'filename' => $file->getClientOriginalName(),
                         'size' => $file->getSize(),
                     ]);
