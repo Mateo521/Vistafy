@@ -182,13 +182,16 @@ class WebhookController extends Controller
 
     private function sendSuccessEmail($purchase, $temporaryPassword = null)
     {
-        $email = $purchase->user ? $purchase->user->email : $purchase->guest_email;
+        $email = $purchase->buyer_email; 
+
         if ($email) {
             try {
-                Notification::route('mail', $email)->notify(new PurchaseCompleted($purchase, $temporaryPassword));
+                Notification::route('mail', $email)->notify(new \App\Notifications\PurchaseCompleted($purchase, $temporaryPassword));
             } catch (\Exception $e) {
                 Log::error('Error enviando notificación de compra', ['error' => $e->getMessage()]);
             }
+        } else {
+            Log::error('Fallo silencioso: Se intentó enviar correo pero buyer_email está vacío', ['purchase_id' => $purchase->id]);
         }
     }
 }
