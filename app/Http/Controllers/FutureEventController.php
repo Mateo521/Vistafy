@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Log;
 
 class FutureEventController extends Controller
 {
-  
     public function index(Request $request)
     {
         try {
@@ -18,12 +17,14 @@ class FutureEventController extends Controller
             $isPhotographer = $user && $user->role === 'photographer';
             $isAuthenticated = $user !== null;
 
-         
             $mode = $request->query('mode', 'default');
 
-          
+            
             $baseQuery = FutureEvent::with('photographer.user')
                 ->upcoming()
+                ->whereHas('photographer', function ($q) {
+                    $q->where('status', 'approved');  
+                })
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
                 ->orderBy('event_date', 'asc');
@@ -66,7 +67,6 @@ class FutureEventController extends Controller
                 ]);
             }
 
-         
             $futureEvents = $baseQuery->take(6)->get()->map(fn($event) => $this->mapEventData($event));
 
             return response()->json([
@@ -100,13 +100,10 @@ class FutureEventController extends Controller
         }
     }
 
-
-   
     public function page()
     {
         return Inertia::render('FutureEvents/Index');
     }
-
 
     private function mapEventData($event)
     {
@@ -137,13 +134,15 @@ class FutureEventController extends Controller
         ];
     }
 
-  
     public function show($id)
     {
+
         $event = FutureEvent::with(['photographer.user'])
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');  
+            })
             ->findOrFail($id);
 
-     
         if ($event->converted_event_id) {
             $convertedEvent = \App\Models\Event::find($event->converted_event_id);
             if ($convertedEvent) {
@@ -178,6 +177,4 @@ class FutureEventController extends Controller
             ],
         ]);
     }
-
-
 }
