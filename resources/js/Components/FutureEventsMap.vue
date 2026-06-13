@@ -28,19 +28,26 @@ const initMap = () => {
         map.remove();
     }
 
+    const boundsArgentina = L.latLngBounds(
+        [-55.051258, -73.576081],  
+        [-21.781134, -53.637568]   
+    );
 
     map = L.map(mapContainer.value, {
         scrollWheelZoom: true,
         zoomControl: false,
-        attributionControl: false
-    }).setView([-38.4161, -63.6167], 4);
-
+        attributionControl: false,
+        maxBounds: boundsArgentina,  
+        maxBoundsViscosity: 1.0,  
+        minZoom: 4, 
+        maxZoom: 19  
+    }).setView([-38.4161, -63.6167], 5);  
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+        maxZoom: 19,
+        minZoom: 4
     }).addTo(map);
 
     addMarkers();
