@@ -160,7 +160,7 @@ onMounted(() => {
                                 
                                 <button type="submit" 
                                     class="px-8 py-5 bg-red-600 hover:bg-white text-black font-black transition-none whitespace-nowrap">
-                                    EJECUTAR
+                                    CREAR
                                 </button>
                             </div>
                         </div>

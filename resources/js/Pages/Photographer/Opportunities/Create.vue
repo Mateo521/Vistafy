@@ -227,7 +227,7 @@ const submit = () => {
                     <div class="flex flex-col sm:flex-row gap-4 border-t border-zinc-800 pt-8">
                         <button type="submit" :disabled="form.processing"
                             class="flex-1 py-4 bg-[#E30613] text-black font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 text-center border border-[#E30613] hover:border-white">
-                            {{ form.processing ? 'PROCESANDO...' : 'EJECUTAR Y CREAR' }}
+                            {{ form.processing ? 'PROCESANDO...' : 'CREAR' }}
                         </button>
 
                         <Link :href="route('photographer.opportunities.index')"
