@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Photographer;
 
 use App\Http\Controllers\Controller;
 use App\Models\FutureEvent;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
+use Inertia\Inertia;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class FutureEventManagementController extends Controller
 {
@@ -31,8 +31,8 @@ class FutureEventManagementController extends Controller
                     'title' => $event->title,
                     'description' => $event->description,
                     'location' => $event->location,
-                    'latitude' => $event->latitude,          // 
-                    'longitude' => $event->longitude,        // 
+                    'latitude' => $event->latitude,          //
+                    'longitude' => $event->longitude,        //
                     'event_date' => $event->event_date,
                     'formatted_date' => $event->formatted_date,
                     'days_until' => $event->daysUntil(),
@@ -55,7 +55,7 @@ class FutureEventManagementController extends Controller
         $photographer = Auth::user()->photographer;
 
         //  Verificar que el fotógrafo existe
-        if (!$photographer) {
+        if (! $photographer) {
             return redirect()->route('photographer.dashboard')
                 ->with('error', 'No se encontró el perfil de fotógrafo');
         }
@@ -66,14 +66,9 @@ class FutureEventManagementController extends Controller
                 'latitude' => $photographer->latitude ?? -38.4161,
                 'longitude' => $photographer->longitude ?? -63.6167,
                 'region' => $photographer->region ?? 'Argentina',
-            ]
+            ],
         ]);
     }
-
-
-
-
-
 
     public function store(Request $request)
     {
@@ -88,6 +83,9 @@ class FutureEventManagementController extends Controller
             'event_date' => 'required|date|after:today',
             'event_time' => 'nullable|date_format:H:i',
             'cover_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+
+            'event_date.after' => 'La fecha del evento debe ser una fecha posterior a hoy.',
         ]);
 
         // Combinar fecha + hora
@@ -104,18 +102,17 @@ class FutureEventManagementController extends Controller
         $coverImagePath = null;
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
-            $filename = 'eventos-futuros/' . Str::random(20) . '.jpg';
+            $filename = 'eventos-futuros/'.Str::random(20).'.jpg';
 
             $manager = new ImageManager(new Driver);
             $image = $manager->read($file);
-            $image->cover(1200, 800); 
+            $image->cover(1200, 800);
             $encoded = $image->toJpeg(80);
 
             Storage::disk('b2')->put($filename, (string) $encoded);
             $coverImagePath = $filename;
         }
 
-        
         FutureEvent::create([
             'photographer_id' => $photographer->id,
             'title' => $validated['title'],
@@ -133,10 +130,6 @@ class FutureEventManagementController extends Controller
             ->with('success', 'Oportunidad creada exitosamente');
     }
 
-
-
-
-
     /**
      *  Formulario para editar oportunidad (CON COORDENADAS)
      */
@@ -153,8 +146,8 @@ class FutureEventManagementController extends Controller
                 'title' => $opportunity->title,
                 'description' => $opportunity->description,
                 'location' => $opportunity->location,
-                'latitude' => $opportunity->latitude,            // 
-                'longitude' => $opportunity->longitude,          // 
+                'latitude' => $opportunity->latitude,            //
+                'longitude' => $opportunity->longitude,          //
                 'event_date' => $opportunity->event_date->format('Y-m-d'),
                 'event_time' => $opportunity->event_date->format('H:i'),
                 'cover_image' => $opportunity->cover_image_url,
@@ -193,27 +186,21 @@ class FutureEventManagementController extends Controller
 
         $expiryDate = $eventDateTime->copy()->addDays(7);
 
-
-
-
         $coverImagePath = $opportunity->cover_image;
 
-    
         if ($request->boolean('remove_image') && $coverImagePath) {
             Storage::disk('b2')->delete($coverImagePath);
             $coverImagePath = null;
         }
 
-    
         if ($request->hasFile('cover_image')) {
-            
+
             if ($coverImagePath) {
                 Storage::disk('b2')->delete($coverImagePath);
             }
-            
-            
+
             $file = $request->file('cover_image');
-            $filename = 'eventos-futuros/' . Str::random(20) . '.jpg';
+            $filename = 'eventos-futuros/'.Str::random(20).'.jpg';
 
             $manager = new ImageManager(new Driver);
             $image = $manager->read($file);
@@ -223,10 +210,6 @@ class FutureEventManagementController extends Controller
             Storage::disk('b2')->put($filename, (string) $encoded);
             $coverImagePath = $filename;
         }
-
-
-
-
 
         //  CONVERSIÓN EXPLÍCITA A FLOAT
         $opportunity->update([
