@@ -51,13 +51,13 @@ const formattedCoordinates = computed(() => {
         const lng = parseFloat(coordinates.value.lng);
 
         if (isNaN(lat) || isNaN(lng)) {
-            return 'Coordenadas no válidas';
+            return 'ERR_COORD_INVALID';
         }
 
         return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     } catch (error) {
         console.error('Error formatting coordinates:', error);
-        return 'Error en coordenadas';
+        return 'ERR_COORD_FAULT';
     }
 });
 
@@ -93,153 +93,152 @@ const submit = () => {
 </script>
 
 <template>
+    <Head title="Inicializar Oportunidad" />
+
     <AuthenticatedLayout>
+        <div class="min-h-screen bg-[#050505] text-white selection:bg-[#E30613] selection:text-black py-12">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <Head title="Crear Oportunidad" />
-
-        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-
-            <!-- Header -->
-            <div class="mb-8">
-                <Link :href="route('photographer.opportunities.index')"
-                    class="inline-flex items-center text-slate-600 hover:text-slate-900 text-sm font-medium mb-4">
-                    <ArrowLeftIcon class="w-4 h-4 mr-2" />
-                    Volver a Oportunidades
-                </Link>
-
-                <h1 class="text-3xl font-sans font-bold text-slate-900">
-                    Crear Nueva Oportunidad
-                </h1>
-                <p class="text-slate-600 mt-2">
-                    Publicá un evento futuro para que otros fotógrafos puedan postularse
-                </p>
-            </div>
-
-            <!-- Formulario -->
-            <form @submit.prevent="submit" class="bg-white border border-gray-200 rounded-lg p-8">
-
-                <!-- Título -->
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-900 mb-2">
-                        Título del Evento *
-                    </label>
-                    <input v-model="form.title" type="text" placeholder="Ej: Casamiento Juan y María"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                        required />
-                    <span v-if="form.errors.title" class="text-xs text-red-600 mt-1">
-                        {{ form.errors.title }}
-                    </span>
-                </div>
-
-                <!-- Descripción -->
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-900 mb-2">
-                        Descripción *
-                    </label>
-                    <textarea v-model="form.description" rows="4"
-                        placeholder="Describe los detalles del evento, qué tipo de cobertura necesitás, etc."
-                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                        required></textarea>
-                    <span v-if="form.errors.description" class="text-xs text-red-600 mt-1">
-                        {{ form.errors.description }}
-                    </span>
-                </div>
-
-                <!--  MAPA SELECTOR DE UBICACIÓN -->
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-                        <MapPinIcon class="w-5 h-5" />
-                        Ubicación del Evento *
-                    </label>
-
-                    <MapPicker v-model="coordinates"
-                        :initial-center="{ lat: photographer.latitude, lng: photographer.longitude }" :zoom="10"
-                        @update:location="updateLocation" />
-
-                    <input v-model="form.location" type="text" placeholder="La dirección se actualizará automáticamente"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent mt-4"
-                        required />
-
-                    <p class="text-xs text-slate-500 mt-2">
-                         Coordenadas: {{ coordinates.lat.toFixed(6) }}, {{ coordinates.lng.toFixed(6) }}
-                    </p>
-
-                    <span v-if="form.errors.location" class="text-xs text-red-600 mt-1 block">
-                        {{ form.errors.location }}
-                    </span>
-                    <span v-if="form.errors.latitude || form.errors.longitude" class="text-xs text-red-600 mt-1 block">
-                        Error en coordenadas
-                    </span>
-                </div>
-
-                <!-- Fecha y Hora -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-900 mb-2">
-                            Fecha del Evento *
-                        </label>
-                        <input v-model="form.event_date" type="date"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                            required />
-                        <span v-if="form.errors.event_date" class="text-xs text-red-600 mt-1">
-                            {{ form.errors.event_date }}
-                        </span>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-bold text-slate-900 mb-2">
-                            Hora (Opcional)
-                        </label>
-                        <input v-model="form.event_time" type="time"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent" />
-                    </div>
-                </div>
-
-                <!-- Imagen de Portada -->
-                <div class="mb-8">
-                    <label class="block text-sm font-bold text-slate-900 mb-2">
-                        Imagen de Portada
-                    </label>
-
-                    <!-- Preview -->
-                    <div v-if="imagePreview" class="relative mb-4">
-                        <img :src="imagePreview" class="w-full h-64 object-cover rounded-sm" />
-                        <button type="button" @click="removeImage"
-                            class="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
-                            <XMarkIcon class="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <!-- Upload -->
-                    <label
-                        class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-sm cursor-pointer hover:bg-gray-50 transition">
-                        <PhotoIcon class="w-8 h-8 text-gray-400 mb-2" />
-                        <span class="text-sm text-gray-600">
-                            Click para subir imagen (opcional)
-                        </span>
-                        <input type="file" accept="image/*" @change="handleImageUpload" class="hidden" />
-                    </label>
-
-                    <span v-if="form.errors.cover_image" class="text-xs text-red-600 mt-1">
-                        {{ form.errors.cover_image }}
-                    </span>
-                </div>
-
-                <!-- Botones -->
-                <div class="flex gap-4">
-                    <button type="submit" :disabled="form.processing"
-                        class="flex-1 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition rounded-sm disabled:opacity-50">
-                        {{ form.processing ? 'Creando...' : 'Crear Oportunidad' }}
-                    </button>
-
+                <div class="mb-10">
                     <Link :href="route('photographer.opportunities.index')"
-                        class="px-6 py-3 border-2 border-slate-900 text-slate-900 font-bold text-sm uppercase tracking-widest hover:bg-slate-900 hover:text-white transition rounded-sm">
-                        Cancelar
+                        class="inline-flex items-center font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors mb-6 border border-zinc-800 bg-[#09090b] px-4 py-2 hover:border-white">
+                        <ArrowLeftIcon class="w-3 h-3 mr-2" />
+                        Cancelar y Volver
                     </Link>
+
+                    <span class="font-mono text-[10px] font-bold text-[#E30613] uppercase tracking-widest mb-2 block flex items-center gap-2">
+                        <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
+                        >_ NUEVA_OPORTUNIDAD
+                    </span>
+                    <h1 class="text-4xl md:text-5xl font-flux font-black text-white uppercase tracking-tighter leading-none">
+                        Inicializar Oportunidad
+                    </h1>
+                    <p class="font-mono text-xs text-zinc-500 mt-4 uppercase tracking-widest border-l-2 border-[#E30613] pl-3">
+                        Registrá un evento futuro para habilitar postulaciones de cobertura
+                    </p>
                 </div>
 
-            </form>
+                <form @submit.prevent="submit" class="bg-[#09090b] border border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.05)]">
 
+                    <div class="mb-8">
+                        <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                            > Identificador del Evento (Título) *
+                        </label>
+                        <input v-model="form.title" type="text" placeholder="Ej: EVENTO CORPORATIVO TECH 2026"
+                            class="w-full px-4 py-3 bg-black border border-zinc-700 text-white font-mono text-xs placeholder-zinc-700 focus:border-[#E30613] focus:ring-0 rounded-none transition-colors uppercase"
+                            required />
+                        <span v-if="form.errors.title" class="font-mono text-[10px] text-[#E30613] mt-2 block tracking-widest uppercase">
+                            ERR: {{ form.errors.title }}
+                        </span>
+                    </div>
+
+                    <div class="mb-8">
+                        <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                            > Parámetros y Requisitos (Descripción) *
+                        </label>
+                        <textarea v-model="form.description" rows="5"
+                            placeholder="ESPECIFICAR TIPO DE COBERTURA, EQUIPO REQUERIDO, CÓDIGO DE VESTIMENTA..."
+                            class="w-full px-4 py-3 bg-black border border-zinc-700 text-white font-mono text-xs placeholder-zinc-700 focus:border-[#E30613] focus:ring-0 rounded-none transition-colors resize-none uppercase"
+                            required></textarea>
+                        <span v-if="form.errors.description" class="font-mono text-[10px] text-[#E30613] mt-2 block tracking-widest uppercase">
+                            ERR: {{ form.errors.description }}
+                        </span>
+                    </div>
+
+                    <div class="mb-8 p-6 bg-black border border-zinc-800">
+                        <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] mb-4 flex items-center gap-2">
+                            <MapPinIcon class="w-4 h-4" />
+                            Ubicación Geográfica *
+                        </label>
+
+                        <div class="border border-zinc-700">
+                            <MapPicker v-model="coordinates"
+                                :initial-center="{ lat: photographer.latitude, lng: photographer.longitude }" :zoom="10"
+                                @update:location="updateLocation" />
+                        </div>
+
+                        <input v-model="form.location" type="text" placeholder="DATOS DE UBICACIÓN AUTO-GENERADOS"
+                            class="w-full px-4 py-3 bg-[#09090b] border border-zinc-700 text-white font-mono text-[10px] placeholder-zinc-600 focus:border-[#E30613] focus:ring-0 rounded-none transition-colors mt-4 uppercase tracking-widest"
+                            required readonly />
+
+                        <div class="mt-3 flex items-center gap-2">
+                            <div class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 bg-[#09090b] px-3 py-1 border border-zinc-800">
+                                COORD: {{ formattedCoordinates }}
+                            </div>
+                        </div>
+
+                        <span v-if="form.errors.location" class="font-mono text-[10px] text-[#E30613] mt-2 block tracking-widest uppercase">
+                            ERR: {{ form.errors.location }}
+                        </span>
+                        <span v-if="form.errors.latitude || form.errors.longitude" class="font-mono text-[10px] text-[#E30613] mt-2 block tracking-widest uppercase">
+                            ERR_GEO: ERROR EN SISTEMA DE COORDENADAS
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                                > Fecha Programada *
+                            </label>
+                            <input v-model="form.event_date" type="date"
+                                class="w-full px-4 py-3 bg-black border border-zinc-700 text-white font-mono text-xs focus:border-[#E30613] focus:ring-0 rounded-none transition-colors uppercase"
+                                required />
+                            <span v-if="form.errors.event_date" class="font-mono text-[10px] text-[#E30613] mt-2 block tracking-widest uppercase">
+                                ERR: {{ form.errors.event_date }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                                > Hora de inicio (Opcional)
+                            </label>
+                            <input v-model="form.event_time" type="time"
+                                class="w-full px-4 py-3 bg-black border border-zinc-700 text-white font-mono text-xs focus:border-[#E30613] focus:ring-0 rounded-none transition-colors uppercase" />
+                        </div>
+                    </div>
+
+                    <div class="mb-10">
+                        <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4 border-t border-zinc-800 pt-6">
+                            > Imagen de Referencia / Portada
+                        </label>
+
+                        <div v-if="imagePreview" class="relative mb-4 border border-zinc-700 p-1 bg-black w-max">
+                            <img :src="imagePreview" class="w-full max-w-sm h-48 object-cover filter grayscale hover:grayscale-0 transition-all duration-500" />
+                            <button type="button" @click="removeImage"
+                                class="absolute top-3 right-3 p-2 bg-[#E30613] text-black hover:bg-white transition-colors border border-black" title="Purgar Imagen">
+                                <XMarkIcon class="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <label v-else
+                            class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-700 bg-black cursor-pointer hover:border-[#E30613] hover:bg-[#E30613]/5 transition-colors group">
+                            <PhotoIcon class="w-8 h-8 text-zinc-600 mb-2 group-hover:text-[#E30613] transition-colors" />
+                            <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                CLICK PARA CARGAR ARCHIVO
+                            </span>
+                            <input type="file" accept="image/*" @change="handleImageUpload" class="hidden" />
+                        </label>
+
+                        <span v-if="form.errors.cover_image" class="font-mono text-[10px] text-[#E30613] mt-2 block tracking-widest uppercase">
+                            ERR: {{ form.errors.cover_image }}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 border-t border-zinc-800 pt-8">
+                        <button type="submit" :disabled="form.processing"
+                            class="flex-1 py-4 bg-[#E30613] text-black font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 text-center border border-[#E30613] hover:border-white">
+                            {{ form.processing ? 'PROCESANDO...' : 'EJECUTAR Y CREAR' }}
+                        </button>
+
+                        <Link :href="route('photographer.opportunities.index')"
+                            class="px-8 py-4 bg-transparent border border-zinc-700 text-zinc-400 font-mono text-[10px] font-bold uppercase tracking-widest hover:border-white hover:text-white transition-colors text-center">
+                            CANCELAR
+                        </Link>
+                    </div>
+
+                </form>
+
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>

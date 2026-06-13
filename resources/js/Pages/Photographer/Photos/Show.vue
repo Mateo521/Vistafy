@@ -67,7 +67,7 @@ const formatDate = (dateString) => {
                             class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-black hover:bg-zinc-100 p-1 mb-4 inline-flex items-center gap-2 transition-colors border border-transparent hover:border-black">
                             <ArrowLeftIcon class="w-3 h-3" /> < Volver_al_Archivo
                         </Link>
-                        <h1 class="text-5xl md:text-6xl font-bebas text-black uppercase leading-none tracking-tight">
+                        <h1 class="text-5xl md:text-6xl font-flux text-black uppercase leading-none tracking-tight">
                             Detalle de Activo
                         </h1>
                         <p class="mt-2 font-mono text-xs font-bold uppercase tracking-widest text-white bg-black inline-block px-3 py-1">
@@ -117,7 +117,7 @@ const formatDate = (dateString) => {
                             <div class="p-6 space-y-6">
                                 <div>
                                     <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Valor Asignado</label>
-                                    <p class="font-bebas text-6xl text-[#E30613] leading-none">${{ photo.price }}</p>
+                                    <p class="font-flux text-6xl text-[#E30613] leading-none">${{ photo.price }}</p>
                                 </div>
 
                                 <div>
@@ -174,7 +174,7 @@ const formatDate = (dateString) => {
                                             IA_Rostros
                                         </span>
                                         <div class="flex items-center gap-3">
-                                            <span v-if="photo.has_faces" class="text-xl font-bebas text-[#E30613]">
+                                            <span v-if="photo.has_faces" class="text-xl font-flux text-[#E30613]">
                                                 {{ photo.face_encodings ? (typeof photo.face_encodings === 'string' ? JSON.parse(photo.face_encodings).length : photo.face_encodings.length) : 0 }}
                                             </span>
                                             <span v-else class="text-sm text-zinc-400">—</span>
@@ -228,7 +228,7 @@ const formatDate = (dateString) => {
                             </div>
                             <div class="p-6 flex items-center justify-between">
                                 <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500">Descargas Totales</span>
-                                <span class="text-5xl font-bebas text-black">{{ photo.downloads }}</span>
+                                <span class="text-5xl font-flux text-black">{{ photo.downloads }}</span>
                             </div>
                         </div>
 

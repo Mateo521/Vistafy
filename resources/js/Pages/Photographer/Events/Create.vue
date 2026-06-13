@@ -91,7 +91,7 @@ const submit = () => {
                             class="text-[10px] font-mono font-bold uppercase tracking-widest text-gray-500 hover:text-white mb-4 block transition-none">
                             [ Volver a Eventos ]
                         </Link>
-                        <h1 class="text-5xl md:text-7xl font-bebas tracking-tighter leading-none uppercase text-white">
+                        <h1 class="text-5xl md:text-7xl font-flux tracking-tighter leading-none uppercase text-white">
                             Crear Nuevo <span class="text-[#E30613]">Evento</span>
                         </h1>
                         <p class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mt-4">
@@ -104,7 +104,7 @@ const submit = () => {
 
                     <div class="bg-[#09090b] border-[4px] border-white/10 p-6 md:p-10 transition-none focus-within:border-white/30">
                         <h2 class="font-mono text-[10px] font-bold uppercase  text-[#E30613] mb-8 border-b border-white/10 pb-4">
-                            Información General
+                            Información general
                         </h2>
 
                         <div class="space-y-8">

@@ -8,7 +8,7 @@ const props = defineProps({
 });
 
 const deleteOpportunity = (id) => {
-    if (confirm('¿Estás seguro de eliminar esta oportunidad?')) {
+    if (confirm('¿Confirmar eliminación? Se purgará esta oportunidad del sistema de forma permanente.')) {
         router.delete(route('photographer.opportunities.destroy', id), {
             preserveScroll: true,
         });
@@ -17,125 +17,124 @@ const deleteOpportunity = (id) => {
 
 const getDaysText = (days) => {
     const roundedDays = Math.round(days);
-    if (roundedDays === 0) return 'Hoy';
-    if (roundedDays === 1) return 'Mañana';
-    if (roundedDays < 0) return `Hace ${Math.abs(roundedDays)} días`;
-    return `En ${roundedDays} días`;
+    if (roundedDays === 0) return 'HOY';
+    if (roundedDays === 1) return 'MAÑANA';
+    if (roundedDays < 0) return `HACE ${Math.abs(roundedDays)} DÍAS`;
+    return `EN ${roundedDays} DÍAS`;
 };
 </script>
 
 <template>
+    <Head title="Mis Oportunidades" />
+
     <AuthenticatedLayout>
+        <div class="min-h-screen bg-[#050505] text-white selection:bg-[#E30613] selection:text-black py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <Head title="Mis Oportunidades" />
-
-        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-sans font-bold text-slate-900">
-                        Mis Oportunidades
-                    </h1>
-                    <p class="text-slate-600 mt-2">
-                        Eventos futuros que estás organizando
-                    </p>
-                </div>
-                <Link :href="route('photographer.opportunities.create')"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition rounded-sm">
-                    <PlusIcon class="w-5 h-5" />
-                    Crear Oportunidad
-                </Link>
-            </div>
-
-            <!-- Grid de Oportunidades -->
-            <div v-if="opportunities.data.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div v-for="opportunity in opportunities.data" :key="opportunity.id"
-                    class="bg-white border border-gray-200 rounded-sm overflow-hidden hover:shadow-lg transition">
-
-                    <!-- Imagen -->
-                    <div class="relative h-48 bg-gray-100">
-                        <img v-if="opportunity.cover_image" :src="opportunity.cover_image" :alt="opportunity.title"
-                            class="w-full h-full object-cover" />
-
-
-
-
-
-                        <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
-                            <CalendarIcon class="w-12 h-12" />
-                        </div>
-
-                        <!-- Badge de días -->
-                        <div class="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-sm shadow-lg">
-                            <span class="text-xs font-bold text-slate-900">
-                                {{ getDaysText(opportunity.days_until) }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Contenido -->
-                    <div class="p-4">
-                        <h3 class="font-sans font-bold text-lg text-slate-900 mb-2 line-clamp-2">
-                            {{ opportunity.title }}
-                        </h3>
-
-                        <p class="text-sm text-slate-600 mb-4 line-clamp-2">
-                            {{ opportunity.description }}
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-zinc-800 pb-6 gap-6">
+                    <div>
+                        <span class="font-mono text-[10px] font-bold text-[#E30613] uppercase tracking-widest mb-2 block flex items-center gap-2">
+                            <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
+                            Planificador Futuro
+                        </span>
+                        <h1 class="text-5xl md:text-6xl font-flux font-black text-white uppercase tracking-tighter leading-none">
+                            Mis Oportunidades
+                        </h1>
+                        <p class="font-mono text-xs text-zinc-500 mt-4 uppercase tracking-widest border-l-2 border-[#E30613] pl-3">
+                            Gestión de prospectos y eventos en fase de organización
                         </p>
+                    </div>
+                    <Link :href="route('photographer.opportunities.create')"
+                        class="bg-[#E30613] text-black px-6 py-3 border border-[#E30613] text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-transparent hover:text-white transition-colors flex items-center justify-center gap-2 rounded-none w-max">
+                        <PlusIcon class="w-4 h-4" />
+                        Crear Instancia
+                    </Link>
+                </div>
 
-                        <div class="space-y-2 mb-4">
-                            <div class="flex items-center gap-2 text-xs text-slate-500">
-                                <CalendarIcon class="w-4 h-4" />
-                                {{ opportunity.formatted_date }}
+                <div v-if="opportunities.data.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div v-for="opportunity in opportunities.data" :key="opportunity.id"
+                        class="group bg-[#09090b] border border-zinc-800 overflow-hidden hover:border-[#E30613] hover:shadow-[8px_8px_0px_0px_rgba(227,6,19,1)] transition-all duration-300 flex flex-col">
+
+                        <div class="relative h-56 bg-zinc-950 border-b border-zinc-800 overflow-hidden">
+                            <img v-if="opportunity.cover_image" :src="opportunity.cover_image" :alt="opportunity.title"
+                                class="w-full h-full object-cover filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                            
+                            <div v-else class="w-full h-full flex items-center justify-center text-zinc-800">
+                                <CalendarIcon class="w-12 h-12" />
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-slate-500">
-                                <MapPinIcon class="w-4 h-4" />
-                                {{ opportunity.location }}
+
+                            <div class="absolute inset-0 bg-[#E30613]/0 group-hover:bg-[#E30613]/10 transition-colors duration-300 pointer-events-none mix-blend-multiply"></div>
+
+                            <div class="absolute top-4 right-4 bg-[#E30613] text-black px-2 py-1 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                <span class="font-mono text-[9px] font-bold uppercase tracking-widest">
+                                    {{ getDaysText(opportunity.days_until) }}
+                                </span>
                             </div>
                         </div>
 
-                        <!-- Acciones -->
-                        <div class="flex gap-2">
-                            <Link :href="route('photographer.opportunities.edit', opportunity.id)"
-                                class="flex-1 py-2 bg-slate-100 text-slate-900 text-xs font-bold uppercase tracking-wider hover:bg-slate-200 transition rounded-sm flex items-center justify-center gap-1">
-                                <PencilIcon class="w-4 h-4" />
-                                Editar
-                            </Link>
-                            <button @click="deleteOpportunity(opportunity.id)"
-                                class="py-2 px-4 bg-red-100 text-red-700 text-xs font-bold uppercase hover:bg-red-200 transition rounded-sm">
-                                <TrashIcon class="w-4 h-4" />
-                            </button>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <h3 class="font-flux text-3xl uppercase tracking-wider text-white mb-3 group-hover:text-[#E30613] transition-colors line-clamp-2 leading-none">
+                                {{ opportunity.title }}
+                            </h3>
+
+                            <p class="font-mono text-xs text-zinc-400 mb-6 line-clamp-3 leading-relaxed flex-1">
+                                {{ opportunity.description }}
+                            </p>
+
+                            <div class="space-y-3 mb-6 pt-4 border-t border-zinc-800">
+                                <div class="flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                    <CalendarIcon class="w-4 h-4 text-[#E30613]" />
+                                    {{ opportunity.formatted_date }}
+                                </div>
+                                <div class="flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                                    <MapPinIcon class="w-4 h-4 text-[#E30613]" />
+                                    <span class="line-clamp-1">{{ opportunity.location }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2 mt-auto">
+                                <Link :href="route('photographer.opportunities.edit', opportunity.id)"
+                                    class="flex-1 py-3 bg-black border border-zinc-700 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black hover:border-white transition-colors flex items-center justify-center gap-2">
+                                    <PencilIcon class="w-3.5 h-3.5" />
+                                    Editar
+                                </Link>
+                                <button @click="deleteOpportunity(opportunity.id)"
+                                    class="w-12 flex items-center justify-center bg-black border border-zinc-700 text-zinc-500 hover:bg-[#E30613] hover:text-black hover:border-[#E30613] transition-colors" title="Purgar">
+                                    <TrashIcon class="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Empty State -->
-            <div v-else class="text-center py-16 bg-white border-2 border-dashed border-gray-300 rounded-lg">
-                <CalendarIcon class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 class="text-xl font-sans font-bold text-slate-900 mb-2">
-                    No tenés oportunidades creadas
-                </h3>
-                <p class="text-slate-600 mb-6">
-                    Comenzá creando tu primera oportunidad de evento
-                </p>
-                <Link :href="route('photographer.opportunities.create')"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest hover:bg-slate-800 transition rounded-sm">
-                    <PlusIcon class="w-5 h-5" />
-                    Crear Primera Oportunidad
-                </Link>
-            </div>
+                <div v-else class="text-center py-24 border-2 border-dashed border-zinc-800 bg-[#09090b] mt-8">
+                    <CalendarIcon class="w-16 h-16 text-zinc-700 mx-auto mb-4 stroke-1" />
+                    <h3 class="font-flux text-2xl uppercase tracking-widest text-zinc-500 mb-2">
+                        SYSTEM_EMPTY // 0 OPORTUNIDADES
+                    </h3>
+                    <p class="font-mono text-xs text-zinc-600 mb-8 uppercase tracking-widest">
+                        Aún no existen registros de prospectos. Inicializa una nueva instancia.
+                    </p>
+                    <Link :href="route('photographer.opportunities.create')"
+                        class="inline-block border border-zinc-700 bg-black text-white px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest hover:border-[#E30613] hover:text-[#E30613] transition-colors">
+                        Inicializar Registro
+                    </Link>
+                </div>
 
-            <!-- Paginación -->
-            <div v-if="opportunities.links && opportunities.last_page > 1" class="flex justify-center gap-2 mt-8">
-                <Link v-for="(link, index) in opportunities.links" :key="index" :href="link.url || '#'"
-                    v-html="link.label"
-                    :class="['px-4 py-2 text-sm font-medium rounded-sm border transition',
-                        link.active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-gray-200 hover:border-slate-400']" />
-            </div>
+                <div v-if="opportunities.links && opportunities.last_page > 1" class="mt-12 pt-8 border-t border-zinc-800 flex flex-wrap items-center justify-center gap-2">
+                    <template v-for="(link, index) in opportunities.links" :key="index">
+                        <Link v-if="link.url" :href="link.url"
+                            class="h-10 min-w-[2.5rem] px-3 flex items-center justify-center font-mono text-[10px] font-bold uppercase tracking-widest rounded-none transition-colors border"
+                            :class="link.active 
+                                ? 'bg-[#E30613] text-black border-[#E30613]' 
+                                : 'bg-black text-zinc-500 border-zinc-800 hover:border-white hover:text-white'"
+                            v-html="link.label"
+                        />
+                        <span v-else v-html="link.label" class="h-10 min-w-[2.5rem] px-3 flex items-center justify-center font-mono text-[10px] font-bold uppercase text-zinc-700 border border-transparent cursor-not-allowed"></span>
+                    </template>
+                </div>
 
+            </div>
         </div>
     </AuthenticatedLayout>
-
 </template>
