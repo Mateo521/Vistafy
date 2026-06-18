@@ -7,11 +7,11 @@ import {
     XMarkIcon,
     PhotoIcon,
     InformationCircleIcon,
-    HashtagIcon // Importante para el editor de dorsales
+    HashtagIcon
 } from '@heroicons/vue/24/outline';
 import { useToast } from '@/Composables/useToast';
 
-// --- IMPORTS DE IA ---
+
 import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
@@ -31,23 +31,21 @@ const form = useForm({
 });
 const { success, error } = useToast();
 
-// Estado de Archivos
+
 const selectedFiles = ref([]);
 const dragOver = ref(false);
 const uploading = ref(false);
 const uploadProgress = ref({ current: 0, total: 0, percentage: 0 });
 const fileInput = ref(null);
 
-// Estado de IA
+
 const modelsLoaded = ref(false);
 const processingFaces = ref(false);
 const processingBibs = ref(false);
 const faceDetectionResults = ref([]);
 const bibDetectionResults = ref([]);
 
-// ----------------------------------------------------------------------
-// 1. CARGA DE MODELOS (Igual que antes)
-// ----------------------------------------------------------------------
+
 onMounted(async () => {
     try {
         if (!faceapi) throw new Error('face-api.js no disponible');
@@ -65,7 +63,6 @@ onMounted(async () => {
         modelsLoaded.value = true;
     } catch (err) {
         console.error('Error cargando modelos:', err);
-        // Fallback a CPU si falla WebGL
         try {
             await faceapi.tf.setBackend('cpu');
             await faceapi.tf.ready();
@@ -75,7 +72,7 @@ onMounted(async () => {
 });
 
 // ----------------------------------------------------------------------
-// 2. MANEJO DE ARCHIVOS (Con Compresión en el Frontend)
+// 2. MANEJO DE ARCHIVOS (Con Compresión)
 // ----------------------------------------------------------------------
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
@@ -88,7 +85,6 @@ const handleDrop = (event) => {
     addFiles(files);
 };
 
-
 const compressImage = async (file) => {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -98,8 +94,6 @@ const compressImage = async (file) => {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-
-                // Limitar el lado más largo a 2500px (Excelente calidad, pero pesa un 80% menos)
                 const maxSize = 2500;
 
                 if (width > height && width > maxSize) {
@@ -115,18 +109,16 @@ const compressImage = async (file) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-
                 canvas.toBlob((blob) => {
-                    // Re-creamos un archivo "File" para que el FormData lo acepte
                     const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
                         type: 'image/jpeg',
                         lastModified: Date.now()
                     });
 
                     resolve({
-                        file: compressedFile, // El archivo liviano
+                        file: compressedFile,
                         name: compressedFile.name,
-                        preview: canvas.toDataURL('image/jpeg', 0.8) // El preview para la grilla
+                        preview: canvas.toDataURL('image/jpeg', 0.8)
                     });
                 }, 'image/jpeg', 0.8);
             };
@@ -137,10 +129,8 @@ const compressImage = async (file) => {
 };
 
 const addFiles = async (files) => {
-    // Validaciones
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-
         const maxSize = 50 * 1024 * 1024;
         if (!validTypes.includes(file.type)) {
             error(`${file.name} no es un formato válido.`);
@@ -160,13 +150,9 @@ const addFiles = async (files) => {
         error(`Límite de 50 fotos. Se agregaron ${remainingSlots}.`);
     }
 
-
     const compressingPromises = filesToAdd.map(file => compressImage(file));
-
-
     const newFileObjects = await Promise.all(compressingPromises);
     selectedFiles.value.push(...newFileObjects);
-
 
     if (modelsLoaded.value) {
         runAIDetection();
@@ -186,33 +172,26 @@ const clearFiles = () => {
     if (fileInput.value) fileInput.value.value = '';
 };
 
-
 const runAIDetection = async () => {
-
-    processingFaces = true;
+    processingFaces.value = true;
     await detectFacesInImages();
-    processingFaces = false;
-
+    processingFaces.value = false;
 
     if (form.read_bibs) {
-        processingBibs = true;
+        processingBibs.value = true;
         await detectBibNumbers(faceDetectionResults.value);
-        processingBibs = false;
+        processingBibs.value = false;
     } else {
-
         bibDetectionResults.value = selectedFiles.value.map((_, i) => ({ index: i, numbers: [], raw_text: '' }));
     }
 };
 
-
 const detectFacesInImages = async () => {
     faceDetectionResults.value = [];
-
     for (let i = 0; i < selectedFiles.value.length; i++) {
         try {
             const img = document.createElement('img');
             img.src = selectedFiles.value[i].preview;
-
             await new Promise(r => { img.onload = r; });
 
             const detections = await faceapi
@@ -236,10 +215,8 @@ const detectFacesInImages = async () => {
     }
 };
 
-
 const detectBibNumbers = async (facesData) => {
     bibDetectionResults.value = [];
-
     const worker = await Tesseract.createWorker('eng');
     await worker.setParameters({
         tessedit_char_whitelist: '0123456789',
@@ -253,7 +230,6 @@ const detectBibNumbers = async (facesData) => {
             let uniqueNumbers = new Set();
 
             if (boxes.length > 0) {
-
                 for (const faceBox of boxes) {
                     const roiDataUrl = await cropTorsoFromFace(selectedFiles.value[i].preview, faceBox);
                     const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
@@ -262,7 +238,6 @@ const detectBibNumbers = async (facesData) => {
                     if (found) found.forEach(num => { if (num.length >= 2) uniqueNumbers.add(num); });
                 }
             } else {
-
                 const roiDataUrl = await cropTorsoFromFace(selectedFiles.value[i].preview, null);
                 const cleanedDataUrl = await preprocessForOCR(roiDataUrl);
                 const result = await worker.recognize(cleanedDataUrl);
@@ -270,12 +245,7 @@ const detectBibNumbers = async (facesData) => {
                 if (found) found.forEach(num => { if (num.length >= 2) uniqueNumbers.add(num); });
             }
 
-            bibDetectionResults.value.push({
-                index: i,
-                numbers: Array.from(uniqueNumbers),
-                raw_text: '',
-            });
-
+            bibDetectionResults.value.push({ index: i, numbers: Array.from(uniqueNumbers), raw_text: '' });
         } catch (error) {
             console.error(`Error OCR foto ${i}:`, error);
             bibDetectionResults.value.push({ index: i, numbers: [], raw_text: '' });
@@ -283,7 +253,6 @@ const detectBibNumbers = async (facesData) => {
     }
     await worker.terminate();
 };
-
 
 const cropTorsoFromFace = async (imageUrl, faceBox) => {
     return new Promise((resolve) => {
@@ -306,7 +275,7 @@ const cropTorsoFromFace = async (imageUrl, faceBox) => {
             rx = Math.max(0, rx); ry = Math.max(0, ry);
             rw = Math.min(rw, img.width - rx); rh = Math.min(rh, img.height - ry);
 
-            canvas.width = rw * 2; canvas.height = rh * 2; // Upscale
+            canvas.width = rw * 2; canvas.height = rh * 2;
             ctx.drawImage(img, rx, ry, rw, rh, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL());
         };
@@ -326,7 +295,6 @@ const preprocessForOCR = async (imageUrl) => {
 
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
-            // Canal Verde
             for (let i = 0; i < data.length; i += 4) {
                 const g = data[i + 1];
                 const val = g > 130 ? 255 : 0;
@@ -338,7 +306,6 @@ const preprocessForOCR = async (imageUrl) => {
         img.src = imageUrl;
     });
 };
-
 
 const addBibTag = (index, event) => {
     const val = event.target.value.trim();
@@ -361,7 +328,7 @@ const handleBackspace = (index, event) => {
 };
 
 // ----------------------------------------------------------------------
-// 4. SUBMIT (Unificación de datos)
+// 4. SUBMIT
 // ----------------------------------------------------------------------
 const submitPhotos = () => {
     if (selectedFiles.value.length === 0) return error('Seleccione al menos una foto.');
@@ -370,7 +337,6 @@ const submitPhotos = () => {
     uploading.value = true;
     uploadProgress.value = { current: 0, total: selectedFiles.value.length, percentage: 0 };
 
-    //  PREPARAR DATOS DE ROSTROS
     const facesData = selectedFiles.value.map((_, index) => {
         const faceResult = faceDetectionResults.value[index];
         return {
@@ -381,7 +347,6 @@ const submitPhotos = () => {
         };
     });
 
-    //  PREPARAR DATOS DE DORSALES
     const bibsData = selectedFiles.value.map((_, index) => {
         const bibResult = bibDetectionResults.value[index];
         return {
@@ -393,23 +358,18 @@ const submitPhotos = () => {
 
     const formData = new FormData();
 
-    // Agregar archivos
     selectedFiles.value.forEach((item, index) => {
         formData.append(`photos[${index}]`, item.file);
     });
-
 
     formData.append('price', form.price);
     formData.append('is_active', form.is_active ? 1 : 0);
     if (form.event_id) formData.append('event_id', form.event_id);
 
-
     formData.append('face_data', JSON.stringify({
         faces: facesData,
         bibs: bibsData
     }));
-
-
 
     router.post(route('photographer.photos.store'), formData, {
         forceFormData: true,
@@ -429,201 +389,199 @@ const submitPhotos = () => {
         },
     });
 };
-
-const formatDate = (date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
-};
 </script>
 
 <template>
-
     <Head title="Carga de Material" />
 
     <AuthenticatedLayout>
-        <div class="py-12">
+        <div class="py-12 bg-[#050505] min-h-screen text-[#F2F0EB] selection:bg-[#FF0000] selection:text-white antialiased">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-                <div
-                    class="mb-10 border-b border-gray-200 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="mb-10 border-b-4 border-zinc-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <Link :href="route('photographer.photos.index')"
-                            class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 mb-2 block transition-colors">
-                            ← Volver al archivo
+                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-[#050505] hover:bg-[#FF0000] p-1 mb-4 inline-flex items-center gap-2 transition-colors border border-transparent hover:border-[#FF0000]">
+                            ← Volver_al_Archivo
                         </Link>
-                        <h1 class="text-3xl font-sans font-bold text-slate-900">
-                            Carga de material
+                        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-[#F2F0EB] leading-none mt-2">
+                            Ingesta de Material
                         </h1>
-                        <p class="text-sm text-slate-500 font-light mt-1">Gestión de activos digitales y asignación de
-                            precios.</p>
+                        <p class="font-mono text-xs text-[#FF0000] font-bold mt-3 uppercase tracking-widest">
+                            > Sistema de compresión e IA activo
+                        </p>
                     </div>
                 </div>
 
-                <form @submit.prevent="submitPhotos" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <form @submit.prevent="submitPhotos" class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-                    <div class="lg:col-span-1 space-y-6">
-                        <div class="bg-white border border-gray-200 rounded-sm p-6 shadow-sm">
-                            <h2
-                                class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 border-b border-gray-100 pb-2">
-                                Parámetros de Venta
-                            </h2>
+                    <div class="lg:col-span-1 space-y-8">
+                        
+                        <div class="bg-[#0a0a0a] border-4 border-[#F2F0EB] rounded-none shadow-[6px_6px_0px_0px_rgba(255,0,0,1)]">
+                            <div class="px-6 py-4 border-b-4 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505]">
+                                <h2 class="font-mono text-[10px] font-bold uppercase tracking-widest">
+                                    PARÁMETROS_DE_VENTA
+                                </h2>
+                            </div>
 
-                            <div class="space-y-6">
+                            <div class="p-6 space-y-6">
                                 <div>
-                                    <label
-                                        class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Precio
-                                        unitario (ARS)</label>
-                                    <input v-model="form.price" type="number" step="0.01" min="0.01" required
-                                        class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 font-mono"
-                                        placeholder="0.00">
-                                    <p v-if="errors.price" class="text-red-600 text-xs mt-1">{{ errors.price }}</p>
+                                    <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                                        Precio Unitario (ARS)
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-[#FF0000]">$</span>
+                                        <input v-model="form.price" type="number" step="0.01" min="0.01" required
+                                            class="w-full bg-[#111] border-2 border-[#F2F0EB] text-[#F2F0EB] font-mono text-2xl font-bold py-3 pl-10 focus:border-[#FF0000] focus:ring-0 rounded-none transition-colors"
+                                            placeholder="0.00">
+                                    </div>
+                                    <p v-if="errors.price" class="text-[#FF0000] font-mono text-[10px] font-bold mt-2 uppercase">{{ errors.price }}</p>
                                 </div>
 
                                 <div>
-                                    <label
-                                        class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Asignar
-                                        a Evento</label>
+                                    <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
+                                        Asignar a Evento
+                                    </label>
                                     <select v-model="form.event_id"
-                                        class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-sm text-slate-700 bg-white">
-                                        <option :value="null">-- Sin asignar --</option>
+                                        class="w-full bg-[#111] border-2 border-[#F2F0EB] text-[#F2F0EB] font-mono text-xs uppercase font-bold py-3 focus:border-[#FF0000] focus:ring-0 rounded-none cursor-pointer">
+                                        <option :value="null">-- SIN_ASIGNAR --</option>
                                         <option v-for="event in events" :key="event.id" :value="event.id">
                                             {{ event.name }}
                                         </option>
                                     </select>
-                                    <p class="text-[10px] text-slate-400 mt-1">Opcional. Agrupa las fotos para facilitar
-                                        la búsqueda.</p>
                                 </div>
 
-                                <div class="flex items-start pt-2">
-                                    <div class="flex items-center h-5">
-                                        <input id="is_active" v-model="form.is_active" type="checkbox"
-                                            class="focus:ring-0 h-4 w-4 text-slate-900 border-gray-300 rounded-sm">
-                                    </div>
-                                    <div class="ml-3 text-sm">
-                                        <label for="is_active" class="font-medium text-slate-700">Publicación
-                                            Inmediata</label>
-                                        <p class="text-xs text-slate-500">Las fotos serán visibles en la galería al
-                                            terminar la carga.</p>
-                                    </div>
+                                <div class="pt-4 border-t-2 border-zinc-800 border-dashed">
+                                    <label class="flex items-start gap-4 cursor-pointer group">
+                                        <div class="relative flex items-center justify-center w-6 h-6 border-2 border-[#F2F0EB] bg-[#111] group-hover:border-[#FF0000] transition-colors mt-0.5">
+                                            <input type="checkbox" v-model="form.is_active" class="peer sr-only">
+                                            <div class="w-3 h-3 bg-[#FF0000] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                        </div>
+                                        <div>
+                                            <span class="block font-mono text-xs font-bold uppercase tracking-widest text-[#F2F0EB] group-hover:text-[#FF0000] transition-colors">
+                                                Publicación Inmediata
+                                            </span>
+                                            <span class="block text-[10px] text-zinc-500 font-mono mt-1 uppercase">
+                                                Activos visibles tras ingesta
+                                            </span>
+                                        </div>
+                                    </label>
                                 </div>
 
-                                <div class="flex items-start pt-2 border-t border-gray-100 mt-4">
-                                    <div class="flex items-center h-5">
-                                        <input id="read_bibs" v-model="form.read_bibs" type="checkbox"
-                                            class="focus:ring-0 h-4 w-4 text-slate-900 border-gray-300 rounded-sm">
-                                    </div>
-                                    <div class="ml-3 text-sm">
-                                        <label for="read_bibs" class="font-medium text-slate-700">Leer Dorsales
-                                            (OCR)</label>
-                                        <p class="text-[10px] text-slate-500 mt-0.5">
-                                            Desactive esto si el evento no es deportivo (Bodas, Cumpleaños). La carga
-                                            será mucho más rápida.
-                                        </p>
-                                    </div>
+                                <div class="pt-4 border-t-2 border-zinc-800 border-dashed">
+                                    <label class="flex items-start gap-4 cursor-pointer group">
+                                        <div class="relative flex items-center justify-center w-6 h-6 border-2 border-[#F2F0EB] bg-[#111] group-hover:border-[#FF0000] transition-colors mt-0.5">
+                                            <input type="checkbox" v-model="form.read_bibs" class="peer sr-only">
+                                            <div class="w-3 h-3 bg-[#FF0000] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                        </div>
+                                        <div>
+                                            <span class="block font-mono text-xs font-bold uppercase tracking-widest text-[#F2F0EB] group-hover:text-[#FF0000] transition-colors">
+                                                Leer Dorsales (OCR)
+                                            </span>
+                                            <span class="block text-[10px] text-zinc-500 font-mono mt-1 uppercase">
+                                                Desactivar para eventos no deportivos
+                                            </span>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 border border-gray-200 p-5 rounded-sm">
-                            <div class="flex items-start gap-3">
-                                <InformationCircleIcon class="w-5 h-5 text-slate-400 flex-shrink-0" />
+                        <div class="bg-[#111] border-2 border-zinc-800 p-6 rounded-none">
+                            <div class="flex items-start gap-4">
+                                <InformationCircleIcon class="w-6 h-6 text-[#FF0000] flex-shrink-0" stroke-width="2" />
                                 <div>
-                                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-700 mb-2">
-                                        Protección de Activos</h4>
-                                    <p class="text-xs text-slate-500 font-light leading-relaxed">
-                                        El sistema aplicará automáticamente marcas de agua a las vistas previas. Los
-                                        archivos originales se almacenan en servidores seguros y solo se liberan tras la
-                                        confirmación del pago.
+                                    <h4 class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#F2F0EB] mb-2">
+                                        SYS_SECURITY
+                                    </h4>
+                                    <p class="font-mono text-[10px] text-zinc-500 leading-relaxed uppercase">
+                                        Marca de agua aplicada automáticamente. Originales resguardados en bóveda segura hasta confirmación de transacción.
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-2">
+                    <div class="lg:col-span-2 flex flex-col gap-8">
 
                         <div @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false"
                             @drop.prevent="handleDrop" :class="[
-                                'border border-dashed rounded-sm p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[300px]',
+                                'border-4 border-dashed rounded-none p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[300px]',
                                 dragOver
-                                    ? 'border-slate-900 bg-slate-50'
-                                    : 'border-gray-300 bg-white hover:border-slate-400'
+                                    ? 'border-[#FF0000] bg-[#1a0505]'
+                                    : 'border-zinc-700 bg-[#0a0a0a] hover:border-[#F2F0EB]'
                             ]">
-                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*"
-                                class="hidden">
+                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*" class="hidden">
 
                             <div v-if="selectedFiles.length === 0" class="flex flex-col items-center">
-                                <CloudArrowUpIcon class="w-12 h-12 text-slate-300 mb-4 stroke-1" />
-                                <h3 class="text-lg font-sans font-medium text-slate-900 mb-2">
-                                    Arrastre sus archivos acá
+                                <CloudArrowUpIcon class="w-16 h-16 text-zinc-600 mb-6 stroke-1" />
+                                <h3 class="text-2xl font-black uppercase tracking-tight text-[#F2F0EB] mb-2">
+                                    Zona de Ingesta
                                 </h3>
-                                <p class="text-sm text-slate-500 mb-6 font-light">
-                                    o haga clic para explorar su dispositivo
+                                <p class="font-mono text-xs text-zinc-500 mb-8 uppercase">
+                                    Arrastre activos físicos aquí o explore
                                 </p>
                                 <button type="button" @click="$refs.fileInput.click()"
-                                    class="px-6 py-2 border border-slate-300 text-slate-600 text-xs font-bold uppercase tracking-widest hover:border-slate-900 hover:text-slate-900 transition rounded-sm">
-                                    Seleccionar
+                                    class="px-8 py-3 border-2 border-[#F2F0EB] bg-transparent text-[#F2F0EB] font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-[#F2F0EB] hover:text-[#050505] transition-colors rounded-none">
+                                    Seleccionar_Archivos
                                 </button>
-                                <div
-                                    class="mt-8 text-[10px] uppercase tracking-widest text-slate-400 border-t border-gray-100 pt-4 w-full">
-                                    JPG, PNG • Max 10MB • Límite 50
+                                <div class="mt-8 font-mono text-[10px] uppercase tracking-widest text-zinc-600 border-t-2 border-zinc-800 pt-4 w-full">
+                                    JPG, PNG // MAX 50MB // LÍMITE 50
                                 </div>
                             </div>
 
-                            <div v-else class="w-full">
-                                <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
-                                    <span class="text-sm font-bold text-slate-900">{{ selectedFiles.length }} archivos
-                                        listos</span>
+                            <div v-else class="w-full flex flex-col h-full">
+                                <div class="flex justify-between items-end mb-6 border-b-2 border-zinc-800 pb-4">
+                                    <span class="font-mono text-2xl font-black text-[#F2F0EB]">
+                                        {{ selectedFiles.length }} <span class="text-[#FF0000] text-sm">ARCHIVOS EN COLA</span>
+                                    </span>
                                     <div class="flex gap-4">
                                         <button type="button" @click="$refs.fileInput.click()"
-                                            class="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">Agregar
-                                            más</button>
+                                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-[#F2F0EB] transition-colors">
+                                            + Agregar
+                                        </button>
                                         <button type="button" @click="clearFiles"
-                                            class="text-xs font-bold uppercase tracking-widest text-red-600 hover:text-red-800">Limpiar
-                                            todo</button>
+                                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#FF0000] hover:text-red-400 transition-colors">
+                                            [ Purgar_Todo ]
+                                        </button>
                                     </div>
                                 </div>
 
                                 <div v-if="processingFaces || processingBibs"
-                                    class="mb-4 bg-blue-50 border border-blue-200 p-3 rounded-sm flex items-center gap-3">
-                                    <div
-                                        class="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent">
-                                    </div>
-                                    <span class="text-xs text-blue-700 font-medium">
-                                        Analizando imágenes ({{ selectedFiles.length }} archivos)...
+                                    class="mb-6 bg-[#1a0505] border-2 border-[#FF0000] p-4 rounded-none flex items-center gap-4">
+                                    <div class="animate-spin rounded-none h-5 w-5 border-4 border-[#FF0000] border-t-transparent"></div>
+                                    <span class="font-mono text-xs text-[#FF0000] font-bold uppercase tracking-widest">
+                                        Ejecutando Modelos IA ({{ selectedFiles.length }} activos)...
                                     </span>
                                 </div>
 
-                                <div
-                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                     <div v-for="(file, index) in selectedFiles" :key="index"
-                                        class="relative group aspect-square bg-gray-100 border border-gray-200 overflow-hidden">
+                                        class="relative group aspect-square bg-[#050505] border-2 border-zinc-800 overflow-hidden hover:border-[#F2F0EB] transition-colors">
 
                                         <img :src="file.preview"
-                                            class="w-full h-full object-cover filter grayscale-[0.1] group-hover:grayscale-0 transition duration-300">
+                                            class="w-full h-full object-cover filter grayscale contrast-125 opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300">
 
                                         <div v-if="faceDetectionResults[index]"
-                                            class="absolute top-2 right-2 px-2 py-1 text-[10px] font-bold shadow-lg z-10 transition-opacity"
-                                            :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black' : 'bg-gray-400 text-white'">
+                                            class="absolute top-2 right-2 px-2 py-1 font-mono text-[10px] font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] z-10 border-2 border-black"
+                                            :class="faceDetectionResults[index].count > 0 ? 'bg-[#FF0000] text-black' : 'bg-zinc-800 text-zinc-400'">
                                             <span v-if="faceDetectionResults[index].count > 0">
-                                                {{ faceDetectionResults[index].count }} Cara(s)
+                                                [{{ faceDetectionResults[index].count }}] ROSTROS
                                             </span>
-                                            <span v-else>—</span>
+                                            <span v-else>0</span>
                                         </div>
 
-                                        <div
-                                            class="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent transition-all duration-300 hover:bg-slate-900/95 z-20 group/edit">
-                                            <div class="flex flex-wrap gap-1 items-center">
-                                                <HashtagIcon class="w-3 h-3 text-white/40 shrink-0" />
+                                        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black via-black/80 to-transparent transition-all duration-300 z-20 group/edit border-t border-transparent group-hover:border-[#FF0000]">
+                                            <div class="flex flex-wrap gap-1.5 items-center">
+                                                <HashtagIcon class="w-3 h-3 text-[#FF0000] shrink-0" stroke-width="3" />
 
                                                 <template v-if="bibDetectionResults[index]?.numbers?.length">
-                                                    <div v-for="number in bibDetectionResults[index].numbers"
-                                                        :key="number"
-                                                        class="bg-white/10 hover:bg-white/20 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-sm flex items-center gap-1 border border-white/10 backdrop-blur-sm">
+                                                    <div v-for="number in bibDetectionResults[index].numbers" :key="number"
+                                                        class="bg-[#F2F0EB] text-black text-[10px] font-black font-mono px-1 py-0.5 flex items-center gap-1 border-2 border-black">
                                                         <span>{{ number }}</span>
                                                         <button type="button" @click.stop="removeBibTag(index, number)"
-                                                            class="text-white/50 hover:text-red-400 focus:outline-none">
-                                                            <XMarkIcon class="w-3 h-3" />
+                                                            class="text-[#FF0000] hover:text-black focus:outline-none">
+                                                            <XMarkIcon class="w-3 h-3" stroke-width="3" />
                                                         </button>
                                                     </div>
                                                 </template>
@@ -631,65 +589,65 @@ const formatDate = (date) => {
                                                 <input type="text" placeholder="+"
                                                     @keydown.enter.prevent="addBibTag(index, $event)"
                                                     @keydown.backspace="handleBackspace(index, $event)"
-                                                    class="flex-1 min-w-[30px] bg-transparent border-none text-white text-[11px] font-bold p-0 focus:ring-0 placeholder-white/30 focus:placeholder-white/50 outline-none h-5" />
+                                                    class="flex-1 min-w-[30px] bg-transparent border-none text-[#F2F0EB] font-mono text-[11px] font-bold p-0 focus:ring-0 placeholder-zinc-600 focus:placeholder-zinc-400 outline-none h-5" />
                                             </div>
                                         </div>
 
-                                        <div
-                                            class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors flex items-center justify-center pointer-events-none">
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
                                             <button type="button" @click="removeFile(index)"
-                                                class="opacity-0 group-hover:opacity-100 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-all pointer-events-auto shadow-lg transform scale-90 hover:scale-100">
-                                                <XMarkIcon class="w-5 h-5" />
+                                                class="bg-[#FF0000] text-black p-3 border-2 border-black hover:bg-white transition-colors pointer-events-auto shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+                                                <XMarkIcon class="w-6 h-6" stroke-width="2" />
                                             </button>
                                         </div>
 
                                         <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
-                                            class="absolute inset-0 bg-black/20 flex items-center justify-center z-30">
-                                            <div
-                                                class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent">
-                                            </div>
+                                            class="absolute inset-0 bg-black/80 flex items-center justify-center z-40 backdrop-blur-sm">
+                                            <div class="animate-spin rounded-none h-6 w-6 border-2 border-zinc-600 border-t-[#FF0000]"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div v-if="uploading" class="mt-6 p-6 bg-slate-50 border border-gray-200 rounded-sm">
-                            <div
-                                class="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
-                                <span>Procesando</span>
-                                <span>{{ uploadProgress.percentage }}%</span>
+                        <div v-if="uploading" class="p-6 bg-[#111] border-2 border-zinc-800 rounded-none">
+                            <div class="flex justify-between font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
+                                <span>TX_EN_PROGRESO</span>
+                                <span class="text-[#FF0000]">{{ uploadProgress.percentage }}%</span>
                             </div>
-                            <div class="w-full bg-gray-200 h-1 rounded-full overflow-hidden">
-                                <div class="bg-slate-900 h-1 transition-all duration-300 ease-out"
+                            <div class="w-full bg-[#050505] h-3 border-2 border-zinc-800 rounded-none overflow-hidden p-0.5">
+                                <div class="bg-[#FF0000] h-full transition-all duration-200 ease-out"
                                     :style="{ width: uploadProgress.percentage + '%' }"></div>
                             </div>
-                            <p class="text-xs text-slate-400 mt-2 text-center font-light">Por favor no cierre esta
-                                ventana.</p>
+                            <p class="font-mono text-[10px] text-[#FF0000] mt-3 uppercase tracking-widest animate-pulse">
+                                [ No interrumpir conexión ]
+                            </p>
                         </div>
 
-                        <div class="mt-6 flex justify-end">
+                        <div class="flex justify-end">
                             <button type="button" @click="submitPhotos"
                                 :disabled="uploading || selectedFiles.length === 0" :class="[
-                                    'px-8 py-4 text-xs font-bold uppercase tracking-widest transition-all duration-300 rounded-sm w-full md:w-auto',
+                                    'px-10 py-5 font-mono text-[12px] font-black uppercase tracking-widest transition-all duration-200 rounded-none w-full md:w-auto border-4',
                                     uploading || selectedFiles.length === 0
-                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                        : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg'
+                                        ? 'bg-[#111] text-zinc-600 border-zinc-800 cursor-not-allowed'
+                                        : 'bg-[#FF0000] text-black border-black hover:bg-[#F2F0EB] hover:text-black shadow-[6px_6px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px]'
                                 ]">
-                                <span v-if="uploading">Subiendo...</span>
-                                <span v-else>Iniciar Carga</span>
+                                <span v-if="uploading">Transmitiendo...</span>
+                                <span v-else>Iniciar Ingesta //</span>
                             </button>
                         </div>
 
                         <div v-if="Object.keys(errors).length > 0"
-                            class="mt-6 p-4 border border-red-200 bg-red-50 rounded-sm">
-                            <div class="flex gap-3">
-                                <XMarkIcon class="w-5 h-5 text-red-500" />
+                            class="p-6 border-4 border-[#FF0000] bg-[#1a0505] rounded-none shadow-[6px_6px_0_0_rgba(255,0,0,1)]">
+                            <div class="flex gap-4">
+                                <XMarkIcon class="w-6 h-6 text-[#FF0000]" stroke-width="2" />
                                 <div>
-                                    <h4 class="text-xs font-bold text-red-700 uppercase tracking-wide mb-1">Error en la
-                                        carga</h4>
-                                    <ul class="list-disc list-inside text-xs text-red-600 font-light">
-                                        <li v-for="(error, key) in errors" :key="key">{{ error }}</li>
+                                    <h4 class="font-mono text-[10px] font-bold text-[#FF0000] uppercase tracking-widest mb-2 border-b-2 border-[#FF0000] pb-1 w-fit">
+                                        FALLO_EN_SISTEMA
+                                    </h4>
+                                    <ul class="list-none font-mono text-xs text-[#F2F0EB] space-y-1">
+                                        <li v-for="(error, key) in errors" :key="key" class="flex gap-2 before:content-['>'] before:text-[#FF0000]">
+                                            {{ error }}
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -703,21 +661,23 @@ const formatDate = (date) => {
 </template>
 
 <style scoped>
-/* Scrollbar fina para la grilla de preview */
+
 .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 12px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #050505;
+    border-left: 2px solid #27272a; 
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 2px;
+    background: #3f3f46; 
+    border-left: 2px solid #27272a;
+    border-radius: 0px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: #FF0000;
 }
 </style>
