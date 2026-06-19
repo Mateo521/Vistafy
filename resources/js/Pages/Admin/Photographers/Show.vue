@@ -153,7 +153,7 @@ const formatDate = (date) => {
 
                             <div v-if="photographer.bio" class="mt-8 pt-8 border-t border-zinc-800">
                                 <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3">Biografía</label>
-                                <p class="font-mono text-xs text-zinc-400 leading-relaxed border-l-2 border-[#E30613] pl-4">
+                                <p class="font-mono text-xs text-zinc-400 leading-relaxed  pl-4">
                                     {{ photographer.bio }}
                                 </p>
                             </div>

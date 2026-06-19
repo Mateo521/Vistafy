@@ -40,7 +40,7 @@ const getDaysText = (days) => {
                         <h1 class="text-5xl md:text-6xl font-flux font-black text-white uppercase tracking-tighter leading-none">
                             Mis Oportunidades
                         </h1>
-                        <p class="font-mono text-xs text-zinc-500 mt-4 uppercase tracking-widest border-l-2 border-[#E30613] pl-3">
+                        <p class="font-mono text-xs text-zinc-500 mt-4 uppercase tracking-widest  pl-3">
                             Gestión de prospectos y eventos en fase de organización
                         </p>
                     </div>

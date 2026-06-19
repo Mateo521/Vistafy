@@ -120,7 +120,7 @@ const deleteEvent = () => {
                         <h1 class="text-4xl md:text-5xl font-flux font-black text-white uppercase tracking-tighter leading-none mb-2">
                             MODIFICAR EVENTO
                         </h1>
-                        <p class="font-mono text-xs text-zinc-500 uppercase tracking-widest border-l-2 border-[#E30613] pl-3">
+                        <p class="font-mono text-xs text-zinc-500 uppercase tracking-widest  pl-3">
                             Alterar parámetros, visibilidad o purgar galería
                         </p>
                     </div>

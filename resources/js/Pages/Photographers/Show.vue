@@ -120,7 +120,7 @@ const formatDate = (dateString) => {
 
                         <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8 border-t border-zinc-800 pt-8">
                             <div class="lg:col-span-2">
-                                <p v-if="photographer.bio" class="font-mono text-xs text-zinc-400 leading-relaxed border-l-2 border-[#E30613] pl-4">
+                                <p v-if="photographer.bio" class="font-mono text-xs text-zinc-400 leading-relaxed  pl-4">
                                     {{ photographer.bio }}
                                 </p>
                                 <p v-else class="font-mono text-xs text-zinc-600 italic">>> NO_BIO_DATA_AVAILABLE</p>

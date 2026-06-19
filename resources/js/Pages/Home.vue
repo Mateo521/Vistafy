@@ -60,106 +60,65 @@ const formatEventTitle = (name) => {
 
             <main class="relative z-10 pt-0">
 
-                <Swiper :modules="[Navigation, Pagination, Autoplay, EffectFade]" effect="fade"
-                    :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 8000, disableOnInteraction: false }"
-                    :pagination="{ clickable: true }" :navigation="true" :loop="true" class="swiper-main">
+                <Swiper 
+            :modules="[Navigation, Pagination, Autoplay, EffectFade]" 
+            effect="fade"
+            :fadeEffect="{ crossFade: true }" 
+            :autoplay="{ delay: 5000, disableOnInteraction: false }"
+            :pagination="{ clickable: true }" 
+            :navigation="true" 
+            :loop="true" 
+            class="swiper-main h-[70vh] md:h-screen w-full bg-[#050505] border-b-2 border-[#E30613]"
+        >
+            <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index" class="relative overflow-hidden bg-black">
+                
+                <div class="absolute inset-0 w-full h-full z-0">
+                    <img :src="bannerUrl" 
+                        class="absolute inset-0 w-full h-full object-cover filter  opacity-50 mix-blend-screen" 
+                        alt="F33 Banner" />
+                </div>
 
-                    <SwiperSlide v-for="(event, index) in recentEvents.slice(0, 3)" :key="event.id"
-                        class="relative overflow-hidden"> <!--bg-[#050505] -->
+                <div class="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50 pointer-events-none"></div>
 
+                <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-10 pointer-events-none"></div>
+
+                <div class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-20 md:pb-32 px-6 md:px-12">
+                    <div class="max-w-7xl mx-auto w-full relative">
                         
-                        <div class="absolute inset-0 w-full h-full z-0 bg-black">
+                        <div class="absolute -top-16 right-0 md:top-0 flex flex-col items-end gap-4">
+                            <span class="text-[#E30613] font-flux font-bold text-2xl md:text-4xl tracking-widest flex items-center gap-4">
+                                0{{ index + 1 }} <span class="w-12 md:w-24 h-[4px] bg-[#E30613]"></span>
+                            </span>
+                        </div>
+
+                        <span class="text-[#E30613] font-mono text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-4">
+                            <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
+                            > F33 // 
+                        </span>
+                        
+                        <h1 class="text-6xl md:text-[8rem] lg:text-[10rem] font-flux text-white uppercase tracking-tighter leading-[0.85] mix-blend-difference drop-shadow-2xl">
+                            F33 
+                        </h1>
+
+                        <div class="mt-8 pl-4 md:pl-6 border-l-4 border-[#E30613] bg-black/50 backdrop-blur-sm p-4 w-max pointer-events-auto">
+                            <p class="font-mono text-xs md:text-sm text-zinc-400 uppercase tracking-widest">
                             
-                            <Swiper v-if="getEventPhotos(event).length > 0" :modules="[Pagination, Autoplay]"
-                                :nested="true" :autoplay="{ delay: 2500, disableOnInteraction: false }"
-                                :pagination="{ clickable: true, el: '.inner-pagination-' + event.id }"
-                                class="w-full h-full inner-swiper">
-                                
-                                <SwiperSlide v-for="photo in getEventPhotos(event)" :key="photo.id" class="relative w-full h-full">
-                                    
-                                    <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="absolute inset-0 w-full h-full object-cover object-center blur-[60px]  opacity-30 z-0">
-                                    
-                                    <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="absolute inset-0 w-full h-full object-contain object-center opacity-60 z-10 p-4 pb-32 md:p-12 md:pb-12">
-                                        
-                                </SwiperSlide>
-
-                                <div :class="'swiper-pagination inner-pagination-' + event.id"></div>
-                            </Swiper>
-
-                            <div v-else-if="event.cover_image_url" class="relative w-full h-full">
-                                <img :src="event.cover_image_url"
-                                    class="absolute inset-0 w-full h-full object-cover object-center blur-[60px]  opacity-30 z-0">
-                                <img :src="event.cover_image_url"
-                                    class="absolute inset-0 w-full h-full object-contain object-center opacity-60 z-10 p-4 pb-32 md:p-12 md:pb-12">
-                            </div>
-
-                            <video v-else autoplay muted loop playsinline class="w-full h-full object-cover opacity-50">
-                                <source :src="currentVideo" type="video/mp4">
-                            </video>
+                                ARCHIVO DIGITAL DE ALTO IMPACTO.
+                            </p>
                         </div>
 
+                    </div>
+                </div>
 
+            </SwiperSlide>
 
-
-
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-[#050505]/20 z-10 pointer-events-none">
-                        </div>
-
-                        <div class="absolute inset-0 w-full h-full z-20 pointer-events-none">
-
-                            <div class="absolute top-20 right-6 md:top-28 md:right-12 flex flex-col items-end gap-6">
-                                
-                                <span class="text-[#E30613] font-flux font-bold text-xl md:text-2xl tracking-widest flex items-center gap-4">
-                                    {{ index + 1 }} <span class="w-16 h-[5px] bg-[#E30613]"></span>
-                                </span>
-
-                                <div v-if="event.cover_image_url"
-                                    class="hidden sm:block w-32 h-32 md:w-48 md:h-48 xl:w-56 xl:h-56 bg-black border-2 md:border-4 border-white p-2 shadow-[8px_8px_0px_0px_rgba(227,6,19,1)] relative transition-transform duration-700 hover:scale-105 pointer-events-auto">
-                                    
-                                    <div class="absolute -top-4 -left-4 bg-[#E30613] text-white text-[10px] md:text-xs font-flux font-bold px-3 py-1 uppercase tracking-widest z-10 border-2 border-black">
-                                        ID: {{ event.id }}
-                                    </div>
-                                    
-                                    <img :src="event.cover_image_url"
-                                        class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500" 
-                                        alt="Thumbnail Evento">
-                                </div>
-                            </div>
-
-                            <div class="absolute bottom-12 left-6 md:bottom-20 md:left-12 max-w-3xl xl:max-w-5xl">
-                                
-                                <h1 class="text-5xl md:text-7xl lg:text-[9rem] font-flux tracking-tighter leading-[0.85] uppercase drop-shadow-2xl">
-                                    {{ formatEventTitle(event.name).first }} <br>
-                                    <span :class="index % 2 === 0 ? 'text-transparent' : 'text-[#E30613]'"
-                                        :style="index % 2 === 0 ? '-webkit-text-stroke: 2px white;' : ''">
-                                        {{ formatEventTitle(event.name).second }}
-                                    </span>
-                                </h1>
-
-                                <p class="mt-6 md:mt-8 max-w-xl text-sm md:text-lg text-gray-300 font-lato pl-4 md:pl-6 border-l-4 border-[#E30613] line-clamp-3 bg-black/30 backdrop-blur-sm p-4">
-                                    {{ event.description || 'Cobertura inmersiva. Captura cruda para revivir la energía del momento.' }}
-                                </p>
-
-                                <div class="mt-8 md:mt-10 pl-4 md:pl-6 pointer-events-auto w-max">
-                                    <Link :href="route('events.show', event.slug || event.id)"
-                                        class="inline-block bg-[#E30613] border border-[#E30613] text-white font-flux text-xs md:text-sm font-bold uppercase tracking-widest px-8 md:px-12 py-4 md:py-5 hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 hover:translate-x-1">
-                                        [ Ver Archivo ]
-                                    </Link>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-
-
-                    </SwiperSlide>
-
-
-
-                </Swiper>
+            <SwiperSlide v-if="!banners || banners.length === 0" class="relative overflow-hidden bg-black flex items-center justify-center">
+                <div class="text-center font-mono text-zinc-600 border border-zinc-800 p-12">
+                    <span class="text-[#E30613] animate-pulse text-2xl">>_</span><br>
+                    DIR_VACÍO: /public/banners/
+                </div>
+            </SwiperSlide>
+        </Swiper>
 
 
                 <section id="eventos" class="w-full pt-20 pb-0 "> <!-- bg-[#050505]-->
@@ -178,7 +137,7 @@ const formatEventTitle = (name) => {
                             class="masonry-item relative group overflow-hidden bg-[#09090b] block ">
 
                             <img :src="event.cover_image_url"
-                                class="w-full h-auto block grayscale group-hover:grayscale-0 transition-all duration-700  opacity-80 group-hover:opacity-100">
+                                class="w-full h-auto block  transition-all duration-700  opacity-80 group-hover:opacity-100">
 
                             <div
                                 class="absolute inset-0 bg-[#050505]/80 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
@@ -233,7 +192,7 @@ const formatEventTitle = (name) => {
                                     class="relative aspect-[3/4] bg-[#09090b] group overflow-hidden border border-white/10  block w-full h-full">
 
                                     <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="w-full h-full object-cover filter grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700  pointer-events-none select-none" />
+                                        class="w-full h-full object-cover filter  contrast-125  transition-all duration-700  pointer-events-none select-none" />
 
                                     <div
                                         class="absolute bottom-4 left-4 right-4 flex items-center gap-3 bg-[#050505]/90 p-3 border border-white/10 backdrop-blur-md translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">

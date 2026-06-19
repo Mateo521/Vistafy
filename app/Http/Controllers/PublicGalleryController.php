@@ -122,12 +122,18 @@ class PublicGalleryController extends Controller
             ->map(fn ($file) => asset('videos/'.$file->getFilename()))
             ->values();
 
+        $bannerFiles = collect(\Illuminate\Support\Facades\File::files(public_path('banners')))
+            ->filter(fn ($file) => preg_match('/\.(jpg|jpeg|png|webp)$/i', $file->getFilename()))
+            ->map(fn ($file) => asset('banners/'.$file->getFilename()))
+            ->values();
+
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
             'futureEvents' => $futureEvents,  
             'stats' => $stats,
             'videoList' => $videoFiles,
+            'banners' => $bannerFiles,
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
         ]);
