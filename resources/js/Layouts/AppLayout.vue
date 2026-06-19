@@ -306,7 +306,7 @@ const navigationItems = [
             </transition>
         </nav>
 
-        <main class="relative z-0 min-h-screen pt-24 bg-[#050505]">
+        <main class="relative z-0 min-h-screen pt-18 bg-[#050505]">
             <slot />
         </main>
 
