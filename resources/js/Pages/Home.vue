@@ -61,72 +61,62 @@ const formatEventTitle = (name) => {
 
             <main class="relative z-10 pt-0">
 
-                <Swiper 
-            :modules="[Navigation, Pagination, Autoplay, EffectFade]" 
-            effect="fade"
-            :fadeEffect="{ crossFade: true }" 
-            :autoplay="{ delay: 5000, disableOnInteraction: false }"
-            :pagination="{ clickable: true }" 
-            :navigation="true" 
-            :loop="true" 
-            class="swiper-main h-[70vh] md:h-screen w-full bg-[#050505] border-b-2 border-[#E30613]"
-        >
-            <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index" class="relative overflow-hidden bg-black">
-                
-                <div class="absolute inset-0 w-full h-full z-0">
-                    <img :src="bannerUrl" 
-                        class="absolute inset-0 w-full h-full object-cover filter  opacity-50 mix-blend-screen" 
-                        alt="F33 Banner" />
-                </div>
+                <Swiper :modules="[Navigation, Pagination, Autoplay, EffectFade]" effect="fade"
+                    :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 5000, disableOnInteraction: false }"
+                    :pagination="{ clickable: true }" :navigation="true" :loop="true"
+                    class="swiper-main h-[70vh] md:h-screen w-full bg-[#050505] border-b-2 border-[#E30613]">
+                    <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index"
+                        class="relative overflow-hidden bg-black">
 
-                <div class="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50 pointer-events-none"></div>
-
-                <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-10 pointer-events-none"></div>
-
-                <div class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-20 md:pb-32 px-6 md:px-12">
-                    <div class="max-w-7xl mx-auto w-full relative">
-                        
-                        <div class="absolute -top-16 right-0 md:top-0 flex flex-col items-end gap-4">
-                            <span class="text-[#E30613] font-flux font-bold text-2xl md:text-4xl tracking-widest flex items-center gap-4">
-                                0{{ index + 1 }} <span class="w-12 md:w-24 h-[4px] bg-[#E30613]"></span>
-                            </span>
+                        <div class="absolute inset-0 w-full h-full z-0">
+                            <img :src="bannerUrl"
+                                class="absolute inset-0 w-full h-full object-cover filter  opacity-50 mix-blend-screen"
+                                alt="F33 Banner" />
                         </div>
 
-                        <span class="text-[#E30613] font-mono text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-4">
-                            <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
-                            > F33 // 
-                        </span>
-                        
-                        <h1 class="text-6xl md:text-[8rem] lg:text-[10rem] font-flux text-white uppercase tracking-tighter leading-[0.85] mix-blend-difference drop-shadow-2xl">
-                            F33 
-                        </h1>
-
-                        <div class="mt-8 pl-4 md:pl-6 border-l-4 border-[#E30613] bg-black/50 backdrop-blur-sm p-4 w-max pointer-events-auto">
-                            <p class="font-mono text-xs md:text-sm text-zinc-400 uppercase tracking-widest">
-                            
-                                ARCHIVO DIGITAL DE ALTO IMPACTO.
-                            </p>
+                        <div
+                            class="absolute inset-0 z-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50 pointer-events-none">
                         </div>
 
-                    </div>
-                </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-10 pointer-events-none">
+                        </div>
 
-            </SwiperSlide>
+                        <div
+                            class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-20 md:pb-32 px-6 md:px-12">
+                            <div class="max-w-7xl mx-auto w-full relative">
 
-            <SwiperSlide v-if="!banners || banners.length === 0" class="relative overflow-hidden bg-black flex items-center justify-center">
-                <div class="text-center font-mono text-zinc-600 border border-zinc-800 p-12">
-                    <span class="text-[#E30613] animate-pulse text-2xl">>_</span><br>
-                    DIR_VACÍO: /public/banners/
-                </div>
-            </SwiperSlide>
-        </Swiper>
+
+
+
+
+                                <h1
+                                    class="text-6xl md:text-[8rem] lg:text-[10rem] font-flux text-white uppercase tracking-tighter leading-[0.85] mix-blend-difference drop-shadow-2xl">
+                                    F33
+                                </h1>
+
+
+
+                            </div>
+                        </div>
+
+                    </SwiperSlide>
+
+                    <SwiperSlide v-if="!banners || banners.length === 0"
+                        class="relative overflow-hidden bg-black flex items-center justify-center">
+                        <div class="text-center font-mono text-zinc-600 border border-zinc-800 p-12">
+                            <span class="text-[#E30613] animate-pulse text-2xl">>_</span><br>
+                            DIR_VACÍO: /public/banners/
+                        </div>
+                    </SwiperSlide>
+                </Swiper>
 
 
                 <section id="eventos" class="w-full pt-20 pb-0 "> <!-- bg-[#050505]-->
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-4xl md:text-7xl font-black font-flux uppercase tracking-tighter mb-2">Eventos <span
-                                    class="text-[#E30613]">.</span></h2>
+                            <h2 class="text-4xl md:text-7xl font-black font-flux uppercase tracking-tighter mb-2">
+                                Eventos <span class="text-[#E30613]">.</span></h2>
                             <p class="text-gray-400 font-flux text-sm tracking-widest uppercase">Seleccioná un evento
                                 para ver su colección de fotos</p>
                         </div>
@@ -147,7 +137,7 @@ const formatEventTitle = (name) => {
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
                                 <h3 class="text-white text-3xl font-black uppercase tracking-tight mb-2">{{ event.name
-                                    }}</h3>
+                                }}</h3>
                                 <p v-if="event.description"
                                     class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
                                     {{ event.description }}
@@ -166,7 +156,8 @@ const formatEventTitle = (name) => {
                 </section>
 
 
-                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden"> <!--  bg-[#050505]-->
+                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden">
+                    <!--  bg-[#050505]-->
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
                             <h2 class="text-4xl md:text-7xl font-black font-flux uppercase tracking-tighter mb-2">
