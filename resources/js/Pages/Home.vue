@@ -14,7 +14,8 @@ import 'swiper/css/free-mode';
 const props = defineProps({
     recentEvents: { type: Array, default: () => [] },
     recentPhotos: { type: Array, default: () => [] },
-    videoList: { type: Array, default: () => [] }
+    videoList: { type: Array, default: () => [] },
+    banners: Array,
 });
 
 const getEventPhotos = (event) => {

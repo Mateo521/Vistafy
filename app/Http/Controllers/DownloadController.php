@@ -49,7 +49,7 @@ class DownloadController extends Controller
 
             return Storage::disk('public')->download(
                 $path,
-                "vistafy_{$photo->unique_id}.jpg"
+                "f33_{$photo->unique_id}.jpg"
             );
         }
 

@@ -237,7 +237,7 @@ class PaymentController extends Controller
             return redirect()->away($url);
         }
 
-        $zipFileName = 'vistafy_orden_' . $purchase->id . '.zip';
+        $zipFileName = 'F33_orden_' . $purchase->id . '.zip';
         $tempDir = storage_path('app/public/temp');
         
         if (!file_exists($tempDir)) {

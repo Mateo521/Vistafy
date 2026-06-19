@@ -29,9 +29,7 @@ class MercadoPagoService
         $this->paymentClient = new PaymentClient();
     }
 
-    /**
-     * Obtener información de un pago desde MP
-     */
+
     public function getPayment($paymentId)
     {
         try {
@@ -43,9 +41,7 @@ class MercadoPagoService
         }
     }
 
-    /**
-     * Crear preferencia para foto individual
-     */
+
     public function createPhotoPreference($photo, string $email): array
     {
         $buyerName = auth()->check() ? auth()->user()->name : 'Invitado';
@@ -69,25 +65,19 @@ class MercadoPagoService
         return $this->buildPreference(collect([$photo]), $purchase, $email);
     }
 
-    /**
-     * Crear preferencia para múltiples fotos (carrito)
-     */
+
     public function createCartPreference($photos, string $email, Purchase $purchase): array
     {
         return $this->buildPreference($photos, $purchase, $email);
     }
 
-  /**
-     * Lógica centralizada para armar y enviar la preferencia a MP (MARKETPLACE)
-     */
+
     private function buildPreference($photos, $purchase, $email): array
     {
         $isLocal = app()->environment(['local', 'development']);
         $items = [];
         $totalAmount = 0;
 
-        // 1. Obtener al fotógrafo dueño de las fotos
-        // (Asumimos que todas las fotos del carrito son del mismo fotógrafo)
         $photographer = $photos->first()->photographer;
 
         if (!$photographer || !$photographer->mp_access_token) {
@@ -95,7 +85,6 @@ class MercadoPagoService
             throw new \Exception("El fotógrafo no puede recibir pagos en este momento.");
         }
 
-        // 2. Cambiamos el Token: Ahora operamos en nombre del Fotógrafo
         MercadoPagoConfig::setAccessToken($photographer->mp_access_token);
 
         foreach ($photos as $photo) {
@@ -118,7 +107,6 @@ class MercadoPagoService
             $totalAmount += (float) $photo->price;
         }
 
-        // 3. CALCULAR TU COMISIÓN (Ejemplo: 10%)
         // Si la foto vale 5000, $platformFee será 500. 
         // El fotógrafo recibe 4500 y vos recibís 500.
         $comisionPorcentaje = 0.10; 
@@ -139,18 +127,17 @@ class MercadoPagoService
             'binary_mode' => true,
             'external_reference' => (string) $purchase->id,
             'notification_url' => $isLocal ? null : config('services.mercadopago.notification_url'),
-            'statement_descriptor' => 'VISTAFY FOTOS',
+            'statement_descriptor' => 'F33 FOTOS',
         ];
 
         try {
-            // Creamos la preferencia (la plata va al fotógrafo, menos el fee)
+
             $preference = $this->preferenceClient->create($preferenceData);
 
             $purchase->update(['mp_preference_id' => $preference->id]);
             $isSandbox = config('services.mercadopago.test_mode');
 
-            // Importante: Volver a poner tu Token principal por las dudas 
-            // para futuras operaciones en el mismo request
+
             MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
 
             return [

@@ -103,7 +103,7 @@
 
             <!-- Soporte -->
             <div class="mt-6 text-center text-sm text-gray-600">
-                <p>¿Problemas con la descarga? <a href="mailto:soporte@vistafy.com"
+                <p>¿Problemas con la descarga? <a href="mailto:soporte@f33.click"
                         class="text-blue-600 hover:underline">Contáctanos</a></p>
             </div>
         </div>
