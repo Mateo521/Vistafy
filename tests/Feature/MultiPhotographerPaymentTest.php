@@ -52,6 +52,56 @@ class MultiPhotographerPaymentTest extends TestCase
         $this->assertTrue($purchase->items->every(fn ($item) => $item->purchase_payment_id !== null));
     }
 
+    public function test_cart_checkout_returns_unavailable_photographer_when_mercadopago_is_not_linked(): void
+    {
+        $user = User::factory()->create();
+        $photographer = Photographer::factory()->create([
+            'business_name' => 'Foto Sin MP',
+            'mp_access_token' => null,
+            'mp_refresh_token' => null,
+            'mp_public_key' => null,
+            'mp_user_id' => null,
+        ]);
+        $photo = Photo::factory()->create(['photographer_id' => $photographer->id, 'price' => 10]);
+
+        $response = $this->actingAs($user)->postJson(route('payment.initiate.cart'), [
+            'photo_ids' => [$photo->id],
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'unavailable_photographers' => [
+                    [
+                        'id' => $photographer->id,
+                        'name' => 'Foto Sin MP',
+                    ],
+                ],
+            ])
+            ->assertJsonPath('unavailable_photographers.0.photo_ids.0', $photo->id);
+
+        $this->assertSame(0, Purchase::count());
+        $this->assertSame(0, PurchasePayment::count());
+    }
+
+    public function test_photographer_serialization_hides_mercadopago_tokens(): void
+    {
+        $photographer = Photographer::factory()->create([
+            'mp_access_token' => 'seller-token',
+            'mp_refresh_token' => 'refresh-token',
+            'mp_public_key' => 'public-key',
+            'mp_user_id' => '123456',
+        ]);
+
+        $serialized = $photographer->toArray();
+
+        $this->assertTrue($serialized['has_mercadopago_account']);
+        $this->assertArrayNotHasKey('mp_access_token', $serialized);
+        $this->assertArrayNotHasKey('mp_refresh_token', $serialized);
+        $this->assertArrayNotHasKey('mp_public_key', $serialized);
+        $this->assertArrayNotHasKey('mp_user_id', $serialized);
+    }
+
     public function test_individual_purchase_does_not_create_duplicate_purchase_records(): void
     {
         $user = User::factory()->create();

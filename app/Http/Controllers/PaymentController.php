@@ -51,15 +51,30 @@ class PaymentController extends Controller
 
             $photosByPhotographer = $photos->groupBy('photographer_id');
 
+            $unavailablePhotographers = collect();
+
             foreach ($photosByPhotographer as $groupPhotos) {
                 $photographer = $groupPhotos->first()->photographer;
-
-                if (!$photographer || !$photographer->mp_access_token) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Uno de los fotógrafos no puede recibir pagos en este momento.',
-                    ], 422);
+                if (!$photographer || !$photographer->has_mercadopago_account) {
+                    $unavailablePhotographers->push([
+                        'id' => $photographer->id ?? null,
+                        'name' => $photographer->business_name ?? 'Fotógrafo',
+                        'photo_ids' => $groupPhotos->pluck('id')->values(),
+                        'photo_unique_ids' => $groupPhotos->pluck('unique_id')->values(),
+                    ]);
                 }
+            }
+
+            if ($unavailablePhotographers->isNotEmpty()) {
+                $names = $unavailablePhotographers->pluck('name')->filter()->join(', ');
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $names
+                        ? "No se puede completar la compra porque {$names} no tiene Mercado Pago habilitado para recibir pagos."
+                        : 'Uno de los fotógrafos no puede recibir pagos en este momento.',
+                    'unavailable_photographers' => $unavailablePhotographers->values(),
+                ], 422);
             }
 
             DB::beginTransaction();

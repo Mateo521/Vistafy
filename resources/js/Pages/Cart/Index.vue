@@ -28,6 +28,21 @@ const itemCount = computed(() => props.items?.length || 0);
 const formattedTotal = computed(() => {
     return parseFloat(props.total || 0).toFixed(2);
 });
+const unavailablePaymentPhotographers = computed(() => {
+    const photographers = new Map();
+
+    (props.items || []).forEach((item) => {
+        const photographer = item.photo?.photographer;
+
+        if (photographer && !photographer.has_mercadopago_account) {
+            photographers.set(photographer.id, photographer.business_name || 'Fotógrafo');
+        }
+    });
+
+    return Array.from(photographers, ([id, name]) => ({ id, name }));
+});
+
+const hasUnavailablePaymentPhotographers = computed(() => unavailablePaymentPhotographers.value.length > 0);
 
 const formatPrice = (amount) => {
     return parseFloat(amount || 0).toFixed(2);
@@ -67,6 +82,11 @@ const clearCart = async () => {
 
 const checkout = async () => {
     if (processing.value || itemCount.value === 0) return;
+    if (hasUnavailablePaymentPhotographers.value) {
+        const names = unavailablePaymentPhotographers.value.map(photographer => photographer.name).join(', ');
+        error(`NO SE PUEDE COMPRAR: ${names} DEBE VINCULAR MERCADO PAGO.`);
+        return;
+    }
 
     processing.value = true;
 
@@ -93,7 +113,7 @@ const checkout = async () => {
     } catch (err) {
         console.error('Error en checkout:', err);
         processing.value = false;
-        error('ERROR AL PROCESAR TRANSACCIÓN');
+        error(err.response?.data?.message || 'ERROR AL PROCESAR TRANSACCIÓN');
     }
 };
 
@@ -243,9 +263,19 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
-                            <button @click="checkout" :disabled="processing || itemCount === 0"
+                            <div v-if="hasUnavailablePaymentPhotographers"
+                                class="mb-6 border border-red-600 bg-red-600/10 p-4 font-mono text-[10px] uppercase tracking-widest text-red-500 leading-relaxed">
+                                <p class="font-bold text-red-400 mb-2">Pago no disponible</p>
+                                <p>
+                                    {{ unavailablePaymentPhotographers.map(photographer => photographer.name).join(', ') }}
+                                    debe vincular Mercado Pago para recibir pagos. Quitá esas fotos del carrito o intentá más tarde.
+                                </p>
+                            </div>
+
+                            <button @click="checkout" :disabled="processing || itemCount === 0 || hasUnavailablePaymentPhotographers"
                                 class="w-full bg-white text-black font-black text-sm uppercase tracking-[0.25em] py-5 border-[4px] border-white hover:bg-black hover:text-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
                                 <span v-if="processing" class="animate-pulse">PROCESANDO...</span>
+                                <span v-else-if="hasUnavailablePaymentPhotographers">PAGO NO DISPONIBLE</span>
                                 <span v-else>COMPRAR</span>
                                 <span v-if="!processing"
                                     class="text-lg leading-none group-hover:translate-x-2 transition-transform duration-300">→</span>

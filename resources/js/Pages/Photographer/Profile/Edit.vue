@@ -308,11 +308,11 @@ const submit = () => {
 
                         <div class="space-y-5">
                             <div class="flex items-start gap-4 p-4 rounded-sm"
-                                :class="photographer.mp_access_token ? 'bg-emerald-50 border border-emerald-100' : 'bg-amber-50 border border-amber-100'">
+                                :class="photographer.has_mercadopago_account ? 'bg-emerald-50 border border-emerald-100' : 'bg-amber-50 border border-amber-100'">
 
                                 <div class="flex-shrink-0 mt-1">
                                     <svg class="w-8 h-8"
-                                        :class="photographer.mp_access_token ? 'text-emerald-500' : 'text-amber-500'"
+                                        :class="photographer.has_mercadopago_account ? 'text-emerald-500' : 'text-amber-500'"
                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                             d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -322,7 +322,7 @@ const submit = () => {
                                 <div class="flex-grow">
                                     <h3 class="text-sm font-bold text-slate-900 mb-1">Cuenta de Mercado Pago</h3>
 
-                                    <template v-if="photographer.mp_access_token">
+                                    <template v-if="photographer.has_mercadopago_account">
                                         <p class="text-xs text-slate-600 mb-3 leading-relaxed">
                                             Su cuenta está vinculada correctamente. Usted está listo para vender
                                             fotografías y recibir los pagos directamente en su cuenta (descontando la

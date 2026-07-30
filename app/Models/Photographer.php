@@ -92,10 +92,17 @@ class Photographer extends Model
         'approved_at' => 'datetime',
         'suspended_at' => 'datetime',
     ];
+    protected $hidden = [
+        'mp_access_token',
+        'mp_refresh_token',
+        'mp_public_key',
+        'mp_user_id',
+    ];
 
     protected $appends = [
         'profile_photo_url',
         'banner_photo_url',
+        'has_mercadopago_account',
     ];
     //  Scopes para filtrar por estado
     public function scopeApproved($query)
@@ -200,6 +207,11 @@ class Photographer extends Model
     public function getEmailAttribute()
     {
         return $this->user->email ?? null;
+    }
+
+    public function getHasMercadopagoAccountAttribute(): bool
+    {
+        return ! empty($this->mp_access_token);
     }
 
     /**
