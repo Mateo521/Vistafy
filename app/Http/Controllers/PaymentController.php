@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class PaymentController extends Controller
 {
@@ -79,16 +80,21 @@ class PaymentController extends Controller
 
             DB::beginTransaction();
             
-            $purchase = Purchase::create([
+            $purchaseData = [
                 'user_id' => $user->id,
                 'buyer_email' => $user->email,
                 'buyer_name' => $user->name,
-                'guest_email' => null, // Ya no hay invitados
                 'total_amount' => $photos->sum('price'),
                 'currency' => 'ARS',
                 'status' => 'pending',
                 'order_token' => Str::random(64),
-            ]);
+            ];
+
+            if (Schema::hasColumn('purchases', 'guest_email')) {
+                $purchaseData['guest_email'] = null; // Ya no hay invitados
+            }
+
+            $purchase = Purchase::create($purchaseData);
 
             $isMultiPhotographer = $photosByPhotographer->count() > 1;
             $paymentResults = [];
@@ -189,16 +195,21 @@ class PaymentController extends Controller
         try {
             DB::beginTransaction();
 
-            $purchase = Purchase::create([
+            $purchaseData = [
                 'user_id' => $user ? $user->id : null,
                 'buyer_email' => $user ? $user->email : $guestEmail,
                 'buyer_name' => $user ? $user->name : null,
-                'guest_email' => $guestEmail,
                 'total_amount' => $photo->price,
                 'currency' => 'ARS',
                 'status' => 'pending',
                 'order_token' => Str::random(64),
-            ]);
+            ];
+
+            if (Schema::hasColumn('purchases', 'guest_email')) {
+                $purchaseData['guest_email'] = $guestEmail;
+            }
+
+            $purchase = Purchase::create($purchaseData);
 
             PurchaseItem::create([
                 'purchase_id' => $purchase->id,
