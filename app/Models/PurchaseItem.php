@@ -10,6 +10,7 @@ class PurchaseItem extends Model
 {
     protected $fillable = [
         'purchase_id',
+        'purchase_payment_id',
         'photo_id',
         'unit_price',     
         // Quitamos title y description (se obtienen de la relación Photo)
@@ -53,5 +54,10 @@ class PurchaseItem extends Model
     public function photo(): BelongsTo
     {
         return $this->belongsTo(Photo::class);
+    }
+
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(PurchasePayment::class, 'purchase_payment_id');
     }
 }

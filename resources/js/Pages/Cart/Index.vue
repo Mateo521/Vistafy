@@ -77,6 +77,11 @@ const checkout = async () => {
             photo_ids: photoIds
         });
 
+        if (response.data.success && response.data.requires_multiple_payments && response.data.redirect_url) {
+            window.location.href = response.data.redirect_url;
+            return;
+        }
+
         const paymentUrl = response.data.init_point || response.data.sandbox_init_point;
 
         if (response.data.success && paymentUrl) {

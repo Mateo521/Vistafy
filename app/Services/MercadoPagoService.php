@@ -8,6 +8,7 @@ use MercadoPago\MercadoPagoConfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\Purchase;
+use App\Models\PurchasePayment;
 
 class MercadoPagoService
 {
@@ -28,6 +29,10 @@ class MercadoPagoService
         $this->preferenceClient = new PreferenceClient();
         $this->paymentClient = new PaymentClient();
     }
+    public function createPaymentPreference($photos, string $email, Purchase $purchase, PurchasePayment $payment, bool $returnToSplitCheckout = false): array
+    {
+        return $this->buildPreference($photos, $purchase, $email, $payment, $returnToSplitCheckout);
+    }
 
 
     public function getPayment($paymentId)
@@ -42,41 +47,76 @@ class MercadoPagoService
     }
 
 
-    public function createPhotoPreference($photo, string $email): array
+    public function createPhotoPreference($photo, string $email, Purchase $purchase): array
     {
-        $buyerName = auth()->check() ? auth()->user()->name : 'Invitado';
-
-        // 1. Crear compra pendiente en tu BD
-        $purchase = Purchase::create([
-            'user_id' => auth()->id(),
-            'buyer_email' => $email,
-            'buyer_name' => $buyerName,
-            'total_amount' => $photo->price,
-            'currency' => 'ARS',
+        $payment = PurchasePayment::create([
+            'purchase_id' => $purchase->id,
+            'photographer_id' => $photo->photographer_id,
+            'amount' => $photo->price,
+            'platform_fee' => $this->calculatePlatformFee((float) $photo->price),
+            'currency' => $purchase->currency,
             'status' => 'pending',
-            'order_token' => Str::random(64),
         ]);
 
-        $purchase->items()->create([
-            'photo_id' => $photo->id,
-            'unit_price' => $photo->price,
-        ]);
+        $purchase->items()
+            ->where('photo_id', $photo->id)
+            ->update(['purchase_payment_id' => $payment->id]);
 
-        return $this->buildPreference(collect([$photo]), $purchase, $email);
+        return $this->createPaymentPreference(collect([$photo]), $email, $purchase, $payment, false);
     }
 
 
     public function createCartPreference($photos, string $email, Purchase $purchase): array
     {
-        return $this->buildPreference($photos, $purchase, $email);
+        $photographerIds = $photos->pluck('photographer_id')->unique();
+
+        if ($photographerIds->count() !== 1) {
+            throw new \Exception('La preferencia de carrito solo puede contener fotos de un fotógrafo.');
+        }
+
+        $photographerId = $photographerIds->first();
+        $totalAmount = (float) $photos->sum('price');
+
+        $payment = PurchasePayment::create([
+            'purchase_id' => $purchase->id,
+            'photographer_id' => $photographerId,
+            'amount' => $totalAmount,
+            'platform_fee' => $this->calculatePlatformFee($totalAmount),
+            'currency' => $purchase->currency,
+            'status' => 'pending',
+        ]);
+
+        $purchase->items()
+            ->whereIn('photo_id', $photos->pluck('id'))
+            ->update(['purchase_payment_id' => $payment->id]);
+
+        return $this->createPaymentPreference($photos, $email, $purchase, $payment, false);
     }
 
 
-    private function buildPreference($photos, $purchase, $email): array
+    public function calculatePlatformFee(float $amount): float
+    {
+        $comisionPorcentaje = 0.10;
+
+        return round($amount * $comisionPorcentaje, 2);
+    }
+
+
+    private function buildPreference($photos, $purchase, $email, PurchasePayment $payment, bool $returnToSplitCheckout): array
     {
         $isLocal = app()->environment(['local', 'development']);
         $items = [];
         $totalAmount = 0;
+
+        $photographerIds = $photos->pluck('photographer_id')->unique();
+
+        if ($photographerIds->count() !== 1) {
+            Log::error('Intento de crear preferencia con múltiples fotógrafos', [
+                'purchase_id' => $purchase->id,
+                'photographer_ids' => $photographerIds->values()->all(),
+            ]);
+            throw new \Exception('Cada preferencia de Mercado Pago debe pertenecer a un único fotógrafo.');
+        }
 
         $photographer = $photos->first()->photographer;
 
@@ -107,10 +147,19 @@ class MercadoPagoService
             $totalAmount += (float) $photo->price;
         }
 
-        // Si la foto vale 5000, $platformFee será 500. 
-        // El fotógrafo recibe 4500 y vos recibís 500.
-        $comisionPorcentaje = 0.10; 
-        $platformFee = $totalAmount * $comisionPorcentaje;
+        $platformFee = $this->calculatePlatformFee($totalAmount);
+        $externalReference = 'purchase_payment_' . $payment->id;
+        $backUrls = $returnToSplitCheckout
+            ? [
+                'success' => route('payment.split.show', ['purchase' => $purchase->id]),
+                'failure' => route('payment.split.show', ['purchase' => $purchase->id]),
+                'pending' => route('payment.split.show', ['purchase' => $purchase->id]),
+            ]
+            : [
+                'success' => route('payment.success', ['purchase_id' => $purchase->id]),
+                'failure' => route('payment.failure', ['purchase_id' => $purchase->id]),
+                'pending' => route('payment.pending', ['purchase_id' => $purchase->id]),
+            ];
 
         $preferenceData = [
             'items' => $items,
@@ -118,14 +167,10 @@ class MercadoPagoService
             'payer' => [
                 'email' => $email,
             ],
-            'back_urls' => [
-                'success' => route('payment.success', ['purchase_id' => $purchase->id]),
-                'failure' => route('payment.failure', ['purchase_id' => $purchase->id]),
-                'pending' => route('payment.pending', ['purchase_id' => $purchase->id]),
-            ],
+            'back_urls' => $backUrls,
             'auto_return' => 'approved',
             'binary_mode' => true,
-            'external_reference' => (string) $purchase->id,
+            'external_reference' => $externalReference,
             'notification_url' => $isLocal ? null : config('services.mercadopago.notification_url'),
             'statement_descriptor' => 'F33 FOTOS',
         ];
@@ -133,9 +178,16 @@ class MercadoPagoService
         try {
 
             $preference = $this->preferenceClient->create($preferenceData);
+            $payment->update([
+                'platform_fee' => $platformFee,
+                'mp_preference_id' => $preference->id,
+                'init_point' => $preference->init_point,
+                'sandbox_init_point' => $preference->sandbox_init_point,
+            ]);
 
-            $purchase->update(['mp_preference_id' => $preference->id]);
-            $isSandbox = config('services.mercadopago.test_mode');
+            if ($purchase->payments()->count() === 1) {
+                $purchase->update(['mp_preference_id' => $preference->id]);
+            }
 
 
             MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
@@ -143,15 +195,18 @@ class MercadoPagoService
             return [
                 'success' => true,
                 'purchase_id' => $purchase->id,
+                'purchase_payment_id' => $payment->id,
                 'init_point' => $preference->init_point,
                 'sandbox_init_point' => $preference->sandbox_init_point,
             ];
 
         } catch (\Exception $e) {
-            $purchase->update(['status' => 'failed']);
+            $payment->update(['status' => 'failed']);
             Log::error('[MP] Error creando preferencia Marketplace', [
                 'error' => $e->getMessage(),
                 'email' => $email,
+                'purchase_id' => $purchase->id,
+                'purchase_payment_id' => $payment->id,
             ]);
             throw new \Exception("Error comunicándose con Mercado Pago.");
         }

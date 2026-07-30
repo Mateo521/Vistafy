@@ -169,7 +169,7 @@ onMounted(() => {
                     <div class="lg:w-7/12">
                         <h3
                             class="font-mono text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500 mb-6 border-b border-white/10 pb-2">
-                            / REPORTE DESCRIPTIVO
+                            / Descripción del evento
                         </h3>
                         <p class="font-mono text-sm text-gray-400 uppercase tracking-widest leading-relaxed mb-6">
                             {{ event.description || 'SIN DATOS DESCRIPTIVOS ASIGNADOS AL EVENTO.' }}

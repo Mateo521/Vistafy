@@ -128,6 +128,9 @@ Route::middleware('auth')->prefix('pago')->name('payment.')->group(function () {
     Route::get('/exito', [PaymentController::class, 'success'])->name('success');
     Route::get('/fallo', [PaymentController::class, 'failure'])->name('failure');
     Route::get('/pendiente', [PaymentController::class, 'pending'])->name('pending');
+    Route::get('/orden/{purchase}/pagos', [PaymentController::class, 'splitCheckout'])->name('split.show');
+    Route::get('/orden/{purchase}/pagos/status', [PaymentController::class, 'splitStatus'])->name('split.status');
+    Route::post('/orden/{purchase}/pagos/{payment}/reintentar', [PaymentController::class, 'retrySplitPayment'])->name('split.retry');
 
     Route::get('/descargar/{token}', [PaymentController::class, 'download'])->name('download');
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
+use App\Models\PurchasePayment;
 use App\Models\User;
 use App\Notifications\PurchaseCompleted;
 use Illuminate\Http\Request;
@@ -68,8 +69,15 @@ class WebhookController extends Controller
             return response()->json(['status' => 'error'], 200);
         }
 
-        $purchaseId = $paymentInfo['external_reference'] ?? null;
-        $purchase = Purchase::with('items.photo.photographer')->find($purchaseId);
+        $externalReference = $paymentInfo['external_reference'] ?? null;
+        $purchasePayment = $this->findPurchasePaymentFromExternalReference($externalReference);
+
+        if ($purchasePayment) {
+            return $this->processPurchasePayment($purchasePayment, $paymentId, $paymentInfo);
+        }
+
+        $purchaseId = $externalReference;
+        $purchase = Purchase::with('items.photo.photographer', 'payments')->find($purchaseId);
 
         if (! $purchase) {
             return response()->json(['status' => 'not_found'], 404);
@@ -79,44 +87,133 @@ class WebhookController extends Controller
             return response()->json(['status' => 'already_done'], 200);
         }
 
-        $isApproved = ($paymentInfo['status'] === 'approved');
+        $previousStatus = $purchase->status;
+        $newStatus = $this->mapMercadoPagoStatus($paymentInfo['status']);
+        $isApproved = ($newStatus === 'approved');
 
         $purchase->update([
             'mp_payment_id' => $paymentId,
             'mp_payment_status' => $paymentInfo['status'],
-            'status' => $isApproved ? 'approved' : 'pending',
+            'status' => $newStatus,
+            'payment_details' => $paymentInfo,
+        ]);
+        if ($isApproved && $previousStatus !== 'approved') {
+            $this->completeApprovedPurchase($purchase);
+        }
+
+        return response()->json(['status' => 'processed'], 200);
+    }
+
+    private function findPurchasePaymentFromExternalReference(?string $externalReference): ?PurchasePayment
+    {
+        if (! $externalReference) {
+            return null;
+        }
+
+        if (preg_match('/^purchase_payment_(\d+)$/', $externalReference, $matches)) {
+            return PurchasePayment::with('purchase.payments', 'purchase.items.photo.photographer', 'purchase.user')
+                ->find($matches[1]);
+        }
+
+        return null;
+    }
+
+    private function processPurchasePayment(PurchasePayment $purchasePayment, $paymentId, array $paymentInfo)
+    {
+        $newStatus = $this->mapMercadoPagoStatus($paymentInfo['status']);
+
+        $purchasePayment->update([
+            'mp_payment_id' => $paymentId,
+            'mp_payment_status' => $paymentInfo['status'],
+            'status' => $newStatus,
+            'payment_details' => $paymentInfo,
         ]);
 
-        if ($isApproved) {
+        $purchase = $purchasePayment->purchase()
+            ->with('payments', 'items.photo.photographer', 'user')
+            ->first();
 
-            $temporaryPassword = $this->handleAccountCreation($purchase);
+        if (! $purchase) {
+            return response()->json(['status' => 'purchase_not_found'], 404);
+        }
 
-            
-            $emailToSend = $purchase->buyer_email;
+        $this->syncPurchaseStatusFromPayments($purchase);
 
-            if ($emailToSend) {
-                $this->sendSuccessEmail($purchase, $temporaryPassword);
-                Log::info(' Notificación de éxito enviada a: '.$emailToSend);
+        return response()->json(['status' => 'processed'], 200);
+    }
+
+    private function syncPurchaseStatusFromPayments(Purchase $purchase): void
+    {
+        $purchase->load('payments', 'items.photo.photographer', 'user');
+
+        if ($purchase->payments->isEmpty()) {
+            return;
+        }
+
+        $previousStatus = $purchase->status;
+        $allApproved = $purchase->payments->every(fn ($payment) => $payment->status === 'approved');
+        $hasFailed = $purchase->payments->contains(fn ($payment) => in_array($payment->status, ['rejected', 'cancelled', 'failed']));
+
+        if ($allApproved) {
+            $lastPayment = $purchase->payments->sortByDesc('updated_at')->first();
+
+            $purchase->update([
+                'status' => 'approved',
+                'mp_payment_id' => $lastPayment?->mp_payment_id,
+                'mp_payment_status' => 'approved',
+            ]);
+
+            if ($previousStatus !== 'approved') {
+                $this->completeApprovedPurchase($purchase);
             }
 
-            if ($purchase->items && $purchase->items->count() > 0) {
-                foreach ($purchase->items as $item) {
-                    if ($item->photo) {
-                        $item->photo->increment('downloads');
-                        Log::info(' Descarga sumada a la foto ID: '.$item->photo->id);
-                    }
-                }
-            }
+            return;
+        }
 
-            if ($purchase->user) {
-                $cart = \App\Models\Cart::where('user_id', $purchase->user->id)->first();
-                if ($cart) {
-                    $cart->items()->delete();
+        $purchase->update([
+            'status' => $hasFailed ? 'partial_failed' : 'pending',
+            'mp_payment_status' => $hasFailed ? 'partial_failed' : 'pending',
+        ]);
+    }
+
+    private function mapMercadoPagoStatus(?string $status): string
+    {
+        return match ($status) {
+            'approved' => 'approved',
+            'rejected' => 'rejected',
+            'cancelled' => 'cancelled',
+            'refunded', 'charged_back' => 'failed',
+            default => 'pending',
+        };
+    }
+
+    private function completeApprovedPurchase(Purchase $purchase): void
+    {
+        $purchase->loadMissing('items.photo', 'user');
+
+        $temporaryPassword = $this->handleAccountCreation($purchase);
+        $emailToSend = $purchase->buyer_email;
+
+        if ($emailToSend) {
+            $this->sendSuccessEmail($purchase, $temporaryPassword);
+            Log::info(' Notificación de éxito enviada a: '.$emailToSend);
+        }
+
+        if ($purchase->items && $purchase->items->count() > 0) {
+            foreach ($purchase->items as $item) {
+                if ($item->photo) {
+                    $item->photo->increment('downloads');
+                    Log::info(' Descarga sumada a la foto ID: '.$item->photo->id);
                 }
             }
         }
 
-        return response()->json(['status' => 'processed'], 200);
+        if ($purchase->user) {
+            $cart = \App\Models\Cart::where('user_id', $purchase->user->id)->first();
+            if ($cart) {
+                $cart->items()->delete();
+            }
+        }
     }
 
     private function fetchPaymentData($paymentId, $accessToken)

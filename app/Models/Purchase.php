@@ -19,11 +19,13 @@ class Purchase extends Model
         // 'event_id',  <-- Opcional, si no lo pusiste en la migración nueva, quítalo.
         'buyer_email',
         'buyer_name',
+        'guest_email',
         'total_amount',      // <--- CAMBIADO (antes amount)
         'currency',
         'status',
         'mp_preference_id',
         'mp_payment_id',
+        'mp_payment_status',
         'mp_merchant_order_id',
         'payment_details',
         'metadata',
@@ -59,6 +61,11 @@ class Purchase extends Model
     public function items(): HasMany
     {
         return $this->hasMany(PurchaseItem::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(PurchasePayment::class);
     }
 
     // Helpers (Actualizados)

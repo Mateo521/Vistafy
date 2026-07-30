@@ -16,7 +16,7 @@ class ImageProcessingService
 
     public function __construct()
     {
-        $this->manager = new ImageManager(new Driver);
+        //
     }
 
     public function processPhoto($file, $photographerId)
@@ -29,7 +29,7 @@ class ImageProcessingService
 
         try {
 
-            $image = $this->manager->read($file);
+            $image = $this->manager()->read($file);
             $width = $image->width();
             $height = $image->height();
 
@@ -111,7 +111,7 @@ class ImageProcessingService
             \Log::info(' Aplicando marca de agua en patrón');
 
             //  Cargar el logo manteniendo transparencia
-            $watermark = $this->manager->read($logoFullPath);
+            $watermark = $this->manager()->read($logoFullPath);
 
             // Configuración desde .env
             $opacity = config('app.watermark_opacity', 30); // 0-100
@@ -204,5 +204,14 @@ class ImageProcessingService
         $this->deletePhoto($photo);
 
         return $this->processPhoto($file, $photo->photographer_id);
+    }
+
+    protected function manager(): ImageManager
+    {
+        if (! $this->manager) {
+            $this->manager = new ImageManager(new Driver);
+        }
+
+        return $this->manager;
     }
 }
