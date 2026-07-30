@@ -154,7 +154,12 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en compra desde carrito', ['error' => $e->getMessage()]);
+            Log::error('Error en compra desde carrito', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => $user->id ?? null,
+                'photo_ids' => isset($photoIds) ? $photoIds->values()->all() : null,
+            ]);
             return response()->json(['success' => false, 'message' => 'Error al procesar la compra.'], 500);
         }
     }
