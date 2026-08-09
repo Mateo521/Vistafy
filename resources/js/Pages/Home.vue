@@ -4,210 +4,167 @@ import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Pagination, Autoplay, EffectFade, FreeMode } from 'swiper/modules';
+import { Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
-import 'swiper/css/free-mode';
 
 const props = defineProps({
     recentEvents: { type: Array, default: () => [] },
     recentPhotos: { type: Array, default: () => [] },
     videoList: { type: Array, default: () => [] },
-    banners: Array,
+    banners: { type: Array, default: () => [] },
 });
-
-const getEventPhotos = (event) => {
-    if (event.photos && event.photos.length > 0) {
-        return event.photos.slice(0, 6);
-    }
-    const photos = props.recentPhotos.filter(p => p.event_id == event.id);
-    return photos.slice(0, 6);
-};
-
-const currentVideo = ref(props.videoList?.length > 0 ? props.videoList[Math.floor(Math.random() * props.videoList.length)] : '/40c665d047c7afa27213c22c2c7b6308_720w.mp4');
-
-const getEventCoverForPhoto = (photo) => {
-    if (photo.event && photo.event.cover_image_url) {
-        return photo.event.cover_image_url;
-    }
-    const event = props.recentEvents.find(e => e.id === photo.event_id);
-    return event ? event.cover_image_url : null;
-};
-
-const formatEventTitle = (name) => {
-    if (!name) return { first: 'F33', second: 'EVENT' };
-    const words = name.trim().split(' ');
-    if (words.length === 1) return { first: words[0], second: '.' };
-
-    const mid = Math.ceil(words.length / 2);
-    return {
-        first: words.slice(0, mid).join(' '),
-        second: words.slice(mid).join(' ')
-    };
-};
 </script>
 
 <template>
 
-    <Head title="F33.click" />
+    <Head>
+        <title>f33.click | Fotografía Deportiva</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700;900&display=swap"
+                    rel="stylesheet">
+    </Head>
 
     <AppLayout>
-        <div class="f33-theme relative w-full min-h-screen selection:bg-[#E30613] selection:text-white">
+        <div class="f33-sport-theme w-full min-h-screen selection:bg-red-600 selection:text-white">
 
-            <div class="fixed inset-0 z-[0] bg-[#F2F0EB] pointer-events-none"></div>
-
-            <main class="relative z-10 pt-0">
+            <main class="relative z-10 pt-4 md:pt-8">
 
 
-                <Swiper :modules="[Navigation, Pagination, Autoplay, EffectFade]" effect="fade"
-                    :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 5000, disableOnInteraction: false }"
-                    :pagination="{ clickable: true }" :navigation="true" :loop="true"
-                    class="swiper-main h-[70vh] md:h-screen w-full border-b border-black/10">
+                <section class="pb-16 px-4 md:px-8 max-w-[90rem] mx-auto">
+                    <div
+                        class="relative w-full h-[75vh] rounded-3xl overflow-hidden shadow-2xl shadow-red-900/10 flex items-center bg-white">
 
-                    <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index"
-                        class="relative overflow-hidden bg-[#F2F0EB]">
 
                         <div class="absolute inset-0 w-full h-full z-0">
-
-                            <img :src="bannerUrl"
-                                class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-multiply"
-                                alt="F33 Banner" />
+                            <Swiper :modules="[Autoplay, EffectFade]" effect="fade" :fadeEffect="{ crossFade: true }"
+                                :autoplay="{ delay: 5000, disableOnInteraction: false }" :loop="true"
+                                class="w-full h-full">
+                                <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index">
+                                    <img :src="bannerUrl" class="w-full h-full object-cover" alt="Banner f33" />
+                                </SwiperSlide>
+                                <SwiperSlide v-if="!banners || banners.length === 0">
+                                    <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=2000&q=80"
+                                        class="w-full h-full object-cover" alt="Fallback Banner" />
+                                </SwiperSlide>
+                            </Swiper>
                         </div>
 
-
-                    
 
                         <div
-                            class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-20 md:pb-32 px-6 md:px-12">
-                            <div class="max-w-7xl mx-auto w-full relative">
-                                <h1
-                                    class="text-6xl md:text-[8rem] lg:text-[10rem] font-black text-black uppercase tracking-tighter leading-[0.85]">
-                                    F33
-                                </h1>
-                            </div>
+                            class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent md:w-3/4 z-10 pointer-events-none">
                         </div>
-                    </SwiperSlide>
 
 
-                    <SwiperSlide v-if="!banners || banners.length === 0"
-                        class="relative overflow-hidden bg-[#F2F0EB] flex items-center justify-center">
-                        <div class="text-center font-mono text-gray-500 border border-gray-300 bg-white p-12">
-                            <span class="text-[#E30613] text-2xl">>_</span><br>
-                            DIR_VACÍO: /public/banners/
-                        </div>
-                    </SwiperSlide>
-                </Swiper>
-
-
-
-                <section id="eventos" class="w-full pt-20 pb-0">
-                    <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
-                        <div>
-                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter text-black mb-2">
-                                Eventos <span class="text-[#E30613]">.</span>
-                            </h2>
-                            <p class="text-gray-500 font-mono text-sm tracking-widest uppercase">
-                                Seleccioná un evento para ver su colección de fotos
+                        <div class="relative z-20 p-8 md:p-16 max-w-2xl pointer-events-auto">
+                            <span class="font-bold tracking-widest uppercase text-red-600 mb-4 block text-sm">
+                                Fotografía Deportiva Profesional
+                            </span>
+                            <h1 class="font-flux text-7xl md:text-8xl lg:text-[7rem] leading-[0.9] text-black mb-6">
+                                El Instante <br>
+                                <span class="text-gradient">Perfecto</span>
+                            </h1>
+                            <p class="font-lato text-lg md:text-xl text-slate-700 leading-relaxed mb-10">
+                                Inmortalizamos el movimiento, la pasión y la adrenalina. Explora nuestros eventos y
+                                revive la acción con una calidad visual incomparable.
                             </p>
-                        </div>
-                    </div>
-
-                    <div class="masonry-container px-6 md:px-12" v-if="recentEvents.length > 0">
-                        <Link v-for="event in recentEvents" :key="event.id"
-                            :href="route('events.show', event.slug || event.id)"
-                            class="masonry-item relative group overflow-hidden bg-white block border border-black/10">
-
-
-                            <img :src="event.cover_image_url"
-                                class="w-full h-auto block opacity-90 group-hover:opacity-10 transition-opacity duration-500">
-
-
-                            <div
-                                class="absolute inset-0 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
-                                <span
-                                    class="text-[#E30613] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#E30613] px-3 py-1 bg-white">
-                                    {{ event.is_private ? 'Privado' : 'Público' }}
-                                </span>
-                                <h3 class="text-black text-3xl md:text-4xl font-black uppercase tracking-tight mb-2">
-                                    {{ event.name }}
-                                </h3>
-                                <p v-if="event.description"
-                                    class="text-gray-700 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
-                                    {{ event.description }}
-                                </p>
-                                <span
-                                    class="text-black font-mono text-sm border-b border-black pb-1 hover:text-[#E30613] hover:border-[#E30613] transition-colors">
-                                    Ver Galería
-                                </span>
+                            <div class="flex gap-4">
+                                <a href="#eventos"
+                                    class="bg-gradient-to-r from-red-600 to-black text-white font-bold uppercase tracking-wider px-8 py-4 rounded-full hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300">
+                                    Ver Calendario
+                                </a>
                             </div>
-                        </Link>
-                    </div>
-
-                    <div v-else class="text-center py-32 border border-gray-200 mx-6 md:mx-12 bg-white">
-                        <p class="font-mono text-gray-500 uppercase tracking-widest">Aún no hay eventos registrados.</p>
+                        </div>
                     </div>
                 </section>
 
 
-
-                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden">
-                    <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
+                <section id="eventos" class="py-20 px-4 md:px-8 max-w-7xl mx-auto">
+                    <div class="text-center md:text-left flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter text-black mb-2">
-                                Últimas <span class="text-[#E30613]">fotos</span>
+                            <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Próximas
+                                Coberturas</span>
+                            <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">
+                                Eventos <span class="text-slate-300 font-sans font-light">/</span> Destacados
                             </h2>
-                            <p class="text-gray-500 font-mono text-sm tracking-widest uppercase">
-                                Colecciones recientes de nuestros fotógrafos
-                            </p>
                         </div>
-                        <Link :href="route('gallery.index')"
-                            class="hidden md:block text-[#E30613] font-mono font-bold uppercase tracking-widest border-b border-[#E30613] pb-1 hover:text-black hover:border-black transition-colors">
-                            [ Ver Archivo Completo ]
+                    </div>
+
+                    <div v-if="recentEvents.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <Link v-for="event in recentEvents.slice(0, 3)" :key="event.id"
+                            :href="route('events.show', event.slug || event.id)"
+                            class="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group block">
+
+                            <div class="h-64 relative overflow-hidden">
+                                <img :src="event.cover_image_url" :alt="event.name"
+                                    class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105">
+                                <div
+                                    class="absolute top-4 right-4 bg-white/90 backdrop-blur text-black font-bold px-4 py-2 rounded-2xl text-sm shadow-sm">
+                                    {{ event.is_private ? 'Privado' : 'Público' }}
+                                </div>
+                            </div>
+
+                            <div class="p-8">
+                                <h3 class="font-flux text-4xl text-black mb-3">{{ event.name }}</h3>
+                                <p class="text-slate-500 text-sm leading-relaxed mb-8 line-clamp-2">
+                                    {{ event.description || 'Explora la cobertura fotográfica completa de este evento espectacular.' }}
+                                </p>
+                                <span
+                                    class="inline-flex items-center gap-2 text-black font-bold uppercase text-sm group-hover:text-red-600 transition-colors">
+                                    Ir a la galería
+                                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                </span>
+                            </div>
                         </Link>
                     </div>
 
-                    <div class="pl-6 md:pl-12">
-                        <Swiper :modules="[FreeMode, Autoplay]" :slidesPerView="1.2" :spaceBetween="16" :freeMode="true"
-                            :grabCursor="true"
-                            :breakpoints="{ '640': { slidesPerView: 2.2 }, '1024': { slidesPerView: 3.5 }, '1536': { slidesPerView: 4.5 } }"
-                            class="w-full !overflow-visible">
-
-                            <SwiperSlide v-for="photo in recentPhotos.slice(0, 8)" :key="photo.id">
-                                <div @click="router.visit(route('gallery.show', photo.unique_id))"
-                                    class="relative aspect-[3/4] bg-white group overflow-hidden border border-black/10 block w-full h-full cursor-pointer">
+                    <div v-else class="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
+                        <p class="font-lato font-bold text-slate-400 uppercase tracking-widest">Aún no hay eventos
+                            registrados.</p>
+                    </div>
+                </section>
 
 
-                                    <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none" />
+                <section v-if="recentPhotos.length > 0" id="galeria"
+                    class="py-20 px-4 md:px-8 bg-white border-t border-slate-100">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="text-center mb-16">
+                            <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Portafolio</span>
+                            <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">Últimas Capturas</h2>
+                            <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-lato">Nuestra selección más reciente.
+                                Imágenes procesadas con la más alta calidad, listas para destacar.</p>
+                        </div>
 
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <Link v-for="photo in recentPhotos.slice(0, 8)" :key="photo.id"
+                                :href="route('gallery.show', photo.unique_id)"
+                                class="group relative rounded-2xl overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300">
 
-                                    <div
-                                        class="absolute bottom-0 left-0 right-0 flex items-center gap-3 bg-gradient-to-t from-white via-white/90 to-transparent p-4 pt-16 border-t border-transparent group-hover:border-[#E30613] transition-colors duration-300">
+                                <img :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.unique_id"
+                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none select-none">
 
-                                        <div class="flex-1 min-w-0">
-                                            <p
-                                                class="text-black font-black text-sm uppercase tracking-tighter truncate">
-                                                {{ photo.event_name || 'Operación X' }}
-                                            </p>
-                                            <p class="text-gray-600 font-mono text-[10px] tracking-widest mt-1">
-                                                ID: <span class="text-[#E30613]">{{ photo.unique_id }}</span>
-                                            </p>
-                                        </div>
-
-                                        <div
-                                            class="w-8 h-8 flex-shrink-0 bg-gray-100 border border-black/10 overflow-hidden">
-                                            <img v-if="getEventCoverForPhoto(photo)" :src="getEventCoverForPhoto(photo)"
-                                                class="w-full h-full object-cover grayscale opacity-80">
-                                            <span v-else
-                                                class="flex items-center justify-center w-full h-full text-[8px] text-gray-500 font-black">F33</span>
-                                        </div>
-                                    </div>
-
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                                    <span class="text-white font-bold tracking-wider uppercase text-sm line-clamp-1">
+                                        {{ photo.event_name || photo.unique_id }}
+                                    </span>
                                 </div>
-                            </SwiperSlide>
-                        </Swiper>
+                            </Link>
+                        </div>
+
+                        <div class="mt-16 text-center">
+                            <Link :href="route('gallery.index')"
+                                class="inline-block px-10 py-4 rounded-full border-2 border-black text-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors duration-300">
+                                Ver Catálogo Completo
+                            </Link>
+                        </div>
                     </div>
                 </section>
 
@@ -217,55 +174,23 @@ const formatEventTitle = (name) => {
 </template>
 
 <style>
-.f33-theme {
-    font-family: 'Outfit', sans-serif;
-    background-color: #F2F0EB;
-    color: #050505;
+.f33-sport-theme {
+    background-color: #F8F9FA;
+    color: #1e293b;
 }
 
-.font-mono {
-    font-family: 'JetBrains Mono', monospace;
+.font-lato {
+    font-family: 'Lato', sans-serif;
 }
 
-
-.swiper-main {
-    width: 100%;
+.font-flux {
+    font-family: 'Bebas Neue', sans-serif;
 }
 
-.swiper-main>.swiper-pagination {
-    bottom: 2rem !important;
-}
-
-.swiper-main>.swiper-pagination>.swiper-pagination-bullet {
-    width: 8px;
-    height: 8px;
-    background-color: #000000;
-    opacity: 0.15;
-    border-radius: 0;
-    transition: all 0.3s ease;
-}
-
-.swiper-main>.swiper-pagination>.swiper-pagination-bullet-active {
-    background-color: #E30613;
-    opacity: 1;
-    width: 24px;
-}
-
-.swiper-main>.swiper-button-next,
-.swiper-main>.swiper-button-prev {
-    color: black !important;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.swiper-main:hover>.swiper-button-next,
-.swiper-main:hover>.swiper-button-prev {
-    opacity: 0.8;
-}
-
-.swiper-main>.swiper-button-next:hover,
-.swiper-main>.swiper-button-prev:hover {
-    color: #E30613 !important;
-    opacity: 1 !important;
+.text-gradient {
+    background: linear-gradient(135deg, #E60000 0%, #000000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 </style>
