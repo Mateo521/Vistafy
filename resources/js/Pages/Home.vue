@@ -72,9 +72,9 @@ const props = defineProps({
                                 reviví la acción con una calidad visual incomparable.
                             </p>
                             <div class="flex gap-4">
-                                <a href="#eventos"
+                                <a href="/nosotros"
                                     class="bg-gradient-to-r from-red-600 to-black text-white font-bold uppercase tracking-wider px-8 py-4 rounded-full hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300">
-                                    Ver Calendario
+                                    Sobre nosotros
                                 </a>
                             </div>
                         </div>
