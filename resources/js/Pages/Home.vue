@@ -36,7 +36,7 @@ const props = defineProps({
 
                 <section class="pb-16 px-4 md:px-8 max-w-[90rem] mx-auto">
                     <div
-                        class="relative w-full h-[75vh] rounded-3xl overflow-hidden shadow-2xl shadow-red-900/10 flex items-center bg-white">
+                        class="relative w-full h-[75vh] rounded overflow-hidden shadow-2xl shadow-red-900/10 flex items-center bg-white">
 
 
                         <div class="absolute inset-0 w-full h-full z-0">
@@ -64,12 +64,12 @@ const props = defineProps({
                                 Fotografía Deportiva Profesional
                             </span>
                             <h1 class="font-flux text-7xl md:text-8xl lg:text-[7rem] leading-[0.9] text-black mb-6">
-                                El Instante <br>
-                                <span class="text-gradient">Perfecto</span>
+                                La fotografía cambió <br>
+                                <span class="text-gradient">la forma de venderla no.</span>
                             </h1>
                             <p class="font-lato text-lg md:text-xl text-slate-700 leading-relaxed mb-10">
-                                Inmortalizamos el movimiento, la pasión y la adrenalina. Explora nuestros eventos y
-                                revive la acción con una calidad visual incomparable.
+                                Inmortalizamos el movimiento, la pasión y la adrenalina. Explorá nuestros eventos y
+                                reviví la acción con una calidad visual incomparable.
                             </p>
                             <div class="flex gap-4">
                                 <a href="#eventos"
@@ -96,13 +96,13 @@ const props = defineProps({
                     <div v-if="recentEvents.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <Link v-for="event in recentEvents.slice(0, 3)" :key="event.id"
                             :href="route('events.show', event.slug || event.id)"
-                            class="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group block">
+                            class="bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group block">
 
                             <div class="h-64 relative overflow-hidden">
                                 <img :src="event.cover_image_url" :alt="event.name"
-                                    class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105">
+                                    class="w-full h-full object-cover transition-transform duration-700 ease-in-out ">
                                 <div
-                                    class="absolute top-4 right-4 bg-white/90 backdrop-blur text-black font-bold px-4 py-2 rounded-2xl text-sm shadow-sm">
+                                    class="absolute top-4 right-4 bg-white/90 backdrop-blur text-black font-bold px-4 py-2 rounded text-sm shadow-sm">
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </div>
                             </div>
@@ -125,7 +125,7 @@ const props = defineProps({
                         </Link>
                     </div>
 
-                    <div v-else class="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
+                    <div v-else class="text-center py-20 bg-white rounded shadow-sm border border-slate-100">
                         <p class="font-lato font-bold text-slate-400 uppercase tracking-widest">Aún no hay eventos
                             registrados.</p>
                     </div>
@@ -145,10 +145,10 @@ const props = defineProps({
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <Link v-for="photo in recentPhotos.slice(0, 8)" :key="photo.id"
                                 :href="route('gallery.show', photo.unique_id)"
-                                class="group relative rounded-2xl overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300">
+                                class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300">
 
                                 <img :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.unique_id"
-                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none select-none">
+                                    class="w-full h-full object-cover transition-transform duration-700  pointer-events-none select-none">
 
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
