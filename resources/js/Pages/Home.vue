@@ -63,7 +63,7 @@ const props = defineProps({
                             <span class="font-bold tracking-widest uppercase text-red-600 mb-4 block text-sm">
                                 Fotografía Deportiva Profesional
                             </span>
-                            <h1 class="font-flux text-7xl md:text-8xl lg:text-[7rem] leading-[0.9] text-black mb-6">
+                            <h1 class="font-flux text-6xl md:text-7xl lg:text-[6rem]  text-black mb-6">
                                 La fotografía cambió <br>
                                 <span class="text-gradient">la forma de venderla no.</span>
                             </h1>
@@ -200,13 +200,6 @@ const props = defineProps({
     color: #1e293b;
 }
 
-.font-lato {
-    font-family: 'Lato', sans-serif;
-}
-
-.font-flux {
-    font-family: 'Bebas Neue', sans-serif;
-}
 
 .text-gradient {
     background: linear-gradient(135deg, #E60000 0%, #000000 100%);
