@@ -96,11 +96,11 @@ const props = defineProps({
                     <div v-if="recentEvents.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Link v-for="event in recentEvents.slice(0, 8)" :key="event.id"
                             :href="route('events.show', event.slug || event.id)"
-                            class="group relative block w-full aspect-[4/5] overflow-hidden rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.15)] transition-all duration-500 bg-black">
+                            class="group relative block w-full aspect-[4/5] overflow-hidden rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.15)] transition-all duration-500 bg-black">
 
                         
                             <img :src="event.cover_image_url" :alt="event.name"
-                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 opacity-100 group-hover:opacity-40">
+                                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out  opacity-100 group-hover:opacity-40">
 
                         
                             <div class="absolute inset-0 flex flex-col justify-center items-center p-6 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
