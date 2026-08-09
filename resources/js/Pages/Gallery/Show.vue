@@ -122,9 +122,7 @@ const handleImageError = (e) => {
                                 @error="handleImageError" />
                             
                         
-                            <div class="absolute bottom-8 left-8 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider pointer-events-none">
-                                Protección Activa
-                            </div>
+                            
                         </div>
                     </div>
 
