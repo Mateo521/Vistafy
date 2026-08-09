@@ -272,275 +272,287 @@ const totalResults = () => {
     return props.photos.total;
 };
 </script>
-
 <template>
-
     <Head title="Archivo Vivo — F33.CLICK" />
 
     <AppLayout>
 
-        <div
-            class="relative bg-black pt-32 pb-16 md:pt-40 md:pb-24 border-b-[12px] border-white group  overflow-hidden">
-            <div class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden -z-10 opacity-30"
-                data-img="/05a8862db26a1bed8ac22cdbf6944145.jpg"></div>
+        <div class="pt-32 pb-12 px-4 md:px-8 max-w-[1500px] mx-auto">
+            <div class="relative w-full h-[40vh] md:h-[45vh] rounded overflow-hidden shadow-2xl flex flex-col justify-end p-8 md:p-16">
 
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
-                <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 pointer-events-none">
+                <div class="absolute inset-0 w-full h-full">
+                    <img src="/05a8862db26a1bed8ac22cdbf6944145.jpg" class="w-full h-full object-cover" alt="Fondo catálogo" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                </div>
+
+                <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <p class="font-mono text-xs uppercase text-red-600 mb-4  border-red-600 pl-3">
-                            Catálogo F33
-                        </p>
-                        <h1
-                            class="font-black font-flux text-[15vw] md:text-[8rem] leading-[0.8] text-white tracking-tighter mix-blend-difference">
-                            ARCHIVOS.
+                        <span class="text-[#E30613] font-bold tracking-widest uppercase text-sm mb-3 block flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-[#E30613]"></span> Catálogo F33
+                        </span>
+                        <h1 class="font-flux text-6xl md:text-8xl text-white leading-none tracking-wide">
+                            Archivo vivo
                         </h1>
                     </div>
 
-                    <div class="text-right border-t md:border-t-0 border-white/20 pt-4 md:pt-0">
-                        <span class="font-black text-5xl md:text-8xl text-red-600 leading-none block mix-blend-screen">
+                    <div class="text-left md:text-right">
+                        <span class="font-flux text-5xl md:text-7xl text-[#E30613] block leading-none drop-shadow-md">
                             {{ totalResults() }}
                         </span>
-                        <span class="font-mono text-[10px] uppercase tracking-[0.35em] text-gray-500 block mt-2">
-                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias' : 'Fotografías Totales' }}
+                        <span class="text-xs font-bold uppercase tracking-widest text-gray-300 mt-2 block">
+                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias Encontradas' : 'Fotografías Totales' }}
                         </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="min-h-screen bg-black text-white">
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-10">
+        <div class="min-h-screen bg-[#F2F0EB] text-slate-800 pb-20">
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
+
 
                 <div v-if="showingFaceResults"
-                    class="bg-red-600 text-black border-[4px] border-white p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono uppercase tracking-widest">
-                    <div>
-                        <h3 class="font-black text-2xl tracking-tighter mb-1">
-                            <SparklesIcon class="inline w-6 h-6 mr-2" /> RECONOCIMIENTO ACTIVO
-                        </h3>
-                        <p class="text-xs"><strong>{{ faceSearchResults.count }}</strong> COINCIDENCIAS BIOMÉTRICAS
-                            LOCALIZADAS</p>
+                    class="bg-white/80 backdrop-blur-md border border-red-100 rounded p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_8px_30px_rgb(227,6,19,0.08)]">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-[#E30613]">
+                            <SparklesIcon class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-black">Reconocimiento Activo</h3>
+                            <p class="text-sm text-gray-500"><strong>{{ faceSearchResults.count }}</strong> coincidencias biométricas localizadas.</p>
+                        </div>
                     </div>
                     <button @click="clearFaceSearch"
-                        class="border-2 border-black px-4 py-2 hover:bg-black hover:text-red-600 transition-none font-bold text-[10px]">
-                        [ PURGAR RESULTADOS ]
+                        class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-full transition-colors">
+                        Limpiar Búsqueda
                     </button>
                 </div>
 
                 <div v-if="showingBibResults"
-                    class="bg-white text-black border-[4px] border-black p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono uppercase tracking-widest">
-                    <div>
-                        <h3 class="font-black text-2xl tracking-tighter mb-1">
-                            <HashtagIcon class="inline w-6 h-6 mr-2" /> DORSAL ENCONTRADO: #{{ bibNumber }}
-                        </h3>
-                        <p class="text-xs"><strong>{{ bibSearchResults.count }}</strong> REGISTROS OCR COINCIDENTES</p>
+                    class="bg-white/80 backdrop-blur-md border border-gray-200 rounded p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-black">
+                            <HashtagIcon class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-black">Dorsal Encontrado: #{{ bibNumber }}</h3>
+                            <p class="text-sm text-gray-500"><strong>{{ bibSearchResults.count }}</strong> registros OCR coincidentes.</p>
+                        </div>
                     </div>
                     <button @click="clearBibSearch"
-                        class="border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-none font-bold text-[10px]">
-                        [ PURGAR RESULTADOS ]
+                        class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs uppercase tracking-wider rounded-full transition-colors">
+                        Limpiar Búsqueda
                     </button>
                 </div>
 
-                <div class="bg-black border border-white/20 mb-12">
+
+                <div class="bg-white rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-10 border border-gray-100 relative z-10 p-2 md:p-3">
                     <form @submit.prevent="applyFilters">
-                        <div
-                            class="flex flex-col md:flex-row gap-0 border-b border-white/20 font-mono text-xs uppercase tracking-widest">
+                        <div class="flex flex-col md:flex-row gap-2">
+
                             <div class="flex-1 relative">
-                                <MagnifyingGlassIcon
-                                    class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                                <MagnifyingGlassIcon class="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input v-model="filterForm.search" type="text"
                                     placeholder="Buscar por ID, fotógrafo o evento..."
-                                    class="w-full pl-12 pr-5 py-5 bg-transparent text-white placeholder-gray-600 border-0 focus:ring-0 focus:outline-none" />
+                                    class="w-full pl-14 pr-6 py-4 bg-gray-50 hover:bg-gray-100 focus:bg-white border border-transparent focus:border-gray-300 rounded text-base focus:ring-4 focus:ring-gray-100 transition-all outline-none font-medium text-slate-700 placeholder-slate-400" />
                             </div>
-                            <div class="flex border-t md:border-t-0 border-white/20">
+                            
+
+                            <div class="flex gap-2">
                                 <button type="button" @click="showFilters = !showFilters" :class="[
-                                    'px-6 py-5 flex items-center gap-2 border-r border-white/20 transition-none whitespace-nowrap hover:bg-white hover:text-black',
-                                    showFilters ? 'bg-white text-black' : 'text-gray-400'
+                                    'px-6 py-4 flex items-center gap-2 rounded font-bold text-xs uppercase tracking-wider transition-colors',
+                                    showFilters ? 'bg-black text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                                 ]">
-                                    <AdjustmentsHorizontalIcon class="w-4 h-4" />
-                                    FILTROS
-                                    <span v-if="showFilters" class="w-2 h-2 bg-red-600 ml-2"></span>
+                                    <AdjustmentsHorizontalIcon class="w-5 h-5" />
+                                    Filtros
+                                    <span v-if="showFilters" class="w-2 h-2 bg-[#E30613] rounded-full ml-1"></span>
                                 </button>
                                 <button type="submit"
-                                    class="px-8 py-5 bg-red-600 hover:bg-white text-black font-black transition-none whitespace-nowrap">
-                                    EJECUTAR
+                                    class="px-8 py-4 bg-[#E30613] hover:bg-red-700 text-white rounded font-bold text-xs uppercase tracking-wider transition-colors shadow-lg shadow-red-500/30">
+                                    Buscar
                                 </button>
                             </div>
                         </div>
 
-                        <div v-show="showFilters" class="p-8 border-b border-white/20 bg-gray-950">
-                            <div
-                                class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-[10px] tracking-widest uppercase">
-                                <div>
-                                    <label class="block text-red-600 mb-2">/ REGIÓN</label>
-                                    <select v-model="filterForm.region"
-                                        class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
-                                        <option value="all">TODAS LAS ZONAS</option>
-                                        <option v-for="region in regions" :key="region" :value="region">{{ region }}
-                                        </option>
-                                    </select>
+
+                        <transition enter-active-class="transition duration-300 ease-out"
+                            enter-from-class="opacity-0 -translate-y-4" enter-to-class="opacity-100 translate-y-0"
+                            leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
+                            leave-to-class="opacity-0 -translate-y-4">
+                            
+                            <div v-show="showFilters" class="mt-4 p-6 md:p-8 bg-gray-50 rounded border border-gray-100">
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Región</label>
+                                        <select v-model="filterForm.region" class="w-full bg-white border border-gray-200 text-slate-700 px-4 py-3.5 rounded focus:border-gray-300 focus:ring-4 focus:ring-gray-100 appearance-none font-medium outline-none">
+                                            <option value="all">Todas las zonas</option>
+                                            <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Evento</label>
+                                        <select v-model="filterForm.event" class="w-full bg-white border border-gray-200 text-slate-700 px-4 py-3.5 rounded focus:border-gray-300 focus:ring-4 focus:ring-gray-100 appearance-none font-medium outline-none">
+                                            <option value="">Todos los eventos</option>
+                                            <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-red-600 mb-2">/ EVENTO</label>
-                                    <select v-model="filterForm.event"
-                                        class="w-full bg-black border border-white/20 text-white px-4 py-3 focus:border-red-600 focus:ring-0 appearance-none rounded-none">
-                                        <option value="">TODOS LOS EVENTOS</option>
-                                        <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name
-                                        }}</option>
-                                    </select>
+
+
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 border-t border-gray-200 pt-8">
+
+                                    <div class="bg-white p-6 rounded border border-gray-100 shadow-sm relative overflow-hidden">
+                                        <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                                        
+                                        <div class="flex items-center gap-3 mb-6 relative z-10">
+                                            <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
+                                                <SparklesIcon class="w-4 h-4 text-[#E30613]" />
+                                            </div>
+                                            <h3 class="font-bold text-lg text-black">Búsqueda Facial</h3>
+                                        </div>
+
+                                        <div v-if="isLoadingModels" class="py-10 flex flex-col items-center justify-center text-center">
+                                            <div class="w-6 h-6 border-2 border-[#E30613] border-t-transparent rounded-full animate-spin mb-3"></div>
+                                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">{{ progressMessage }}</span>
+                                        </div>
+
+                                        <div v-else class="space-y-4 relative z-10">
+                                            <div v-if="!previewUrl"
+                                                class="border-2 border-dashed border-gray-200 hover:border-red-300 hover:bg-red-50/50 rounded cursor-pointer py-10 text-center transition-all duration-300"
+                                                @click="$refs.faceFileInput.click()">
+                                                <FaceSmileIcon class="w-10 h-10 text-gray-400 mx-auto mb-3" />
+                                                <p class="text-sm font-bold text-gray-600">Sube una selfie para buscarte</p>
+                                                <p class="text-xs text-gray-400 mt-1">Formatos soportados: JPG, PNG</p>
+                                                <input ref="faceFileInput" type="file" accept="image/*" class="hidden" @change="handleFileSelect">
+                                            </div>
+                                            
+                                            <div v-else class="relative rounded overflow-hidden shadow-sm border border-gray-100">
+                                                <img :src="previewUrl" class="w-full h-48 object-cover" />
+                                                <button @click="selectedFile = null; previewUrl = null"
+                                                    class="absolute top-3 right-3 bg-white/90 backdrop-blur p-2 rounded-full text-black hover:text-[#E30613] hover:bg-white transition-colors shadow-sm">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                </button>
+                                            </div>
+
+                                            <button @click="performFaceSearch" :disabled="isSearching"
+                                                class="w-full bg-black text-white font-bold py-3.5 rounded text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                                                {{ isSearching ? progressMessage : 'Escanear Galería' }}
+                                            </button>
+                                            <p v-if="errorMessage" class="text-[#E30613] text-xs font-bold mt-2 text-center">{{ errorMessage }}</p>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="bg-white p-6 rounded border border-gray-100 shadow-sm">
+                                        <div class="flex items-center gap-3 mb-6">
+                                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                                <HashtagIcon class="w-4 h-4 text-black" />
+                                            </div>
+                                            <h3 class="font-bold text-lg text-black">Búsqueda por Dorsal</h3>
+                                        </div>
+                                        
+                                        <div class="space-y-4">
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Número de corredor</label>
+                                            <input v-model="bibNumber" type="text" placeholder="Ej: 529"
+                                                class="w-full px-4 py-4 bg-gray-50 border border-transparent focus:border-gray-300 focus:bg-white rounded text-2xl font-bold text-center text-slate-800 placeholder-gray-300 focus:ring-4 focus:ring-gray-100 transition-all outline-none"
+                                                @keyup.enter="performBibSearch" />
+                                            
+                                            <button @click="performBibSearch"
+                                                :disabled="isSearchingBib || !bibNumber.trim()"
+                                                class="w-full border-2 border-black text-black font-bold py-3 rounded text-xs uppercase tracking-wider hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-black">
+                                                {{ isSearchingBib ? 'Buscando...' : 'Buscar Número' }}
+                                            </button>
+                                            <p v-if="bibErrorMessage" class="text-[#E30613] text-xs font-bold mt-2 text-center">{{ bibErrorMessage }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 pt-6 border-t border-gray-200 flex justify-end">
+                                    <button type="button" @click="clearFilters" class="text-xs font-bold text-gray-500 hover:text-[#E30613] uppercase tracking-wider transition-colors">
+                                        Reiniciar Filtros
+                                    </button>
                                 </div>
                             </div>
-
-                            <div
-                                class="mt-8 pt-8 border-t border-dashed border-white/20 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div
-                                    class="border border-white/20 p-6 bg-black hover:border-red-600 transition-none group relative">
-                                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                                        <div
-                                            class="w-8 h-8 border border-red-600 bg-red-600/10 flex items-center justify-center">
-                                            <SparklesIcon class="w-4 h-4 text-red-600" />
-                                        </div>
-                                        <h3 class="font-black text-xl uppercase tracking-tighter">ANÁLISIS BIOMÉTRICO
-                                        </h3>
-                                    </div>
-
-                                    <div v-if="isLoadingModels"
-                                        class="py-8 text-center text-red-600 font-mono text-[10px] animate-pulse">
-                                        {{ progressMessage }}
-                                    </div>
-
-                                    <div v-else class="space-y-4">
-                                        <div v-if="!previewUrl"
-                                            class="border border-dashed border-gray-600 hover:border-white cursor-pointer py-10 text-center transition-none"
-                                            @click="$refs.faceFileInput.click()">
-                                            <FaceSmileIcon
-                                                class="w-8 h-8 text-gray-500 group-hover:text-white mx-auto mb-2" />
-                                            <p class="font-mono text-xs text-gray-400">CARGAR REFERENCIA FACIAL</p>
-                                            <input ref="faceFileInput" type="file" accept="image/*" class="hidden"
-                                                @change="handleFileSelect">
-                                        </div>
-                                        <div v-else class="relative border border-white/20 p-2">
-                                            <img :src="previewUrl" class="w-full h-40 object-cover grayscale" />
-                                            <button @click="selectedFile = null; previewUrl = null"
-                                                class="absolute top-4 right-4 bg-red-600 text-black px-2 py-1 font-mono text-[10px] hover:bg-white transition-none">[X]</button>
-                                        </div>
-
-                                        <button @click="performFaceSearch" :disabled="isSearching"
-                                            class="w-full bg-white text-black font-black py-3 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-none disabled:opacity-50 flex items-center justify-center gap-2">
-                                            {{ isSearching ? progressMessage : 'BUSCAR' }}
-                                        </button>
-                                        <p v-if="errorMessage"
-                                            class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ errorMessage }}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="border border-white/20 p-6 bg-black hover:border-white transition-none">
-                                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                                        <div
-                                            class="w-8 h-8 border border-white bg-white/10 flex items-center justify-center">
-                                            <HashtagIcon class="w-4 h-4 text-white" />
-                                        </div>
-                                        <h3 class="font-black text-xl uppercase tracking-tighter">ANÁLISIS OCR (DORSAL)
-                                        </h3>
-                                    </div>
-                                    <div class="space-y-4">
-                                        <label
-                                            class="block font-mono text-[10px] text-gray-500 uppercase tracking-widest">INGRESAR
-                                            IDENTIFICADOR NUMÉRICO</label>
-                                        <input v-model="bibNumber" type="text" placeholder="EJ: 529"
-                                            class="w-full px-4 py-4 bg-transparent border border-gray-600 focus:border-white focus:ring-0 text-2xl font-mono text-center text-white placeholder-gray-800"
-                                            @keyup.enter="performBibSearch" />
-                                        <button @click="performBibSearch"
-                                            :disabled="isSearchingBib || !bibNumber.trim()"
-                                            class="w-full border-2 border-white text-white font-black py-3 uppercase tracking-widest hover:bg-white hover:text-black transition-none disabled:opacity-50">
-                                            {{ isSearchingBib ? 'PROCESANDO...' : 'BUSCAR' }}
-                                        </button>
-                                        <p v-if="bibErrorMessage"
-                                            class="text-red-600 text-[10px] font-mono mt-2 uppercase">{{ bibErrorMessage
-                                            }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 flex justify-end">
-                                <button type="button" @click="clearFilters"
-                                    class="font-mono text-[10px] text-red-600 hover:text-white uppercase  transition-none border-b border-red-600 hover:border-white pb-1">
-                                    [ REINICIAR PARÁMETROS ]
-                                </button>
-                            </div>
-                        </div>
+                        </transition>
                     </form>
                 </div>
 
-                <div
-                    class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4 border-b border-white/20 pb-4">
-                    <div class="flex flex-wrap gap-2">
+
+                <div class="flex items-center justify-end mb-6">
+                    <div class="flex bg-white rounded-lg shadow-sm border border-gray-200 p-1">
                         <button v-for="option in sortOptions" :key="option.value" @click="changeSort(option.value)"
                             :class="[
-                                'px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] transition-none border',
+                                'px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md transition-colors',
                                 filterForm.sort === option.value
-                                    ? 'bg-white text-black border-white'
-                                    : 'bg-black text-gray-500 border-white/20 hover:border-white hover:text-white'
+                                    ? 'bg-gray-100 text-black shadow-sm'
+                                    : 'text-gray-500 hover:text-black'
                             ]">
                             {{ option.label }}
                         </button>
                     </div>
                 </div>
 
+
                 <div v-if="allPhotos.length > 0" :key="gridKey">
-                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-2 space-y-2 masonry-grid">
+                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 masonry-grid">
                         <div v-for="photo in allPhotos" :key="photo.id"
                             @click="router.visit(route('gallery.show', photo.unique_id))" @contextmenu.prevent
-                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[6px] border-black hover:border-red-600 transition-none ">
+                            class="break-inside-avoid block group relative bg-white rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200">
 
                             <div class="relative w-full h-auto">
                                 <ProtectedImage :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                    class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
+                                    class="w-full h-auto object-cover transition-transform duration-700  pointer-events-none"
                                     loading="lazy" @error="handleImageError" />
 
-                                <div
-                                    class="absolute top-3 left-3 bg-black border border-white px-2 py-1 text-[9px] font-mono text-white tracking-widest pointer-events-none">
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                            
+                                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold text-black shadow-sm pointer-events-none">
                                     ${{ photo.price }}
                                 </div>
 
+
                                 <div v-if="showingFaceResults && photo.similarity"
-                                    class="absolute bottom-3 left-3 bg-red-600 text-black px-2 py-1 font-bold text-[9px] font-mono tracking-widest pointer-events-none">
-                                    MATCH: {{ Math.round(photo.similarity * 100) }}%
+                                    class="absolute bottom-3 left-3 bg-[#E30613] text-white px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider shadow-md pointer-events-none z-10">
+                                    Match: {{ Math.round(photo.similarity * 100) }}%
                                 </div>
                                 <div v-if="showingBibResults && photo.bib_numbers"
-                                    class="absolute bottom-3 left-3 bg-white text-black px-2 py-1 font-bold text-[9px] font-mono tracking-widest pointer-events-none">
+                                    class="absolute bottom-3 left-3 bg-black text-white px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider shadow-md pointer-events-none z-10">
                                     #{{ photo.bib_numbers.join(', ') }}
                                 </div>
 
-                                <div
-                                    class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-none pointer-events-none bg-black text-white p-1 border border-white">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="square" stroke-width="2" d="M7 17L17 7M17 7H7M17 7v10" />
+
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300  pointer-events-none">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                     </svg>
                                 </div>
                             </div>
-
-
-
                         </div>
                     </div>
 
+
                     <div v-if="nextUrl && !showingFaceResults && !showingBibResults" class="flex justify-center pt-16">
                         <button @click="loadMore" :disabled="loadingMore"
-                            class="border-[4px] border-white px-12 py-4 bg-black text-white hover:bg-white hover:text-black font-black uppercase tracking-widest transition-none disabled:opacity-50 disabled:cursor-not-allowed">
-                            {{ loadingMore ? '[ DESCARGANDO DATOS... ]' : 'CARGAR MÁS FRAGMENTOS' }}
+                            class="px-8 py-4 bg-white border border-gray-200 rounded-full text-black hover:bg-gray-50 hover:shadow-md font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center gap-2">
+                            <span v-if="loadingMore" class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                            {{ loadingMore ? 'Cargando...' : 'Cargar Más Fotos' }}
                         </button>
                     </div>
                 </div>
 
-                <div v-else
-                    class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 text-center bg-gray-950">
-                    <h3 class="font-black text-6xl text-gray-700 tracking-tighter mb-4 uppercase">VACÍO.</h3>
-                    <p class="font-mono text-xs text-gray-500 tracking-widest mb-8 uppercase">NO EXISTEN REGISTROS EN LA
-                        BASE DE DATOS.</p>
+
+                <div v-else class="flex flex-col items-center justify-center py-24 px-4 text-center bg-white rounded shadow-sm border border-gray-100">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                        <MagnifyingGlassIcon class="w-8 h-8 text-gray-300" />
+                    </div>
+                    <h3 class="font-flux text-4xl text-black mb-3">No hay resultados</h3>
+                    <p class="text-gray-500 mb-8 max-w-md">No hemos encontrado fotografías que coincidan con tus filtros actuales. Intenta modificar tu búsqueda.</p>
                     <button @click="clearFilters"
-                        class="border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
-                        [ REINICIAR CATÁLOGO ]
+                        class="bg-black text-white px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors">
+                        Limpiar Filtros
                     </button>
                 </div>
 
@@ -550,6 +562,7 @@ const totalResults = () => {
 </template>
 
 <style scoped>
+
 .masonry-grid {
     column-fill: balance;
 }
@@ -558,57 +571,14 @@ const totalResults = () => {
 ::-webkit-scrollbar {
     width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #000000;
-    border-left: 1px solid #333;
+    background: #F2F0EB;
 }
-
 ::-webkit-scrollbar-thumb {
-    background: #ffffff;
-    border-radius: 0;
+    background: #cbd5e1;
+    border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: #dc2626;
-}
-
-
-@keyframes precise-glitch {
-
-    0%,
-    33.33%,
-    43.33%,
-    66.67%,
-    76.67%,
-    100% {
-        transform: none;
-        filter: hue-rotate(0) drop-shadow(0 0 0 transparent);
-    }
-
-    33.43%,
-    43.23% {
-        transform: translateX(var(--glitch-x-1));
-        filter: hue-rotate(var(--glitch-hue-1)) drop-shadow(3px 0 0 rgba(220, 38, 38, 0.6));
-    }
-
-    66.77%,
-    76.57% {
-        transform: translateX(var(--glitch-x-2));
-        filter: hue-rotate(var(--glitch-hue-2)) drop-shadow(-3px 0 0 rgba(255, 255, 255, 0.4));
-    }
-}
-
-:deep(.glitch-strip) {
-    width: 100%;
-    background-repeat: no-repeat;
-    animation-name: precise-glitch;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-play-state: paused;
-}
-
-.group:hover :deep(.glitch-strip) {
-    animation-play-state: running;
+    background: #94a3b8;
 }
 </style>
