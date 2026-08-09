@@ -74,16 +74,16 @@ const handleImageError = (e) => {
             <div class="relative w-full h-[40vh] md:h-[45vh] rounded overflow-hidden shadow-2xl flex flex-col justify-end p-8 md:p-16">
         
                 <div class="absolute inset-0 w-full h-full">
-                    <img src="/0fcce5d4573ebd79df2e147d7f87af35.jpg" class="w-full h-full object-cover" alt="Staff fotógrafos" />
+                    <!--img src="/0fcce5d4573ebd79df2e147d7f87af35.jpg" class="w-full h-full object-cover" alt="Staff fotógrafos" /-->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                 </div>
 
                 <div class="relative z-10">
                     <span class="text-[#E30613] font-bold tracking-widest uppercase text-sm mb-3 block flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#E30613]"></span> Directorio Oficial
+                        <span class="w-2 h-2 rounded-full bg-[#E30613]"></span> -
                     </span>
                     <h1 class="font-flux text-6xl md:text-8xl text-white leading-none tracking-wide">
-                        Nuestro <span class="text-[#E30613]">Staff.</span>
+                        Nuestro <span class="text-[#E30613]">staff.</span>
                     </h1>
                 </div>
             </div>
