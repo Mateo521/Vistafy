@@ -36,7 +36,7 @@ const props = defineProps({
 
                 <section class="pb-16 px-4 md:px-8 max-w-[90rem] mx-auto">
                     <div
-                        class="relative w-full h-[75vh] rounded overflow-hidden shadow-2xl shadow-red-900/10 flex items-center bg-white">
+                        class="relative w-full h-[75vh] rounded-3xl overflow-hidden shadow-2xl shadow-red-900/10 flex items-center bg-white">
 
 
                         <div class="absolute inset-0 w-full h-full z-0">
@@ -63,7 +63,7 @@ const props = defineProps({
                             <span class="font-bold tracking-widest uppercase text-red-600 mb-4 block text-sm">
                                 Fotografía Deportiva Profesional
                             </span>
-                            <h1 class="font-flux text-6xl md:text-7xl lg:text-[6rem]  text-black mb-6">
+                            <h1 class="font-flux text-2xl md:text-7xl lg:text-[6rem]  text-black mb-6">
                                 La fotografía cambió <br>
                                 <span class="text-gradient">la forma de venderla no.</span>
                             </h1>
@@ -148,9 +148,8 @@ const props = defineProps({
                     <div class="max-w-7xl mx-auto">
                         <div class="text-center mb-16">
                             <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Portafolio</span>
-                            <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">Últimas Capturas</h2>
-                            <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-lato">Nuestra selección más reciente.
-                                Imágenes procesadas con la más alta calidad, listas para destacar.</p>
+                            <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">Últimas capturas</h2>
+                            <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-lato">Nuestra selección más reciente.</p>
                         </div>
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
