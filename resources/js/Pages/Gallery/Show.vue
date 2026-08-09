@@ -8,7 +8,8 @@ import {
     ArrowLeftIcon,
     ShoppingCartIcon,
     PlusIcon,
-    ArrowsPointingOutIcon
+    ArrowsPointingOutIcon,
+    XMarkIcon
 } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 
@@ -59,14 +60,14 @@ const addToCart = async () => {
         const response = await axios.post(route('cart.add', props.photo.id));
 
         if (response.data.success) {
-            success('FOTOGRAFÍA AGREGADA AL CARRITO');
+            success('Fotografía agregada al carrito');
             window.dispatchEvent(new Event('cart-updated'));
         } else {
-            error('FOTOGRAFÍA YA EXISTENTE EN EL CARRITO');
+            error('La fotografía ya está en el carrito');
         }
     } catch (err) {
         console.error('Error agregando al carrito:', err);
-        error('ERROR DE CONEXIÓN');
+        error('Error de conexión');
     } finally {
         addingToCart.value = false;
     }
@@ -77,166 +78,158 @@ const handleImageError = (e) => {
     const parent = e.target.parentElement;
     if (!parent.querySelector('.placeholder-img')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder-img w-full h-full min-h-[300px] flex items-center justify-center bg-gray-100 border-4 border-black';
-        placeholder.innerHTML = `<span class="font-mono text-xs text-[#E30613] font-bold uppercase tracking-widest">[ ERROR DE LECTURA ]</span>`;
+        placeholder.className = 'placeholder-img w-full h-full min-h-[300px] flex items-center justify-center bg-slate-50 rounded border border-slate-100';
+        placeholder.innerHTML = `<span class="font-bold text-xs text-slate-400 uppercase tracking-widest">Sin Imagen</span>`;
         parent.appendChild(placeholder);
     }
 };
 </script>
 
 <template>
-
-    <Head :title="`ID_${photo.unique_id} — F33`" />
+    <Head :title="`Foto ${photo.unique_id} | f33.click`" />
 
     <AppLayout>
-        <div class="min-h-screen bg-[#F2F0EB] text-[#050505] font-sans selection:bg-[#E30613] selection:text-white">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-lato selection:bg-red-600 selection:text-white pb-20">
 
-
-            <div class="border-b-4 border-black bg-white sticky top-0 z-30 pt-16 md:pt-0">
-                <div
-                    class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-widest">
+        
+            <div class="max-w-[90rem] mx-auto px-4 md:px-8 pt-32 md:pt-40">
+                
+            
+                <div class="mb-8">
                     <Link :href="route('gallery.index')"
-                        class="text-gray-600 hover:text-[#E30613] flex items-center gap-2 transition-colors py-1">
-                        <ArrowLeftIcon class="w-4 h-4" /> VOLVER AL CATÁLOGO
-                    </Link>
-
-                    <Link :href="route('cart.index')"
-                        class="bg-black text-white hover:bg-[#E30613] transition-colors flex items-center gap-2 border-2 border-black px-4 py-1.5">
-                        <ShoppingCartIcon class="w-4 h-4" />
-                        <span>CARRITO</span>
+                        class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition-colors">
+                        <ArrowLeftIcon class="w-4 h-4" /> Volver a la galería
                     </Link>
                 </div>
-            </div>
 
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-10 md:py-16">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-
-
+                
                     <div class="lg:col-span-8">
-                        <div class="bg-white border-4 border-black p-3 relative group">
-
-
-                            <button @click="showFullImage = true"
-                                class="absolute top-6 right-6 z-20 bg-white border-2 border-black text-black hover:bg-[#E30613] hover:text-white transition-colors p-2 flex items-center gap-2 font-mono text-[10px] font-bold uppercase"
+                        <div class="bg-white p-3 md:p-4 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative group flex items-center justify-center h-full min-h-[50vh]">
+                            
+                        
+                            <button @click="showFullImage = true" 
+                                class="absolute top-8 right-8 z-20 bg-white/80 backdrop-blur-md border border-white text-slate-800 hover:text-red-600  transition-all p-3 rounded-full shadow-sm"
                                 aria-label="Expandir imagen">
                                 <ArrowsPointingOutIcon class="w-5 h-5" />
-                                <span class="hidden sm:inline">Expandir</span>
                             </button>
 
-
+                        
                             <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                                class="w-full max-h-[75vh] object-contain cursor-zoom-in" @click="showFullImage = true"
+                                class="w-full max-h-[75vh] object-contain rounded cursor-zoom-in transition-transform duration-500 "
+                                @click="showFullImage = true"
                                 @error="handleImageError" />
-
-
                             
+                        
+                            <div class="absolute bottom-8 left-8 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider pointer-events-none">
+                                Protección Activa
+                            </div>
                         </div>
                     </div>
 
+                
+                    <div class="lg:col-span-4 flex flex-col">
 
-                    <div class="lg:col-span-4 flex flex-col font-mono">
-
-                        <div class="mb-8">
-
-                            <div class="mb-4">
-                                <span
-                                    class="text-[11px] font-bold uppercase text-black bg-white px-3 py-1 border-2 border-black">
-                                    ID: <span class="text-[#E30613]">{{ photo.unique_id }}</span>
+                        <div class="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col">
+                            
+                        
+                            <div class="mb-6">
+                                <span class="text-[10px] font-bold uppercase text-red-600 bg-red-50 px-4 py-2 rounded-full tracking-widest">
+                                    Ref: {{ photo.unique_id }}
                                 </span>
                             </div>
-
-
-                            <h1
-                                class="font-black font-sans text-4xl md:text-5xl text-black mb-6 leading-none tracking-tight uppercase">
-                                {{ photo.title || 'Fotografía' }}
+                            
+                    
+                            <h1 class="font-flux text-5xl md:text-6xl text-black mb-8 leading-none">
+                                {{ photo.title || 'Captura Deportiva' }}
                             </h1>
 
-
-                            <div
-                                class="flex flex-col gap-3 mb-8 text-[11px] font-bold tracking-widest text-gray-700 uppercase">
-                                <div class="flex justify-between border-b-2 border-black/10 pb-2">
-                                    <span>Resolución Original:</span>
-                                    <span class="text-black">{{ photo.width }} x {{ photo.height }} PX</span>
+                        
+                            <div class="flex flex-col gap-4 mb-10">
+                                <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Resolución Original</span>
+                                    <span class="text-sm font-bold text-slate-800">{{ photo.width }} x {{ photo.height }} px</span>
                                 </div>
-                                <div v-if="photo.event" class="flex justify-between border-b-2 border-black/10 pb-2">
-                                    <span>Evento:</span>
-                                    <span class="text-[#E30613] truncate ml-4">{{ photo.event.name }}</span>
+                                <div v-if="photo.event" class="flex justify-between items-center pb-4 border-b border-slate-100">
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Evento</span>
+                                    <span class="text-sm font-bold text-red-600 truncate max-w-[150px] text-right">
+                                        <Link :href="route('events.show', photo.event.slug || photo.event.id)" class="hover:underline">
+                                            {{ photo.event.name }}
+                                        </Link>
+                                    </span>
                                 </div>
                             </div>
 
-
-                            <div class="border-t-4 border-black pt-6 mb-8 flex items-end justify-between">
-                                <span class="text-[12px] font-bold uppercase text-gray-600">Valor de Licencia</span>
-                                <span class="text-5xl font-black font-sans text-black leading-none tracking-tighter">${{
-                                    photo.price }}</span>
+                        
+                            <div class="mb-8 flex items-end justify-between">
+                                <span class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Licencia Digital</span>
+                                <span class="font-flux text-6xl text-black leading-none">${{ photo.price }}</span>
                             </div>
 
-
+                        
                             <button @click="addToCart" :disabled="addingToCart"
-                                class="w-full bg-[#E30613] text-white hover:bg-black hover:text-white text-[13px] font-black uppercase tracking-widest py-5 border-4 border-black transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
-                                <PlusIcon v-if="!addingToCart" class="w-6 h-6" stroke-width="3" />
+                                class="w-full bg-gradient-to-r from-red-600 to-red-500 text-white hover:shadow-[0_8px_25px_rgb(230,0,0,0.3)] hover:-translate-y-1 text-sm font-bold uppercase tracking-widest py-4 rounded-full transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none mt-auto">
+                                <PlusIcon v-if="!addingToCart" class="w-5 h-5" stroke-width="2.5" />
                                 <span v-if="addingToCart">Procesando...</span>
                                 <span v-else>Agregar al carrito</span>
                             </button>
 
-                        
+                            <p class="text-[10px] text-slate-400 mt-4 tracking-widest uppercase font-bold text-center">
+                                Descarga inmediata sin marca de agua
+                            </p>
                         </div>
-
-
-                        <div class="border-4 border-black p-5 mt-auto bg-white">
-                            <h3
-                                class="text-[11px] font-bold uppercase text-gray-600 mb-4 border-b-2 border-black/10 pb-2">
-                                Fotógrafo
-                            </h3>
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="w-12 h-12 bg-[#F2F0EB] border-2 border-black flex-shrink-0 flex items-center justify-center overflow-hidden">
-                                    <ProtectedImage v-if="photo.photographer?.profile_photo_url"
-                                        :src="photo.photographer.profile_photo_url"
-                                        class="w-full h-full object-cover" />
-                                    <div v-else class="text-[#E30613] font-black text-xl font-sans">
-                                        {{ photo.photographer?.business_name?.charAt(0) || 'F' }}
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-xs font-black text-black mb-1 uppercase tracking-widest truncate">{{
-                                        photo.photographer?.business_name || 'Fotógrafo F33' }}</p>
-                                    <Link v-if="photo.photographer?.slug"
-                                        :href="route('photographers.show', photo.photographer.slug)"
-                                        class="text-[10px] uppercase font-bold text-[#E30613] hover:text-black underline transition-colors">
-                                        Ver Catálogo
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
 
-                <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-20 border-t-8 border-black pt-16">
-                    <h2 class="text-3xl md:text-5xl font-black font-sans text-black uppercase tracking-tighter mb-10">
-                        Archivos <span class="text-[#E30613]">Relacionados</span>
-                    </h2>
-
-                    <div class="columns-2 md:columns-4 lg:columns-5 gap-4 space-y-4 masonry-grid">
-                        <Link v-for="related in relatedPhotos" :key="related.id"
-                            :href="route('gallery.show', related.unique_id)"
-                            class="break-inside-avoid flex flex-col bg-white border-4 border-black hover:border-[#E30613] transition-colors group">
-
-
-                            <div class="relative w-full overflow-hidden border-b-4 border-black">
-                                <ProtectedImage :src="related.thumbnail_url"
-                                    class="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                                    @error="handleImageError" />
+                <div class="mt-8 bg-white rounded-[2rem] p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-6">
+                        <div class="w-16 h-16 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white shadow-md">
+                            <ProtectedImage v-if="photo.photographer?.profile_photo_url"
+                                :src="photo.photographer.profile_photo_url"
+                                class="w-full h-full object-cover" />
+                            <div v-else class="text-slate-400 font-flux text-3xl mt-1">
+                                {{ photo.photographer?.business_name?.charAt(0) || 'F' }}
                             </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Capturado por</p>
+                            <p class="text-xl font-flux text-black leading-none">{{ photo.photographer?.business_name || 'Fotógrafo F33' }}</p>
+                        </div>
+                    </div>
+                    
+                    <Link v-if="photo.photographer?.slug"
+                        :href="route('photographers.show', photo.photographer.slug)"
+                        class="px-8 py-3 rounded-full border border-slate-200 text-sm font-bold text-slate-600 hover:text-black hover:border-black transition-colors w-full sm:w-auto text-center">
+                        Ver Portafolio
+                    </Link>
+                </div>
 
+                <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-24 pt-12 border-t border-slate-200">
+                    <div class="text-center md:text-left mb-12">
+                        <h2 class="font-flux text-5xl md:text-6xl text-black">
+                            Capturas <span class="text-slate-300 font-sans font-light">/</span> Relacionadas
+                        </h2>
+                    </div>
+                    
 
-                            <div class="p-3 bg-white flex justify-between items-center font-mono font-bold">
-                                <span class="text-[10px] text-gray-500 uppercase tracking-widest">{{ related.unique_id
-                                    }}</span>
-                                <span class="text-xs text-black">${{ related.price }}</span>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <Link v-for="related in relatedPhotos" :key="related.id"
+                            :href="route('gallery.show', related.unique_id)" 
+                            class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
+                            
+
+                            <ProtectedImage :src="related.thumbnail_url"
+                                class="w-full h-full object-cover transition-transform duration-700  pointer-events-none"
+                                @error="handleImageError" />
+                            
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                                <div class="w-full flex justify-between items-end">
+                                    <span class="text-white font-mono text-[10px] tracking-widest">{{ related.unique_id }}</span>
+                                    <span class="bg-red-600 text-white font-bold text-xs px-2 py-1 rounded-lg">${{ related.price }}</span>
+                                </div>
                             </div>
                         </Link>
                     </div>
@@ -245,26 +238,26 @@ const handleImageError = (e) => {
         </div>
 
 
-        <Transition enter-active-class="transition-opacity duration-200" enter-from-class="opacity-0"
-            enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200"
+        <Transition enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
+            enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200 ease-in"
             leave-from-class="opacity-100" leave-to-class="opacity-0">
-
-            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-white/95 cursor-zoom-out flex flex-col"
+            
+            <div v-if="showFullImage" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm cursor-zoom-out flex flex-col"
                 @click="showFullImage = false">
-
-                <button @click.stop="showFullImage = false"
-                    class="absolute top-4 right-4 md:top-8 md:right-8 z-[150] bg-black text-white hover:bg-[#E30613] font-mono font-bold text-[11px] uppercase tracking-widest px-6 py-3 transition-colors cursor-pointer border-4 border-black">
-                    Cerrar
+                
+                <button @click.stop="showFullImage = false" 
+                    class="absolute top-6 right-6 md:top-8 md:right-8 z-[150] bg-white/10 hover:bg-red-600 text-white rounded-full p-4 transition-colors cursor-pointer border border-white/20 hover:border-transparent">
+                    <XMarkIcon class="w-6 h-6" />
                 </button>
 
-                <div
-                    class="flex-1 flex items-center justify-center p-4 pt-20 pb-16 md:p-16 pointer-events-none z-[110]">
+                <div class="flex-1 flex items-center justify-center p-4 pt-20 pb-16 md:p-16 pointer-events-none z-[110]">
 
                     <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.title"
-                        class="w-auto h-auto object-contain border-[8px] border-black bg-white pointer-events-auto cursor-default"
-                        style="max-width: 100%; max-height: 100%;" @click.stop />
+                        class="w-auto h-auto object-contain rounded shadow-2xl pointer-events-auto cursor-default" 
+                        style="max-width: 100%; max-height: 100%;"
+                        @click.stop />
                 </div>
-
+                
             </div>
         </Transition>
 
@@ -272,25 +265,19 @@ const handleImageError = (e) => {
 </template>
 
 <style scoped>
-.masonry-grid {
-    column-fill: balance;
-}
 
 
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #F2F0EB;
-    border-left: 2px solid #050505;
+    background: #f8f9fa;
 }
-
 ::-webkit-scrollbar-thumb {
-    background: #050505;
+    background: #cbd5e1;
+    border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: #E30613;
+    background: #94a3b8;
 }
 </style>
