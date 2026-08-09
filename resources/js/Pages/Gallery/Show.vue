@@ -106,7 +106,7 @@ const handleImageError = (e) => {
 
                 
                     <div class="lg:col-span-8">
-                        <div class="bg-white p-3 md:p-4 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative group flex items-center justify-center h-full min-h-[50vh]">
+                        <div class="bg-white p-3 md:p-4 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative group flex items-center justify-center h-full min-h-[50vh]">
                             
                         
                             <button @click="showFullImage = true" 
@@ -131,7 +131,7 @@ const handleImageError = (e) => {
                 
                     <div class="lg:col-span-4 flex flex-col">
 
-                        <div class="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col">
+                        <div class="bg-white rounded p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-full flex flex-col">
                             
                         
                             <div class="mb-6">
@@ -175,15 +175,13 @@ const handleImageError = (e) => {
                                 <span v-else>Agregar al carrito</span>
                             </button>
 
-                            <p class="text-[10px] text-slate-400 mt-4 tracking-widest uppercase font-bold text-center">
-                                Descarga inmediata sin marca de agua
-                            </p>
+                        
                         </div>
                     </div>
                 </div>
 
 
-                <div class="mt-8 bg-white rounded-[2rem] p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="mt-8 bg-white rounded p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div class="flex items-center gap-6">
                         <div class="w-16 h-16 rounded-full bg-slate-100 flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white shadow-md">
                             <ProtectedImage v-if="photo.photographer?.profile_photo_url"
@@ -209,7 +207,7 @@ const handleImageError = (e) => {
                 <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-24 pt-12 border-t border-slate-200">
                     <div class="text-center md:text-left mb-12">
                         <h2 class="font-flux text-5xl md:text-6xl text-black">
-                            Capturas <span class="text-slate-300 font-sans font-light">/</span> Relacionadas
+                            Capturas <span class="text-slate-300 font-sans font-light">/</span> relacionadas
                         </h2>
                     </div>
                     
