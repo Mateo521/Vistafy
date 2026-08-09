@@ -130,10 +130,7 @@ const handleImageError = (e) => {
                                 @error="handleImageError" />
 
 
-                            <div
-                                class="mt-3 text-center text-gray-500 text-[10px] font-mono font-bold uppercase tracking-widest">
-                                Muestra con protección digital
-                            </div>
+                            
                         </div>
                     </div>
 
@@ -183,16 +180,14 @@ const handleImageError = (e) => {
                                 <span v-else>Agregar al carrito</span>
                             </button>
 
-                            <p class="text-[10px] text-gray-600 mt-4 tracking-widest uppercase font-bold text-center">
-                                Descarga inmediata sin marca de agua
-                            </p>
+                        
                         </div>
 
 
                         <div class="border-4 border-black p-5 mt-auto bg-white">
                             <h3
                                 class="text-[11px] font-bold uppercase text-gray-600 mb-4 border-b-2 border-black/10 pb-2">
-                                Creador
+                                Fotógrafo
                             </h3>
                             <div class="flex items-center gap-4">
                                 <div
