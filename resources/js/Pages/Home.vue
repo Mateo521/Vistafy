@@ -53,154 +53,144 @@ const formatEventTitle = (name) => {
     <Head title="F33.click" />
 
     <AppLayout>
-        <div class="f33-theme relative w-full min-h-screen selection:bg-[#E30613] selection:text-white">
-            
-           
-            <div class="fixed inset-0 z-[0] opacity-5 pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMCwwLDAsMSkiLz48L3N2Zz4=')]"></div>
+        <div class="f33-theme relative w-full min-h-screen">
+            <!-- Fondo oscuro sólido y limpio -->
+            <div class="fixed inset-0 z-[0] bg-[#050505] pointer-events-none"></div>
 
             <main class="relative z-10 pt-0">
 
-           
+                <!-- HERO SWIPER -->
                 <Swiper :modules="[Navigation, Pagination, Autoplay, EffectFade]" effect="fade"
                     :fadeEffect="{ crossFade: true }" :autoplay="{ delay: 5000, disableOnInteraction: false }"
                     :pagination="{ clickable: true }" :navigation="true" :loop="true"
-                    class="swiper-main h-[70vh] md:h-screen w-full bg-[#F2F0EB] border-b-8 border-black">
+                    class="swiper-main h-[70vh] md:h-screen w-full border-b border-white/10">
                     
                     <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index"
-                        class="relative overflow-hidden bg-[#F2F0EB]">
+                        class="relative overflow-hidden bg-black">
 
-                      
                         <div class="absolute inset-0 w-full h-full z-0">
+                            <!-- Imagen estática, sin animaciones de escala -->
                             <img :src="bannerUrl"
-                                class="absolute inset-0 w-full h-full object-cover grayscale-[0.2] contrast-125 opacity-90"
+                                class="absolute inset-0 w-full h-full object-cover opacity-50"
                                 alt="F33 Banner" />
                         </div>
 
-                      
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#F2F0EB] via-[#F2F0EB]/30 to-transparent z-10 pointer-events-none"></div>
+                        <!-- Degradado inferior simple -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-10 pointer-events-none"></div>
 
-                   
-                        <div class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-24 md:pb-32 px-6 md:px-12">
+                        <div class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-20 md:pb-32 px-6 md:px-12">
                             <div class="max-w-7xl mx-auto w-full relative">
-                              
-                                <div class="inline-block bg-white border-4 border-black p-4 shadow-[8px_8px_0px_0px_rgba(227,6,19,1)]">
-                                    <h1 class="text-6xl md:text-[8rem] lg:text-[10rem] font-flux text-black uppercase tracking-tighter leading-[0.85]">
-                                        F33 <span class="text-[#E30613]">.</span>
-                                    </h1>
-                                </div>
+                                <h1 class="text-6xl md:text-[8rem] lg:text-[10rem] font-black text-white uppercase tracking-tighter leading-[0.85]">
+                                    F33
+                                </h1>
                             </div>
                         </div>
-
                     </SwiperSlide>
 
-                  
+                    <!-- FALLBACK VACÍO -->
                     <SwiperSlide v-if="!banners || banners.length === 0"
-                        class="relative overflow-hidden bg-[#F2F0EB] flex items-center justify-center">
-                        <div class="text-center font-mono text-black border-4 border-black bg-white p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                            <span class="text-[#E30613] animate-pulse text-3xl font-black">>_</span><br>
-                            <span class="font-bold tracking-widest uppercase">DIR_VACÍO: /public/banners/</span>
+                        class="relative overflow-hidden bg-black flex items-center justify-center">
+                        <div class="text-center font-mono text-zinc-500 border border-zinc-800 p-12">
+                            <span class="text-[#E30613] text-2xl">>_</span><br>
+                            DIR_VACÍO: /public/banners/
                         </div>
                     </SwiperSlide>
                 </Swiper>
 
 
-              
+                <!-- SECCIÓN EVENTOS -->
                 <section id="eventos" class="w-full pt-20 pb-0">
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-5xl md:text-7xl font-black font-flux uppercase tracking-tighter text-black mb-2 flex items-center gap-4">
-                                <span class="w-8 h-8 md:w-12 md:h-12 bg-[#E30613] border-4 border-black inline-block"></span>
-                                Eventos
+                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter text-white mb-2">
+                                Eventos <span class="text-[#E30613]">.</span>
                             </h2>
-                            <p class="text-gray-600 font-mono text-sm font-bold tracking-widest uppercase border-l-4 border-[#E30613] pl-3">
+                            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">
                                 Seleccioná un evento para ver su colección de fotos
                             </p>
                         </div>
                     </div>
 
-                    <div class="masonry-container px-4 md:px-12" v-if="recentEvents.length > 0">
+                    <div class="masonry-container px-6 md:px-12" v-if="recentEvents.length > 0">
                         <Link v-for="event in recentEvents" :key="event.id"
                             :href="route('events.show', event.slug || event.id)"
-                            class="masonry-item relative group overflow-hidden bg-white block border-4 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all duration-200">
+                            class="masonry-item relative group overflow-hidden bg-black block border border-white/10">
 
-                        
+                            <!-- Imagen con transición suave de opacidad (sin zoom) -->
                             <img :src="event.cover_image_url"
-                                class="w-full h-auto block filter grayscale-[0.2] contrast-125 group-hover:grayscale-0 transition-all duration-500">
+                                class="w-full h-auto block opacity-80 group-hover:opacity-30 transition-opacity duration-500">
 
-                            
-                            <div class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center border-[12px] border-transparent group-hover:border-black">
-                                <span class="text-black bg-[#E30613] font-mono text-[10px] font-black tracking-widest uppercase mb-4 border-2 border-black px-3 py-1">
+                            <!-- Overlay de información centrado (fade in) -->
+                            <div class="absolute inset-0 flex flex-col justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 text-center">
+                                <span class="text-[#E30613] font-mono text-xs font-bold tracking-widest uppercase mb-3 border border-[#E30613] px-3 py-1">
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
-                                <h3 class="text-black text-4xl font-black font-flux uppercase tracking-tight mb-3">
+                                <h3 class="text-white text-3xl md:text-4xl font-black uppercase tracking-tight mb-2">
                                     {{ event.name }}
                                 </h3>
-                                <p v-if="event.description"
-                                    class="text-gray-800 text-sm font-medium line-clamp-2 max-w-[80%] mb-6 font-mono">
+                                <p v-if="event.description" class="text-gray-300 text-sm font-light line-clamp-2 max-w-[80%] mb-6">
                                     {{ event.description }}
                                 </p>
-                                <span class="text-white bg-black font-mono font-bold text-xs uppercase tracking-widest px-6 py-3 border-2 border-black group-hover:bg-[#E30613] transition-colors">
-                                    Ver Galería →
+                                <span class="text-white font-mono text-sm border-b border-white pb-1 hover:text-[#E30613] hover:border-[#E30613] transition-colors">
+                                    Ver Galería
                                 </span>
                             </div>
                         </Link>
                     </div>
 
-                    
-                    <div v-else class="text-center py-32 border-4 border-dashed border-black mx-6 md:mx-12 bg-white shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
-                        <p class="font-mono font-bold text-black uppercase tracking-widest text-xl">Aún no hay eventos registrados.</p>
+                    <div v-else class="text-center py-32 border border-white/10 mx-6 md:mx-12 bg-[#09090b]">
+                        <p class="font-mono text-gray-500 uppercase tracking-widest">Aún no hay eventos registrados.</p>
                     </div>
                 </section>
 
 
-               
-                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-24 overflow-hidden border-t-8 border-black mt-20 bg-white">
+                <!-- SECCIÓN FOTOS RECIENTES -->
+                <section v-if="recentPhotos.length > 0" class="w-full pt-32 pb-16 overflow-hidden">
                     <div class="px-6 md:px-12 flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <h2 class="text-4xl md:text-7xl font-black font-flux uppercase tracking-tighter text-black mb-2">
+                            <h2 class="text-4xl md:text-7xl font-black uppercase tracking-tighter text-white mb-2">
                                 Últimas <span class="text-[#E30613]">fotos</span>
                             </h2>
-                            <p class="text-gray-600 font-mono text-sm font-bold tracking-widest uppercase">
+                            <p class="text-gray-400 font-mono text-sm tracking-widest uppercase">
                                 Colecciones recientes de nuestros fotógrafos
                             </p>
                         </div>
                         <Link :href="route('gallery.index')"
-                            class="hidden md:block text-black bg-white border-4 border-black px-6 py-3 font-mono font-bold uppercase tracking-widest shadow-[4px_4px_0_0_rgba(227,6,19,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all">
-                            Ver Archivo Completo
+                            class="hidden md:block text-[#E30613] font-mono font-bold uppercase tracking-widest border-b border-[#E30613] pb-1 hover:text-white hover:border-white transition-colors">
+                            [ Ver Archivo Completo ]
                         </Link>
                     </div>
 
                     <div class="pl-6 md:pl-12">
-                        <Swiper :modules="[FreeMode, Autoplay]" :slidesPerView="1.2" :spaceBetween="24" :freeMode="true"
+                        <Swiper :modules="[FreeMode, Autoplay]" :slidesPerView="1.2" :spaceBetween="16" :freeMode="true"
                             :grabCursor="true"
                             :breakpoints="{ '640': { slidesPerView: 2.2 }, '1024': { slidesPerView: 3.5 }, '1536': { slidesPerView: 4.5 } }"
-                            class="w-full !overflow-visible pb-8">
+                            class="w-full !overflow-visible">
 
                             <SwiperSlide v-for="photo in recentPhotos.slice(0, 8)" :key="photo.id">
                                 <div @click="router.visit(route('gallery.show', photo.unique_id))"
-                                    class="relative aspect-[3/4] bg-[#F2F0EB] group overflow-hidden border-4 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all duration-200 block w-full h-full cursor-pointer flex flex-col">
+                                    class="relative aspect-[3/4] bg-black group overflow-hidden border border-white/10 block w-full h-full cursor-pointer">
 
-                                    <!-- Foto -->
-                                    <div class="relative flex-1 overflow-hidden bg-black border-b-4 border-black">
-                                        <img :src="photo.watermarked_url || photo.thumbnail_url"
-                                            class="w-full h-full object-cover filter contrast-125 group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none" />
-                                    </div>
+                                    <!-- Foto limpia sin transformaciones de escala -->
+                                    <img :src="photo.watermarked_url || photo.thumbnail_url"
+                                        class="w-full h-full object-cover filter contrast-125 opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none" />
 
-                                    <!-- Etiqueta inferior estilo Polaroid/Brutalista -->
-                                    <div class="bg-white p-4 flex items-center gap-3">
-                                        <div class="w-10 h-10 flex-shrink-0 bg-[#F2F0EB] border-2 border-black overflow-hidden">
-                                            <img v-if="getEventCoverForPhoto(photo)" :src="getEventCoverForPhoto(photo)"
-                                                class="w-full h-full object-cover grayscale">
-                                            <span v-else class="flex items-center justify-center w-full h-full text-[10px] text-black font-black">F33</span>
-                                        </div>
-
+                                    <!-- Barra de información inferior siempre visible -->
+                                    <div class="absolute bottom-0 left-0 right-0 flex items-center gap-3 bg-gradient-to-t from-black via-black/80 to-transparent p-4 pt-12 border-t border-transparent group-hover:border-[#E30613] transition-colors duration-300">
+                                        
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-black font-black text-sm uppercase tracking-tighter truncate">
+                                            <p class="text-white font-black text-sm uppercase tracking-tighter truncate">
                                                 {{ photo.event_name || 'Operación X' }}
                                             </p>
-                                            <p class="text-[#E30613] font-mono text-[10px] font-bold tracking-widest mt-0.5">
-                                                ID: {{ photo.unique_id }}
+                                            <p class="text-gray-400 font-mono text-[10px] tracking-widest mt-1">
+                                                ID: <span class="text-[#E30613]">{{ photo.unique_id }}</span>
                                             </p>
+                                        </div>
+
+                                        <div class="w-8 h-8 flex-shrink-0 bg-[#09090b] border border-white/20 overflow-hidden">
+                                            <img v-if="getEventCoverForPhoto(photo)" :src="getEventCoverForPhoto(photo)"
+                                                class="w-full h-full object-cover grayscale opacity-80">
+                                            <span v-else class="flex items-center justify-center w-full h-full text-[8px] text-zinc-500 font-black">F33</span>
                                         </div>
                                     </div>
                                     
@@ -218,13 +208,13 @@ const formatEventTitle = (name) => {
 <style>
 .f33-theme {
     font-family: 'Outfit', sans-serif;
-    background-color: #F2F0EB;
-    color: #050505;
+    background-color: #050505;
+    color: #ffffff;
 }
 
- 
-.font-flux { font-family: 'Outfit', sans-serif; }
-.font-mono { font-family: 'JetBrains Mono', monospace; }
+.font-mono { 
+    font-family: 'JetBrains Mono', monospace; 
+}
 
  
 .swiper-main {
@@ -236,50 +226,35 @@ const formatEventTitle = (name) => {
 }
 
 .swiper-main>.swiper-pagination>.swiper-pagination-bullet {
-    width: 16px;
-    height: 16px;
-    background-color: white;
-    border: 3px solid black;
-    opacity: 1;
-    border-radius: 0;  
-    transition: all 0.2s ease;
-    box-shadow: 2px 2px 0 0 rgba(0,0,0,1);
+    width: 8px;
+    height: 8px;
+    background-color: #ffffff;
+    opacity: 0.3;
+    border-radius: 0;
+    transition: all 0.3s ease;
 }
 
 .swiper-main>.swiper-pagination>.swiper-pagination-bullet-active {
     background-color: #E30613;
-    border-color: black;
-    width: 32px;
+    opacity: 1;
+    width: 24px;
 }
 
 .swiper-main>.swiper-button-next,
 .swiper-main>.swiper-button-prev {
-    color: black !important;
-    background-color: white;
-    border: 4px solid black;
-    width: 60px;
-    height: 60px;
+    color: white !important;
     opacity: 0;
-    transition: all 0.2s ease;
-    box-shadow: 4px 4px 0 0 rgba(0,0,0,1);
-}
-
-.swiper-main>.swiper-button-next:after,
-.swiper-main>.swiper-button-prev:after {
-    font-size: 24px;
-    font-weight: 900;
+    transition: opacity 0.3s ease;
 }
 
 .swiper-main:hover>.swiper-button-next,
 .swiper-main:hover>.swiper-button-prev {
-    opacity: 1;
+    opacity: 0.8;
 }
 
 .swiper-main>.swiper-button-next:hover,
 .swiper-main>.swiper-button-prev:hover {
-    background-color: #E30613;
-    color: white !important;
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 0 rgba(0,0,0,1);
+    color: #E30613 !important;
+    opacity: 1 !important;
 }
 </style>
