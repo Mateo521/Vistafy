@@ -69,20 +69,20 @@ const handleImageError = (e) => {
             
         
             <div class="pt-32 pb-16 px-4 md:px-8 max-w-7xl mx-auto text-center">
-                <span class="font-bold tracking-widest text-red-600 uppercase text-sm mb-4 block">Línea de Tiempo</span>
+                <span class="font-bold tracking-widest text-red-600 uppercase text-sm mb-4 block">-</span>
                 <h1 class="font-flux text-6xl md:text-8xl text-black mb-6 leading-none">
                     Explorá <br class="md:hidden">
-                    <span class="bg-gradient-to-r from-red-600 to-black -webkit-background-clip-text text-transparent bg-clip-text">Eventos</span>
+                    <span class="bg-gradient-to-r from-red-600 to-black -webkit-background-clip-text text-transparent bg-clip-text">eventos</span>
                 </h1>
                 <p class="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">
-                    Encuentra tu evento, busca por locación o filtra por nuestros fotógrafos oficiales para encontrar tus capturas.
+                    Encontrá tu evento, busca por lugar o filtrá por nuestros fotógrafos.
                 </p>
             </div>
 
             <div class="max-w-[1400px] mx-auto px-4 md:px-8">
                 
             
-                <section class="bg-white p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-12 border border-slate-100">
+                <section class="bg-white p-6 md:p-8 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-12 border border-slate-100">
                     <form @submit.prevent="submitFilters" class="flex flex-col gap-6">
                         
                     
@@ -96,7 +96,7 @@ const handleImageError = (e) => {
                                 class="block w-full pl-14 pr-32 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-base focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors outline-none font-bold text-slate-700 placeholder-slate-400" 
                                 placeholder="Buscar identificador, nombre o locación..."
                             />
-                            <button type="submit" class="absolute inset-y-2 right-2 bg-black text-white px-6 rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-red-600 transition-colors">
+                            <button type="submit" class="absolute inset-y-2 right-2 bg-black text-white px-6 rounded font-bold uppercase tracking-wider text-sm hover:bg-red-600 transition-colors">
                                 Buscar
                             </button>
                         </div>
@@ -110,7 +110,7 @@ const handleImageError = (e) => {
                                 <input 
                                     v-model="form.date"
                                     type="date"
-                                    class="block w-full bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 rounded-xl outline-none focus:ring-2 focus:ring-red-500 font-semibold cursor-pointer appearance-none"
+                                    class="block w-full bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 rounded outline-none focus:ring-2 focus:ring-red-500 font-semibold cursor-pointer appearance-none"
                                 />
                             </div>
 
@@ -119,7 +119,7 @@ const handleImageError = (e) => {
                                 <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Fotógrafo</label>
                                 <select 
                                     v-model="form.photographer_id"
-                                    class="block w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl outline-none focus:ring-2 focus:ring-red-500 font-semibold cursor-pointer">
+                                    class="block w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded outline-none focus:ring-2 focus:ring-red-500 font-semibold cursor-pointer">
                                     <option value="">Cualquier Fotógrafo</option>
                                     <option v-for="photographer in photographers" :key="photographer.id" :value="photographer.id">
                                         {{ photographer.business_name || photographer.user?.name }}
@@ -132,7 +132,7 @@ const handleImageError = (e) => {
 
             
                             <div class="flex items-end">
-                                <button type="button" @click="clearFilters" class="w-full py-3 px-4 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold uppercase tracking-wider text-sm hover:bg-slate-50 hover:text-red-600 transition-colors flex justify-center items-center gap-2">
+                                <button type="button" @click="clearFilters" class="w-full py-3 px-4 bg-white border border-slate-200 text-slate-500 rounded font-bold uppercase tracking-wider text-sm hover:bg-slate-50 hover:text-red-600 transition-colors flex justify-center items-center gap-2">
                                     <XMarkIcon class="w-4 h-4" /> Limpiar Filtros
                                 </button>
                             </div>
@@ -151,7 +151,7 @@ const handleImageError = (e) => {
                 </div>
 
             
-                <div v-if="!events.data || events.data.length === 0" class="text-center py-24 bg-white rounded-3xl shadow-sm border border-slate-100">
+                <div v-if="!events.data || events.data.length === 0" class="text-center py-24 bg-white rounded shadow-sm border border-slate-100">
                     <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
                         <MagnifyingGlassIcon class="w-10 h-10 text-slate-300" />
                     </div>
@@ -165,16 +165,16 @@ const handleImageError = (e) => {
             
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <Link v-for="event in events.data" :key="event.id" :href="route('events.show', event.slug)"
-                        class="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group flex flex-col">
+                        class="bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group flex flex-col">
                         
                     
                         <div class="h-60 relative overflow-hidden bg-slate-100 flex-shrink-0">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                                class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105" 
+                                class="w-full h-full object-cover transition-transform duration-700 ease-in-out " 
                                 @error="handleImageError" 
                             />
                         
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-black font-bold px-3 py-1.5 rounded-xl text-xs shadow-sm">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-black font-bold px-3 py-1.5 rounded text-xs shadow-sm">
                                 {{ event.is_private ? 'Privado' : 'Público' }}
                             </div>
                         </div>
@@ -220,7 +220,7 @@ const handleImageError = (e) => {
                     <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
                         <template v-for="(link, index) in events.links" :key="index">
                             <Link v-if="link.url" :href="link.url" 
-                                class="min-w-[40px] h-10 flex items-center justify-center px-4 text-sm font-bold rounded-xl transition-colors"
+                                class="min-w-[40px] h-10 flex items-center justify-center px-4 text-sm font-bold rounded transition-colors"
                                 :class="link.active 
                                     ? 'bg-red-600 text-white shadow-md' 
                                     : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-black'"
