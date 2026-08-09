@@ -77,9 +77,7 @@ const formatEventTitle = (name) => {
                         </div>
 
 
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-[#F2F0EB] via-[#F2F0EB]/60 to-transparent z-10 pointer-events-none">
-                        </div>
+                    
 
                         <div
                             class="absolute inset-0 w-full h-full z-20 pointer-events-none flex flex-col justify-end pb-20 md:pb-32 px-6 md:px-12">

@@ -111,7 +111,7 @@ const navigationItems = [
 
                     <Link href="/" class="group z-50 relative flex items-center">
                          
-                        <img src="/images/logo-dark.png" alt="f33 Photography"
+                        <img src="/images/logo.png" alt="f33 Photography"
                             class="h-10 w-auto transition-opacity duration-300 group-hover:opacity-80" />
                     </Link>
 
