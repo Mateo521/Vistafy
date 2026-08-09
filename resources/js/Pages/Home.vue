@@ -82,47 +82,55 @@ const props = defineProps({
                 </section>
 
 
-                <section id="eventos" class="py-20 px-4 md:px-8 max-w-7xl mx-auto">
+                <section id="eventos" class="py-20 px-4 md:px-8 max-w-7xl mx-auto overflow-hidden">
                     <div class="text-center md:text-left flex flex-col md:flex-row justify-between items-end mb-12">
                         <div>
-                            <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Próximas
-                                Coberturas</span>
+                            <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Todos los eventos y
+                                coberturas</span>
                             <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">
                                 Eventos <span class="text-slate-300 font-sans font-light">/</span> Destacados
                             </h2>
                         </div>
                     </div>
 
-                    <div v-if="recentEvents.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <Link v-for="event in recentEvents.slice(0, 3)" :key="event.id"
-                            :href="route('events.show', event.slug || event.id)"
-                            class="bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group block">
+                    <div v-if="recentEvents.length > 0" class="w-full relative">
+                        <Swiper :modules="[Autoplay]" :loop="true" :speed="4000"
+                            :autoplay="{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }"
+                            :slidesPerView="1.2" :spaceBetween="24" :breakpoints="{
+                                '640': { slidesPerView: 2.2 },
+                                '1024': { slidesPerView: 3.2 }
+                            }" class="marquee-swiper !overflow-visible pb-12">
+                            <SwiperSlide v-for="event in recentEvents" :key="event.id" class="h-auto">
+                                <Link :href="route('events.show', event.slug || event.id)"
+                                    class="bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group flex flex-col h-full">
 
-                            <div class="h-64 relative overflow-hidden">
-                                <img :src="event.cover_image_url" :alt="event.name"
-                                    class="w-full h-full object-cover transition-transform duration-700 ease-in-out ">
-                                <div
-                                    class="absolute top-4 right-4 bg-white/90 backdrop-blur text-black font-bold px-4 py-2 rounded text-sm shadow-sm">
-                                    {{ event.is_private ? 'Privado' : 'Público' }}
-                                </div>
-                            </div>
+                                    <div class="h-64 relative overflow-hidden flex-shrink-0">
+                                        <img :src="event.cover_image_url" :alt="event.name"
+                                            class="w-full h-full object-cover transition-transform duration-700 ease-in-out">
+                                        <div
+                                            class="absolute top-4 right-4 bg-white/90 backdrop-blur text-black font-bold px-4 py-2 rounded text-sm shadow-sm">
+                                            {{ event.is_private ? 'Privado' : 'Público' }}
+                                        </div>
+                                    </div>
 
-                            <div class="p-8">
-                                <h3 class="font-flux text-4xl text-black mb-3">{{ event.name }}</h3>
-                                <p class="text-slate-500 text-sm leading-relaxed mb-8 line-clamp-2">
-                                    {{ event.description || 'Explora la cobertura fotográfica completa de este evento espectacular.' }}
-                                </p>
-                                <span
-                                    class="inline-flex items-center gap-2 text-black font-bold uppercase text-sm group-hover:text-red-600 transition-colors">
-                                    Ir a la galería
-                                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                    </svg>
-                                </span>
-                            </div>
-                        </Link>
+                                    <div class="p-8 flex flex-col flex-grow">
+                                        <h3 class="font-flux text-4xl text-black mb-3">{{ event.name }}</h3>
+                                        <p class="text-slate-500 text-sm leading-relaxed mb-8 line-clamp-2 flex-grow">
+                                            {{ event.description || 'Explora la cobertura fotográfica completa de este evento espectacular.' }}
+                                        </p>
+                                        <span
+                                            class="inline-flex items-center gap-2 text-black font-bold uppercase text-sm group-hover:text-red-600 transition-colors mt-auto">
+                                            Ir a la galería
+                                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </Link>
+                            </SwiperSlide>
+                        </Swiper>
                     </div>
 
                     <div v-else class="text-center py-20 bg-white rounded shadow-sm border border-slate-100">
@@ -130,6 +138,8 @@ const props = defineProps({
                             registrados.</p>
                     </div>
                 </section>
+
+
 
 
                 <section v-if="recentPhotos.length > 0" id="galeria"
@@ -162,7 +172,7 @@ const props = defineProps({
                         <div class="mt-16 text-center">
                             <Link :href="route('gallery.index')"
                                 class="inline-block px-10 py-4 rounded-full border-2 border-black text-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors duration-300">
-                                Ver Catálogo Completo
+                                Ver catálogo completo
                             </Link>
                         </div>
                     </div>
@@ -174,6 +184,17 @@ const props = defineProps({
 </template>
 
 <style>
+
+
+.marquee-swiper .swiper-wrapper {
+    transition-timing-function: linear !important;
+}
+
+
+.marquee-swiper .swiper-slide {
+    transition: filter 0.3s ease;
+}
+
 .f33-sport-theme {
     background-color: #F8F9FA;
     color: #1e293b;
