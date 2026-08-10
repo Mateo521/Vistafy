@@ -51,7 +51,7 @@ const handleImageError = (e) => {
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-24 md:pt-28">
             <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-                <!-- CABECERA -->
+                
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                     <div>
                         <div class="flex items-center gap-2 mb-3">
@@ -68,7 +68,7 @@ const handleImageError = (e) => {
                         </h1>
                     </div>
                     
-                    <!-- Acciones Rápidas -->
+                  
                     <div class="flex flex-wrap gap-3">
                         <Link :href="route('photographer.photos.create')"
                             class="px-6 py-3 bg-white border border-gray-200 text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-50 hover:shadow-sm transition-all rounded-full flex items-center gap-2">
@@ -81,12 +81,12 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-                <!-- ALERTA DE INVITACIONES (Ubicación óptima) -->
+              
                 <div v-if="pendingInvitations && pendingInvitations.length > 0" class="mb-8 space-y-3">
                     <div v-for="invitation in pendingInvitations" :key="invitation.id"
                         class="bg-white border border-blue-100 p-5 md:p-6 rounded shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
                         
-                        <!-- Fondo decorativo sutil -->
+                    
                         <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
 
                         <div class="flex items-start gap-4 relative z-10">
@@ -119,9 +119,9 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-                <!-- GRID DE MÉTRICAS -->
+               
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-                    <!-- Total Archivo -->
+                 
                     <div class="bg-white p-6 rounded shadow-sm border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
@@ -134,7 +134,7 @@ const handleImageError = (e) => {
                         </div>
                     </div>
 
-                    <!-- Públicas -->
+                  
                     <div class="bg-white p-6 rounded shadow-sm border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
@@ -147,7 +147,7 @@ const handleImageError = (e) => {
                         </div>
                     </div>
 
-                    <!-- Descargas -->
+                
                     <div class="bg-white p-6 rounded shadow-sm border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
@@ -160,7 +160,7 @@ const handleImageError = (e) => {
                         </div>
                     </div>
 
-                    <!-- Eventos -->
+                  
                     <div class="bg-white p-6 rounded shadow-sm border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
@@ -173,11 +173,10 @@ const handleImageError = (e) => {
                         </div>
                     </div>
                 </div>
-
-                <!-- CONTENIDO INFERIOR: EVENTOS Y FOTOS RECIENTES -->
+ 
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 xl:gap-12">
 
-                    <!-- Columna Izquierda: Eventos Recientes -->
+                 
                     <div class="xl:col-span-2">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-2xl font-flux text-black tracking-wide">Eventos Recientes</h3>
@@ -192,7 +191,7 @@ const handleImageError = (e) => {
                                 :href="route('photographer.events.show', event.id)"
                                 class="group flex flex-col sm:flex-row bg-white border border-gray-100 hover:shadow-md transition-all duration-300 rounded overflow-hidden">
 
-                                <!-- Imagen del Evento -->
+                               
                                 <div class="w-full sm:w-48 h-48 sm:h-auto relative overflow-hidden bg-gray-100 shrink-0">
                                     <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
                                         class="w-full h-full object-cover transition-transform duration-700 "
@@ -201,7 +200,7 @@ const handleImageError = (e) => {
                                         <PhotoIcon class="w-10 h-10" />
                                     </div>
                                     
-                                    <!-- Badge Estado -->
+                                  
                                     <div class="absolute top-3 left-3">
                                         <span :class="[
                                             'px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md',
@@ -212,7 +211,7 @@ const handleImageError = (e) => {
                                     </div>
                                 </div>
 
-                                <!-- Info del Evento -->
+                            
                                 <div class="p-6 flex flex-col justify-between flex-1">
                                     <div>
                                         <div class="flex justify-between items-start mb-2">
@@ -247,23 +246,23 @@ const handleImageError = (e) => {
                             </Link>
                         </div>
 
-                        <!-- Estado Vacío Eventos -->
+                     
                         <div v-else class="text-center py-16 bg-white rounded border border-gray-100 shadow-sm flex flex-col items-center">
                             <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                                 <CalendarIcon class="w-8 h-8 text-gray-300" />
                             </div>
-                            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider mb-6">Sin operaciones activas</p>
+                            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider mb-6">Sin eventos activos</p>
                             <Link :href="route('photographer.events.create')"
                                 class="px-6 py-3 bg-black text-white rounded-full text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors">
-                                Iniciar primera misión
+                                Crear evento
                             </Link>
                         </div>
                     </div>
 
-                    <!-- Columna Derecha: Fotos Recientes -->
+                    
                     <div class="xl:col-span-1">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-2xl font-flux text-black tracking-wide">Últimos Datos</h3>
+                            <h3 class="text-2xl font-flux text-black tracking-wide">Últimas fotos</h3>
                             <Link :href="route('photographer.photos.index')"
                                 class="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#E30613] transition-colors">
                                 Ver Todo &rarr;
@@ -282,7 +281,7 @@ const handleImageError = (e) => {
                                     <span class="font-bold text-xl text-gray-300">F33</span>
                                 </div>
 
-                                <!-- Overlay sutil -->
+                               
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
                                     <span class="text-white font-bold text-[10px] uppercase tracking-wider truncate">
                                         ID: {{ photo.unique_id.substring(0, 6) }}
@@ -293,7 +292,7 @@ const handleImageError = (e) => {
                             </div>
                         </div>
 
-                        <!-- Estado Vacío Fotos -->
+                       
                         <div v-else class="text-center py-16 bg-white rounded border border-gray-100 shadow-sm flex flex-col items-center h-full justify-center">
                             <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                                 <PhotoIcon class="w-8 h-8 text-gray-300" />
