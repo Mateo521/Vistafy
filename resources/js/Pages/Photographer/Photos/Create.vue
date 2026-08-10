@@ -25,12 +25,14 @@ const form = useForm({
     photos: [],
     price: 5.00,
     event_id: null,
+    location_role: '',  
     is_active: true,
     read_bibs: true,
     face_data: null,
 });
 const { success, error } = useToast();
 
+const isTypingCustomRole = ref(false);
 
 const selectedFiles = ref([]);
 const dragOver = ref(false);
@@ -158,6 +160,13 @@ const addFiles = async (files) => {
         runAIDetection();
     }
 };
+
+watch(() => form.location_role, (newValue) => {
+    if (newValue === 'custom') {
+        isTypingCustomRole.value = true;
+        form.location_role = '';  
+    }
+});
 
 const removeFile = (index) => {
     selectedFiles.value.splice(index, 1);
@@ -364,6 +373,7 @@ const submitPhotos = () => {
 
     formData.append('price', form.price);
     formData.append('is_active', form.is_active ? 1 : 0);
+    if (form.location_role) formData.append('location_role', form.location_role);
     if (form.event_id) formData.append('event_id', form.event_id);
 
     formData.append('face_data', JSON.stringify({
@@ -405,7 +415,7 @@ const submitPhotos = () => {
                             <ArrowLeftIcon class="w-4 h-4" /> Volver al Archivo
                         </Link>
                         <h1 class="font-flux text-5xl md:text-7xl text-black leading-none tracking-wide">
-                            Ingesta de <span class="text-[#E30613]">Material</span>
+                            Subida de <span class="text-[#E30613]">fotos</span>
                         </h1>
                         <p class="text-sm font-bold text-gray-500 mt-2 flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Sistema de compresión e IA activo
@@ -452,6 +462,45 @@ const submitPhotos = () => {
                                             {{ event.name }}
                                         </option>
                                     </select>
+                                </div>
+
+                                
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                        Rol / Lugar asignado (opcional)
+                                    </label>
+                                    
+                                    <div class="relative">
+                                        
+                                        <select v-if="!isTypingCustomRole && existingRoles.length > 0" 
+                                            v-model="form.location_role"
+                                            class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
+                                            <option value="">-- Seleccionar lugar / rol --</option>
+                                            <option v-for="role in existingRoles" :key="role" :value="role">
+                                                {{ role }}
+                                            </option>
+                                            <option value="custom">+ Escribir uno nuevo...</option>
+                                        </select>
+
+                                        
+                                        <div v-if="isTypingCustomRole || existingRoles.length === 0" class="flex gap-2">
+                                            <input v-model="form.location_role" type="text"
+                                                class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
+                                                placeholder="Ej: Línea de Meta, Podio, Curva 3..."
+                                                maxlength="100">
+                                            
+                                            
+                                            <button v-if="existingRoles.length > 0" type="button" 
+                                                @click="isTypingCustomRole = false; form.location_role = ''"
+                                                class="px-4 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors">
+                                                <XMarkIcon class="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 mt-2 ml-1">
+                                        Ayuda a los atletas a encontrarte más fácil en el evento.
+                                    </p>
+                                    <p v-if="errors.location_role" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.location_role }}</p>
                                 </div>
 
                                 
@@ -528,11 +577,11 @@ const submitPhotos = () => {
                                 <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100">
                                     <CloudArrowUpIcon class="w-10 h-10 text-gray-400 stroke-1" />
                                 </div>
-                                <h3 class="font-flux text-4xl text-black mb-2">Zona de Carga</h3>
-                                <p class="text-gray-500 mb-6">Arrastra tus fotografías aquí o explora tus archivos</p>
+                                <h3 class="font-flux text-4xl text-black mb-2">Carga</h3>
+                                <p class="text-gray-500 mb-6">Arrastrá tus fotografías acá o explora tus archivos</p>
                                 <button type="button" @click="$refs.fileInput.click()"
                                     class="px-8 py-3.5 bg-black text-white rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors shadow-md">
-                                    Seleccionar Archivos
+                                    Seleccionar archivos
                                 </button>
                                 <p class="mt-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                                     JPG, PNG • Máx 50MB • Límite 50 archivos
