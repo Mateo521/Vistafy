@@ -84,6 +84,8 @@ Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{event:slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
 
+    Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
+    
     Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'show'])
         ->name('face-search.show');
 

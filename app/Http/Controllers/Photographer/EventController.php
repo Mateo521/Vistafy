@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Photographer;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Photo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,44 @@ use Inertia\Inertia;
 
 class EventController extends Controller
 {
+
+public function inviteColleague(Request $request, Event $event)
+{
+    if ($event->photographer_id !== auth()->user()->photographer->id) {
+        return redirect()->back()->withErrors(['email' => 'Solo el creador puede invitar colaboradores.']);
+    }
+
+    $request->validate([
+        'email' => 'required|email'
+    ]);
+
+    $invitedUser = User::where('email', $request->email)
+        ->whereHas('photographer', function($q) {
+            $q->where('status', 'approved');
+        })->first();
+
+    if (!$invitedUser) {
+        return redirect()->back()->withErrors(['email' => 'No se encontró un fotógrafo aprobado con este correo en f33.']);
+    }
+
+    $invitedPhotographer = $invitedUser->photographer;
+
+    if ($invitedPhotographer->id === $event->photographer_id) {
+        return redirect()->back()->withErrors(['email' => 'Ya eres el creador de este evento.']);
+    }
+
+    if ($event->collaborators()->where('photographer_id', $invitedPhotographer->id)->exists()) {
+        return redirect()->back()->withErrors(['email' => 'Este fotógrafo ya forma parte del evento o fue invitado.']);
+    }
+
+    $event->collaborators()->attach($invitedPhotographer->id, ['status' => 'invited']);
+
+    // Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $invitedPhotographer));
+
+    return redirect()->back()->with('success', 'Invitación enviada.');
+}
+
+
     public function index(Request $request)
     {
         $photographer = $request->user()->photographer;
@@ -159,7 +198,7 @@ class EventController extends Controller
                 'slug' => $event->slug,
                 'description' => $event->description,
                 'long_description' => $event->long_description,
-                'event_date' => $event->event_date?->format('Y-m-d'),
+                'event_date' => $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('Y-m-d') : null,
                 'location' => $event->location,
                 'cover_image' => $event->cover_image,
                 'cover_image_url' => $event->cover_image_url,

@@ -9,10 +9,31 @@ import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
 
 
+const showInviteModal = ref(false);
+const inviteForm = useForm({
+    email: '',
+});
+
+const invitePhotographer = () => {
+    inviteForm.post(route('photographer.events.invite', props.event.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showInviteModal.value = false;
+            inviteForm.reset();
+            success('Invitación enviada correctamente al correo.');
+        },
+        onError: () => {
+            error('Hubo un problema al enviar la invitación.');
+        }
+    });
+};
+
 
 import {
     CalendarIcon,
     MapPinIcon,
+    UserPlusIcon,
+    EnvelopeIcon,
     PhotoIcon,
     ArrowDownTrayIcon,
     TrashIcon,
@@ -545,13 +566,21 @@ const paginationPages = computed(() => {
                         </div>
 
                         
+                        
+                        
                         <div class="bg-white rounded p-6 md:p-8 shadow-sm border border-gray-100">
-                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
-                                <span class="w-4 h-px bg-gray-200"></span> Equipo asignado
-                            </h3>
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-2">
+                                    <span class="w-4 h-px bg-gray-200"></span> Equipo asignado
+                                </h3>
+                                
+                                <button @click="showInviteModal = true" class="text-[10px] font-bold uppercase text-red-600 hover:text-black transition-colors flex items-center gap-1">
+                                    <UserPlusIcon class="w-3 h-3" /> Invitar
+                                </button>
+                            </div>
 
                             <div class="space-y-4">
-                            
+                                
                                 <div class="flex items-center gap-4 bg-gray-50 p-3 rounded border border-gray-100">
                                     <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-bold shadow-sm">
                                         {{ event.photographer?.business_name?.charAt(0) || 'Y' }}
@@ -564,15 +593,24 @@ const paginationPages = computed(() => {
 
                                 
                                 <template v-if="event.collaborators && event.collaborators.length > 0">
-                                    <div v-for="collab in event.collaborators" :key="collab.id" class="flex items-center gap-4 p-2">
+                                    <div v-for="collab in event.collaborators" :key="collab.id" class="flex items-center gap-4 p-2 border-b border-gray-50 last:border-0">
                                         <img v-if="collab.profile_photo_url" :src="collab.profile_photo_url"
                                             class="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm">
                                         <div v-else class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold shadow-sm">
                                             {{ collab.business_name.charAt(0) }}
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-bold text-slate-700 truncate">{{ collab.business_name }}</p>
-                                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Colaborador</p>
+                                        <div class="flex-1 min-w-0 flex justify-between items-center">
+                                            <div>
+                                                <p class="text-sm font-bold text-slate-700 truncate">{{ collab.business_name }}</p>
+                                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Colaborador</p>
+                                            </div>
+                                            
+                                            <span v-if="collab.pivot.status === 'pending' || collab.pivot.status === 'invited'" class="bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest">
+                                                Pendiente
+                                            </span>
+                                            <span v-else-if="collab.pivot.status === 'approved'" class="bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest">
+                                                Confirmado
+                                            </span>
                                         </div>
                                     </div>
                                 </template>
@@ -581,6 +619,8 @@ const paginationPages = computed(() => {
                                 </div>
                             </div>
                         </div>
+
+
 
                     </div>
 
@@ -793,6 +833,54 @@ const paginationPages = computed(() => {
                         </button>
                     </div>
 
+                </div>
+            </div>
+        </transition>
+
+        <transition enter-active-class="transition duration-300 ease-out"
+            enter-from-class="opacity-0" enter-to-class="opacity-100"
+            leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100"
+            leave-to-class="opacity-0">
+            
+            <div v-if="showInviteModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6">
+                
+                <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showInviteModal = false"></div>
+                
+                <div class="relative bg-white rounded shadow-2xl max-w-lg w-full flex flex-col overflow-hidden z-10">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-white flex justify-between items-center z-10">
+                        <div>
+                            <h3 class="font-bold text-xl text-black">Invitar fotógrafo</h3>
+                            <p class="text-xs text-gray-500 mt-1">Ingresá el correo con el que está registrado en F33.</p>
+                        </div>
+                        <button @click="showInviteModal = false" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-[#E30613] transition-colors">
+                            <XMarkIcon class="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <form @submit.prevent="invitePhotographer" class="p-6 bg-gray-50">
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                Correo del colega
+                            </label>
+                            <div class="relative">
+                                <EnvelopeIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input v-model="inviteForm.email" type="email" required
+                                    class="w-full bg-white border border-gray-200 focus:bg-white focus:border-red-600 focus:ring-1 focus:ring-red-600 text-slate-800 font-bold text-sm py-3 pl-12 pr-4 rounded-xl transition-all outline-none"
+                                    placeholder="ejemplo@correo.com">
+                            </div>
+                            <p v-if="inviteForm.errors.email" class="text-[#E30613] text-xs font-bold mt-2">{{ inviteForm.errors.email }}</p>
+                        </div>
+
+                        <div class="flex justify-end gap-3">
+                            <button type="button" @click="showInviteModal = false" class="px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-bold text-xs uppercase tracking-wider hover:bg-white transition-colors">
+                                Cancelar
+                            </button>
+                            <button type="submit" :disabled="inviteForm.processing" class="px-8 py-3 rounded-full bg-red-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-black transition-colors disabled:opacity-50 shadow-md">
+                                <span v-if="inviteForm.processing">Enviando...</span>
+                                <span v-else>Enviar Invitación</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </transition>

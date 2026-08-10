@@ -119,7 +119,7 @@ const handleImageError = (e) => {
                                         </span>
                                     </div>
                                     <span v-else class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                        Fotógrafo oficial
+                                        Fotógrafo
                                     </span>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@ const handleImageError = (e) => {
                                 class="group relative rounded-2xl overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
                                 
                                 <ProtectedImage :src="photo.thumbnail_url"
-                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
+                                    class="w-full h-full object-cover transition-transform duration-700  pointer-events-none"
                                     @error="handleImageError" />
                                 
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 md:p-4">
