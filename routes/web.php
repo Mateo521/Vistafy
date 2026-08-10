@@ -221,6 +221,12 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::get('/panel', function () {
         $photographer = auth()->user()->photographer;
 
+        $pendingInvitations = $photographer->guestEvents()
+            ->wherePivot('status', 'invited')
+            ->with('photographer:id,business_name')  
+            ->get();
+
+
         $stats = [
             'total_events' => \App\Models\Event::where('photographer_id', $photographer->id)->count(),
             'total_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->count(),
@@ -270,6 +276,12 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::delete('/eventos/{event}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
     Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
+
+
+    Route::post('/oportunidades/{event}/aceptar', [FutureEventManagementController::class, 'acceptInvitation'])->name('opportunities.accept');
+    Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
+
+
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

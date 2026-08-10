@@ -8,6 +8,7 @@ use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -46,7 +47,7 @@ public function inviteColleague(Request $request, Event $event)
 
     $event->collaborators()->attach($invitedPhotographer->id, ['status' => 'invited']);
 
-    // Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $invitedPhotographer));
+    Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $invitedPhotographer));
 
     return redirect()->back()->with('success', 'Invitación enviada.');
 }
