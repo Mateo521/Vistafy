@@ -860,7 +860,7 @@ const paginationPages = computed(() => {
                     <form @submit.prevent="invitePhotographer" class="p-6 bg-gray-50">
                         <div class="mb-6">
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
-                                Correo del colega
+                                Correo del fotografo
                             </label>
                             <div class="relative">
                                 <EnvelopeIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

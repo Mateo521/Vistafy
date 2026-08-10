@@ -83,8 +83,6 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
 Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{event:slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
-
-    Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
     
     Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'show'])
         ->name('face-search.show');
@@ -271,6 +269,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::put('/eventos/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/eventos/{event}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
+    Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
