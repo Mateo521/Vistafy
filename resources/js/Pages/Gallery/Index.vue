@@ -347,7 +347,7 @@ const totalResults = () => {
                             <HashtagIcon class="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-black">Dorsal Encontrado: #{{ bibNumber }}</h3>
+                            <h3 class="font-bold text-lg text-black">Dorsal encontrado: #{{ bibNumber }}</h3>
                             <p class="text-sm text-gray-500"><strong>{{ bibSearchResults.count }}</strong> registros OCR
                                 coincidentes.</p>
                         </div>

@@ -191,6 +191,8 @@ public function inviteColleague(Request $request, Event $event)
                 ];
             });
 
+$event->load('collaborators');
+
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
                 'id' => $event->id,
@@ -217,6 +219,9 @@ public function inviteColleague(Request $request, Event $event)
                         'id' => $collab->id,
                         'business_name' => $collab->business_name,
                         'profile_photo_url' => $collab->profile_photo_url,
+                        'pivot' => [
+                            'status' => $collab->pivot->status ?? 'pending',
+                        ],
                     ];
                 }),
             ],

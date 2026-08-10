@@ -14,6 +14,7 @@ const inviteForm = useForm({
     email: '',
 });
 
+
 const invitePhotographer = () => {
     inviteForm.post(route('photographer.events.invite', props.event.id), {
         preserveScroll: true,
@@ -54,7 +55,7 @@ const props = defineProps({
 });
 
 const { confirm } = useConfirm();
-const { success } = useToast();
+const { success, error } = useToast();
 const copyEventUrl = () => {
     navigator.clipboard.writeText(window.location.href);
     success('ENLACE EN PORTAPAPELES');
@@ -605,10 +606,10 @@ const paginationPages = computed(() => {
                                                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Colaborador</p>
                                             </div>
                                             
-                                            <span v-if="collab.pivot.status === 'pending' || collab.pivot.status === 'invited'" class="bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest">
+                                            <span v-if="collab.pivot?.status === 'pending' || collab.pivot?.status === 'invited'" class="bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest">
                                                 Pendiente
                                             </span>
-                                            <span v-else-if="collab.pivot.status === 'approved'" class="bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest">
+                                            <span v-else-if="collab.pivot?.status === 'approved'" class="bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest">
                                                 Confirmado
                                             </span>
                                         </div>

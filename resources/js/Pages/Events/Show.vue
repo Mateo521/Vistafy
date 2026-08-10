@@ -2,12 +2,14 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
+
 import { 
     ArrowLeftIcon, 
     MapPinIcon, 
     CalendarIcon,
     CameraIcon
 } from '@heroicons/vue/24/outline';
+
 
 const props = defineProps({
     event: Object,
