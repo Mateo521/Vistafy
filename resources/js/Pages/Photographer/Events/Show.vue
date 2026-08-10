@@ -547,7 +547,7 @@ const paginationPages = computed(() => {
                         
                         <div class="bg-white rounded p-6 md:p-8 shadow-sm border border-gray-100">
                             <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
-                                <span class="w-4 h-px bg-gray-200"></span> Equipo Asignado
+                                <span class="w-4 h-px bg-gray-200"></span> Equipo asignado
                             </h3>
 
                             <div class="space-y-4">
@@ -731,8 +731,8 @@ const paginationPages = computed(() => {
                     
                     <div class="px-6 py-5 border-b border-gray-100 bg-white flex justify-between items-center z-10">
                         <div>
-                            <h3 class="font-bold text-xl text-black">Asignar Archivo Interno</h3>
-                            <p class="text-xs text-gray-500 mt-1">Selecciona las capturas disponibles en tu bóveda personal para vincularlas a este evento.</p>
+                            <h3 class="font-bold text-xl text-black">Asignar fotografías cargadas anteriormente</h3>
+                            <p class="text-xs text-gray-500 mt-1">Seleccioná las fotografías disponibles en tu bóveda personal para vincularlas a este evento.</p>
                         </div>
                         <button @click="closeModal" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-[#E30613] transition-colors">
                             <XMarkIcon class="w-5 h-5" />
@@ -746,7 +746,7 @@ const paginationPages = computed(() => {
                             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 mb-4">
                                 <PhotoIcon class="w-8 h-8 text-gray-300" />
                             </div>
-                            <h4 class="font-bold text-lg text-slate-700 mb-1">Sin archivos residuales</h4>
+                            <h4 class="font-bold text-lg text-slate-700 mb-1">Sin fotografías</h4>
                             <p class="text-sm text-gray-500">No tienes fotografías pendientes de asignación en tu bóveda.</p>
                         </div>
                         
@@ -789,7 +789,7 @@ const paginationPages = computed(() => {
                         </button>
                         <button @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0"
                             class="px-8 py-3 rounded-full bg-black text-white font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
-                            Asignar Archivos
+                            Asignar fotografías
                         </button>
                     </div>
 

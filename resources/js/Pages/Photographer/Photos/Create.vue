@@ -390,262 +390,286 @@ const submitPhotos = () => {
     });
 };
 </script>
-
 <template>
     <Head title="Carga de Material" />
 
     <AuthenticatedLayout>
-        <div class="py-12 bg-[#050505] min-h-screen text-[#F2F0EB] selection:bg-[#FF0000] selection:text-white antialiased">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-28">
+            <div class="max-w-[1500px] mx-auto sm:px-6 lg:px-8">
 
-                <div class="mb-10 border-b-4 border-zinc-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                
+                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
                     <div>
                         <Link :href="route('photographer.photos.index')"
-                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-[#050505] hover:bg-[#FF0000] p-1 mb-4 inline-flex items-center gap-2 transition-colors border border-transparent hover:border-[#FF0000]">
-                            ← Volver_al_Archivo
+                            class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
+                            <ArrowLeftIcon class="w-4 h-4" /> Volver al Archivo
                         </Link>
-                        <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-[#F2F0EB] leading-none mt-2">
-                            Ingesta de Material
+                        <h1 class="font-flux text-5xl md:text-7xl text-black leading-none tracking-wide">
+                            Ingesta de <span class="text-[#E30613]">Material</span>
                         </h1>
-                        <p class="font-mono text-xs text-[#FF0000] font-bold mt-3 uppercase tracking-widest">
-                            > Sistema de compresión e IA activo
+                        <p class="text-sm font-bold text-gray-500 mt-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Sistema de compresión e IA activo
                         </p>
                     </div>
                 </div>
 
-                <form @submit.prevent="submitPhotos" class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <form @submit.prevent="submitPhotos" class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12">
 
-                    <div class="lg:col-span-1 space-y-8">
+                     
+                    <div class="lg:col-span-1 space-y-6">
                         
-                        <div class="bg-[#0a0a0a] border-4 border-[#F2F0EB] rounded-none shadow-[6px_6px_0px_0px_rgba(255,0,0,1)]">
-                            <div class="px-6 py-4 border-b-4 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505]">
-                                <h2 class="font-mono text-[10px] font-bold uppercase tracking-widest">
-                                    PARÁMETROS_DE_VENTA
+                        <div class="bg-white border border-gray-100 rounded shadow-sm overflow-hidden">
+                            <div class="px-6 md:px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+                                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                    <span class="w-4 h-px bg-gray-300"></span> Parámetros de Venta
                                 </h2>
                             </div>
 
-                            <div class="p-6 space-y-6">
+                            <div class="p-6 md:p-8 space-y-8">
+                               
                                 <div>
-                                    <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                        Precio Unitario (ARS)
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                        Precio unitario (ARS)
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-[#FF0000]">$</span>
+                                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">$</span>
                                         <input v-model="form.price" type="number" step="0.01" min="0.01" required
-                                            class="w-full bg-[#111] border-2 border-[#F2F0EB] text-[#F2F0EB] font-mono text-2xl font-bold py-3 pl-10 focus:border-[#FF0000] focus:ring-0 rounded-none transition-colors"
+                                            class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-2xl py-3 pl-10 pr-4 rounded-xl transition-all outline-none"
                                             placeholder="0.00">
                                     </div>
-                                    <p v-if="errors.price" class="text-[#FF0000] font-mono text-[10px] font-bold mt-2 uppercase">{{ errors.price }}</p>
+                                    <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price }}</p>
                                 </div>
 
+                                
                                 <div>
-                                    <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                        Asignar a Evento
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                        Asignar a evento
                                     </label>
                                     <select v-model="form.event_id"
-                                        class="w-full bg-[#111] border-2 border-[#F2F0EB] text-[#F2F0EB] font-mono text-xs uppercase font-bold py-3 focus:border-[#FF0000] focus:ring-0 rounded-none cursor-pointer">
-                                        <option :value="null">-- SIN_ASIGNAR --</option>
+                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
+                                        <option :value="null">-- Guardar en mi bóveda personal --</option>
                                         <option v-for="event in events" :key="event.id" :value="event.id">
                                             {{ event.name }}
                                         </option>
                                     </select>
                                 </div>
 
-                                <div class="pt-4 border-t-2 border-zinc-800 border-dashed">
-                                    <label class="flex items-start gap-4 cursor-pointer group">
-                                        <div class="relative flex items-center justify-center w-6 h-6 border-2 border-[#F2F0EB] bg-[#111] group-hover:border-[#FF0000] transition-colors mt-0.5">
-                                            <input type="checkbox" v-model="form.is_active" class="peer sr-only">
-                                            <div class="w-3 h-3 bg-[#FF0000] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                
+                                <div class="space-y-6 pt-6 border-t border-gray-100">
+                                    
+                                   
+                                    <label class="relative flex justify-between items-start cursor-pointer group">
+                                        <div class="pr-4">
+                                            <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
+                                                Publicación inmediata
+                                            </span>
+                                            <span class="block text-xs text-gray-400 mt-1">
+                                                Las fotos van a ser visibles tras la carga.
+                                            </span>
                                         </div>
-                                        <div>
-                                            <span class="block font-mono text-xs font-bold uppercase tracking-widest text-[#F2F0EB] group-hover:text-[#FF0000] transition-colors">
-                                                Publicación Inmediata
-                                            </span>
-                                            <span class="block text-[10px] text-zinc-500 font-mono mt-1 uppercase">
-                                                Activos visibles tras ingesta
-                                            </span>
+                                        <div class="relative inline-flex items-center mt-1">
+                                            <input type="checkbox" v-model="form.is_active" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E30613]"></div>
                                         </div>
                                     </label>
-                                </div>
 
-                                <div class="pt-4 border-t-2 border-zinc-800 border-dashed">
-                                    <label class="flex items-start gap-4 cursor-pointer group">
-                                        <div class="relative flex items-center justify-center w-6 h-6 border-2 border-[#F2F0EB] bg-[#111] group-hover:border-[#FF0000] transition-colors mt-0.5">
-                                            <input type="checkbox" v-model="form.read_bibs" class="peer sr-only">
-                                            <div class="w-3 h-3 bg-[#FF0000] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                    
+                                    <label class="relative flex justify-between items-start cursor-pointer group">
+                                        <div class="pr-4">
+                                            <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
+                                                Leer dorsales (OCR)
+                                            </span>
+                                            <span class="block text-xs text-gray-400 mt-1">
+                                                Identificación automática de números
+                                            </span>
                                         </div>
-                                        <div>
-                                            <span class="block font-mono text-xs font-bold uppercase tracking-widest text-[#F2F0EB] group-hover:text-[#FF0000] transition-colors">
-                                                Leer Dorsales (OCR)
-                                            </span>
-                                            <span class="block text-[10px] text-zinc-500 font-mono mt-1 uppercase">
-                                                Desactivar para eventos no deportivos
-                                            </span>
+                                        <div class="relative inline-flex items-center mt-1">
+                                            <input type="checkbox" v-model="form.read_bibs" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
                                         </div>
                                     </label>
+
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-[#111] border-2 border-zinc-800 p-6 rounded-none">
+                        
+                        <div class="bg-gray-50 border border-gray-200 p-6 rounded">
                             <div class="flex items-start gap-4">
-                                <InformationCircleIcon class="w-6 h-6 text-[#FF0000] flex-shrink-0" stroke-width="2" />
+                                <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+                                    <InformationCircleIcon class="w-5 h-5 text-gray-500" stroke-width="2" />
+                                </div>
                                 <div>
-                                    <h4 class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#F2F0EB] mb-2">
-                                        SYS_SECURITY
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        Protección F33
                                     </h4>
-                                    <p class="font-mono text-[10px] text-zinc-500 leading-relaxed uppercase">
-                                        Marca de agua aplicada automáticamente. Originales resguardados en bóveda segura hasta confirmación de transacción.
+                                    <p class="text-xs text-gray-500 leading-relaxed">
+                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan en bóveda segura hasta la confirmación de transacción.
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-2 flex flex-col gap-8">
+                     
+                    <div class="lg:col-span-2 flex flex-col gap-6">
 
+                       
                         <div @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false"
                             @drop.prevent="handleDrop" :class="[
-                                'border-4 border-dashed rounded-none p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[300px]',
+                                'border-2 border-dashed rounded p-8 md:p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden bg-white',
                                 dragOver
-                                    ? 'border-[#FF0000] bg-[#1a0505]'
-                                    : 'border-zinc-700 bg-[#0a0a0a] hover:border-[#F2F0EB]'
+                                    ? 'border-[#E30613] bg-red-50'
+                                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                             ]">
-                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*" class="hidden">
+                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*" class="hidden" id="file-upload">
 
                             <div v-if="selectedFiles.length === 0" class="flex flex-col items-center">
-                                <CloudArrowUpIcon class="w-16 h-16 text-zinc-600 mb-6 stroke-1" />
-                                <h3 class="text-2xl font-black uppercase tracking-tight text-[#F2F0EB] mb-2">
-                                    Zona de Ingesta
-                                </h3>
-                                <p class="font-mono text-xs text-zinc-500 mb-8 uppercase">
-                                    Arrastre activos físicos aquí o explore
-                                </p>
-                                <button type="button" @click="$refs.fileInput.click()"
-                                    class="px-8 py-3 border-2 border-[#F2F0EB] bg-transparent text-[#F2F0EB] font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-[#F2F0EB] hover:text-[#050505] transition-colors rounded-none">
-                                    Seleccionar_Archivos
-                                </button>
-                                <div class="mt-8 font-mono text-[10px] uppercase tracking-widest text-zinc-600 border-t-2 border-zinc-800 pt-4 w-full">
-                                    JPG, PNG // MAX 50MB // LÍMITE 50
+                                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100">
+                                    <CloudArrowUpIcon class="w-10 h-10 text-gray-400 stroke-1" />
                                 </div>
+                                <h3 class="font-flux text-4xl text-black mb-2">Zona de Carga</h3>
+                                <p class="text-gray-500 mb-6">Arrastra tus fotografías aquí o explora tus archivos</p>
+                                <button type="button" @click="$refs.fileInput.click()"
+                                    class="px-8 py-3.5 bg-black text-white rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors shadow-md">
+                                    Seleccionar Archivos
+                                </button>
+                                <p class="mt-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                    JPG, PNG • Máx 50MB • Límite 50 archivos
+                                </p>
                             </div>
 
                             <div v-else class="w-full flex flex-col h-full">
-                                <div class="flex justify-between items-end mb-6 border-b-2 border-zinc-800 pb-4">
-                                    <span class="font-mono text-2xl font-black text-[#F2F0EB]">
-                                        {{ selectedFiles.length }} <span class="text-[#FF0000] text-sm">ARCHIVOS EN COLA</span>
+                                
+                                <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                                    <span class="text-xl font-bold text-black flex items-center gap-2">
+                                        {{ selectedFiles.length }} <span class="text-sm font-medium text-gray-500">Archivos en cola</span>
                                     </span>
-                                    <div class="flex gap-4">
+                                    <div class="flex gap-2">
                                         <button type="button" @click="$refs.fileInput.click()"
-                                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-[#F2F0EB] transition-colors">
+                                            class="px-4 py-2 bg-gray-100 text-slate-700 rounded-full font-bold text-xs hover:bg-gray-200 transition-colors">
                                             + Agregar
                                         </button>
                                         <button type="button" @click="clearFiles"
-                                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#FF0000] hover:text-red-400 transition-colors">
-                                            [ Purgar_Todo ]
+                                            class="px-4 py-2 bg-red-50 text-[#E30613] rounded-full font-bold text-xs hover:bg-red-100 transition-colors">
+                                            Limpiar Todo
                                         </button>
                                     </div>
                                 </div>
 
+                              
                                 <div v-if="processingFaces || processingBibs"
-                                    class="mb-6 bg-[#1a0505] border-2 border-[#FF0000] p-4 rounded-none flex items-center gap-4">
-                                    <div class="animate-spin rounded-none h-5 w-5 border-4 border-[#FF0000] border-t-transparent"></div>
-                                    <span class="font-mono text-xs text-[#FF0000] font-bold uppercase tracking-widest">
-                                        Ejecutando Modelos IA ({{ selectedFiles.length }} activos)...
+                                    class="mb-6 bg-red-50 border border-red-100 p-4 rounded flex items-center gap-4 text-[#E30613]">
+                                    <div class="animate-spin rounded-full h-5 w-5 border-2 border-[#E30613] border-t-transparent"></div>
+                                    <span class="text-xs font-bold uppercase tracking-wider">
+                                        Ejecutando modelos IA ({{ selectedFiles.length }} activos)...
                                     </span>
                                 </div>
 
-                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar text-left">
                                     <div v-for="(file, index) in selectedFiles" :key="index"
-                                        class="relative group aspect-square bg-[#050505] border-2 border-zinc-800 overflow-hidden hover:border-[#F2F0EB] transition-colors">
+                                        class="relative group aspect-square bg-gray-100 rounded overflow-hidden border border-gray-200 hover:shadow-md transition-all">
 
                                         <img :src="file.preview"
-                                            class="w-full h-full object-cover filter grayscale contrast-125 opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300">
+                                            class="w-full h-full object-cover transition-transform duration-500 ">
 
+                                        
                                         <div v-if="faceDetectionResults[index]"
-                                            class="absolute top-2 right-2 px-2 py-1 font-mono text-[10px] font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] z-10 border-2 border-black"
-                                            :class="faceDetectionResults[index].count > 0 ? 'bg-[#FF0000] text-black' : 'bg-zinc-800 text-zinc-400'">
+                                            class="absolute top-2 right-2 px-2 py-1 rounded-md text-[9px] font-bold shadow-sm z-10"
+                                            :class="faceDetectionResults[index].count > 0 ? 'bg-[#E30613] text-white' : 'bg-black/50 text-white backdrop-blur'">
                                             <span v-if="faceDetectionResults[index].count > 0">
-                                                [{{ faceDetectionResults[index].count }}] ROSTROS
+                                                {{ faceDetectionResults[index].count }} Rostro(s)
                                             </span>
-                                            <span v-else>0</span>
+                                            <span v-else>0 Rostros</span>
                                         </div>
 
-                                        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black via-black/80 to-transparent transition-all duration-300 z-20 group/edit border-t border-transparent group-hover:border-[#FF0000]">
+                                        
+                                        <div class="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity z-20">
                                             <div class="flex flex-wrap gap-1.5 items-center">
-                                                <HashtagIcon class="w-3 h-3 text-[#FF0000] shrink-0" stroke-width="3" />
+                                                <HashtagIcon class="w-3 h-3 text-white shrink-0" stroke-width="3" />
 
                                                 <template v-if="bibDetectionResults[index]?.numbers?.length">
                                                     <div v-for="number in bibDetectionResults[index].numbers" :key="number"
-                                                        class="bg-[#F2F0EB] text-black text-[10px] font-black font-mono px-1 py-0.5 flex items-center gap-1 border-2 border-black">
+                                                        class="bg-white/90 backdrop-blur text-black text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                                                         <span>{{ number }}</span>
                                                         <button type="button" @click.stop="removeBibTag(index, number)"
-                                                            class="text-[#FF0000] hover:text-black focus:outline-none">
-                                                            <XMarkIcon class="w-3 h-3" stroke-width="3" />
+                                                            class="text-gray-400 hover:text-[#E30613] focus:outline-none">
+                                                            <XMarkIcon class="w-2.5 h-2.5" stroke-width="3" />
                                                         </button>
                                                     </div>
                                                 </template>
 
-                                                <input type="text" placeholder="+"
+                                                <input type="text" placeholder="Añadir..."
                                                     @keydown.enter.prevent="addBibTag(index, $event)"
                                                     @keydown.backspace="handleBackspace(index, $event)"
-                                                    class="flex-1 min-w-[30px] bg-transparent border-none text-[#F2F0EB] font-mono text-[11px] font-bold p-0 focus:ring-0 placeholder-zinc-600 focus:placeholder-zinc-400 outline-none h-5" />
+                                                    class="flex-1 min-w-[50px] bg-transparent border-none text-white text-[10px] font-bold p-0 focus:ring-0 placeholder-gray-300 outline-none h-5" />
                                             </div>
                                         </div>
 
-                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
+                                        
+                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
                                             <button type="button" @click="removeFile(index)"
-                                                class="bg-[#FF0000] text-black p-3 border-2 border-black hover:bg-white transition-colors pointer-events-auto shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-                                                <XMarkIcon class="w-6 h-6" stroke-width="2" />
+                                                class="w-10 h-10 bg-white rounded-full text-[#E30613] shadow-lg flex items-center justify-center hover:bg-[#E30613] hover:text-white transition-colors pointer-events-auto transform ">
+                                                <XMarkIcon class="w-5 h-5" stroke-width="2" />
                                             </button>
                                         </div>
 
+                                        
                                         <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
-                                            class="absolute inset-0 bg-black/80 flex items-center justify-center z-40 backdrop-blur-sm">
-                                            <div class="animate-spin rounded-none h-6 w-6 border-2 border-zinc-600 border-t-[#FF0000]"></div>
+                                            class="absolute inset-0 bg-white/80 flex items-center justify-center z-40 backdrop-blur-sm">
+                                            <div class="animate-spin rounded-full h-6 w-6 border-2 border-gray-200 border-t-[#E30613]"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div v-if="uploading" class="p-6 bg-[#111] border-2 border-zinc-800 rounded-none">
-                            <div class="flex justify-between font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">
-                                <span>TX_EN_PROGRESO</span>
-                                <span class="text-[#FF0000]">{{ uploadProgress.percentage }}%</span>
+                        
+                        <div v-if="uploading" class="p-6 bg-white border border-gray-100 rounded shadow-sm">
+                            <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+                                <span>Subiendo archivos...</span>
+                                <span class="text-[#E30613]">{{ uploadProgress.percentage }}%</span>
                             </div>
-                            <div class="w-full bg-[#050505] h-3 border-2 border-zinc-800 rounded-none overflow-hidden p-0.5">
-                                <div class="bg-[#FF0000] h-full transition-all duration-200 ease-out"
+                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-red-500 to-[#E30613] h-full transition-all duration-200 ease-out"
                                     :style="{ width: uploadProgress.percentage + '%' }"></div>
                             </div>
-                            <p class="font-mono text-[10px] text-[#FF0000] mt-3 uppercase tracking-widest animate-pulse">
-                                [ No interrumpir conexión ]
+                            <p class="text-xs text-gray-400 mt-3 text-center">
+                                Por favor, no cerrés esta ventana hasta que termine el proceso.
                             </p>
                         </div>
 
-                        <div class="flex justify-end">
+                        
+                        <div class="flex justify-end mt-2">
                             <button type="button" @click="submitPhotos"
                                 :disabled="uploading || selectedFiles.length === 0" :class="[
-                                    'px-10 py-5 font-mono text-[12px] font-black uppercase tracking-widest transition-all duration-200 rounded-none w-full md:w-auto border-4',
+                                    'px-10 py-4 font-bold text-sm uppercase tracking-wider transition-all duration-200 rounded-full w-full md:w-auto flex justify-center items-center gap-2',
                                     uploading || selectedFiles.length === 0
-                                        ? 'bg-[#111] text-zinc-600 border-zinc-800 cursor-not-allowed'
-                                        : 'bg-[#FF0000] text-black border-black hover:bg-[#F2F0EB] hover:text-black shadow-[6px_6px_0_0_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px]'
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1'
                                 ]">
-                                <span v-if="uploading">Transmitiendo...</span>
-                                <span v-else>Iniciar Ingesta //</span>
+                                <span v-if="uploading" class="flex items-center gap-2">
+                                    <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Subiendo...
+                                </span>
+                                <span v-else>Subir fotos</span>
                             </button>
                         </div>
 
+                      
                         <div v-if="Object.keys(errors).length > 0"
-                            class="p-6 border-4 border-[#FF0000] bg-[#1a0505] rounded-none shadow-[6px_6px_0_0_rgba(255,0,0,1)]">
+                            class="p-6 bg-red-50 border border-red-100 rounded mt-4">
                             <div class="flex gap-4">
-                                <XMarkIcon class="w-6 h-6 text-[#FF0000]" stroke-width="2" />
+                                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                    <XMarkIcon class="w-5 h-5 text-[#E30613]" stroke-width="2" />
+                                </div>
                                 <div>
-                                    <h4 class="font-mono text-[10px] font-bold text-[#FF0000] uppercase tracking-widest mb-2 border-b-2 border-[#FF0000] pb-1 w-fit">
-                                        FALLO_EN_SISTEMA
+                                    <h4 class="text-sm font-bold text-[#E30613] mb-2">
+                                        Error en el sistema
                                     </h4>
-                                    <ul class="list-none font-mono text-xs text-[#F2F0EB] space-y-1">
-                                        <li v-for="(error, key) in errors" :key="key" class="flex gap-2 before:content-['>'] before:text-[#FF0000]">
+                                    <ul class="list-disc pl-4 text-xs text-red-800 space-y-1 font-medium">
+                                        <li v-for="(error, key) in errors" :key="key">
                                             {{ error }}
                                         </li>
                                     </ul>
@@ -663,21 +687,16 @@ const submitPhotos = () => {
 <style scoped>
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 12px;
+    width: 6px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: #050505;
-    border-left: 2px solid #27272a; 
+    background: transparent;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #3f3f46; 
-    border-left: 2px solid #27272a;
-    border-radius: 0px;
+    background: #cbd5e1; 
+    border-radius: 10px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #FF0000;
+    background: #94a3b8;
 }
 </style>
