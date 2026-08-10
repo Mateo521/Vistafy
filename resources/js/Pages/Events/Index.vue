@@ -69,7 +69,7 @@ const handleImageError = (e) => {
             
         
             <div class="pt-32 pb-16 px-4 md:px-8 max-w-7xl mx-auto text-center">
-                <span class="font-bold tracking-widest text-red-600 uppercase text-sm mb-4 block">-</span>
+                <span class="font-bold tracking-widest text-red-600 uppercase text-sm mb-4 block">Todos los eventos pasados</span>
                 <h1 class="font-flux text-6xl md:text-8xl text-black mb-6 leading-none">
                     Explorá <br class="md:hidden">
                     <span class="bg-gradient-to-r from-red-600 to-black -webkit-background-clip-text text-transparent bg-clip-text">eventos</span>

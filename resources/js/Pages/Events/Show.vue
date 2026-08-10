@@ -1,9 +1,17 @@
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLeftIcon, FunnelIcon, MagnifyingGlassIcon, HashtagIcon, MapPinIcon } from '@heroicons/vue/24/outline';
+import { 
+    ArrowLeftIcon, 
+    MagnifyingGlassIcon, 
+    HashtagIcon, 
+    MapPinIcon,
+    CalendarIcon,
+    CameraIcon
+} from '@heroicons/vue/24/outline';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
+
 const props = defineProps({
     event: Object,
     photos: Object,
@@ -32,198 +40,158 @@ const filterByPhotographer = () => {
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
         year: 'numeric',
-        month: 'short',
+        month: 'long',
         day: 'numeric'
     });
 };
-
 
 const handleImageError = (e) => {
     e.target.style.display = 'none';
     const parent = e.target.parentElement;
     if (!parent.querySelector('.placeholder-img')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder-img w-full h-full min-h-[250px] flex items-center justify-center bg-gray-950 border-[4px] border-red-600/30';
-        placeholder.innerHTML = `<span class="font-mono text-[10px] text-red-600 uppercase tracking-widest">[ SEÑAL PERDIDA ]</span>`;
+        placeholder.className = 'placeholder-img w-full h-full min-h-[250px] flex flex-col items-center justify-center bg-gray-50 border border-gray-100 rounded';
+        placeholder.innerHTML = `
+            <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">No disponible</span>
+        `;
         parent.appendChild(placeholder);
     }
 };
-
-
-const initGlitch = () => {
-    const glitchContainers = document.querySelectorAll('.glitch-image-container');
-
-    glitchContainers.forEach(container => {
-        const imgUrl = container.getAttribute('data-img');
-        if (!imgUrl) return;
-
-        const imgPreloader = new Image();
-        imgPreloader.src = imgUrl;
-
-        imgPreloader.onload = () => {
-            // Obtenemos el ancho y alto real del contenedor (evitando ceros)
-            const height = container.offsetHeight || 400;
-            const width = container.offsetWidth || window.innerWidth;
-
-            let i = 0;
-            let html = '';
-            const random = (min, max) => Math.random() * (max - min) + min;
-
-            while (i < height) {
-                const stripHeight = Math.floor(random(4, 15));
-                const actualHeight = (i + stripHeight < height) ? stripHeight : (height - i);
-
-                const gx1 = random(-12, 12).toFixed(1) + 'px';
-                const gx2 = random(-12, 12).toFixed(1) + 'px';
-                const gh1 = random(-30, 30).toFixed(1) + 'deg';
-                const gh2 = random(-30, 30).toFixed(1) + 'deg';
-                const duration = random(3, 6).toFixed(1) + 's';
-                const delay = random(0, 3).toFixed(1) + 's';
-
-                html += `
-                    <div class="glitch-strip absolute left-0 w-full" 
-                         style="
-                            top: ${i}px;
-                            height: ${actualHeight}px; 
-                            background-image: url('${imgUrl}');
-                            background-size: ${width}px ${height}px; 
-                            background-position: 0px -${i}px;
-                            --glitch-x-1: ${gx1};
-                            --glitch-x-2: ${gx2};
-                            --glitch-hue-1: ${gh1};
-                            --glitch-hue-2: ${gh2};
-                            animation-duration: ${duration};
-                            animation-delay: -${delay};
-                         ">
-                    </div>`;
-                i += actualHeight;
-            }
-            container.innerHTML = html;
-        };
-    });
-};
-
-onMounted(() => {
-    setTimeout(() => {
-        initGlitch();
-    }, 50);
-});
 </script>
 
 <template>
-
     <Head :title="event.name + ' — F33'" />
 
     <AppLayout>
-
-        <div class="border-b border-white/20 bg-black/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
-            <div
-                class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center font-mono text-[10px] uppercase tracking-widest">
-                <Link :href="route('events.index')"
-                    class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
-                    <ArrowLeftIcon class="w-3.5 h-3.5" /> [ Archivos ]
-                </Link>
-            </div>
+        
+        <div class="fixed top-24 md:top-28 left-4 md:left-8 z-40">
+            <Link :href="route('events.index')"
+                class="flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-200 text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black hover:shadow-md hover:-translate-x-1 transition-all">
+                <ArrowLeftIcon class="w-4 h-4" /> Volver
+            </Link>
         </div>
 
-        <div
-            class="relative bg-black pt-20 pb-16 md:pt-32 md:pb-24 border-b-[12px] border-white group overflow-hidden z-0">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 pb-24 pt-20">
+            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
 
-            <div v-if="event.cover_image_url"
-                class="glitch-image-container absolute inset-0 w-full h-full overflow-hidden z-0 opacity-40 grayscale contrast-125 mix-blend-screen"
-                :data-img="event.cover_image_url"></div>
+                
+                <div class="relative w-full h-[50vh] min-h-[400px] rounded overflow-hidden shadow-xl mb-12 flex flex-col justify-end">
+                    
+                    <div class="absolute inset-0 w-full h-full bg-slate-900">
+                        <img v-if="event.cover_image_url" :src="event.cover_image_url" 
+                             class="w-full h-full object-cover opacity-80 mix-blend-overlay" :alt="event.name" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                    </div>
 
-            <div v-else class="absolute inset-0 w-full h-full bg-gray-950 z-0"></div>
+                    
+                    <div class="relative z-10 p-8 md:p-16">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-[#E30613] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <CalendarIcon class="w-3.5 h-3.5" /> {{ formatDate(event.event_date) }}
+                            </span>
+                            <span v-if="event.location" class="bg-white/20 backdrop-blur-md text-white border border-white/20 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <MapPinIcon class="w-3.5 h-3.5" /> {{ event.location }}
+                            </span>
+                        </div>
+                        
+                        <h1 class="font-flux text-5xl md:text-8xl text-white leading-none tracking-wide mb-6">
+                            {{ event.name }}
+                        </h1>
 
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8 relative z-10">
-                <div class="pointer-events-none">
-                    <p class="font-mono text-xs uppercase text-red-600 mb-4 border-l-2 border-red-600 pl-3">
-                        // {{ formatDate(event.event_date) }}
-                    </p>
-                    <h1
-                        class="font-black font-flux text-[10vw] md:text-[7rem] leading-[0.8] text-white tracking-tighter mb-6 drop-shadow-xl">
-                        {{ event.name }}
-                    </h1>
-
-                    <div
-                        class="flex flex-wrap items-center gap-6 font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-8">
-                        <span v-if="event.location"
-                            class="flex items-center gap-2 border border-white/20 px-3 py-1.5 bg-black/80 backdrop-blur-sm">
-                            <MapPinIcon class="w-3.5 h-3.5 text-red-600" /> {{ event.location }}
-                        </span>
-                        <span class="border border-white/20 px-3 py-1.5 bg-black/80 backdrop-blur-sm text-white">
-                            VOLUMEN: <span class="text-red-600">{{ event.photos_count }}</span> FRAMES
-                        </span>
+                        <div class="flex items-center gap-2 text-white/80 text-sm font-medium">
+                            <CameraIcon class="w-5 h-5" />
+                            <span><strong class="text-white">{{ event.photos_count }}</strong> fotografías capturadas</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-
-
-        <div class="min-h-screen bg-black text-white font-sans pb-24">
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8 pt-16">
-
-                <div class="flex flex-col lg:flex-row gap-12 lg:gap-16 mb-16 border-b border-white/20 pb-16">
-
+            
+                <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-16">
+                    
+                
                     <div class="lg:w-7/12">
-                        <h3
-                            class="font-mono text-[10px] font-bold uppercase tracking-[0.35em] text-gray-500 mb-6 border-b border-white/10 pb-2">
-                            / Descripción del evento
-                        </h3>
-                        <p class="font-mono text-sm text-gray-400 uppercase tracking-widest leading-relaxed mb-6">
-                            {{ event.description || 'SIN DATOS DESCRIPTIVOS ASIGNADOS AL EVENTO.' }}
-                        </p>
-                        <p v-if="event.long_description"
-                            class="font-mono text-[11px] text-gray-600 uppercase tracking-widest leading-relaxed">
-                            {{ event.long_description }}
-                        </p>
+                        <div class="bg-white p-8 md:p-10 rounded shadow-sm border border-gray-100 h-full">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <span class="w-8 h-px bg-gray-200"></span> Acerca del evento
+                            </h3>
+                            <p class="text-lg md:text-xl text-slate-700 leading-relaxed mb-6 font-medium">
+                                {{ event.description || 'Sin descripción general asignada a este evento.' }}
+                            </p>
+                            <p v-if="event.long_description" class="text-slate-500 leading-relaxed">
+                                {{ event.long_description }}
+                            </p>
+                        </div>
                     </div>
 
+                
                     <div class="lg:w-5/12 flex flex-col gap-6">
-
-                        <div
-                            class="bg-gray-950 border-[4px] border-white/20 p-6 relative overflow-hidden transition-none group hover:border-white">
-                            <div
-                                class="absolute -right-8 -bottom-8 text-white/5 pointer-events-none group-hover:text-red-600/5 transition-none">
-                                <FunnelIcon class="w-48 h-48" />
-                            </div>
-
-                            <h3
-                                class="font-mono text-[10px] font-bold uppercase  text-white mb-6 border-b border-white/10 pb-2">
-                                [ FILTRAR POR FOTÓGRAFO ]
-                            </h3>
-
-                            <div class="space-y-3 relative z-10 font-mono text-[10px] tracking-widest uppercase">
-                                <label class="flex items-center cursor-pointer group/label">
-                                    <input type="radio" v-model="selectedPhotographer" value="all"
-                                        @change="filterByPhotographer" class="sr-only">
-                                    <div class="w-4 h-4 border-2 mr-3 flex items-center justify-center transition-none"
-                                        :class="selectedPhotographer === 'all' ? 'border-red-600' : 'border-gray-600 group-hover/label:border-white'">
-                                        <div v-if="selectedPhotographer === 'all'" class="w-2 h-2 bg-red-600"></div>
+                        
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
+                            <Link :href="route('events.face-search', event.slug)"
+                                class="group bg-gradient-to-br from-[#E30613] to-red-800 p-6 rounded shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 opacity-20 transform  transition-transform duration-500">
+                                    <MagnifyingGlassIcon class="w-24 h-24 text-white" />
+                                </div>
+                                <div class="relative z-10">
+                                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                                        <MagnifyingGlassIcon class="w-5 h-5 text-white" />
                                     </div>
-                                    <span class="font-bold transition-none"
-                                        :class="selectedPhotographer === 'all' ? 'text-white' : 'text-gray-500 group-hover/label:text-white'">
-                                        MOSTRAR TODO EL VOLUMEN
-                                    </span>
+                                    <h4 class="font-bold text-white text-lg mb-1">Escáner Facial</h4>
+                                    <p class="text-red-100 text-xs">Sube una selfie y encuéntrate.</p>
+                                </div>
+                            </Link>
+
+                            <Link :href="route('events.bib-search', event.slug)"
+                                class="group bg-black p-6 rounded shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 opacity-10 transform  transition-transform duration-500">
+                                    <HashtagIcon class="w-24 h-24 text-white" />
+                                </div>
+                                <div class="relative z-10">
+                                    <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm border border-white/10">
+                                        <HashtagIcon class="w-5 h-5 text-white" />
+                                    </div>
+                                    <h4 class="font-bold text-white text-lg mb-1">Búsqueda OCR</h4>
+                                    <p class="text-gray-400 text-xs">Busca por tu número de dorsal.</p>
+                                </div>
+                            </Link>
+                        </div>
+
+                    
+                        <div class="bg-white p-6 rounded shadow-sm border border-gray-100 flex-1">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Fotógrafos Oficiales
+                            </h3>
+                            
+                            <div class="flex flex-wrap gap-2">
+                                
+                                <label class="cursor-pointer">
+                                    <input type="radio" v-model="selectedPhotographer" value="all" @change="filterByPhotographer" class="sr-only">
+                                    <div :class="[
+                                        'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border',
+                                        selectedPhotographer === 'all' 
+                                            ? 'bg-black text-white border-black shadow-md' 
+                                            : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-black'
+                                    ]">
+                                        Ver Todos
+                                    </div>
                                 </label>
 
-                                <label v-for="photographer in photographers" :key="photographer.id"
-                                    class="flex items-center cursor-pointer group/label">
-                                    <input type="radio" v-model="selectedPhotographer" :value="photographer.id"
-                                        @change="filterByPhotographer" class="sr-only">
-                                    <div class="w-4 h-4 border-2 mr-3 flex items-center justify-center transition-none"
-                                        :class="selectedPhotographer === photographer.id ? 'border-red-600' : 'border-gray-600 group-hover/label:border-white'">
-                                        <div v-if="selectedPhotographer === photographer.id" class="w-2 h-2 bg-red-600">
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3 w-full">
-                                        <span class="font-bold truncate transition-none"
-                                            :class="selectedPhotographer === photographer.id ? 'text-white' : 'text-gray-500 group-hover/label:text-white'">
-                                            {{ photographer.business_name || photographer.user.name }}
-                                        </span>
-                                        <span
-                                            class="ml-auto text-[9px] text-gray-500 bg-black border border-white/20 px-1.5 py-0.5">
+                                
+                                <label v-for="photographer in photographers" :key="photographer.id" class="cursor-pointer">
+                                    <input type="radio" v-model="selectedPhotographer" :value="photographer.id" @change="filterByPhotographer" class="sr-only">
+                                    <div :class="[
+                                        'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border flex items-center gap-2',
+                                        selectedPhotographer === photographer.id 
+                                            ? 'bg-black text-white border-black shadow-md' 
+                                            : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-black'
+                                    ]">
+                                        {{ photographer.business_name || photographer.user.name }}
+                                        <span :class="[
+                                            'px-1.5 py-0.5 rounded-full text-[9px] leading-none',
+                                            selectedPhotographer === photographer.id ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-600'
+                                        ]">
                                             {{ photographer.photos_count }}
                                         </span>
                                     </div>
@@ -231,92 +199,81 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="flex flex-col gap-3">
-                            <Link :href="route('events.face-search', event.slug)"
-                                class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white transition-none px-6 py-4 font-black font-sans text-xl uppercase tracking-tighter group">
-                                <span class="flex items-center gap-3">
-                                    <MagnifyingGlassIcon class="w-6 h-6" /> ESCÁNER BIOMÉTRICO
-                                </span>
-                                <span
-                                    class="font-mono text-xs opacity-50 group-hover:translate-x-2 transition-transform">→</span>
-                            </Link>
-
-                            <Link :href="route('events.bib-search', event.slug)"
-                                class="w-full flex items-center justify-between bg-black border-2 border-white text-white hover:bg-white hover:text-black transition-none px-6 py-4 font-black font-sans text-xl uppercase tracking-tighter group">
-                                <span class="flex items-center gap-3">
-                                    <HashtagIcon class="w-6 h-6" /> ANÁLISIS OCR (DORSAL)
-                                </span>
-                                <span
-                                    class="font-mono text-xs opacity-50 group-hover:translate-x-2 transition-transform">→</span>
-                            </Link>
-                        </div>
-
                     </div>
                 </div>
 
+                
                 <div v-if="photos.data && photos.data.length > 0">
-                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-2 space-y-2 masonry-grid mb-16">
-
-                        <div v-for="photo in photos.data" :key="photo.id"
-                            @click="router.visit(route('gallery.show', photo.unique_id))" @contextmenu.prevent
-                            class="break-inside-avoid block group relative bg-gray-950 overflow-hidden border-[4px] border-black hover:border-red-600 transition-none  w-full h-auto">
-
-
-
-                            <ProtectedImage :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                class="w-full h-auto object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none pointer-events-none"
-                                loading="lazy" @error="handleImageError" />
-
-
-                            <div
-                                class="absolute inset-0 bg-red-600 mix-blend-overlay opacity-0 group-hover:opacity-20 transition-none pointer-events-none">
-                            </div>
-
-                            <div class="absolute top-2 left-2 pointer-events-none">
-                                <span
-                                    class="bg-black border border-white text-white font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-1 shadow-lg block mb-1 w-max opacity-0 group-hover:opacity-100 transition-none">
-                                    [ INSPECCIONAR ]
-                                </span>
-                                <span
-                                    class="bg-black text-red-600 font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-1 w-max">
-                                    #{{ photo.unique_id }}
-                                </span>
-                            </div>
-
-                            <div
-                                class="absolute bottom-2 right-2 bg-black text-white px-2 py-1 text-[9px] font-mono font-bold uppercase tracking-widest border border-white/20 opacity-0 group-hover:opacity-100 transition-none pointer-events-none">
-                                {{ photo.photographer_name }}
-                            </div>
-                        </div>
-
+                    <div class="flex justify-between items-center mb-6 px-2">
+                        <h2 class="text-2xl font-flux text-black tracking-wide">Capturas Recientes</h2>
+                        <span class="text-sm font-bold text-gray-500">{{ photos.total }} resultados</span>
                     </div>
 
-                    <div v-if="photos.last_page > 1" class="flex justify-center pt-8 border-t border-white/20">
-                        <div class="flex flex-wrap gap-2">
+                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 masonry-grid mb-16">
+                        <div v-for="photo in photos.data" :key="photo.id"
+                            @click="router.visit(route('gallery.show', photo.unique_id))" @contextmenu.prevent
+                            class="break-inside-avoid block group relative bg-white rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200">
+
+                            <div class="relative w-full h-auto">
+                                <ProtectedImage :src="photo.thumbnail_url" :alt="photo.unique_id"
+                                    class="w-full h-auto object-cover transition-transform duration-700  pointer-events-none"
+                                    loading="lazy" @error="handleImageError" />
+
+                            
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+                            
+                                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-[10px] font-bold text-slate-800 shadow-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    #{{ photo.unique_id }}
+                                </div>
+
+                            
+                                <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    <div class="bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                        {{ photo.photographer_name }}
+                                    </div>
+                                    <div class="w-8 h-8 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                    <div v-if="photos.last_page > 1" class="flex justify-center pt-8 border-t border-gray-200">
+                        <div class="flex flex-wrap gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
                             <template v-for="(link, index) in photos.links" :key="index">
-                                <Link v-if="link.url" :href="link.url" v-html="link.label"
-                                    class="min-w-[40px] h-10 flex items-center justify-center px-4 font-mono text-[11px] font-bold transition-none border-2 border-white/20 hover:border-white"
-                                    :class="link.active ? 'bg-red-600 text-black border-red-600 hover:border-red-600' : 'bg-black text-gray-400 hover:text-white'" />
-                                <span v-else v-html="link.label"
-                                    class="min-w-[40px] h-10 flex items-center justify-center px-4 font-mono text-[11px] font-bold text-gray-700 border-2 border-transparent"></span>
+                                <Link v-if="link.url" :href="link.url"
+                                    class="min-w-[40px] h-10 flex items-center justify-center px-4 rounded-full text-xs font-bold transition-colors"
+                                    :class="link.active
+                                        ? 'bg-[#E30613] text-white shadow-md'
+                                        : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-black'">
+                                    <span v-html="link.label"></span>
+                                </Link>
+                                <span v-else v-html="link.label" class="min-w-[40px] h-10 flex items-center justify-center px-4 rounded-full text-xs font-bold text-gray-300"></span>
                             </template>
                         </div>
                     </div>
                 </div>
 
-                <div v-else
-                    class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 bg-gray-950 text-center">
-                    <div class="w-16 h-16 text-gray-600 mb-6">
-                        <FunnelIcon class="w-full h-full" />
+            
+                <div v-else class="flex flex-col items-center justify-center py-24 px-4 text-center bg-white rounded shadow-sm border border-gray-100">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                        <CameraIcon class="w-8 h-8 text-gray-300" />
                     </div>
-                    <h3 class="font-black text-4xl md:text-6xl text-gray-700 tracking-tighter mb-4 uppercase">NULO.</h3>
-                    <p class="font-mono text-xs text-gray-500 tracking-widest uppercase mb-8">
-                        EL FOTÓGRAFO SELECCIONADO NO REGISTRA ARCHIVOS EN ESTE EVENTO.
+                    <h3 class="font-flux text-4xl text-black mb-3">Sin Resultados</h3>
+                    <p class="text-gray-500 mb-8 max-w-md">
+                        {{ selectedPhotographer !== 'all' 
+                            ? 'El fotógrafo seleccionado aún no ha publicado capturas para este evento.' 
+                            : 'Aún no se han publicado fotografías para este evento.' }}
                     </p>
                     <button v-if="selectedPhotographer !== 'all'"
                         @click="selectedPhotographer = 'all'; filterByPhotographer()"
-                        class="border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black px-8 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-none">
-                        [ PURGAR FILTRO Y VER TODO ]
+                        class="bg-black text-white px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors">
+                        Ver galería completa
                     </button>
                 </div>
 
@@ -334,57 +291,14 @@ onMounted(() => {
 ::-webkit-scrollbar {
     width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #000000;
-    border-left: 1px solid #333;
+    background: #F8F9FA;
 }
-
 ::-webkit-scrollbar-thumb {
-    background: #ffffff;
-    border-radius: 0;
+    background: #cbd5e1;
+    border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: #dc2626;
-}
-
-/* Efectos Glitch Generales */
-@keyframes precise-glitch {
-
-    0%,
-    33.33%,
-    43.33%,
-    66.67%,
-    76.67%,
-    100% {
-        transform: none;
-        filter: hue-rotate(0) drop-shadow(0 0 0 transparent);
-    }
-
-    33.43%,
-    43.23% {
-        transform: translateX(var(--glitch-x-1));
-        filter: hue-rotate(var(--glitch-hue-1)) drop-shadow(3px 0 0 rgba(220, 38, 38, 0.6));
-    }
-
-    66.77%,
-    76.57% {
-        transform: translateX(var(--glitch-x-2));
-        filter: hue-rotate(var(--glitch-hue-2)) drop-shadow(-3px 0 0 rgba(255, 255, 255, 0.4));
-    }
-}
-
-:deep(.glitch-strip) {
-    width: 100%;
-    background-repeat: no-repeat;
-    animation-name: precise-glitch;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-play-state: paused;
-}
-
-.group:hover :deep(.glitch-strip) {
-    animation-play-state: running;
+    background: #94a3b8;
 }
 </style>
