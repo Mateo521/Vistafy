@@ -152,7 +152,7 @@ const uploadForm = useForm({
     face_data: null,
 });
 
-// NUEVO: Función para comprimir imagen en el cliente
+
 const compressImage = async (file) => {
     return new Promise((resolve) => {
         const reader = new FileReader();
