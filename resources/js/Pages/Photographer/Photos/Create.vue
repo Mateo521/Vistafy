@@ -73,9 +73,7 @@ onMounted(async () => {
     }
 });
 
-// ----------------------------------------------------------------------
-// 2. MANEJO DE ARCHIVOS (Con Compresión)
-// ----------------------------------------------------------------------
+
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     addFiles(files);
@@ -336,9 +334,7 @@ const handleBackspace = (index, event) => {
     }
 };
 
-// ----------------------------------------------------------------------
-// 4. SUBMIT
-// ----------------------------------------------------------------------
+
 const submitPhotos = () => {
     if (selectedFiles.value.length === 0) return error('Seleccione al menos una foto.');
     if (!form.price || form.price <= 0) return error('Establezca un precio válido.');
@@ -465,6 +461,7 @@ const submitPhotos = () => {
                                 </div>
 
                                 
+                                
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Rol / Lugar asignado (opcional)
@@ -472,7 +469,7 @@ const submitPhotos = () => {
                                     
                                     <div class="relative">
                                         
-                                        <select v-if="!isTypingCustomRole && existingRoles.length > 0" 
+                                        <select v-if="!isTypingCustomRole && existingRoles?.length > 0" 
                                             v-model="form.location_role"
                                             class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
                                             <option value="">-- Seleccionar lugar / rol --</option>
@@ -483,14 +480,14 @@ const submitPhotos = () => {
                                         </select>
 
                                         
-                                        <div v-if="isTypingCustomRole || existingRoles.length === 0" class="flex gap-2">
+                                        <div v-if="isTypingCustomRole || !existingRoles || existingRoles.length === 0" class="flex gap-2">
                                             <input v-model="form.location_role" type="text"
                                                 class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
                                                 placeholder="Ej: Línea de Meta, Podio, Curva 3..."
                                                 maxlength="100">
                                             
                                             
-                                            <button v-if="existingRoles.length > 0" type="button" 
+                                            <button v-if="existingRoles?.length > 0" type="button" 
                                                 @click="isTypingCustomRole = false; form.location_role = ''"
                                                 class="px-4 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors">
                                                 <XMarkIcon class="w-5 h-5" />
@@ -498,11 +495,10 @@ const submitPhotos = () => {
                                         </div>
                                     </div>
                                     <p class="text-[10px] text-gray-400 mt-2 ml-1">
-                                        Ayuda a los atletas a encontrarte más fácil en el evento.
+                                        Ayuda a las personas a encontrarte más fácil en el evento.
                                     </p>
                                     <p v-if="errors.location_role" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.location_role }}</p>
                                 </div>
-
                                 
                                 <div class="space-y-6 pt-6 border-t border-gray-100">
                                     
