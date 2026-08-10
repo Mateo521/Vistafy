@@ -101,6 +101,7 @@ class PhotoController extends Controller
             'photos.*' => 'required|image|mimes:jpeg,jpg,png|max:10240',
             'event_id' => 'nullable|exists:events,id',
             'price' => 'nullable|numeric|min:0.01|max:999999.99',
+            'location_role' => 'nullable|string|max:100',
             'is_active' => 'nullable|boolean',
             'face_data' => 'nullable|json',
         ]);
@@ -155,6 +156,7 @@ class PhotoController extends Controller
                     \Log::info(' Foto procesada exitosamente', [
                         'unique_id' => $processed['unique_id'],
                         'event_id' => $request->event_id,
+                        'location_role' => $request->location_role,
                         'original_path' => $processed['original_path'],
                     ]);
 

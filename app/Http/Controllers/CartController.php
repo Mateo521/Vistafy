@@ -13,7 +13,7 @@ class CartController extends Controller
 
     public function __construct(CartService $cartService)
     {
-        //  ELIMINAR: $this->middleware('auth');
+        
         $this->cartService = $cartService;
     }
 

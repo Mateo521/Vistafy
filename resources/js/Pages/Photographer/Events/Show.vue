@@ -426,276 +426,286 @@ const paginationPages = computed(() => {
 </script>
 
 <template>
-
     <Head :title="event.name" />
 
     <AuthenticatedLayout>
 
-        <div class="relative h-80 bg-black overflow-hidden border-b border-red-600">
+        
+        <div class="relative w-full h-[40vh] min-h-[350px] bg-slate-900 overflow-hidden">
             <img v-if="event.cover_image_url" :src="event.cover_image_url"
-                class="absolute inset-0 w-full h-full object-cover opacity-40 filter grayscale contrast-125" />
-            <div v-else class="absolute inset-0 bg-zinc-900 flex items-center justify-center opacity-50">
-                <PhotoIcon class="w-24 h-24 text-zinc-800" />
-            </div>
+                class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" />
+            <div v-else class="absolute inset-0 bg-gradient-to-br from-slate-800 to-black"></div>
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
 
-            <div
-                class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none">
-            </div>
+            <div class="relative max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-between pt-8 pb-10 z-10">
+                
+                <div>
+                    <Link :href="route('photographer.events.index')"
+                        class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-white hover:bg-white hover:text-black transition-colors border border-white/30">
+                        <ArrowLeftIcon class="w-4 h-4" /> Volver a mis eventos
+                    </Link>
+                </div>
 
-            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end pb-10 z-10">
+                
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <div
-                            class="flex items-center gap-3 mb-3 text-[10px] font-mono font-bold uppercase tracking-widest text-red-600">
-                            <Link :href="route('photographer.events.index')" class="hover:text-white transition">Eventos
-                            </Link>
-                            <span>/</span>
-                            <span class="text-white">{{ event.name }}</span>
-                        </div>
-                        <h1
-                            class="text-4xl md:text-5xl font-sans font-black text-white uppercase tracking-tighter mb-2">
-                            {{ event.name }}</h1>
-                        <div class="flex items-center gap-6 text-xs font-mono text-gray-400">
-                            <span class="flex items-center gap-2" v-if="event.event_date">
-                                <CalendarIcon class="w-4 h-4 text-red-600" /> {{ formatDate(event.event_date) }}
+                        <h1 class="font-flux text-5xl md:text-7xl text-white leading-none tracking-wide mb-4">
+                            {{ event.name }}
+                        </h1>
+                        <div class="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-wider text-white/80">
+                            <span v-if="event.event_date" class="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full">
+                                <CalendarIcon class="w-4 h-4 text-[#E30613]" /> {{ formatDate(event.event_date) }}
                             </span>
-                            <span class="flex items-center gap-2" v-if="event.location">
-                                <MapPinIcon class="w-4 h-4 text-red-600" /> {{ event.location }}
+                            <span v-if="event.location" class="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full">
+                                <MapPinIcon class="w-4 h-4 text-[#E30613]" /> {{ event.location }}
                             </span>
                         </div>
                     </div>
 
-                    <div class="flex gap-3">
+                    <div class="flex flex-wrap gap-3">
                         <Link :href="route('photographer.events.edit', event.id)"
-                            class="px-5 py-3 border border-white text-white text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors rounded-none">
-                            [ Editar ]
+                            class="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors rounded-full flex items-center gap-2">
+                            <Cog6ToothIcon class="w-4 h-4" /> Editar Evento
                         </Link>
                         <button @click="showUploadModal = true"
-                            class="px-5 py-3 bg-red-600 border border-red-600 text-black text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-black hover:text-red-600 transition-colors rounded-none flex items-center gap-2">
-                            <CloudArrowUpIcon class="w-4 h-4" /> Subir Fotos
+                            class="px-6 py-3 bg-[#E30613] text-white text-xs font-bold uppercase tracking-wider hover:bg-red-700 transition-colors rounded-full flex items-center gap-2 shadow-lg shadow-red-500/30">
+                            <PlusCircleIcon class="w-5 h-5" /> Asignar Fotos
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="py-12 bg-black min-h-screen text-white selection:bg-red-600 selection:text-white relative">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 relative z-10">
+        
+        <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12">
 
+                    
+                    <div class="lg:col-span-1 space-y-6">
 
-
-                    <div class="lg:col-span-1 space-y-8">
-
-                        <div class="bg-zinc-950 border border-white/10 p-6">
-                            <h3
-                                class="font-mono text-[10px] font-bold uppercase tracking-widest text-red-600 border-b border-white/10 pb-2 mb-6">
-                                Métricas de Operación</h3>
-                            <div class="space-y-6 font-mono text-xs uppercase tracking-widest text-gray-400">
-                                <div class="flex justify-between items-center">
-                                    <span>Total Archivos</span>
-                                    <span class="text-xl font-sans font-black text-white">{{ stats.total_photos
-                                        }}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span>Públicas</span>
-                                    <span class="text-xl font-sans font-black text-white">{{ stats.active_photos
-                                        }}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span>Descargas</span>
-                                    <span class="text-xl font-sans font-black text-white">{{ stats.total_downloads
-                                        }}</span>
-                                </div>
-                            </div>
-
-                            <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap gap-4">
-                                <button @click="copyEventUrl"
-                                    class="w-full border-2 border-white bg-black hover:bg-white text-white hover:text-black transition-none px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2"
-                                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-                                        </path>
-                                    </svg>
-                                    [ COPIAR ENLACE DEL NODO ]
-                                </button>
-                            </div>
-                        </div>
-
-                        <div v-if="$page.props.auth.user"
-                            class="bg-gray-950 border-[4px] border-red-600 p-6 relative overflow-hidden transition-none group mb-6">
-                            <div class="absolute -right-4 -top-4 text-red-600 opacity-10 pointer-events-none">
-                                <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z" />
-                                </svg>
-                            </div>
-
-                            <h3
-                                class="font-mono text-[10px] font-bold uppercase  text-red-600 mb-6 border-b border-red-600/30 pb-2">
-                                [ ACCESO RESTRINGIDO // GESTIÓN ]
+                        
+                        <div class="bg-white rounded p-6 md:p-8 shadow-sm border border-gray-100">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Métricas de Operación
                             </h3>
-
-                            <div class="flex flex-col gap-3 relative z-10">
-                                <Link :href="route('photographer.events.edit', event.id)"
-                                    class="w-full flex items-center justify-between bg-red-600 text-black hover:bg-white hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
-                                    <span class="flex items-center gap-2">
-                                        + GESTIONAR Fotógrafos
-                                    </span>
-                                    <span class="font-mono text-xs font-bold">></span>
-                                </Link>
-
-                                <button @click="showUploadModal = true"
-                                    class="w-full flex items-center justify-between border-2 border-red-600 bg-black text-red-600 hover:bg-red-600 hover:text-black transition-none px-4 py-3 font-black font-sans text-sm uppercase tracking-tighter">
-                                    <span class="flex items-center gap-2">
-                                        ↑ SUBIR FRAGMENTOS (FOTOS)
-                                    </span>
-                                    <span class="font-mono text-xs font-bold">></span>
-                                </button>
+                            
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
+                                    <span class="text-sm font-medium text-gray-600">Total Archivos</span>
+                                    <span class="text-xl font-black text-black">{{ stats?.total_photos || 0 }}</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
+                                    <span class="text-sm font-medium text-gray-600">Públicas</span>
+                                    <span class="text-xl font-black text-black">{{ stats?.active_photos || 0 }}</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
+                                    <span class="text-sm font-medium text-gray-600">Descargas Totales</span>
+                                    <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0 }}</span>
+                                </div>
                             </div>
+
+                            <button @click="copyEventUrl"
+                                class="mt-6 w-full bg-white border-2 border-gray-200 hover:border-black text-gray-600 hover:text-black transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                                <LinkIcon class="w-4 h-4" /> Copiar Enlace Público
+                            </button>
                         </div>
 
-                        <div class="bg-zinc-950 border border-white/10 p-6">
-                            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-2">
-                                <h3
-                                    class="text-[10px] font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2">
-                                    [ Fotógrafos ASIGNADOS ]
-                                </h3>
-                            </div>
+                    
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                            <Link :href="route('events.face-search', event.slug)"
+                                class="group bg-white border border-gray-100 p-5 rounded shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
+                                        <MagnifyingGlassIcon class="w-5 h-5 text-[#E30613]" />
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-black">Escáner Facial</h4>
+                                        <p class="text-xs text-gray-500">Probar búsqueda</p>
+                                    </div>
+                                </div>
+                                <ArrowLeftIcon class="w-4 h-4 text-gray-400 rotate-180 group-hover:text-[#E30613] group-hover:translate-x-1 transition-all" />
+                            </Link>
+
+                            <Link :href="route('events.bib-search', event.slug)"
+                                class="group bg-white border border-gray-100 p-5 rounded shadow-sm hover:shadow-md transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <HashtagIcon class="w-5 h-5 text-black" />
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm text-black">Búsqueda OCR</h4>
+                                        <p class="text-xs text-gray-500">Dorsales</p>
+                                    </div>
+                                </div>
+                                <ArrowLeftIcon class="w-4 h-4 text-gray-400 rotate-180 group-hover:text-black group-hover:translate-x-1 transition-all" />
+                            </Link>
+                        </div>
+
+                        
+                        <div class="bg-white rounded p-6 md:p-8 shadow-sm border border-gray-100">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Equipo Asignado
+                            </h3>
 
                             <div class="space-y-4">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-8 h-8 bg-black flex items-center justify-center text-white text-xs font-sans border border-red-600">
-                                        {{ event.photographer?.business_name?.charAt(0) || 'YO' }}
+                            
+                                <div class="flex items-center gap-4 bg-gray-50 p-3 rounded border border-gray-100">
+                                    <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-bold shadow-sm">
+                                        {{ event.photographer?.business_name?.charAt(0) || 'Y' }}
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-bold text-white truncate uppercase">
-                                            {{ event.photographer?.business_name || 'Tú' }}
-                                        </p>
-                                        <p class="text-[9px] font-mono text-red-600 uppercase tracking-wider">COMANDANTE
-                                        </p>
+                                        <p class="text-sm font-bold text-black truncate">{{ event.photographer?.business_name || 'Tú' }}</p>
+                                        <p class="text-[10px] font-bold text-[#E30613] uppercase tracking-wider">Administrador</p>
                                     </div>
                                 </div>
 
-                                <div v-if="event.collaborators && event.collaborators.length > 0"
-                                    v-for="collab in event.collaborators" :key="collab.id"
-                                    class="flex items-center gap-3 pt-3 border-t border-white/5">
-
-                                    <img v-if="collab.profile_photo_url" :src="collab.profile_photo_url"
-                                        class="w-8 h-8 object-cover border border-white/20 filter grayscale">
-                                    <div v-else
-                                        class="w-8 h-8 bg-black flex items-center justify-center text-gray-500 text-xs font-sans border border-white/20">
-                                        {{ collab.business_name.charAt(0) }}
+                                
+                                <template v-if="event.collaborators && event.collaborators.length > 0">
+                                    <div v-for="collab in event.collaborators" :key="collab.id" class="flex items-center gap-4 p-2">
+                                        <img v-if="collab.profile_photo_url" :src="collab.profile_photo_url"
+                                            class="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm">
+                                        <div v-else class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold shadow-sm">
+                                            {{ collab.business_name.charAt(0) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-slate-700 truncate">{{ collab.business_name }}</p>
+                                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Colaborador</p>
+                                        </div>
                                     </div>
-
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-bold text-gray-300 truncate uppercase">{{
-                                            collab.business_name }}</p>
-                                        <p class="text-[9px] font-mono text-gray-500 uppercase tracking-wider">OPERATIVO
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div v-else class="pt-2">
-                                    <p class="text-[10px] font-mono text-gray-600 uppercase tracking-widest">
-                                        Sin operativos secundarios.
-                                    </p>
+                                </template>
+                                <div v-else>
+                                    <p class="text-xs text-gray-500 italic">No hay colaboradores asignados.</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div v-if="event.description" class="bg-zinc-950 border border-white/10 p-6">
-                            <h3
-                                class="font-mono text-[10px] font-bold uppercase tracking-widest text-red-600 mb-4 border-b border-white/10 pb-2">
-                                [ REPORTE DE MISIÓN ]
-                            </h3>
-                            <p class="text-xs font-mono text-gray-400 leading-relaxed">{{ event.description }}</p>
                         </div>
 
                     </div>
 
-
+                    
                     <div class="lg:col-span-2">
+                        
+                        
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-100 mb-8 overflow-x-auto hide-scrollbar">
+                            <div class="flex flex-nowrap gap-2 min-w-max">
+                                <label class="cursor-pointer">
+                                    <input type="radio" v-model="selectedPhotographer" value="all" @change="filterByPhotographer" class="sr-only">
+                                    <div :class="[
+                                        'px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border',
+                                        selectedPhotographer === 'all' 
+                                            ? 'bg-black text-white border-black shadow-md' 
+                                            : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-black'
+                                    ]">
+                                        Todos los archivos
+                                    </div>
+                                </label>
+
+                                <label v-for="photographer in photographers" :key="photographer.id" class="cursor-pointer">
+                                    <input type="radio" v-model="selectedPhotographer" :value="photographer.id" @change="filterByPhotographer" class="sr-only">
+                                    <div :class="[
+                                        'px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 border flex items-center gap-2',
+                                        selectedPhotographer === photographer.id 
+                                            ? 'bg-black text-white border-black shadow-md' 
+                                            : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 hover:text-black'
+                                    ]">
+                                        {{ photographer.business_name || photographer.user.name }}
+                                        <span :class="[
+                                            'px-1.5 py-0.5 rounded-full text-[9px] leading-none',
+                                            selectedPhotographer === photographer.id ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-600'
+                                        ]">
+                                            {{ photographer.photos_count }}
+                                        </span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        
                         <div v-if="!photos.data || photos.data.length === 0"
-                            class="text-center py-24 border border-white/10 bg-zinc-950">
-                            <PhotoIcon class="h-12 w-12 mx-auto text-gray-600 mb-4" />
-                            <h4 class="font-sans font-black text-white uppercase tracking-tighter mb-1">Bóveda Vacía
-                            </h4>
-                            <p class="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-6">No hay datos
-                                en esta operación.</p>
+                            class="bg-white rounded border border-gray-100 shadow-sm flex flex-col items-center justify-center py-32 px-4 text-center">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                                <PhotoIcon class="h-10 w-10 text-gray-300" />
+                            </div>
+                            <h4 class="font-flux text-4xl text-black mb-2">Bóveda Vacía</h4>
+                            <p class="text-gray-500 mb-8 max-w-sm">No hay fotografías disponibles bajo estos filtros o aún no se han asignado capturas.</p>
                             <button @click="showUploadModal = true"
-                                class="text-[10px] font-mono font-bold uppercase tracking-widest text-white border-b border-white hover:text-red-600 hover:border-red-600 pb-0.5 transition">
-                                Iniciar Carga
+                                class="bg-black text-white px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors shadow-md">
+                                Asignar Fotografías
                             </button>
                         </div>
 
                         <div v-else>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-8">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
                                 <div v-for="photo in photos.data" :key="photo.id"
-                                    class="group relative aspect-square bg-zinc-950 border border-white/10 overflow-hidden ">
+                                    class="group relative aspect-square bg-gray-100 rounded overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-300">
+                                    
                                     <img :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter grayscale contrast-125 group-hover:grayscale-0 opacity-80 group-hover:opacity-100" />
+                                        class="w-full h-full object-cover transition-transform duration-700 " />
 
-                                    <div
-                                        class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 p-4">
-                                        <div class="flex gap-2">
-                                            <button @click="updateCoverImage(photo.id)" title="Usar como portada"
-                                                class="p-2 border border-white text-white hover:bg-white hover:text-black transition">
-                                                <PhotoIcon class="w-4 h-4" />
+                                     
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3">
+                                        
+                                        
+                                        <div class="flex justify-start">
+                                            <span class="bg-white/90 backdrop-blur-sm text-black px-2 py-1 rounded text-[9px] font-bold tracking-wider">
+                                                #{{ photo.unique_id }}
+                                            </span>
+                                        </div>
+
+                                        
+                                        <div class="flex items-center justify-center gap-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                            <button @click="updateCoverImage(photo.id)" title="Fijar como portada"
+                                                class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors">
+                                                <PhotoIcon class="w-5 h-5" />
                                             </button>
-                                            <button @click="deletePhoto(photo.id)" title="Eliminar"
-                                                class="p-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition">
-                                                <TrashIcon class="w-4 h-4" />
+                                            <button @click="deletePhoto(photo.id)" title="Eliminar captura"
+                                                class="w-10 h-10 bg-[#E30613]/90 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-[#E30613] transition-colors shadow-lg">
+                                                <TrashIcon class="w-5 h-5" />
                                             </button>
                                         </div>
-                                        <div class="text-[9px] text-white/50 font-mono uppercase tracking-widest mt-2">
-                                            {{ photo.unique_id }}</div>
-                                    </div>
 
-                                    <div v-if="photo.downloads > 0"
-                                        class="absolute bottom-1 right-1 bg-black text-red-600 border border-red-600 text-[9px] font-mono px-1.5 py-0.5 flex items-center gap-1">
-                                        <ArrowDownTrayIcon class="w-3 h-3" /> {{ photo.downloads }}
+                                        
+                                        <div class="flex justify-end">
+                                            <div v-if="photo.downloads > 0" class="bg-white text-black px-2 py-1 rounded flex items-center gap-1 text-[10px] font-bold">
+                                                <ArrowDownTrayIcon class="w-3 h-3 text-[#E30613]" /> {{ photo.downloads }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div v-if="photos.last_page > 1"
-                                class="flex items-center justify-center gap-2 pt-6 border-t border-white/10">
-                                <Link v-if="photos.prev_page_url" :href="photos.prev_page_url"
-                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-white border border-white/20 hover:border-red-600 hover:text-red-600 transition-colors">
-                                    [ ATRÁS ]
-                                </Link>
-                                <span v-else
-                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-gray-600 border border-white/5 cursor-not-allowed">
-                                    [ ATRÁS ]
-                                </span>
+                            
+                            <div v-if="photos.last_page > 1" class="flex justify-center pt-8 border-t border-gray-200">
+                                <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
+                                    
+                                    <Link v-if="photos.prev_page_url" :href="photos.prev_page_url"
+                                        class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                                        Ant
+                                    </Link>
+                                    <span v-else class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-300 cursor-not-allowed">Ant</span>
 
-                                <div class="flex items-center gap-2">
+                                    
                                     <template v-for="(page, index) in paginationPages" :key="index">
                                         <span v-if="page === photos.current_page"
-                                            class="h-8 w-8 flex items-center justify-center font-mono text-xs font-bold bg-white text-black">
+                                            class="h-10 w-10 flex items-center justify-center text-xs font-bold bg-black text-white rounded-full shadow-md">
                                             {{ page }}
                                         </span>
-                                        <span v-else-if="page === '...'"
-                                            class="h-8 w-8 flex items-center justify-center font-mono text-xs text-gray-500">
-                                            ...
-                                        </span>
+                                        <span v-else-if="page === '...'" class="h-10 w-10 flex items-center justify-center text-xs text-gray-400">...</span>
                                         <Link v-else :href="photos.path + '?page=' + page"
-                                            class="h-8 w-8 flex items-center justify-center font-mono text-xs text-gray-400 border border-white/10 hover:border-white hover:text-white transition-colors">
+                                            class="h-10 w-10 flex items-center justify-center text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
                                             {{ page }}
                                         </Link>
                                     </template>
-                                </div>
 
-                                <Link v-if="photos.next_page_url" :href="photos.next_page_url"
-                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-white border border-white/20 hover:border-red-600 hover:text-red-600 transition-colors">
-                                    [ SIGUIENTE ]
-                                </Link>
-                                <span v-else
-                                    class="h-8 px-3 flex items-center justify-center font-mono text-xs text-gray-600 border border-white/5 cursor-not-allowed">
-                                    [ SIGUIENTE ]
-                                </span>
+                                    
+                                    <Link v-if="photos.next_page_url" :href="photos.next_page_url"
+                                        class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                                        Sig
+                                    </Link>
+                                    <span v-else class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-300 cursor-not-allowed">Sig</span>
+                                </div>
                             </div>
                         </div>
 
@@ -705,157 +715,104 @@ const paginationPages = computed(() => {
             </div>
         </div>
 
-        <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" @click="closeModal"></div>
-            <div
-                class="relative bg-zinc-950 border border-white/20 shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col text-white font-sans">
-
-                <div class="border-b border-white/10 bg-zinc-900">
-                    <div class="p-6 pb-0 flex justify-between items-start mb-4">
-                        <h3 class="font-sans font-black text-xl uppercase tracking-tighter">Agregar Datos</h3>
-                        <button @click="closeModal" class="text-gray-500 hover:text-red-600">
-                            <XMarkIcon class="w-6 h-6" />
+        
+        <transition enter-active-class="transition duration-300 ease-out"
+            enter-from-class="opacity-0" enter-to-class="opacity-100"
+            leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100"
+            leave-to-class="opacity-0">
+            
+            <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeModal"></div>
+                
+                
+                <div class="relative bg-white rounded shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden z-10">
+                    
+                    
+                    <div class="px-6 py-5 border-b border-gray-100 bg-white flex justify-between items-center z-10">
+                        <div>
+                            <h3 class="font-bold text-xl text-black">Asignar Archivo Interno</h3>
+                            <p class="text-xs text-gray-500 mt-1">Selecciona las capturas disponibles en tu bóveda personal para vincularlas a este evento.</p>
+                        </div>
+                        <button @click="closeModal" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-[#E30613] transition-colors">
+                            <XMarkIcon class="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div class="flex px-6 gap-4">
-                        <button @click="uploadMode = 'upload'"
-                            :class="['pb-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2', uploadMode === 'upload' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-white']">
-                            [ Carga Local ]
-                        </button>
-                        <button @click="uploadMode = 'existing'"
-                            :class="['pb-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors border-b-2', uploadMode === 'existing' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-white']">
-                            [ Archivo Interno ]
-                        </button>
-                    </div>
-                </div>
-
-                <div class="p-6 overflow-y-auto flex-1 scrollbar-hide">
-
-                    <div v-if="uploadMode === 'upload'" class="space-y-6">
-
-                        <div class="flex items-center gap-3 border-b border-white/10 pb-4">
-                            <input type="checkbox" id="read_bibs" v-model="readBibs"
-                                class="bg-black border-gray-600 text-red-600 focus:ring-red-600 rounded-sm">
-                            <label for="read_bibs"
-                                class="font-mono text-[10px] uppercase tracking-widest text-gray-300">Activar
-                                detección de dorsales (OCR)</label>
-                        </div>
-
-                        <div v-if="processingFaces || processingBibs"
-                            class="bg-zinc-900 border border-white/10 p-4 space-y-3 font-mono text-xs uppercase tracking-widest">
-                            <div v-if="processingFaces" class="flex items-center gap-3 text-white">
-                                <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                                Analizando biometría: {{ faceDetectionResults.length }}/{{ previewUrls.length }}
+                    
+                    <div class="p-6 overflow-y-auto flex-1 bg-gray-50 hide-scrollbar">
+                        <div v-if="!unassignedPhotos || unassignedPhotos.length === 0"
+                            class="flex flex-col items-center justify-center py-16 text-center">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 mb-4">
+                                <PhotoIcon class="w-8 h-8 text-gray-300" />
                             </div>
-                            <div v-if="processingBibs" class="flex items-center gap-3 text-white">
-                                <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-                                Extrayendo dorsales: {{ bibDetectionResults.length }}/{{ previewUrls.length }}
-                            </div>
+                            <h4 class="font-bold text-lg text-slate-700 mb-1">Sin archivos residuales</h4>
+                            <p class="text-sm text-gray-500">No tienes fotografías pendientes de asignación en tu bóveda.</p>
                         </div>
-
-                        <div v-if="selectedFiles.length === 0"
-                            class="border border-dashed border-gray-700 bg-zinc-900 p-12 text-center hover:border-red-600 transition-colors">
-                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="hidden"
-                                id="file-upload">
-                            <label for="file-upload" class="cursor-pointer block h-full">
-                                <CloudArrowUpIcon class="w-12 h-12 mx-auto text-gray-600 mb-4" />
-                                <span
-                                    class="font-sans font-black uppercase text-white tracking-tighter block mb-2 text-xl">Seleccionar
-                                    Archivos</span>
-                                <span class="font-mono text-[10px] uppercase tracking-widest text-gray-500">JPG, PNG •
-                                    Máx
-                                    10MB</span>
-                            </label>
-                        </div>
-
-                        <div v-else class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                            <div v-for="(url, index) in previewUrls" :key="index"
-                                class="relative aspect-square bg-black overflow-hidden border border-white/10 group">
-                                <img :src="url" class="w-full h-full object-cover grayscale contrast-125" />
-
-                                <div v-if="faceDetectionResults[index]"
-                                    class="absolute top-1 right-1 px-1.5 py-0.5 font-mono text-[8px] border"
-                                    :class="faceDetectionResults[index].count > 0 ? 'bg-white text-black border-white' : 'bg-black text-gray-500 border-gray-700'">
-                                    {{ faceDetectionResults[index].count > 0 ? faceDetectionResults[index].count +'BIO': '0 BIO' }}
-                                </div>
-
-                                <div
-                                    class="absolute bottom-0 left-0 w-full p-1 bg-black/80 flex gap-1 flex-wrap items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <template v-if="bibDetectionResults[index]?.numbers?.length">
-                                        <div v-for="number in bibDetectionResults[index].numbers" :key="number"
-                                            class="flex items-center gap-1 font-mono text-[8px] bg-red-600 text-white px-1 py-0.5">
-                                            <span>{{ number }}</span>
-                                            <button @click.stop="removeBibTag(index, number)" class="hover:text-black">
-                                                <XMarkIcon class="w-2.5 h-2.5" />
-                                            </button>
-                                        </div>
-                                    </template>
-                                    <input type="text" placeholder="+" @keydown.enter.prevent="addBibTag(index, $event)"
-                                        @keydown.backspace="handleBackspace(index, $event)"
-                                        class="w-full bg-transparent border-none text-white font-mono text-[8px] focus:ring-0 p-0" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-else-if="uploadMode === 'existing'">
-                        <div v-if="unassignedPhotos.length === 0"
-                            class="text-center py-12 border border-white/10 bg-zinc-900">
-                            <PhotoIcon class="w-12 h-12 mx-auto text-gray-600 mb-3" />
-                            <p class="font-mono text-xs uppercase text-gray-400">Sin datos residuales.</p>
-                        </div>
+                        
                         <div v-else>
-                            <p class="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-4">Selección
-                                manual ({{
-                                    selectedExistingPhotos.length }})</p>
-                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                    Disponibles ({{ unassignedPhotos.length }})
+                                </span>
+                                <span v-if="selectedExistingPhotos.length > 0" class="text-xs font-bold text-[#E30613] bg-red-50 px-3 py-1 rounded-full">
+                                    {{ selectedExistingPhotos.length }} seleccionadas
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                 <div v-for="photo in unassignedPhotos" :key="photo.id"
                                     @click="togglePhotoSelection(photo.id)"
-                                    class="relative aspect-square bg-black border cursor-pointer transition-all grayscale contrast-125"
-                                    :class="selectedExistingPhotos.includes(photo.id) ? 'border-red-600 grayscale-0' : 'border-white/10'">
-                                    <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
-                                    <div v-if="selectedExistingPhotos.includes(photo.id)"
-                                        class="absolute inset-0 bg-red-600/20 flex items-center justify-center">
-                                        <div class="w-6 h-6 bg-red-600 text-white flex items-center justify-center">
+                                    class="relative aspect-square rounded overflow-hidden cursor-pointer shadow-sm transition-all duration-200 group"
+                                    :class="selectedExistingPhotos.includes(photo.id) ? 'ring-4 ring-[#E30613] ring-offset-2 scale-95' : 'hover:shadow-md'">
+                                    
+                                    <img :src="photo.thumbnail_url" class="w-full h-full object-cover transition-transform duration-500 " />
+                                    
+                                    
+                                    <div class="absolute inset-0 transition-colors duration-200"
+                                        :class="selectedExistingPhotos.includes(photo.id) ? 'bg-[#E30613]/20' : 'bg-black/0 group-hover:bg-black/10'">
+                                        <div v-if="selectedExistingPhotos.includes(photo.id)"
+                                            class="absolute top-2 right-2 w-6 h-6 bg-[#E30613] text-white rounded-full flex items-center justify-center shadow-md transform scale-100 transition-transform">
                                             <CheckIcon class="w-4 h-4" />
                                         </div>
                                     </div>
-                                    <div
-                                        class="absolute bottom-1 left-1 bg-black text-white font-mono text-[8px] px-1 py-0.5">
-                                        #{{ photo.unique_id.substring(0, 4) }}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="p-6 border-t border-white/10 bg-zinc-900 flex justify-between items-center">
-                    <div class="font-mono text-[10px] text-gray-400 uppercase tracking-widest">
-                        <span v-if="uploadMode === 'upload'">{{ selectedFiles.length }} DATOS</span>
-                        <span v-else>{{ selectedExistingPhotos.length }} DATOS</span>
-                    </div>
-                    <div class="flex gap-3">
+                    
+                    <div class="p-6 border-t border-gray-100 bg-white flex justify-end gap-3 z-10">
                         <button @click="closeModal"
-                            class="px-5 py-2 border border-white text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition">CANCELAR</button>
-                        <button v-if="uploadMode === 'upload'" @click="uploadPhotos"
-                            :disabled="uploadForm.processing || selectedFiles.length === 0 || processingFaces || processingBibs"
-                            class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">
-                            {{ processingFaces || processingBibs ? 'Procesando...' : (uploadForm.processing ?
-                                'Transfiriendo...'
-                                : 'Transmitir') }}
+                            class="px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-bold text-xs uppercase tracking-wider hover:bg-gray-50 transition-colors">
+                            Cancelar
                         </button>
-                        <button v-else @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0"
-                            class="px-5 py-2 bg-red-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-red-700 transition disabled:opacity-50">
-                            Asignar
+                        <button @click="assignExistingPhotos" :disabled="selectedExistingPhotos.length === 0"
+                            class="px-8 py-3 rounded-full bg-black text-white font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
+                            Asignar Archivos
                         </button>
                     </div>
+
                 </div>
             </div>
-        </div>
+        </transition>
 
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.masonry-grid {
+    column-fill: balance;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>
 
 <style scoped>
 .scrollbar-hide::-webkit-scrollbar {

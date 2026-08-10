@@ -43,8 +43,7 @@ class Event extends Model
         return $this->hasMany(Photo::class);
     }
 
-    // Accessor para URL de portada
-// Accessor para URL de portada 100% en la nube
+
     public function getCoverImageUrlAttribute()
     {
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
@@ -81,24 +80,24 @@ class Event extends Model
         return $this->belongsTo(Photographer::class, 'photographer_id');
     }
 
-    // 2. Los Colaboradores (Nueva relación)
+
     public function collaborators()
     {
         return $this->belongsToMany(Photographer::class, 'event_photographer')
+                    ->withPivot('status')
                     ->withTimestamps();
     }
     
-    // Helper para saber quiénes pueden subir fotos (Dueño + Colaboradores)
+    
     public function canUpload(Photographer $photographer)
     {
         return $this->photographer_id === $photographer->id || 
-               $this->collaborators->contains($photographer->id);
+            $this->collaborators()->where('photographer_id', $photographer->id)->where('event_photographer.status', 'approved')->exists();
     }
 
     
 
 
-    // Auto-generar slug y token
     protected static function boot()
     {
         parent::boot();

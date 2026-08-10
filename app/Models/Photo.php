@@ -13,6 +13,7 @@ class Photo extends Model
 
     protected $fillable = [
         'photographer_id', 'event_id', 'unique_id', 'title', 'description',
+        'location_role',
         'original_path', 'watermarked_path', 'thumbnail_path', 'original_name',
         'file_size', 'width', 'height', 'mime_type', 'price', 'is_active',
         'downloads', 'views', 'face_encodings', 'has_faces', 'faces_processed_at',

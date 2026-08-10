@@ -476,8 +476,9 @@ class PublicGalleryController extends Controller
             ->with('info', "No se encontró la foto exacta '{$uniqueId}'. Mostrando resultados similares.");
     }
 
-    public function showEvent(Request $request, $slug)
+public function showEvent(Request $request, $slug)
     {
+       
         $event = Event::where('slug', $slug)
             ->whereHas('photographer', function ($q) {
                 $q->where('status', 'approved');  
@@ -488,7 +489,6 @@ class PublicGalleryController extends Controller
                 },
                 'photographer.user:id,email',
             ])
-            ->withCount('photos')
             ->firstOrFail();
 
         if (! $event->is_active) {
@@ -503,44 +503,77 @@ class PublicGalleryController extends Controller
             }
         }
 
-        $photosQuery = $event->photos()
-            ->where('is_active', true)
-            ->with([
-                'photographer' => function ($query) {
-                    $query->select('id', 'business_name', 'region');
-                },
-            ]);
+        
+        $photographersQuery = Photographer::whereHas('photos', function ($q) use ($event) {
+                $q->where('event_id', $event->id)->where('is_active', true);
+            })
+            ->where('status', 'approved')
+            ->with('user:id,name,email')
+            ->inRandomOrder();
 
+      
         if ($request->filled('photographer_id')) {
-            $photosQuery->where('photographer_id', $request->photographer_id);
+            $photographersQuery->where('id', $request->photographer_id);
         }
 
-        $photos = $photosQuery->latest()->paginate(30)->withQueryString();
+        $activePhotographers = $photographersQuery->get();
 
-        $photographers = Photographer::select('photographers.id', 'photographers.business_name')
+      
+        
+        $galleries = $activePhotographers->map(function ($photographer) use ($event) {
+            
+            
+            $roles = \App\Models\Photo::where('event_id', $event->id)
+                ->where('photographer_id', $photographer->id)
+                ->where('is_active', true)
+                ->whereNotNull('location_role')
+                ->where('location_role', '!=', '')
+                ->distinct()
+                ->pluck('location_role')
+                ->toArray();
+
+            
+            $photos = \App\Models\Photo::where('event_id', $event->id)
+                ->where('photographer_id', $photographer->id)
+                ->where('is_active', true)
+                ->latest()
+                ->get()
+                ->map(function ($photo) {
+                    return [
+                        'id' => $photo->id,
+                        'unique_id' => $photo->unique_id,
+                        'title' => $photo->title,
+                        'price' => $photo->price,
+                        'location_role' => $photo->location_role,
+                        
+                        
+                        'thumbnail_url' => $photo->thumbnail_url, 
+                        'watermarked_url' => $photo->watermarked_url,
+                    ];
+                });
+
+            return [
+                'photographer' => [
+                    'id' => $photographer->id,
+                    'business_name' => $photographer->business_name ?? $photographer->user->name ?? 'Fotógrafo',
+                    
+                    
+                    'profile_photo_url' => $photographer->profile_photo_url,
+                ],
+                'roles' => $roles,
+                'photos_count' => $photos->count(),
+                'photos' => $photos,
+            ];
+        });
+        
+        $filterPhotographers = Photographer::select('photographers.id', 'photographers.business_name')
             ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
             ->where('photos.event_id', $event->id)
             ->where('photos.is_active', true)
             ->where('photographers.status', 'approved')  
-            ->with('user:id,name')
             ->selectRaw('COUNT(photos.id) as photos_count')
             ->groupBy('photographers.id', 'photographers.business_name')
             ->get();
-
-        $photos->getCollection()->transform(function ($photo) {
-            return [
-                'id' => $photo->id,
-                'unique_id' => $photo->unique_id,
-                'title' => $photo->title,
-                'price' => $photo->price,
-                'thumbnail_url' => $photo->getThumbnailUrlAttribute(), 
-                'watermarked_url' => $photo->getWatermarkedUrlAttribute(),
-                'photographer' => [
-                    'id' => $photo->photographer->id,
-                    'business_name' => $photo->photographer->business_name,
-                ],
-            ];
-        });
 
         return Inertia::render('Events/Show', [
             'event' => [
@@ -549,9 +582,9 @@ class PublicGalleryController extends Controller
                 'slug' => $event->slug,
                 'description' => $event->description,
                 'long_description' => $event->long_description,
-                'event_date' => $event->event_date->format('Y-m-d'),
+                'event_date' => \Carbon\Carbon::parse($event->event_date)->format('Y-m-d'),
                 'location' => $event->location,
-                'photos_count' => $event->photos_count,
+                'photos_count' => $event->photos()->where('is_active', true)->count(),
                 'cover_image_url' => $event->cover_image_url,
                 'downloads' => $event->photos()->sum('downloads'),
                 'is_private' => $event->is_private,
@@ -563,13 +596,16 @@ class PublicGalleryController extends Controller
                     'profile_photo_url' => $event->photographer->profile_photo_url,
                 ],
             ],
-            'photos' => $photos,
-            'photographers' => $photographers,
+            
+            'galleries' => $galleries,
+            'photographers' => $filterPhotographers,
             'filters' => [
                 'photographer_id' => $request->photographer_id,
             ],
         ]);
     }
+
+
 
     public function photographers(Request $request)
     {
