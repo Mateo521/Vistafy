@@ -9,25 +9,26 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::create('event_photographer', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('event_id')->constrained()->onDelete('cascade');
-        $table->foreignId('photographer_id')->constrained()->onDelete('cascade');
-        // status: 'invited', 'applied', 'approved', 'rejected'
-        $table->string('status')->default('pending');
-        $table->timestamps();
+    public function up(): void
+    {
         
-        $table->unique(['event_id', 'photographer_id']);
-    });
-}
+        Schema::table('event_photographer', function (Blueprint $table) {
+            
+            if (!Schema::hasColumn('event_photographer', 'status')) {
+                $table->string('status')->default('pending')->after('photographer_id');
+            }
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('event_photographer');
+        Schema::table('event_photographer', function (Blueprint $table) {
+            if (Schema::hasColumn('event_photographer', 'status')) {
+                $table->dropColumn('status');
+            }
+        });
     }
 };
