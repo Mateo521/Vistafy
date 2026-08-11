@@ -18,6 +18,10 @@ import Tesseract from 'tesseract.js';
 
 const props = defineProps({
     events: Array,
+    eventRoles: { 
+        type: Object,
+        default: () => ({})
+    },
     errors: Object,
 });
 
@@ -33,6 +37,14 @@ const form = useForm({
 const { success, error } = useToast();
 
 const isTypingCustomRole = ref(false);
+
+const currentEventRoles = computed(() => {
+    if (!form.event_id || !props.eventRoles[form.event_id]) {
+        return [];
+    }
+    return props.eventRoles[form.event_id];
+});
+
 
 const selectedFiles = ref([]);
 const dragOver = ref(false);
@@ -160,16 +172,14 @@ const addFiles = async (files) => {
 };
 
 watch(() => form.event_id, (newVal) => {
-    if (!newVal) {
-        form.location_role = '';
-        isTypingCustomRole.value = false;
-    }
+    form.location_role = '';
+    isTypingCustomRole.value = false;
 });
 
 watch(() => form.location_role, (newValue) => {
     if (newValue === 'custom') {
         isTypingCustomRole.value = true;
-        form.location_role = '';  
+        form.location_role = '';
     }
 });
 
@@ -470,32 +480,33 @@ const submitPhotos = () => {
                                 
                                 
                                 
+                                
                                 <div v-if="form.event_id" class="animate-fade-in transition-all duration-300">
                                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Rol / Lugar asignado (opcional)
                                     </label>
                                     
                                     <div class="relative">
-                                        
-                                        <select v-if="!isTypingCustomRole && existingRoles?.length > 0" 
+                                    
+                                        <select v-if="!isTypingCustomRole && currentEventRoles.length > 0" 
                                             v-model="form.location_role"
                                             class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
                                             <option value="">-- Seleccionar lugar / rol --</option>
-                                            <option v-for="role in existingRoles" :key="role" :value="role">
+                                            <option v-for="role in currentEventRoles" :key="role" :value="role">
                                                 {{ role }}
                                             </option>
                                             <option value="custom">+ Escribir uno nuevo...</option>
                                         </select>
 
-                                        
-                                        <div v-if="isTypingCustomRole || !existingRoles || existingRoles.length === 0" class="flex gap-2">
+                                    
+                                        <div v-if="isTypingCustomRole || currentEventRoles.length === 0" class="flex gap-2">
                                             <input v-model="form.location_role" type="text"
                                                 class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
                                                 placeholder="Ej: Línea de Meta, Podio, Curva 3..."
                                                 maxlength="100">
                                             
-                                            
-                                            <button v-if="existingRoles?.length > 0" type="button" 
+                                        
+                                            <button v-if="currentEventRoles.length > 0" type="button" 
                                                 @click="isTypingCustomRole = false; form.location_role = ''"
                                                 class="px-4 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors">
                                                 <XMarkIcon class="w-5 h-5" />

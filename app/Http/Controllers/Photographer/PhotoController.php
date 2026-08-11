@@ -76,8 +76,8 @@ class PhotoController extends Controller
     {
         $photographer = auth()->user()->photographer;
 
- 
-        $events = Event::where('photographer_id', $photographer->id)
+
+        $events = \App\Models\Event::where('photographer_id', $photographer->id)
             ->orWhereHas('collaborators', function ($q) use ($photographer) {
                 $q->where('photographer_id', $photographer->id)
                   ->where('event_photographer.status', 'approved');
@@ -86,16 +86,21 @@ class PhotoController extends Controller
             ->orderBy('event_date', 'desc')
             ->get();
 
- 
-        $existingRoles = \App\Models\Photo::where('photographer_id', $photographer->id)
+
+        $eventRoles = \App\Models\Photo::whereIn('event_id', $events->pluck('id'))
             ->whereNotNull('location_role')
             ->where('location_role', '!=', '')
+            ->select('event_id', 'location_role')
             ->distinct()
-            ->pluck('location_role');
+            ->get()
+            ->groupBy('event_id')
+            ->map(function ($items) {
+                return $items->pluck('location_role');
+            })->toArray();
 
         return Inertia::render('Photographer/Photos/Create', [
             'events' => $events,
-            'existingRoles' => $existingRoles,
+            'eventRoles' => $eventRoles, 
         ]);
     }
 
