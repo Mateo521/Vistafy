@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import {
     CloudArrowUpIcon,
     XMarkIcon,
@@ -502,7 +502,7 @@ const submitPhotos = () => {
                                         <div v-if="isTypingCustomRole || currentEventRoles.length === 0" class="flex gap-2">
                                             <input v-model="form.location_role" type="text"
                                                 class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
-                                                placeholder="Ej: Línea de Meta, Podio, Curva 3..."
+                                                placeholder="Ej: Línea de meta, podio, curva 3..."
                                                 maxlength="100">
                                             
                                         
