@@ -164,12 +164,12 @@ class FutureEventManagementController extends Controller
         $pivot = $event->collaborators()->where('photographer_id', $photographerId)->first();
 
         if (!$pivot || !in_array($pivot->pivot->status, ['pending', 'invited'])) {
-            return redirect()->back()->with('error', 'No tienes invitaciones pendientes para este evento.');
+            return redirect()->back()->with('error', 'No tenés invitaciones pendientes para este evento.');
         }
 
         $event->collaborators()->updateExistingPivot($photographerId, ['status' => 'approved']);
 
-        return redirect()->back()->with('success', '¡Invitación aceptada! Ya puedes subir fotos a este evento.');
+        return redirect()->back()->with('success', '¡Invitación aceptada! Ya podés subir fotos a este evento.');
     }
 
     public function rejectInvitation(\App\Models\Event $event)
