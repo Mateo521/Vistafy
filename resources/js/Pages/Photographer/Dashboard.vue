@@ -73,9 +73,6 @@ const handleImageError = (e) => {
 
 
                         </h1>
-                        <div class="bg-yellow-100 p-4 mb-4 text-xs font-mono overflow-auto">
-                            DEBUG inv.: {{ pendingInvitations }}
-                        </div>
                     </div>
 
 

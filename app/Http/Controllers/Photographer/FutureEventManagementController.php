@@ -156,6 +156,35 @@ class FutureEventManagementController extends Controller
         ]);
     }
 
+
+    public function acceptInvitation(\App\Models\Event $event)
+    {
+        $photographerId = auth()->user()->photographer->id;
+
+        $pivot = $event->collaborators()->where('photographer_id', $photographerId)->first();
+
+        if (!$pivot || !in_array($pivot->pivot->status, ['pending', 'invited'])) {
+            return redirect()->back()->with('error', 'No tienes invitaciones pendientes para este evento.');
+        }
+
+        $event->collaborators()->updateExistingPivot($photographerId, ['status' => 'approved']);
+
+        return redirect()->back()->with('success', '¡Invitación aceptada! Ya puedes subir fotos a este evento.');
+    }
+
+    public function rejectInvitation(\App\Models\Event $event)
+    {
+        $photographerId = auth()->user()->photographer->id;
+
+        $event->collaborators()->detach($photographerId);
+
+        return redirect()->back()->with('success', 'Invitación rechazada.');
+    }
+
+
+
+
+
     /**
      *  Actualizar oportunidad (CON COORDENADAS)
      */
