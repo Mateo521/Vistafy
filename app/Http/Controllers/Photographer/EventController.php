@@ -178,8 +178,9 @@ public function inviteColleague(Request $request, Event $event)
         }
 
         $photos = $event->photos()
+            ->with('photographer:id,business_name')  
             ->latest()
-            ->paginate(24)
+            ->paginate(100) 
             ->withQueryString();
 
         $stats = [

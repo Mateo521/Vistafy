@@ -41,7 +41,8 @@ import {
     CloudArrowUpIcon,
     HashtagIcon,
     CheckIcon,
-    XMarkIcon
+    XMarkIcon,
+    UserIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -683,19 +684,28 @@ const paginationPages = computed(() => {
                                     class="group relative aspect-square bg-gray-100 rounded overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-gray-300">
                                     
                                     <img :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                        class="w-full h-full object-cover transition-transform duration-700 " />
+                                        class="w-full h-full object-cover transition-transform duration-700" />
 
-                                     
-                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3">
+                                    
+                                    <div class="absolute top-2 left-2 z-20 flex items-center group/tooltip">
+                                        <div class="bg-black/60 backdrop-blur-md p-1.5 rounded-full text-white cursor-help shadow-sm group-hover/tooltip:bg-[#E30613] transition-colors">
+                                            <UserIcon class="w-4 h-4" />
+                                        </div>
                                         
+                                        <span class="absolute left-full ml-2 px-2.5 py-1.5 bg-white text-black text-[9px] font-bold uppercase tracking-wider rounded shadow-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none border border-gray-100 z-30">
+                                            {{ photo.photographer?.business_name || 'Fotógrafo F33' }}
+                                        </span>
+                                    </div>
+
+                                    
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 z-10">
                                         
-                                        <div class="flex justify-start">
+                                        <div class="flex justify-end">
                                             <span class="bg-white/90 backdrop-blur-sm text-black px-2 py-1 rounded text-[9px] font-bold tracking-wider">
                                                 #{{ photo.unique_id }}
                                             </span>
                                         </div>
 
-                                        
                                         <div class="flex items-center justify-center gap-3 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                                             <button @click="updateCoverImage(photo.id)" title="Fijar como portada"
                                                 class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors">
@@ -707,7 +717,6 @@ const paginationPages = computed(() => {
                                             </button>
                                         </div>
 
-                                        
                                         <div class="flex justify-end">
                                             <div v-if="photo.downloads > 0" class="bg-white text-black px-2 py-1 rounded flex items-center gap-1 text-[10px] font-bold">
                                                 <ArrowDownTrayIcon class="w-3 h-3 text-[#E30613]" /> {{ photo.downloads }}
