@@ -3,7 +3,7 @@
 <head>
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8f9fa; color: #1e293b; padding: 20px; }
-        .container { max-w-[600px] margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 8px; border-top: 4px solid #E30613; }
+        .container { max-w-[600px] margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 3px; }
         .btn { display: inline-block; background-color: #000000; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
