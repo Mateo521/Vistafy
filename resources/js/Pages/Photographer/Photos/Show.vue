@@ -5,10 +5,15 @@ import {
     PencilSquareIcon,
     TrashIcon,
     ArrowLeftIcon,
-    InformationCircleIcon,
     CurrencyDollarIcon,
     TagIcon,
-    ArrowDownTrayIcon
+    ArrowDownTrayIcon,
+    CheckBadgeIcon,
+    EyeSlashIcon,
+    FaceSmileIcon,
+    HashtagIcon,
+    DocumentMagnifyingGlassIcon,
+    CalendarIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -54,240 +59,216 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
-
-    <Head :title="`ACTIVO_${photo.unique_id}`" />
+    <Head :title="`Captura #${photo.unique_id}`" />
 
     <AuthenticatedLayout>
-        <div class="py-12 bg-[#050505] min-h-screen text-[#F2F0EB] selection:bg-[#FF0000] selection:text-[#050505]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-
-                <div
-                    class="mb-8 border-b-4 border-zinc-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-gray-200 pb-8 gap-6">
                     <div>
                         <Link :href="route('photographer.photos.index')"
-                            class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-[#050505] hover:bg-[#FF0000] p-1 mb-4 inline-flex items-center gap-2 transition-colors border border-transparent hover:border-[#FF0000]">
-                            <ArrowLeftIcon class="w-3 h-3" />
-                            < Volver_al_Archivo </Link>
-                                <h1
-                                    class="text-5xl md:text-6xl font-black text-[#F2F0EB] uppercase leading-none tracking-tighter">
-                                    Detalle de Activo
-                                </h1>
-                                <p
-                                    class="mt-4 font-mono text-xs font-bold uppercase tracking-widest text-[#050505] bg-[#FF0000] inline-block px-3 py-1">
-                                    ID // {{ photo.unique_id }}
-                                </p>
+                            class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
+                            <ArrowLeftIcon class="w-4 h-4" /> Volver al archivo
+                        </Link>
+                        
+                        <div class="flex items-center gap-4 mb-2">
+                            <h1 class="text-4xl md:text-5xl font-flux text-black uppercase leading-none tracking-wide">
+                                Detalle de captura
+                            </h1>
+                            <span class="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-md text-xs uppercase tracking-wider border border-gray-200">
+                                #{{ photo.unique_id }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="flex gap-4">
+                    <div class="flex flex-wrap gap-3">
                         <Link :href="route('photographer.photos.edit', photo.id)"
-                            class="px-6 py-3 border-2 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505] font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all flex items-center gap-2">
-                            <PencilSquareIcon class="w-4 h-4" /> Editar_Metadata
+                            class="px-6 py-3.5 bg-white border border-gray-200 text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-50 hover:shadow-sm transition-all rounded-full flex items-center gap-2">
+                            <PencilSquareIcon class="w-4 h-4" /> Editar metadata
                         </Link>
                         <button @click="deletePhoto"
-                            class="px-6 py-3 border-2 border-[#FF0000] bg-transparent text-[#FF0000] font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-[#FF0000] hover:text-[#050505] hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all flex items-center gap-2">
-                            <TrashIcon class="w-4 h-4" /> Purgar
+                            class="px-6 py-3.5 bg-white border border-red-200 text-[#E30613] text-xs font-bold uppercase tracking-wider hover:bg-red-50 transition-all rounded-full flex items-center gap-2">
+                            <TrashIcon class="w-4 h-4" /> Eliminar
                         </button>
                     </div>
                 </div>
 
+              
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-10">
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-10">
-
-
-                    <div class="xl:col-span-2">
-                        <div
-                            class="bg-[#0f0f0f] border-4 border-[#F2F0EB] p-4 md:p-8 flex items-center justify-center min-h-[500px] relative group">
-
-                            <div
-                                class="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMSkiLz48L3N2Zz4=')]">
-                            </div>
+                  
+                    <div class="lg:col-span-2 flex flex-col gap-4">
+                        
+                       
+                        <div class="bg-gray-100 rounded overflow-hidden border border-gray-200 shadow-inner flex items-center justify-center min-h-[500px] relative group">
+                            
+                            
+                            <div class="absolute inset-0 opacity-[0.4] pointer-events-none" style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 24px 24px;"></div>
 
                             <img :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.unique_id"
-                                class="max-w-full max-h-[70vh] object-contain border-4 border-[#F2F0EB] bg-black shadow-[8px_8px_0px_0px_rgba(255,0,0,1)] group-hover:shadow-[12px_12px_0px_0px_rgba(242,240,235,1)] transition-all duration-300 relative z-10" />
+                                class="max-w-full max-h-[70vh] object-contain relative z-10 drop-shadow-2xl transition-transform duration-500 " />
+                            
+                            
+                            <div class="absolute top-4 left-4 z-20">
+                                <span class="bg-white/90 backdrop-blur text-black text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
+                                    <CheckBadgeIcon class="w-3.5 h-3.5 text-[#E30613]" /> Marca de agua aplicada
+                                </span>
+                            </div>
                         </div>
 
-                        <div
-                            class="mt-4 flex justify-between items-center font-mono text-[10px] uppercase font-bold text-zinc-500">
-                            <span>> PREVIEW: WATERMARK_APPLIED</span>
+                        
+                        <div class="flex justify-end">
                             <a :href="photo.watermarked_url" target="_blank"
-                                class="text-[#F2F0EB] border-b-2 border-transparent hover:border-[#FF0000] hover:text-[#FF0000] transition-colors pb-0.5">
-                                [ RAW_PREVIEW ]
+                                class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#E30613] transition-colors bg-white px-5 py-2.5 rounded-full border border-gray-200 shadow-sm hover:shadow-md">
+                                <DocumentMagnifyingGlassIcon class="w-4 h-4" /> Ver foto original
                             </a>
                         </div>
                     </div>
 
+                    
+                    <div class="lg:col-span-1 space-y-6">
 
-                    <div class="xl:col-span-1 space-y-8">
+                        
+                        <div class="bg-white rounded p-6 md:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Comercialización
+                            </h3>
 
-
-                        <div
-                            class="bg-[#0a0a0a] border-4 border-[#F2F0EB] shadow-[6px_6px_0px_0px_rgba(255,0,0,1)] rounded-none">
-                            <div class="px-6 py-4 border-b-4 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505]">
-                                <h3
-                                    class="font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                                    <CurrencyDollarIcon class="w-4 h-4 text-[#FF0000]" /> SYS_COMMERCE
-                                </h3>
-                            </div>
-                            <div class="p-6 space-y-6">
+                            <div class="space-y-6">
                                 <div>
-                                    <label
-                                        class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Valor
-                                        Asignado</label>
-                                    <p class="font-black text-6xl text-[#FF0000] leading-none">${{ photo.price }}</p>
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Precio Asignado</p>
+                                    <p class="text-5xl font-flux text-black leading-none">${{ photo.price }}</p>
                                 </div>
 
-                                <div>
-                                    <label
-                                        class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Estado
-                                        de Red</label>
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            :class="['w-3 h-3 border-2 border-[#F2F0EB]', photo.is_active ? 'bg-[#FF0000]' : 'bg-[#050505]']">
+                                <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Visibilidad</p>
+                                        <div class="flex items-center gap-2">
+                                            <span :class="[
+                                                'px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5',
+                                                photo.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                                            ]">
+                                                <div :class="['w-1.5 h-1.5 rounded-full', photo.is_active ? 'bg-green-500 animate-pulse' : 'bg-gray-400']"></div>
+                                                {{ photo.is_active ? 'Pública' : 'Oculta' }}
+                                            </span>
                                         </div>
-                                        <span
-                                            :class="['font-mono text-xs font-bold uppercase tracking-widest', photo.is_active ? 'text-[#F2F0EB]' : 'text-zinc-500']">
-                                            {{ photo.is_active ? 'PUBLICADA_ACTIVA' : 'OFFLINE_OCULTA' }}
-                                        </span>
+                                    </div>
+                                    
+                                    <div v-if="photo.downloads > 0" class="text-right">
+                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Descargas</p>
+                                        <div class="flex items-center gap-1 text-lg font-bold text-[#E30613]">
+                                            <ArrowDownTrayIcon class="w-4 h-4" /> {{ photo.downloads }}
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div v-if="photo.event" class="pt-4 border-t-2 border-[#F2F0EB] border-dashed">
-                                    <label
-                                        class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Evento
-                                        Vinculado</label>
+                                <div v-if="photo.event" class="pt-6 border-t border-gray-100">
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Evento vinculado</p>
                                     <Link :href="route('photographer.events.show', photo.event.id)"
-                                        class="inline-block font-mono text-sm font-bold text-[#FF0000] border-b-2 border-[#FF0000] hover:bg-[#FF0000] hover:text-[#050505] transition-colors pb-0.5">
-                                        {{ photo.event.name }}
+                                        class="inline-flex bg-gray-50 hover:bg-red-50 text-slate-700 hover:text-[#E30613] px-4 py-2.5 rounded text-sm font-bold transition-colors w-full group">
+                                        <span class="truncate">{{ photo.event.name }}</span>
+                                        <span class="ml-auto text-[#E30613] opacity-0 group-hover:opacity-100 transition-opacity">&rarr;</span>
                                     </Link>
+                                </div>
+                                <div v-else class="pt-6 border-t border-gray-100">
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Evento vinculado</p>
+                                    <span class="inline-flex bg-gray-50 text-gray-400 px-4 py-2.5 rounded text-sm font-bold italic w-full">
+                                        Sin evento asignado
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
+                        
+                        <div class="bg-white rounded p-6 md:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Análisis F33 (IA)
+                            </h3>
 
-                        <div
-                            class="bg-[#0a0a0a] border-4 border-[#F2F0EB] shadow-[6px_6px_0px_0px_rgba(255,0,0,1)] rounded-none">
-                            <div class="px-6 py-4 border-b-4 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505]">
-                                <h3
-                                    class="font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                                    <TagIcon class="w-4 h-4 text-[#FF0000]" /> METADATA_TÉCNICA
-                                </h3>
+                            <div class="space-y-4">
+                            
+                                <div class="flex justify-between items-center bg-gray-50 p-4 rounded border border-transparent hover:border-gray-200 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div :class="['w-8 h-8 rounded-full flex items-center justify-center', photo.has_faces ? 'bg-red-50 text-[#E30613]' : 'bg-gray-200 text-gray-400']">
+                                            <FaceSmileIcon class="w-4 h-4" />
+                                        </div>
+                                        <span class="text-sm font-bold text-slate-700">Rostros detectados</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span v-if="photo.has_faces" class="text-lg font-black text-[#E30613]">
+                                            {{ photo.face_encodings ? (typeof photo.face_encodings === 'string' ? JSON.parse(photo.face_encodings).length : photo.face_encodings.length) : 0 }}
+                                        </span>
+                                        <span v-else class="text-sm text-gray-400 font-bold">0</span>
+                                    </div>
+                                </div>
+
+                                
+                                <div class="flex flex-col bg-gray-50 p-4 rounded border border-transparent hover:border-gray-200 transition-colors">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div :class="['w-8 h-8 rounded-full flex items-center justify-center', photo.bib_processed && formatBibNumbers(photo.bib_numbers).length > 0 ? 'bg-red-50 text-[#E30613]' : 'bg-gray-200 text-gray-400']">
+                                                <HashtagIcon class="w-4 h-4" />
+                                            </div>
+                                            <span class="text-sm font-bold text-slate-700">Dorsales (OCR)</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-if="photo.bib_processed && formatBibNumbers(photo.bib_numbers).length > 0" class="flex flex-wrap gap-2 pl-11">
+                                        <span v-for="bib in formatBibNumbers(photo.bib_numbers)" :key="bib"
+                                            class="bg-white border border-gray-200 text-black px-2.5 py-1 rounded-md text-xs font-bold shadow-sm">
+                                            #{{ bib }}
+                                        </span>
+                                    </div>
+                                    <div v-else class="pl-11">
+                                        <span class="text-xs text-gray-400 font-medium italic">No se detectaron dorsales</span>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="divide-y-2 divide-[#F2F0EB] font-mono">
-                                <div class="px-6 py-4 flex justify-between items-center hover:bg-[#1a1a1a]">
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Resolución</span>
-                                    <span class="text-sm font-bold text-[#F2F0EB]">{{ photo.width }} x {{ photo.height
-                                        }} px</span>
+                        
+                        <div class="bg-white rounded p-6 md:p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Especificaciones
+                            </h3>
+
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Resolución</span>
+                                    <span class="text-sm font-bold text-slate-700">{{ photo.width }} x {{ photo.height }} px</span>
                                 </div>
+                                <div class="w-full h-px bg-gray-50"></div>
 
-                                <div class="px-6 py-4 flex justify-between items-center hover:bg-[#1a1a1a]">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Peso en
-                                        Disco</span>
-                                    <span class="text-sm font-bold text-[#F2F0EB]">{{ formatFileSize(photo.file_size)
-                                        }}</span>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Peso</span>
+                                    <span class="text-sm font-bold text-slate-700">{{ formatFileSize(photo.file_size) }}</span>
                                 </div>
+                                <div class="w-full h-px bg-gray-50"></div>
 
-                                <div class="px-6 py-4 flex justify-between items-center hover:bg-[#1a1a1a]">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Formato
-                                        Ext</span>
-                                    <span class="text-sm font-bold uppercase bg-[#F2F0EB] text-[#050505] px-2 py-0.5">
-                                        .{{ photo.file_path ? photo.file_path.split('.').pop() : 'N/A' }}
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Formato</span>
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                                        {{ photo.file_path ? photo.file_path.split('.').pop() : 'N/A' }}
                                     </span>
                                 </div>
+                                <div class="w-full h-px bg-gray-50"></div>
 
-
-                                <div class="px-6 py-4 flex flex-col gap-3 transition-colors"
-                                    :class="photo.has_faces ? 'bg-[#1a1a1a]' : ''">
-                                    <div class="flex justify-between items-center">
-                                        <span
-                                            class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-[#F2F0EB]" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            IA_Rostros
-                                        </span>
-                                        <div class="flex items-center gap-3">
-                                            <span v-if="photo.has_faces" class="text-xl font-black text-[#FF0000]">
-                                                {{ photo.face_encodings ? (typeof photo.face_encodings === 'string' ?
-                                                    JSON.parse(photo.face_encodings).length : photo.face_encodings.length) :
-                                                0 }}
-                                            </span>
-                                            <span v-else class="text-sm text-zinc-600">—</span>
-
-                                            <span v-if="photo.has_faces"
-                                                class="px-2 py-0.5 border-2 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505] text-[9px] font-bold uppercase tracking-wider">
-                                                Detectado
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="px-6 py-4 flex flex-col gap-3 transition-colors"
-                                    :class="photo.bib_processed && formatBibNumbers(photo.bib_numbers).length > 0 ? 'bg-[#330000]/40' : ''">
-                                    <div class="flex justify-between items-start">
-                                        <span
-                                            class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2 pt-1">
-                                            <svg class="w-4 h-4 text-[#F2F0EB]" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                                            </svg>
-                                            OCR_Dorsales
-                                        </span>
-                                        <div class="flex flex-col items-end gap-2">
-                                            <div v-if="photo.bib_processed && formatBibNumbers(photo.bib_numbers).length > 0"
-                                                class="flex flex-wrap gap-1 justify-end">
-                                                <span v-for="bib in formatBibNumbers(photo.bib_numbers)" :key="bib"
-                                                    class="px-2 py-1 bg-[#FF0000] text-[#050505] text-xs font-bold font-mono border-2 border-[#F2F0EB]">
-                                                    #{{ bib }}
-                                                </span>
-                                            </div>
-                                            <div v-else class="flex items-center gap-2">
-                                                <span class="text-sm text-zinc-600 font-mono">—</span>
-                                                <span
-                                                    class="px-2 py-0.5 border-2 border-zinc-700 text-zinc-600 text-[9px] font-bold uppercase tracking-wider">
-                                                    N/A
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="px-6 py-4 flex justify-between items-center bg-[#111]">
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Timestamp</span>
-                                    <span class="text-[10px] font-bold text-[#F2F0EB] text-right uppercase">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                                        <CalendarIcon class="w-3.5 h-3.5" /> Fecha
+                                    </span>
+                                    <span class="text-sm font-bold text-slate-700 text-right">
                                         {{ formatDate(photo.created_at) }}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-
-                        <div
-                            class="bg-[#0a0a0a] border-4 border-[#F2F0EB] shadow-[6px_6px_0px_0px_rgba(255,0,0,1)] rounded-none">
-                            <div class="px-6 py-4 border-b-4 border-[#F2F0EB] bg-[#F2F0EB] text-[#050505]">
-                                <h3
-                                    class="font-mono text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                                    <ArrowDownTrayIcon class="w-4 h-4 text-[#FF0000]" /> ANALÍTICAS
-                                </h3>
-                            </div>
-                            <div class="p-6 flex items-center justify-between">
-                                <span
-                                    class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400">Descargas
-                                    Totales</span>
-                                <span class="text-5xl font-black text-[#F2F0EB]">{{ photo.downloads }}</span>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
+
             </div>
         </div>
     </AuthenticatedLayout>

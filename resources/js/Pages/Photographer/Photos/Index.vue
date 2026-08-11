@@ -105,7 +105,7 @@ const handleImageError = (e) => {
                             Gestión de activos
                         </span>
                         <h1 class="text-5xl md:text-7xl font-flux text-black tracking-wide leading-none">
-                            Archivo <span class="text-[#E30613]">Fotográfico</span>
+                            Archivo <span class="text-[#E30613]">de fotos</span>
                         </h1>
                     </div>
                     
@@ -146,7 +146,7 @@ const handleImageError = (e) => {
                         </div>
                         <div>
                             <span class="text-4xl md:text-5xl font-flux text-black block mb-1">{{ stats.active }}</span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Activos visibles</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Fotos visibles</span>
                         </div>
                     </div>
 
