@@ -176,12 +176,6 @@ const handleImageError = (e) => {
 </template>
 
 <style scoped>
-.font-flux {
-    font-family: 'Bebas Neue', sans-serif;
-}
-.font-lato {
-    font-family: 'Lato', sans-serif;
-}
 
 .mask-image-gradient {
     mask-image: linear-gradient(to right, transparent, black);

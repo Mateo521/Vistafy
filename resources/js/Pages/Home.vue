@@ -54,9 +54,9 @@ const props = defineProps({
                         </div>
 
 
-                        <div
+                        <!--div
                             class="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-transparent md:w-3/4 z-10 pointer-events-none">
-                        </div>
+                        </div-->
 
 
                         <div class="relative z-20 p-8 md:p-16 max-w-2xl pointer-events-auto">
@@ -134,7 +134,7 @@ const props = defineProps({
                     
                     <div v-if="recentEvents.length > 8" class="mt-16 text-center">
                         <Link :href="route('events.index')" class="inline-flex items-center gap-2 text-black font-bold uppercase text-sm hover:text-red-600 transition-colors bg-white px-8 py-4 rounded-full shadow-sm border border-slate-200 hover:shadow-md">
-                            Explorar Calendario Completo
+                            Explorar eventos
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                         </Link>
                     </div>
