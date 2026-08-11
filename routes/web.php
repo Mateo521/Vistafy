@@ -231,6 +231,14 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             ->get();
 
 
+        $collaboratingEvents = $photographer->guestEvents()
+            ->wherePivot('status', 'approved')
+            ->with('photographer:id,business_name') 
+            ->latest()
+            ->take(4) 
+            ->get();
+
+
         $stats = [
             'total_events' => \App\Models\Event::where('photographer_id', $photographer->id)->count(),
             'total_photos' => \App\Models\Photo::where('photographer_id', $photographer->id)->count(),
@@ -256,6 +264,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
             'pendingInvitations' => $pendingInvitations,
+            'collaboratingEvents' => $collaboratingEvents,
         ]);
     })->name('dashboard');
 

@@ -11,7 +11,7 @@ import {
     EyeIcon
 } from '@heroicons/vue/24/outline';
 
-const props = defineProps({
+defineProps({
     photographer: Object,
     stats: Object,
     recentPhotos: Array,
@@ -20,6 +20,10 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    collaboratingEvents: {
+        type: Array,
+        default: () => []
+    }
 });
 
 const formatDate = (dateString) => {
@@ -299,6 +303,39 @@ const handleImageError = (e) => {
                         </div>
                     </div>
 
+
+                    
+                    <div v-if="collaboratingEvents && collaboratingEvents.length > 0" class="xl:col-span-3 mt-8 mb-4">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-flux text-black tracking-wide">Colaboraciones activas</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <Link v-for="event in collaboratingEvents" :key="event.id"
+                                :href="route('photographer.photos.create')" 
+                                class="group bg-white border border-gray-100 p-5 rounded hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                                
+                                <div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-green-600">Aprobado</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold text-black group-hover:text-[#E30613] transition-colors line-clamp-2 leading-tight mb-2">
+                                        {{ event.name }}
+                                    </h4>
+                                </div>
+                                
+                                <div class="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                        Por: {{ event.photographer?.business_name }}
+                                    </span>
+                                    <span class="text-[#E30613] text-xs font-bold uppercase group-hover:translate-x-1 transition-transform">
+                                        Subir &rarr;
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
 
                     <div class="xl:col-span-1">
                         <div class="flex items-center justify-between mb-6">
