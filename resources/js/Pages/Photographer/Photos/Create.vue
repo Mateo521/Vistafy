@@ -39,12 +39,14 @@ const { success, error } = useToast();
 const isTypingCustomRole = ref(false);
 
 const currentEventRoles = computed(() => {
-    if (!form.event_id || !props.eventRoles[form.event_id]) {
+    if (!form.event_id || !props.eventRoles) {
         return [];
     }
-    return props.eventRoles[form.event_id];
+    
+    const roles = props.eventRoles[form.event_id] || props.eventRoles[String(form.event_id)];
+    
+    return Array.isArray(roles) ? roles : [];
 });
-
 
 const selectedFiles = ref([]);
 const dragOver = ref(false);
@@ -475,6 +477,10 @@ const submitPhotos = () => {
                                             {{ event.name }}
                                         </option>
                                     </select>
+
+                                    <div class="p-2 bg-yellow-100 text-xs text-yellow-800 font-mono mt-2">
+    DEBUG ROLES: {{ eventRoles }}
+</div>
                                 </div>
 
                                 
