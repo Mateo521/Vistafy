@@ -556,8 +556,7 @@ public function showEvent(Request $request, $slug)
                 'photographer' => [
                     'id' => $photographer->id,
                     'business_name' => $photographer->business_name ?? $photographer->user->name ?? 'Fotógrafo',
-                    
-                    
+                    'slug' => $photographer->slug,  
                     'profile_photo_url' => $photographer->profile_photo_url,
                 ],
                 'roles' => $roles,
@@ -605,7 +604,61 @@ public function showEvent(Request $request, $slug)
         ]);
     }
 
+public function showEventPhotographer(Request $request, $eventSlug, $photographerSlug)
+    {
+        $event = \App\Models\Event::where('slug', $eventSlug)->where('is_active', true)->firstOrFail();
 
+        if ($event->is_private) {
+            $token = $request->query('token');
+            if (! $token || $token !== $event->private_token) {
+                abort(403, 'No tenés permiso para ver este evento privado.');
+            }
+        }
+
+        $photographer = \App\Models\Photographer::where('slug', $photographerSlug)
+            ->where('status', 'approved')
+            ->firstOrFail();
+
+       
+        $photos = \App\Models\Photo::where('event_id', $event->id)
+            ->where('photographer_id', $photographer->id)
+            ->where('is_active', true)
+            ->latest()
+            ->paginate(40)
+            ->withQueryString();
+
+        $photos->getCollection()->transform(function ($photo) {
+            return [
+                'id' => $photo->id,
+                'unique_id' => $photo->unique_id,
+                'price' => $photo->price,
+                'location_role' => $photo->location_role,
+                'thumbnail_url' => $photo->thumbnail_url,
+            ];
+        });
+
+         
+        $roles = \App\Models\Photo::where('event_id', $event->id)
+            ->where('photographer_id', $photographer->id)
+            ->where('is_active', true)
+            ->whereNotNull('location_role')
+            ->where('location_role', '!=', '')
+            ->distinct()
+            ->pluck('location_role');
+
+        return Inertia::render('Events/ShowPhotographer', [
+            'event' => [
+                'name' => $event->name,
+                'slug' => $event->slug,
+            ],
+            'photographer' => [
+                'business_name' => $photographer->business_name,
+                'profile_photo_url' => $photographer->profile_photo_url,
+                'roles' => $roles,
+            ],
+            'photos' => $photos,
+        ]);
+    }
 
     public function photographers(Request $request)
     {

@@ -44,7 +44,7 @@ const handleImageError = (e) => {
                 <div class="mb-12">
                     <Link :href="route('events.index')"
                         class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition-colors mb-6">
-                        <ArrowLeftIcon class="w-4 h-4" /> Volver al calendario
+                        <ArrowLeftIcon class="w-4 h-4" /> Volver a eventos subidos
                     </Link>
 
                     <div class="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative">
@@ -59,7 +59,7 @@ const handleImageError = (e) => {
                                     Evento Privado
                                 </span>
                                 <span class="bg-black text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                                    {{ event.photos_count }} Capturas Disponibles
+                                    {{ event.photos_count }} fotos hechas
                                 </span>
                             </div>
 
@@ -126,16 +126,25 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
-                            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
-                                {{ gallery.photos_count }} Capturas
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 hidden md:block">
+                                    {{ gallery.photos_count }} Capturas
+                                </span>
+                                <Link :href="route('events.show-photographer', [event.slug, gallery.photographer.slug])" 
+                                    class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-red-600 transition-colors">
+                                    Ver todo
+                                </Link>
                             </div>
+
+
+
                         </div>
 
                         
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             <Link v-for="photo in gallery.photos" :key="photo.id"
                                 :href="route('gallery.show', photo.unique_id)" 
-                                class="group relative rounded-2xl overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
+                                class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
                                 
                                 <ProtectedImage :src="photo.thumbnail_url"
                                     class="w-full h-full object-cover transition-transform duration-700  pointer-events-none"

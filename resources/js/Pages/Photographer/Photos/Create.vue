@@ -18,7 +18,7 @@ import Tesseract from 'tesseract.js';
 
 const props = defineProps({
     events: Array,
-    eventRoles: { 
+    eventRoles: {
         type: Object,
         default: () => ({})
     },
@@ -29,7 +29,7 @@ const form = useForm({
     photos: [],
     price: 5.00,
     event_id: null,
-    location_role: '',  
+    location_role: '',
     is_active: true,
     read_bibs: true,
     face_data: null,
@@ -42,9 +42,9 @@ const currentEventRoles = computed(() => {
     if (!form.event_id || !props.eventRoles) {
         return [];
     }
-    
+
     const roles = props.eventRoles[form.event_id] || props.eventRoles[String(form.event_id)];
-    
+
     return Array.isArray(roles) ? roles : [];
 });
 
@@ -417,14 +417,16 @@ const submitPhotos = () => {
 };
 </script>
 <template>
+
     <Head title="Carga de Material" />
 
     <AuthenticatedLayout>
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-28">
             <div class="max-w-[1500px] mx-auto sm:px-6 lg:px-8">
 
-                
-                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
+
+                <div
+                    class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
                     <div>
                         <Link :href="route('photographer.photos.index')"
                             class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
@@ -434,41 +436,47 @@ const submitPhotos = () => {
                             Subida de <span class="text-[#E30613]">fotos</span>
                         </h1>
                         <p class="text-sm font-bold text-gray-500 mt-2 flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Sistema de compresión e IA activo
+                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Sistema de compresión
+                            e IA activo
                         </p>
                     </div>
                 </div>
 
                 <form @submit.prevent="submitPhotos" class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12">
 
-                     
+
                     <div class="lg:col-span-1 space-y-6">
-                        
+
                         <div class="bg-white border border-gray-100 rounded shadow-sm overflow-hidden">
                             <div class="px-6 md:px-8 py-5 border-b border-gray-100 bg-gray-50/50">
-                                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                <h2
+                                    class="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                                     <span class="w-4 h-px bg-gray-300"></span> Parámetros de Venta
                                 </h2>
                             </div>
 
                             <div class="p-6 md:p-8 space-y-8">
-                               
+
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Precio unitario (ARS)
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">$</span>
+                                        <span
+                                            class="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">$</span>
                                         <input v-model="form.price" type="number" step="0.01" min="0.01" required
                                             class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-2xl py-3 pl-10 pr-4 rounded-xl transition-all outline-none"
                                             placeholder="0.00">
                                     </div>
-                                    <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price }}</p>
+                                    <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price
+                                        }}</p>
                                 </div>
 
-                                
+
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Asignar a evento
                                     </label>
                                     <select v-model="form.event_id"
@@ -479,23 +487,22 @@ const submitPhotos = () => {
                                         </option>
                                     </select>
 
-                                    <div class="p-2 bg-yellow-100 text-xs text-yellow-800 font-mono mt-2">
-    DEBUG ROLES: {{ eventRoles }}
-</div>
+                                
                                 </div>
 
-                                
-                                
-                                
-                                
+
+
+
+
                                 <div v-if="form.event_id" class="animate-fade-in transition-all duration-300">
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Rol / Lugar asignado (opcional)
                                     </label>
-                                    
+
                                     <div class="relative">
-                                    
-                                        <select v-if="!isTypingCustomRole && currentEventRoles.length > 0" 
+
+                                        <select v-if="!isTypingCustomRole && currentEventRoles.length > 0"
                                             v-model="form.location_role"
                                             class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
                                             <option value="">-- Seleccionar lugar / rol --</option>
@@ -505,15 +512,15 @@ const submitPhotos = () => {
                                             <option value="custom">+ Escribir uno nuevo...</option>
                                         </select>
 
-                                    
-                                        <div v-if="isTypingCustomRole || currentEventRoles.length === 0" class="flex gap-2">
+
+                                        <div v-if="isTypingCustomRole || currentEventRoles.length === 0"
+                                            class="flex gap-2">
                                             <input v-model="form.location_role" type="text"
                                                 class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
-                                                placeholder="Ej: Línea de meta, podio, curva 3..."
-                                                maxlength="100">
-                                            
-                                        
-                                            <button v-if="currentEventRoles.length > 0" type="button" 
+                                                placeholder="Ej: Línea de meta, podio, curva 3..." maxlength="100">
+
+
+                                            <button v-if="currentEventRoles.length > 0" type="button"
                                                 @click="isTypingCustomRole = false; form.location_role = ''"
                                                 class="px-4 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors">
                                                 <XMarkIcon class="w-5 h-5" />
@@ -523,15 +530,17 @@ const submitPhotos = () => {
                                     <p class="text-[10px] text-gray-400 mt-2 ml-1">
                                         Ayudá a las personas a encontrarte más fácil en el evento.
                                     </p>
-                                    <p v-if="errors.location_role" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.location_role }}</p>
+                                    <p v-if="errors.location_role" class="text-[#E30613] text-xs font-bold mt-2">{{
+                                        errors.location_role }}</p>
                                 </div>
-                                
+
                                 <div class="space-y-6 pt-6 border-t border-gray-100">
-                                    
-                                
+
+
                                     <label class="relative flex justify-between items-start cursor-pointer group">
                                         <div class="pr-4">
-                                            <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
+                                            <span
+                                                class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
                                                 Publicación inmediata
                                             </span>
                                             <span class="block text-xs text-gray-400 mt-1">
@@ -540,14 +549,17 @@ const submitPhotos = () => {
                                         </div>
                                         <div class="relative inline-flex items-center mt-1">
                                             <input type="checkbox" v-model="form.is_active" class="sr-only peer">
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E30613]"></div>
+                                            <div
+                                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E30613]">
+                                            </div>
                                         </div>
                                     </label>
 
-                                    
+
                                     <label class="relative flex justify-between items-start cursor-pointer group">
                                         <div class="pr-4">
-                                            <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
+                                            <span
+                                                class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
                                                 Leer dorsales (OCR)
                                             </span>
                                             <span class="block text-xs text-gray-400 mt-1">
@@ -556,7 +568,9 @@ const submitPhotos = () => {
                                         </div>
                                         <div class="relative inline-flex items-center mt-1">
                                             <input type="checkbox" v-model="form.read_bibs" class="sr-only peer">
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+                                            <div
+                                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black">
+                                            </div>
                                         </div>
                                     </label>
 
@@ -564,10 +578,11 @@ const submitPhotos = () => {
                             </div>
                         </div>
 
-                        
+
                         <div class="bg-gray-50 border border-gray-200 p-6 rounded">
                             <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
                                     <InformationCircleIcon class="w-5 h-5 text-gray-500" stroke-width="2" />
                                 </div>
                                 <div>
@@ -575,17 +590,18 @@ const submitPhotos = () => {
                                         Protección F33
                                     </h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan en bóveda segura hasta la confirmación de transacción.
+                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan en
+                                        bóveda segura hasta la confirmación de transacción.
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                     
+
                     <div class="lg:col-span-2 flex flex-col gap-6">
 
-                       
+
                         <div @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false"
                             @drop.prevent="handleDrop" :class="[
                                 'border-2 border-dashed rounded p-8 md:p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden bg-white',
@@ -593,10 +609,12 @@ const submitPhotos = () => {
                                     ? 'border-[#E30613] bg-red-50'
                                     : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                             ]">
-                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*" class="hidden" id="file-upload">
+                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*"
+                                class="hidden" id="file-upload">
 
                             <div v-if="selectedFiles.length === 0" class="flex flex-col items-center">
-                                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100">
+                                <div
+                                    class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100">
                                     <CloudArrowUpIcon class="w-10 h-10 text-gray-400 stroke-1" />
                                 </div>
                                 <h3 class="font-flux text-4xl text-black mb-2">Carga</h3>
@@ -611,10 +629,11 @@ const submitPhotos = () => {
                             </div>
 
                             <div v-else class="w-full flex flex-col h-full">
-                                
+
                                 <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
                                     <span class="text-xl font-bold text-black flex items-center gap-2">
-                                        {{ selectedFiles.length }} <span class="text-sm font-medium text-gray-500">Archivos en cola</span>
+                                        {{ selectedFiles.length }} <span
+                                            class="text-sm font-medium text-gray-500">Archivos en cola</span>
                                     </span>
                                     <div class="flex gap-2">
                                         <button type="button" @click="$refs.fileInput.click()"
@@ -628,24 +647,27 @@ const submitPhotos = () => {
                                     </div>
                                 </div>
 
-                              
+
                                 <div v-if="processingFaces || processingBibs"
                                     class="mb-6 bg-red-50 border border-red-100 p-4 rounded flex items-center gap-4 text-[#E30613]">
-                                    <div class="animate-spin rounded-full h-5 w-5 border-2 border-[#E30613] border-t-transparent"></div>
+                                    <div
+                                        class="animate-spin rounded-full h-5 w-5 border-2 border-[#E30613] border-t-transparent">
+                                    </div>
                                     <span class="text-xs font-bold uppercase tracking-wider">
                                         Ejecutando modelos IA ({{ selectedFiles.length }} activos)...
                                     </span>
                                 </div>
 
-                                
-                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar text-left">
+
+                                <div
+                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar text-left">
                                     <div v-for="(file, index) in selectedFiles" :key="index"
                                         class="relative group aspect-square bg-gray-100 rounded overflow-hidden border border-gray-200 hover:shadow-md transition-all">
 
                                         <img :src="file.preview"
                                             class="w-full h-full object-cover transition-transform duration-500 ">
 
-                                        
+
                                         <div v-if="faceDetectionResults[index]"
                                             class="absolute top-2 right-2 px-2 py-1 rounded-md text-[9px] font-bold shadow-sm z-10"
                                             :class="faceDetectionResults[index].count > 0 ? 'bg-[#E30613] text-white' : 'bg-black/50 text-white backdrop-blur'">
@@ -655,13 +677,15 @@ const submitPhotos = () => {
                                             <span v-else>0 Rostros</span>
                                         </div>
 
-                                        
-                                        <div class="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity z-20">
+
+                                        <div
+                                            class="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity z-20">
                                             <div class="flex flex-wrap gap-1.5 items-center">
                                                 <HashtagIcon class="w-3 h-3 text-white shrink-0" stroke-width="3" />
 
                                                 <template v-if="bibDetectionResults[index]?.numbers?.length">
-                                                    <div v-for="number in bibDetectionResults[index].numbers" :key="number"
+                                                    <div v-for="number in bibDetectionResults[index].numbers"
+                                                        :key="number"
                                                         class="bg-white/90 backdrop-blur text-black text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                                                         <span>{{ number }}</span>
                                                         <button type="button" @click.stop="removeBibTag(index, number)"
@@ -678,27 +702,31 @@ const submitPhotos = () => {
                                             </div>
                                         </div>
 
-                                        
-                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
+
+                                        <div
+                                            class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
                                             <button type="button" @click="removeFile(index)"
                                                 class="w-10 h-10 bg-white rounded-full text-[#E30613] shadow-lg flex items-center justify-center hover:bg-[#E30613] hover:text-white transition-colors pointer-events-auto transform ">
                                                 <XMarkIcon class="w-5 h-5" stroke-width="2" />
                                             </button>
                                         </div>
 
-                                        
+
                                         <div v-if="(processingFaces && !faceDetectionResults[index]) || (processingBibs && !bibDetectionResults[index])"
                                             class="absolute inset-0 bg-white/80 flex items-center justify-center z-40 backdrop-blur-sm">
-                                            <div class="animate-spin rounded-full h-6 w-6 border-2 border-gray-200 border-t-[#E30613]"></div>
+                                            <div
+                                                class="animate-spin rounded-full h-6 w-6 border-2 border-gray-200 border-t-[#E30613]">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        
+
                         <div v-if="uploading" class="p-6 bg-white border border-gray-100 rounded shadow-sm">
-                            <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+                            <div
+                                class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
                                 <span>Subiendo archivos...</span>
                                 <span class="text-[#E30613]">{{ uploadProgress.percentage }}%</span>
                             </div>
@@ -711,7 +739,7 @@ const submitPhotos = () => {
                             </p>
                         </div>
 
-                        
+
                         <div class="flex justify-end mt-2">
                             <button type="button" @click="submitPhotos"
                                 :disabled="uploading || selectedFiles.length === 0" :class="[
@@ -721,14 +749,16 @@ const submitPhotos = () => {
                                         : 'bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1'
                                 ]">
                                 <span v-if="uploading" class="flex items-center gap-2">
-                                    <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <div
+                                        class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
+                                    </div>
                                     Subiendo...
                                 </span>
                                 <span v-else>Subir fotos</span>
                             </button>
                         </div>
 
-                      
+
                         <div v-if="Object.keys(errors).length > 0"
                             class="p-6 bg-red-50 border border-red-100 rounded mt-4">
                             <div class="flex gap-4">
@@ -757,9 +787,17 @@ const submitPhotos = () => {
 
 <style scoped>
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
 .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
 }
@@ -767,13 +805,16 @@ const submitPhotos = () => {
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1; 
+    background: #cbd5e1;
     border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
