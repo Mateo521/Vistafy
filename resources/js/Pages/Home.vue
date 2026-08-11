@@ -36,7 +36,7 @@ const props = defineProps({
 
                 <section class="pb-16 px-4 md:px-8 max-w-[90rem] mx-auto">
                     <div
-                        class="relative w-full h-[75vh] rounded-3xl overflow-hidden shadow-2xl shadow-red-900/10 flex items-center bg-white">
+                        class="relative w-full h-[75vh] rounded-3xl overflow-hidden shadow-2xl shadow-red-900/10 flex items-end bg-white">
 
 
                         <div class="absolute inset-0 w-full h-full z-0">
@@ -54,15 +54,15 @@ const props = defineProps({
                         </div>
 
 
-                        <!--div
-                            class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent md:w-3/4 z-10 pointer-events-none">
-                        </div-->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-transparent md:w-3/4 z-10 pointer-events-none">
+                        </div>
 
 
                         <div class="relative z-20 p-8 md:p-16 max-w-2xl pointer-events-auto">
-                            <span class="font-bold tracking-widest uppercase text-red-600 mb-4 block text-sm">
+                            <!--span class="font-bold tracking-widest uppercase text-red-600 mb-4 block text-sm">
                                 Fotografía deportiva
-                            </span>
+                            </span-->
                             <!--h1 class="font-flux text-2xl md:text-7xl lg:text-[6rem]  text-black mb-6">
                                 La fotografía cambió <br>
                                 <span class="text-gradient">la forma de venderla no.</span>

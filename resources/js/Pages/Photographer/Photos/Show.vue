@@ -63,7 +63,7 @@ const formatDate = (dateString) => {
 
     <AuthenticatedLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
-            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-gray-200 pb-8 gap-6">

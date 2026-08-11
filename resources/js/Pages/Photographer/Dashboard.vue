@@ -97,11 +97,11 @@ const handleImageError = (e) => {
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="text-sm font-bold text-black">{{ invitation.name }}</span>
                                     <span class="bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
-                                        Nueva Invitación
+                                        Nueva invitación
                                     </span>
                                 </div>
                                 <p class="text-sm text-gray-500">
-                                    <strong class="text-slate-700">{{ invitation.photographer.business_name }}</strong> te ha invitado a colaborar como fotógrafo oficial.
+                                    <strong class="text-slate-700">{{ invitation.photographer.business_name }}</strong> te invitó a colaborar como fotógrafo.
                                 </p>
                             </div>
                         </div>
