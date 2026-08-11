@@ -205,6 +205,7 @@ class PhotoController extends Controller
                     $photo = Photo::create([
                         'photographer_id' => $photographer->id,
                         'event_id' => $request->event_id,
+                        'location_role' => $request->location_role,
                         'unique_id' => $processed['unique_id'],
                         'original_path' => $processed['original_path'],
                         'watermarked_path' => $processed['watermarked_path'],

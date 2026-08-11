@@ -388,8 +388,9 @@ const submitPhotos = () => {
 
     formData.append('price', form.price);
     formData.append('is_active', form.is_active ? 1 : 0);
-    if (form.location_role) formData.append('location_role', form.location_role);
     if (form.event_id) formData.append('event_id', form.event_id);
+
+    if (form.location_role) formData.append('location_role', form.location_role);
 
     formData.append('face_data', JSON.stringify({
         faces: facesData,
