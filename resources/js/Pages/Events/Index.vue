@@ -93,7 +93,7 @@ const handleImageError = (e) => {
                             <input 
                                 v-model="form.search" 
                                 type="text" 
-                                class="block w-full pl-14 pr-32 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-base focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors outline-none font-bold text-slate-700 placeholder-slate-400" 
+                                class="block w-full pl-14 pr-32 py-4 bg-slate-50 border border-slate-200 rounded text-base focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors outline-none font-bold text-slate-700 placeholder-slate-400" 
                                 placeholder="Buscar identificador, nombre o locación..."
                             />
                             <button type="submit" class="absolute inset-y-2 right-2 bg-black text-white px-6 rounded font-bold uppercase tracking-wider text-sm hover:bg-red-600 transition-colors">
@@ -179,9 +179,9 @@ const handleImageError = (e) => {
                         </div>
                         
                     
-                        <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500 bg-slate-100 mt-1">
+                        <div class="relative w-full aspect-[4/3] rounded overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500 bg-slate-100 mt-1">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
+                                class="w-full h-full object-cover transition-transform duration-700 ease-out " 
                                 @error="handleImageError" 
                             />
                         
@@ -215,7 +215,7 @@ const handleImageError = (e) => {
 
 
                 <div v-if="events.data && events.data.length > 0 && events.last_page > 1" class="mt-16 flex justify-center">
-                    <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex flex-wrap gap-2 bg-white p-2 rounded shadow-sm border border-slate-100">
                         <template v-for="(link, index) in events.links" :key="index">
                             <Link v-if="link.url" :href="link.url" 
                                 class="min-w-[40px] h-10 flex items-center justify-center px-4 text-sm font-bold rounded transition-colors"
