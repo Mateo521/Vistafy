@@ -128,108 +128,105 @@ const handleImageError = (e) => {
     }
 };
 </script>
-<template>
 
-    <Head title="Terminal de Descargas — F33" />
+<template>
+    <Head title="Carrito de Compras | F33" />
 
     <AppLayout>
-        <div class="min-h-screen bg-black text-white font-sans selection:bg-red-600 selection:text-white ">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans selection:bg-[#E30613] selection:text-white pb-24 pt-24 md:pt-28">
 
-            <div class="border-b border-white/20 bg-black/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
-                <div
-                    class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
-                    <Link :href="route('gallery.index')"
-                        class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
-                        <ArrowLeftIcon class="w-3.5 h-3.5" /> [ RETORNAR AL CATÁLOGO ]
-                    </Link>
+            
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+                <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-200 pb-8 gap-6">
+                    <div>
+                        <Link :href="route('gallery.index')"
+                            class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
+                            <ArrowLeftIcon class="w-4 h-4" /> Seguir explorando
+                        </Link>
+                        <h1 class="font-flux text-5xl md:text-7xl text-black uppercase tracking-wide leading-none">
+                            Mi <span class="text-[#E30613]">Carrito</span>
+                        </h1>
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-4">
+                            {{ itemCount }} {{ itemCount === 1 ? 'Archivo seleccionado' : 'Archivos seleccionados' }}
+                        </p>
+                    </div>
 
                     <button v-if="itemCount > 0" @click="clearCart" :disabled="processing"
-                        class="text-gray-400 hover:text-red-600 flex items-center gap-2 transition-none disabled:opacity-30 px-3 py-1 border border-transparent hover:border-red-600">
-                        <TrashIcon class="w-3.5 h-3.5" /> [ PURGAR MEMORIA ]
+                        class="px-5 py-2.5 bg-red-50 text-[#E30613] text-xs font-bold uppercase tracking-wider hover:bg-red-100 transition-colors rounded-full flex items-center gap-2 disabled:opacity-50 w-max">
+                        <TrashIcon class="w-4 h-4" /> Vaciar Carrito
                     </button>
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div class="mb-12 border-b-[12px] border-white pb-8">
-                    <span class="font-mono text-xs uppercase text-red-600 mb-4 block  border-red-600 pl-3">
-                        // {{ itemCount }} {{ itemCount === 1 ? 'Archivo' : 'Archivos' }}
-                    </span>
-                    <h1
-                        class="font-black font-flux text-6xl md:text-8xl lg:text-[9rem] leading-[0.85] tracking-tighter uppercase text-white">
-                        COLA DE<br><span class="text-red-600">DESCARGAS.</span>
-                    </h1>
-                </div>
-
+                
                 <div v-if="itemCount === 0"
-                    class="flex flex-col items-center justify-center py-32 border-4 border-dashed border-gray-800 bg-gray-950 text-center">
-                    <div class="w-20 h-20 border-2 border-red-600 bg-red-600/10 flex items-center justify-center mb-6">
-                        <ShoppingBagIcon class="w-10 h-10 text-red-600" />
+                    class="flex flex-col items-center justify-center py-24 bg-white rounded border border-gray-100 shadow-sm text-center">
+                    <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                        <ShoppingBagIcon class="w-12 h-12 text-gray-300" />
                     </div>
-                    <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase mb-4">
-                        VACÍO.
+                    <h2 class="text-4xl font-flux text-black mb-3">
+                        Carrito Vacío
                     </h2>
-                    <p class="font-mono text-xs text-gray-500 tracking-widest uppercase mb-10">
-                        NO HAY ARCHIVOS EN LA COLA DE DESCARGAS. AGREGÁ FOTOGRAFÍAS DESDE EL CATÁLOGO PARA PROCESAR TU
-                        COMPRA.
+                    <p class="text-sm font-medium text-gray-500 mb-10 max-w-md mx-auto">
+                        Todavía no agregaste ninguna fotografía. Explorá nuestras galerías para encontrar y descargar las mejores fotos.
                     </p>
                     <Link :href="route('gallery.index')"
-                        class="border-2 border-white bg-black text-white hover:bg-white hover:text-black font-black uppercase tracking-widest px-8 py-4 flex items-center gap-3 transition-none">
-                        <ArrowLeftIcon class="w-4 h-4" /> [ INICIAR BÚSQUEDA ]
+                        class="bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1 font-bold text-xs uppercase tracking-wider px-8 py-4 rounded-full flex items-center gap-2 transition-all">
+                        <ArrowLeftIcon class="w-4 h-4" /> Ir al catálogo
                     </Link>
                 </div>
 
-                <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+                
+                <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
+                
                     <div class="lg:col-span-8 flex flex-col gap-4">
                         <div v-for="item in items" :key="item.id"
-                            class="bg-gray-950 border-2 border-white/10 hover:border-white p-4 flex flex-col sm:flex-row gap-6 transition-none group">
+                            class="bg-white border border-gray-100 hover:shadow-md hover:border-gray-200 rounded p-4 md:p-6 flex flex-col sm:flex-row gap-6 transition-all group">
 
                             <Link :href="route('gallery.show', item.photo.unique_id)"
-                                class="block flex-shrink-0 w-full sm:w-40 h-40 bg-black border-[4px] border-black group-hover:border-red-600 overflow-hidden relative transition-none">
+                                class="block flex-shrink-0 w-full sm:w-48 h-48 bg-gray-100 rounded overflow-hidden relative">
                                 <ProtectedImage :src="item.photo.thumbnail_url" :alt="item.photo.title"
-                                    class="absolute inset-0 w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-none"
+                                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 "
                                     @error="handleImageError" />
-                                <div
-                                    class="absolute inset-0 bg-red-600 mix-blend-overlay opacity-0 group-hover:opacity-30 transition-none pointer-events-none">
-                                </div>
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                             </Link>
 
-                            <div class="flex-1 flex flex-col font-mono relative">
+                            <div class="flex-1 flex flex-col relative">
                                 <div class="flex justify-between items-start gap-4">
                                     <div>
-                                        <p class="text-[9px] font-bold uppercase  text-red-600 mb-1">
-                                            ID_REF: #{{ item.photo.unique_id }}
-                                        </p>
+                                        <span class="inline-block bg-gray-50 text-gray-500 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mb-3 border border-gray-100">
+                                            ID: #{{ item.photo.unique_id }}
+                                        </span>
                                         <Link :href="route('gallery.show', item.photo.unique_id)"
-                                            class="font-sans font-black text-2xl md:text-3xl text-white uppercase tracking-tighter leading-none hover:text-red-600 transition-none line-clamp-2">
-                                            {{ item.photo.title || 'Fotografía' }}
+                                            class="block font-flux text-3xl text-black leading-none hover:text-[#E30613] transition-colors line-clamp-2">
+                                            {{ item.photo.title || 'Captura Fotográfica' }}
                                         </Link>
                                     </div>
                                     <button @click="removeItem(item.photo_id)"
                                         :disabled="removingItems.has(item.photo_id)"
-                                        class="text-gray-600 hover:text-red-600 transition-none disabled:opacity-30 flex-shrink-0 border border-transparent hover:border-red-600 p-1">
-                                        <XMarkIcon class="w-6 h-6" />
+                                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-[#E30613] transition-colors disabled:opacity-50 shrink-0">
+                                        <XMarkIcon class="w-5 h-5" />
                                     </button>
                                 </div>
 
                                 <div class="flex flex-wrap gap-2 my-4">
                                     <span v-if="item.photo.event"
-                                        class="bg-white/10 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1">
+                                        class="bg-gray-50 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-md">
                                         {{ item.photo.event.name }}
                                     </span>
-                                    <span
-                                        class="border border-white/20 text-gray-400 text-[9px] font-bold uppercase tracking-widest px-2 py-1">
+                                    <span class="bg-gray-50 text-slate-600 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-md">
                                         {{ item.photo.width }} x {{ item.photo.height }} PX
                                     </span>
                                 </div>
 
-                                <div class="mt-auto border-t border-white/10 pt-4 flex items-end justify-between">
-                                    <span class="text-[9px] font-bold uppercase  text-gray-500">
-                                        LICENCIA STANDARD
+                                <div class="mt-auto border-t border-gray-100 pt-4 flex items-end justify-between">
+                                    <span class="text-[10px] font-bold uppercase text-gray-400">
+                                        Licencia Estándar
                                     </span>
-                                    <span class="font-sans font-black text-3xl text-white leading-none">
+                                    <span class="font-flux text-4xl text-black leading-none">
                                         ${{ formatPrice(item.price) }}
                                     </span>
                                 </div>
@@ -237,63 +234,55 @@ const handleImageError = (e) => {
                         </div>
                     </div>
 
+                    
                     <div class="lg:col-span-4">
-                        <div
-                            class="bg-black border-[4px] border-white p-8 sticky top-24 shadow-[8px_8px_0_rgba(220,38,38,1)]">
+                        <div class="bg-white border border-gray-100 rounded p-6 md:p-8 shadow-sm sticky top-28">
 
-                            <h2
-                                class="font-mono text-xs font-bold uppercase  text-gray-400 mb-6 border-b border-white/20 pb-4">
-                                // BALANCE
+                            <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                                <span class="w-4 h-px bg-gray-200"></span> Resumen de compra
                             </h2>
 
-                            <div class="font-mono space-y-4 mb-8">
-                                <div class="flex justify-between items-center text-sm uppercase tracking-widest">
-                                    <span class="text-gray-400">ARCHIVOS ({{ itemCount }})</span>
-                                    <span class="text-white font-bold">${{ formattedTotal }}</span>
+                            <div class="space-y-4 mb-6">
+                                <div class="flex justify-between items-center text-sm font-bold text-slate-600">
+                                    <span>Subtotal ({{ itemCount }} items)</span>
+                                    <span>${{ formattedTotal }}</span>
                                 </div>
                             </div>
 
-                            <div class="mb-8 border-y-[4px] border-white py-6">
-                                <div class="flex justify-between items-end font-sans">
-                                    <span
-                                        class="text-xl font-black uppercase text-gray-400 tracking-tighter">TOTAL</span>
-                                    <span class="text-5xl font-black text-red-600 leading-none tracking-tighter">
+                            <div class="mb-8 border-y border-gray-100 py-6">
+                                <div class="flex justify-between items-end">
+                                    <span class="text-sm font-bold uppercase text-gray-400">Total</span>
+                                    <span class="text-5xl font-flux text-black leading-none tracking-wide">
                                         ${{ formattedTotal }}
                                     </span>
                                 </div>
                             </div>
 
                             <div v-if="hasUnavailablePaymentPhotographers"
-                                class="mb-6 border border-red-600 bg-red-600/10 p-4 font-mono text-[10px] uppercase tracking-widest text-red-500 leading-relaxed">
-                                <p class="font-bold text-red-400 mb-2">Pago no disponible</p>
+                                class="mb-6 bg-red-50 border border-red-100 p-4 rounded text-xs font-medium text-red-600 leading-relaxed">
+                                <p class="font-bold text-[#E30613] mb-1">Pago no disponible</p>
                                 <p>
                                     {{ unavailablePaymentPhotographers.map(photographer => photographer.name).join(', ') }}
-                                    debe vincular Mercado Pago para recibir pagos. Quitá esas fotos del carrito o intentá más tarde.
+                                    debe vincular Mercado Pago para recibir pagos. Quita esas fotos del carrito o intenta más tarde.
                                 </p>
                             </div>
 
                             <button @click="checkout" :disabled="processing || itemCount === 0 || hasUnavailablePaymentPhotographers"
-                                class="w-full bg-white text-black font-black text-sm uppercase tracking-[0.25em] py-5 border-[4px] border-white hover:bg-black hover:text-white transition-none flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed group">
-                                <span v-if="processing" class="animate-pulse">PROCESANDO...</span>
-                                <span v-else-if="hasUnavailablePaymentPhotographers">PAGO NO DISPONIBLE</span>
-                                <span v-else>COMPRAR</span>
-                                <span v-if="!processing"
-                                    class="text-lg leading-none group-hover:translate-x-2 transition-transform duration-300">→</span>
+                                class="w-full bg-black text-white font-bold text-xs uppercase tracking-wider py-4 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-black disabled:hover:shadow-none group">
+                                <span v-if="processing" class="flex items-center gap-2">
+                                    <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Procesando...
+                                </span>
+                                <span v-else-if="hasUnavailablePaymentPhotographers">Pago No Disponible</span>
+                                <span v-else>Proceder al Pago</span>
+                                <ArrowRightIcon v-if="!processing && !hasUnavailablePaymentPhotographers" class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
 
-                            <div
-                                class="mt-6 font-mono text-[9px] uppercase tracking-widest text-gray-500 font-bold space-y-3">
-                                <p class="flex items-start gap-2">
-                                    <ShieldCheckIcon class="w-4 h-4 text-white flex-shrink-0" />
-                                    PASARELA CON MERCADO PAGO.
+                            <div class="mt-6 space-y-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                <p class="flex items-center gap-2">
+                                    <ShieldCheckIcon class="w-4 h-4 text-green-500" /> Transacción segura con Mercado Pago.
                                 </p>
-                                <p class="flex items-start gap-2">
-                                    <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                    DESCARGA INMEDIATA AL ACREDITAR.
+                                <p class="flex items-center gap-2">
+                                    <CloudArrowDownIcon class="w-4 h-4 text-blue-500" /> Descarga inmediata al acreditar.
                                 </p>
                             </div>
                         </div>
@@ -302,84 +291,85 @@ const handleImageError = (e) => {
             </div>
         </div>
 
-        <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 font-mono">
-            <div class="absolute inset-0 bg-black/90" @click="showEmailModal = false"></div>
+        
+        <transition enter-active-class="transition duration-300 ease-out"
+            enter-from-class="opacity-0" enter-to-class="opacity-100"
+            leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100"
+            leave-to-class="opacity-0">
+            <div v-if="showEmailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showEmailModal = false"></div>
 
-            <div
-                class="relative bg-black border-[4px] border-white w-full max-w-md shadow-[10px_10px_0_rgba(220,38,38,1)] overflow-hidden z-10">
-                <div
-                    class="bg-white text-black px-4 py-2 flex justify-between items-center font-bold text-xs uppercase tracking-widest">
-                    <span>F33 // IDENTIFICACIÓN</span>
-                    <button @click="showEmailModal = false" class="hover:text-red-600 transition-none">[X]</button>
-                </div>
+                <div class="relative bg-white rounded w-full max-w-md shadow-2xl overflow-hidden z-10 flex flex-col">
+                    
+                    <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <span class="font-bold text-sm text-black">Finalizar compra</span>
+                        <button @click="showEmailModal = false" class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-[#E30613] hover:border-red-100 transition-colors">
+                            <XMarkIcon class="w-4 h-4" />
+                        </button>
+                    </div>
 
-                <div class="p-8">
-                    <form @submit.prevent="submitGuestCheckout" class="space-y-6">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">
-                                > CORREO_DE_ENTREGA
+                    <div class="p-6 md:p-8">
+                        <form @submit.prevent="submitGuestCheckout" class="space-y-6">
+                            
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    Correo de entrega
+                                </label>
+                                <input v-model="guestEmail" type="email" required
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-medium text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
+                                    placeholder="tu@correo.com">
+                                <p v-if="emailError" class="text-[#E30613] text-xs font-bold mt-2 ml-1">
+                                    {{ emailError }}
+                                </p>
+                            </div>
+
+                            <label class="relative flex justify-between items-start cursor-pointer group p-4 border border-gray-100 rounded hover:border-gray-200 transition-colors">
+                                <div class="pr-4">
+                                    <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
+                                        Crear cuenta F33
+                                    </span>
+                                    <span class="block text-xs text-gray-400 mt-1 font-medium">
+                                        Guardá tu historial de compras. Vas a recibir tu contraseña por email.
+                                    </span>
+                                </div>
+                                <div class="relative inline-flex items-center mt-1 shrink-0">
+                                    <input id="createAccount" v-model="createAccount" type="checkbox" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E30613]"></div>
+                                </div>
                             </label>
-                            <input v-model="guestEmail" type="email" required
-                                class="w-full bg-gray-950 border border-gray-600 focus:border-red-600 focus:ring-0 text-white font-mono text-xs py-3 px-4 outline-none transition-none"
-                                placeholder="usuario@nodo.com">
-                            <p v-if="emailError"
-                                class="text-red-600 text-[9px] uppercase tracking-widest font-bold mt-2">
-                                ! {{ emailError }}
-                            </p>
-                        </div>
 
-                        <label
-                            class="flex items-start cursor-pointer group p-4 border border-gray-800 bg-gray-950 hover:border-white transition-none">
-                            <div class="flex items-center h-4 mt-0.5">
-                                <input id="createAccount" v-model="createAccount" type="checkbox"
-                                    class="focus:ring-0 focus:ring-offset-0 h-4 w-4 text-red-600 border-gray-600 bg-black rounded-none cursor-pointer">
+                            <div class="pt-4 flex flex-col gap-3">
+                                <button type="submit" :disabled="processing"
+                                    class="w-full py-3.5 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-[#E30613] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                                    <span v-if="processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                    {{ processing ? 'Procesando...' : 'Ir a pagar' }}
+                                </button>
+                                <button type="button" @click="showEmailModal = false"
+                                    class="w-full py-3.5 text-gray-500 bg-white border border-gray-200 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-gray-50 hover:text-black transition-colors">
+                                    Cancelar
+                                </button>
                             </div>
-                            <div class="ml-3">
-                                <span
-                                    class="block text-[9px] font-bold uppercase tracking-widest text-white group-hover:text-red-600 transition-none">
-                                    [ CREAR USUARIO ]
-                                </span>
-                                <span class="block text-[9px] text-gray-500 mt-1 leading-relaxed">
-                                    SE ALMACENARÁ EL HISTORIAL. RECIBIRÁ CREDENCIALES TEMPORALES VÍA EMAIL.
-                                </span>
-                            </div>
-                        </label>
-
-                        <div class="pt-4 flex flex-col gap-3">
-                            <button type="submit" :disabled="processing"
-                                class="w-full py-4 bg-red-600 text-black text-[11px] font-black uppercase tracking-[0.25em] hover:bg-white transition-none disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span v-if="processing">PROCESANDO...</span>
-                                <span v-else>IR A PAGAR</span>
-                            </button>
-                            <button type="button" @click="showEmailModal = false"
-                                class="w-full py-3 text-gray-500 text-[9px] font-bold uppercase tracking-widest hover:text-white transition-none border border-transparent hover:border-gray-500">
-                                [ CANCELAR ]
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </transition>
 
     </AppLayout>
 </template>
 
 <style scoped>
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
-
 ::-webkit-scrollbar-track {
-    background: #000000;
-    border-left: 1px solid #333;
+    background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-    background: #ffffff;
-    border-radius: 0;
+    background: #cbd5e1;
+    border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-    background: #dc2626;
+    background: #94a3b8;
 }
 </style>
