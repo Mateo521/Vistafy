@@ -60,7 +60,7 @@ const handleImageError = (e) => {
                                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E30613]"></span>
                             </span>
                             <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                Panel Profesional
+                                Panel fotógrafo
                             </span>
                         </div>
                         <h1 class="text-4xl md:text-5xl font-flux text-black tracking-wide leading-none">
@@ -179,10 +179,10 @@ const handleImageError = (e) => {
                  
                     <div class="xl:col-span-2">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-2xl font-flux text-black tracking-wide">Eventos Recientes</h3>
+                            <h3 class="text-2xl font-flux text-black tracking-wide">Eventos recientes</h3>
                             <Link :href="route('photographer.events.index')"
                                 class="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#E30613] transition-colors">
-                                Ver Registro &rarr;
+                                Ver registro &rarr;
                             </Link>
                         </div>
 
