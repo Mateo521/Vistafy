@@ -103,7 +103,7 @@ onUnmounted(() => {
 
     <AppLayout>
         <div class="min-h-screen bg-black text-white px-4 py-24 font-sans">
-            <div class="max-w-5xl mx-auto">
+            <div class="max-w-7xl mx-auto">
                 <div class="border-b-[10px] border-white pb-8 mb-10">
                     <p class="font-mono text-xs uppercase tracking-widest text-red-600 mb-3">
                         // Orden #{{ purchaseState.id }}
