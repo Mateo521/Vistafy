@@ -159,6 +159,13 @@ const addFiles = async (files) => {
     }
 };
 
+watch(() => form.event_id, (newVal) => {
+    if (!newVal) {
+        form.location_role = '';
+        isTypingCustomRole.value = false;
+    }
+});
+
 watch(() => form.location_role, (newValue) => {
     if (newValue === 'custom') {
         isTypingCustomRole.value = true;
@@ -462,7 +469,8 @@ const submitPhotos = () => {
 
                                 
                                 
-                                <div>
+                                
+                                <div v-if="form.event_id" class="animate-fade-in transition-all duration-300">
                                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Rol / Lugar asignado (opcional)
                                     </label>
@@ -495,14 +503,14 @@ const submitPhotos = () => {
                                         </div>
                                     </div>
                                     <p class="text-[10px] text-gray-400 mt-2 ml-1">
-                                        Ayuda a las personas a encontrarte más fácil en el evento.
+                                        Ayudá a las personas a encontrarte más fácil en el evento.
                                     </p>
                                     <p v-if="errors.location_role" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.location_role }}</p>
                                 </div>
                                 
                                 <div class="space-y-6 pt-6 border-t border-gray-100">
                                     
-                                   
+                                
                                     <label class="relative flex justify-between items-start cursor-pointer group">
                                         <div class="pr-4">
                                             <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
@@ -730,6 +738,13 @@ const submitPhotos = () => {
 </template>
 
 <style scoped>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
 
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
