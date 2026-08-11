@@ -422,7 +422,7 @@ const submitPhotos = () => {
 
     <AuthenticatedLayout>
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-28">
-            <div class="max-w-[1500px] mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
 
                 <div

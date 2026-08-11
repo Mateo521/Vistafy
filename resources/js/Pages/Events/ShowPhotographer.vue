@@ -66,7 +66,7 @@ const handleImageError = (e) => {
                         <CameraIcon class="w-10 h-10 text-slate-300" />
                     </div>
                     <h3 class="font-flux text-4xl text-black mb-3">Sin material disponible</h3>
-                    <p class="font-lato text-slate-500">Este profesional no tiene capturas públicas activas para este evento.</p>
+                    <p class="font-lato text-slate-500">Este profesional no tiene fotos públicas activas para este evento.</p>
                 </div>
 
                 

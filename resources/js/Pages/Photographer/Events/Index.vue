@@ -208,7 +208,7 @@ const handleImageError = (e) => {
                             <div class="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
                                     <PhotoIcon class="w-4 h-4" />
-                                    <strong class="text-black">{{ event.photos_count || 0 }}</strong> Capturas
+                                    <strong class="text-black">{{ event.photos_count || 0 }}</strong> fotos
                                 </div>
                                 
                                 <div class="flex gap-2">

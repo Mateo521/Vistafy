@@ -159,7 +159,7 @@ const handleImageError = (e) => {
                                 ¿SOS FOTÓGRAFO? <span class="text-[#E30613]">ASIGNATE A ESTE EVENTO</span>
                             </h3>
                             <p class="font-mono text-xs text-zinc-400 mb-8 max-w-2xl leading-relaxed uppercase">
-                                Se requieren operadores de cámara. Envía tu solicitud de cobertura para este evento, documenta la instancia y comercializa tus capturas mediante la red f33.
+                                Se requieren operadores de cámara. Envía tu solicitud de cobertura para este evento, documenta la instancia y comercializa tus fotos mediante la red f33.
                             </p>
                             
                             <div class="flex flex-wrap gap-4">

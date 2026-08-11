@@ -36,7 +36,7 @@ const handleImageError = (e) => {
 
 <template>
     <section id="eventos-futuros" class="relative border-b border-white/10 bg-black py-28 z-30">
-        <div class="mx-auto max-w-[1500px] px-4 md:px-8 lg:px-12 mb-12" data-aos="fade-up">
+        <div class="mx-auto max-w-7xl px-4 md:px-8 lg:px-12 mb-12" data-aos="fade-up">
             <p class="font-mono text-sm uppercase text-gray-500 pl-3  border-red-600">
                 Próximas coberturas
             </p>

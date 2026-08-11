@@ -50,7 +50,7 @@ const isUrlActive = (path) => {
     <div class="min-h-screen bg-[#F8F9FA] font-sans text-slate-800 selection:bg-[#E30613] selection:text-white antialiased">
 
         
-        <nav class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] max-w-[1500px] z-50 bg-white/85 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/50 px-4 md:px-6 py-3 transition-all duration-300">
+        <nav class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl z-50 bg-white/85 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/50 px-4 md:px-6 py-3 transition-all duration-300">
             <div class="flex justify-between items-center w-full">
 
                 
@@ -239,7 +239,7 @@ const isUrlActive = (path) => {
 
      
         <header v-if="$slots.header" class="bg-white border-b border-gray-100 shadow-sm mt-20 md:mt-24">
-            <div class="max-w-[1500px] mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <slot name="header" />
             </div>
         </header>
@@ -251,7 +251,7 @@ const isUrlActive = (path) => {
 
     
         <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
-            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-400">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-400">
                 <span>© {{ new Date().getFullYear() }} F33. Todos los derechos reservados.</span>
                 <span class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-md">
                     <div class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></div>

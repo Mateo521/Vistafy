@@ -49,7 +49,7 @@ const handleImageError = (e) => {
 
     <AuthenticatedLayout>
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-24 md:pt-28">
-            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
@@ -231,7 +231,7 @@ const handleImageError = (e) => {
                                         <div class="flex items-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                                             <span class="flex items-center gap-1.5">
                                                 <PhotoIcon class="w-4 h-4 text-gray-400" />
-                                                {{ event.photos_count || 0 }} Capturas
+                                                {{ event.photos_count || 0 }} fotos
                                             </span>
                                             <span v-if="event.location" class="flex items-center gap-1.5 truncate max-w-[150px]">
                                                 <MapPinIcon class="w-4 h-4 text-gray-400" />

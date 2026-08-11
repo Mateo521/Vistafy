@@ -100,7 +100,7 @@ const handleImageError = (e) => {
                     <div v-for="gallery in galleries" :key="gallery.photographer.id" class="relative">
                         
                         
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-200 pb-4 sticky top-20 bg-[#F8F9FA]/90 backdrop-blur-md z-20 py-2">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-200 py-4 sticky top-22 bg-[#F8F9FA]/90 backdrop-blur-md z-20 px-3">
                             
                             <div class="flex items-center gap-4">
                                 
@@ -128,7 +128,7 @@ const handleImageError = (e) => {
 
                             <div class="flex items-center gap-4">
                                 <span class="text-xs font-bold text-slate-400 uppercase tracking-widest bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 hidden md:block">
-                                    {{ gallery.photos_count }} Capturas
+                                    {{ gallery.photos_count }} fotos
                                 </span>
                                 <Link :href="route('events.show-photographer', [event.slug, gallery.photographer.slug])" 
                                     class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-red-600 transition-colors">

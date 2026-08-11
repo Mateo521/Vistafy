@@ -148,7 +148,7 @@ const props = defineProps({
                     <div class="max-w-7xl mx-auto">
                         <div class="text-center mb-16">
                             <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Portafolio</span>
-                            <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">Últimas capturas</h2>
+                            <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">Últimas fotos</h2>
                             <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-lato">Nuestra selección más reciente.</p>
                         </div>
 

@@ -70,7 +70,7 @@ const handleImageError = (e) => {
 
     <AppLayout>
     
-        <div class="pt-32 pb-12 px-4 md:px-8 max-w-[1500px] mx-auto">
+        <div class="pt-32 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
             <div class="relative w-full h-[40vh] md:h-[45vh] rounded overflow-hidden shadow-2xl flex flex-col justify-end p-8 md:p-16">
         
                 <div class="absolute inset-0 w-full h-full">
@@ -90,7 +90,7 @@ const handleImageError = (e) => {
         </div>
 
         <div class="min-h-screen bg-[#F2F0EB] text-slate-800 pb-20">
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
+            <div class="max-w-7xl mx-auto px-4 md:px-8">
 
             
                 <div class="mb-10 relative bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-[400px]">

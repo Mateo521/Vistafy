@@ -205,7 +205,7 @@ const handleImageError = (e) => {
                 <div v-if="relatedPhotos && relatedPhotos.length > 0" class="mt-24 pt-12 border-t border-slate-200">
                     <div class="text-center md:text-left mb-12">
                         <h2 class="font-flux text-5xl md:text-6xl text-black">
-                            Capturas <span class="text-slate-300 font-sans font-light">/</span> relacionadas
+                            fotos <span class="text-slate-300 font-sans font-light">/</span> relacionadas
                         </h2>
                     </div>
                     

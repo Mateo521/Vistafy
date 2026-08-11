@@ -460,7 +460,7 @@ const paginationPages = computed(() => {
             
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
 
-            <div class="relative max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-between pt-8 pb-10 z-10">
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-between pt-8 pb-10 z-10">
                 
                 <div>
                     <Link :href="route('photographer.events.index')"
@@ -501,7 +501,7 @@ const paginationPages = computed(() => {
 
         
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800">
-            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12">
 
@@ -670,7 +670,7 @@ const paginationPages = computed(() => {
                                 <PhotoIcon class="h-10 w-10 text-gray-300" />
                             </div>
                             <h4 class="font-flux text-4xl text-black mb-2">Bóveda Vacía</h4>
-                            <p class="text-gray-500 mb-8 max-w-sm">No hay fotografías disponibles bajo estos filtros o aún no se han asignado capturas.</p>
+                            <p class="text-gray-500 mb-8 max-w-sm">No hay fotografías disponibles bajo estos filtros o aún no se han asignado fotos.</p>
                             <button @click="showUploadModal = true"
                                 class="bg-black text-white px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors shadow-md">
                                 Asignar Fotografías

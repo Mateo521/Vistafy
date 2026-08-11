@@ -286,7 +286,7 @@ const totalResults = () => {
 
     <AppLayout>
 
-        <div class="pt-32 pb-12 px-4 md:px-8 max-w-[1500px] mx-auto">
+        <div class="pt-32 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
             <div
                 class="relative w-full h-[40vh] md:h-[45vh] rounded overflow-hidden shadow-2xl flex flex-col justify-end p-8 md:p-16">
 
@@ -320,7 +320,7 @@ const totalResults = () => {
         </div>
 
         <div class="min-h-screen bg-[#F2F0EB] text-slate-800 pb-20">
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8">
+            <div class="max-w-7xl mx-auto px-4 md:px-8">
 
 
                 <div v-if="showingFaceResults"

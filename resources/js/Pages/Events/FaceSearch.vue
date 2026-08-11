@@ -193,7 +193,7 @@ onMounted(async () => {
         <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#E30613] selection:text-white">
 
             <div class="border-b border-white/20 bg-[#050505]/90 backdrop-blur-sm sticky top-0 z-30 pt-16 md:pt-0">
-                <div class="max-w-[1500px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
+                <div class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
                     <Link :href="route('events.show', event.slug)"
                         class="text-gray-400 hover:text-white flex items-center gap-3 transition-none border border-transparent hover:border-white px-3 py-1">
                         <ArrowLeftIcon class="w-3.5 h-3.5" /> [ CANCELAR ESCÁNER ]
@@ -204,7 +204,7 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <div class="max-w-[1500px] mx-auto px-4 md:px-8 py-12 md:py-20">
+            <div class="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
 
                 <div class="mb-12 border-b-[12px] border-white pb-8">
                     <span class="font-mono text-xs uppercase text-[#E30613] mb-4 block  pl-3">
