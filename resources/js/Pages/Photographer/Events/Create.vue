@@ -90,7 +90,7 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <div class="bg-[#F8F9FA] min-h-screen text-slate-800 font-sans antialiased py-12 md:py-24 pt-28">
-            <div class="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             
                 <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
@@ -100,7 +100,7 @@ const submit = () => {
                             <ArrowLeftIcon class="w-4 h-4" /> Volver a eventos
                         </Link>
                         <h1 class="font-flux text-5xl md:text-7xl text-black leading-none tracking-wide">
-                            Crear <span class="text-[#E30613]">Evento</span>
+                            Crear <span class="text-[#E30613]">evento</span>
                         </h1>
                         <p class="text-sm font-medium text-gray-500 mt-3">
                             Configurá los detalles, la portada y la visibilidad de su nueva galería.
@@ -111,7 +111,7 @@ const submit = () => {
                 <form @submit.prevent="submit" class="space-y-8">
 
                     
-                    <div class="bg-white border border-gray-100 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
+                    <div class="bg-white border border-gray-100 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 flex items-center gap-2">
                             <span class="w-4 h-px bg-gray-200"></span> Información general
                         </h2>
@@ -123,7 +123,7 @@ const submit = () => {
                                     Nombre del evento
                                 </label>
                                 <input v-model="form.name" type="text" required
-                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-lg py-3.5 px-4 rounded-xl transition-all outline-none placeholder-gray-400"
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-lg py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400"
                                     placeholder="Ej: Boda Smith & Jones, Maratón 42K..." />
                                 <p v-if="form.errors.name" class="text-[#E30613] text-xs font-bold mt-2 ml-1">{{ form.errors.name }}</p>
                             </div>
@@ -135,7 +135,7 @@ const submit = () => {
                                         Fecha
                                     </label>
                                     <input v-model="form.event_date" type="date" required
-                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none" />
+                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded transition-all outline-none" />
                                     <p v-if="form.errors.event_date" class="text-[#E30613] text-xs font-bold mt-2 ml-1">{{ form.errors.event_date }}</p>
                                 </div>
                                 <div>
@@ -143,7 +143,7 @@ const submit = () => {
                                         Ubicación
                                     </label>
                                     <input v-model="form.location" type="text"
-                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none placeholder-gray-400"
+                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400"
                                         placeholder="Ciudad, Lugar, Estadio..." />
                                 </div>
                             </div>
@@ -154,7 +154,7 @@ const submit = () => {
                                     Resumen
                                 </label>
                                 <textarea v-model="form.description" rows="2" maxlength="500"
-                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-medium text-sm py-3.5 px-4 rounded-xl transition-all outline-none resize-none placeholder-gray-400"
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none resize-none placeholder-gray-400"
                                     placeholder="Breve descripción para mostrar en los listados..."></textarea>
                                 <p class="text-xs text-gray-400 text-right mt-2 font-medium">
                                     {{ form.description?.length || 0 }}/500
@@ -167,7 +167,7 @@ const submit = () => {
                                     Detalles completos
                                 </label>
                                 <textarea v-model="form.long_description" rows="5" maxlength="2000"
-                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-medium text-sm py-3.5 px-4 rounded-xl transition-all outline-none placeholder-gray-400"
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400"
                                     placeholder="Información extendida, horarios, indicaciones para los participantes..."></textarea>
                                 <p class="text-xs text-gray-400 text-right mt-2 font-medium">
                                     {{ form.long_description?.length || 0 }}/2000
@@ -177,7 +177,7 @@ const submit = () => {
                     </div>
 
                 
-                    <div class="bg-white border border-gray-100 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
+                    <div class="bg-white border border-gray-100 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 flex items-center gap-2">
                             <span class="w-4 h-px bg-gray-200"></span> Configuración de acceso
                         </h2>
@@ -188,7 +188,7 @@ const submit = () => {
                                 <input type="radio" name="visibility" class="peer sr-only"
                                     :checked="form.is_active && !form.is_private"
                                     @change="form.is_active = true; form.is_private = false">
-                                <div class="p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-gray-200 peer-checked:border-black peer-checked:shadow-md transition-all h-full">
+                                <div class="p-6 bg-white border-2 border-gray-100 rounded hover:border-gray-200 peer-checked:border-black peer-checked:shadow-md transition-all h-full">
                                     <div class="flex items-center gap-3 mb-4 text-gray-400 peer-checked:text-black">
                                         <GlobeAltIcon class="w-6 h-6" />
                                         <span class="font-bold text-sm uppercase tracking-wider">Público</span>
@@ -202,7 +202,7 @@ const submit = () => {
                                 <input type="radio" name="visibility" class="peer sr-only"
                                     :checked="form.is_active && form.is_private"
                                     @change="form.is_active = true; form.is_private = true">
-                                <div class="p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-gray-200 peer-checked:border-[#E30613] peer-checked:bg-red-50/30 peer-checked:shadow-md transition-all h-full">
+                                <div class="p-6 bg-white border-2 border-gray-100 rounded hover:border-gray-200 peer-checked:border-[#E30613] peer-checked:bg-red-50/30 peer-checked:shadow-md transition-all h-full">
                                     <div class="flex items-center gap-3 mb-4 text-gray-400 peer-checked:text-[#E30613]">
                                         <LockClosedIcon class="w-6 h-6" />
                                         <span class="font-bold text-sm uppercase tracking-wider">Privado</span>
@@ -215,7 +215,7 @@ const submit = () => {
                             <label class="cursor-pointer group relative flex-1">
                                 <input type="radio" name="visibility" class="peer sr-only" :checked="!form.is_active"
                                     @change="form.is_active = false; form.is_private = false">
-                                <div class="p-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-gray-200 peer-checked:border-gray-400 peer-checked:bg-gray-50 peer-checked:shadow-md transition-all h-full">
+                                <div class="p-6 bg-white border-2 border-gray-100 rounded hover:border-gray-200 peer-checked:border-gray-400 peer-checked:bg-gray-50 peer-checked:shadow-md transition-all h-full">
                                     <div class="flex items-center gap-3 mb-4 text-gray-300 peer-checked:text-gray-600">
                                         <EyeSlashIcon class="w-6 h-6" />
                                         <span class="font-bold text-sm uppercase tracking-wider">Borrador</span>
@@ -227,7 +227,7 @@ const submit = () => {
                     </div>
 
                    
-                    <div class="bg-white border border-gray-100 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
+                    <div class="bg-white border border-gray-100 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 flex items-center gap-2">
                             <span class="w-4 h-px bg-gray-200"></span> Añadir imagen de portada
                         </h2>
@@ -235,7 +235,7 @@ const submit = () => {
                         <div class="flex flex-col md:flex-row gap-8 items-start">
                             
                              
-                            <div class="w-full md:w-5/12 aspect-video bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-center overflow-hidden relative shadow-inner">
+                            <div class="w-full md:w-5/12 aspect-video bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden relative shadow-inner">
                                 <img v-if="coverImagePreview" :src="coverImagePreview" class="w-full h-full object-cover">
                                 <div v-else class="text-gray-300 flex flex-col items-center">
                                     <PhotoIcon class="w-12 h-12 mb-2" />
@@ -248,7 +248,7 @@ const submit = () => {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 ml-1">
                                     Imagen principal
                                 </label>
-                                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 bg-white rounded-2xl cursor-pointer hover:bg-gray-50 hover:border-black transition-all group">
+                                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 bg-white rounded cursor-pointer hover:bg-gray-50 hover:border-black transition-all group">
                                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                         <CloudArrowUpIcon class="w-8 h-8 text-gray-400 group-hover:text-black mb-2 transition-colors" />
                                         <p class="mb-1 text-sm font-bold text-gray-600 group-hover:text-black transition-colors">Selecciona una imagen</p>
