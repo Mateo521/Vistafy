@@ -45,11 +45,20 @@ public function inviteColleague(Request $request, Event $event)
         return redirect()->back()->withErrors(['email' => 'Este fotógrafo ya forma parte del evento o fue invitado.']);
     }
 
+
     $event->collaborators()->attach($invitedPhotographer->id, ['status' => 'invited']);
 
-    Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $invitedPhotographer));
+    $inviter = auth()->user()->photographer;
 
-    return redirect()->back()->with('success', 'Invitación enviada.');
+
+    try {
+        Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $inviter));
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('Error enviando invitación por Brevo: ' . $e->getMessage());
+        return redirect()->back()->with('success', 'El fotógrafo fue invitado, pero el correo de aviso no se pudo enviar.');
+    }
+
+    return redirect()->back()->with('success', 'Invitación enviada por correo.');
 }
 
 

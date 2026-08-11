@@ -152,11 +152,7 @@ class Photographer extends Model
         return $this->hasMany(Event::class);
     }
 
-    public function guestEvents()
-    {
-        return $this->belongsToMany(Event::class, 'event_photographer')
-            ->withTimestamps();
-    }
+   
 
     public function photos(): HasMany
     {
@@ -250,9 +246,14 @@ class Photographer extends Model
 
         return $disk->url($this->banner_photo);
     }
-    /**
-     * Usar slug por defecto para rutas públicas
-     */
+  
+    public function guestEvents()
+    {
+        return $this->belongsToMany(\App\Models\Event::class, 'event_photographer', 'photographer_id', 'event_id')
+                    ->withPivot('status')
+                    ->withTimestamps();
+    }
+
     public function getRouteKeyName()
     {
         // Si estamos en una ruta de admin, usar ID
