@@ -120,7 +120,7 @@ const handleImageError = (e) => {
                                 <select 
                                     v-model="form.photographer_id"
                                     class="block w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded outline-none focus:ring-2 focus:ring-red-500 font-semibold cursor-pointer">
-                                    <option value="">Cualquier Fotógrafo</option>
+                                    <option value="">Cualquier fotógrafo</option>
                                     <option v-for="photographer in photographers" :key="photographer.id" :value="photographer.id">
                                         {{ photographer.business_name || photographer.user?.name }}
                                     </option>
@@ -133,7 +133,7 @@ const handleImageError = (e) => {
             
                             <div class="flex items-end">
                                 <button type="button" @click="clearFilters" class="w-full py-3 px-4 bg-white border border-slate-200 text-slate-500 rounded font-bold uppercase tracking-wider text-sm hover:bg-slate-50 hover:text-red-600 transition-colors flex justify-center items-center gap-2">
-                                    <XMarkIcon class="w-4 h-4" /> Limpiar Filtros
+                                    <XMarkIcon class="w-4 h-4" /> Limpiar filtros
                                 </button>
                             </div>
                         </div>
@@ -146,7 +146,7 @@ const handleImageError = (e) => {
                         Mostrando <span class="text-black">{{ events.data.length }}</span> resultados
                     </h2>
                     <span v-if="form.search || form.date || form.photographer_id" class="text-red-600 font-bold text-sm bg-red-50 px-3 py-1 rounded-full animate-pulse">
-                        Filtros Activos
+                        Filtros activos
                     </span>
                 </div>
 
@@ -156,65 +156,63 @@ const handleImageError = (e) => {
                         <MagnifyingGlassIcon class="w-10 h-10 text-slate-300" />
                     </div>
                     <h3 class="font-flux text-4xl text-black mb-3">No hay coincidencias</h3>
-                    <p class="font-lato text-slate-500 mb-8">Intenta ajustar los filtros o limpiar tu búsqueda.</p>
+                    <p class="font-lato text-slate-500 mb-8">Intentá ajustar los filtros o limpiar tu búsqueda.</p>
                     <button @click="clearFilters" class="bg-black text-white px-8 py-3 rounded-full font-bold uppercase tracking-wider text-sm hover:bg-red-600 transition-colors">
-                        Mostrar Todos Los Eventos
+                        Mostrar todos Los eventos
                     </button>
                 </div>
 
             
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
                     <Link v-for="event in events.data" :key="event.id" :href="route('events.show', event.slug)"
-                        class="bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.12)] transition-all duration-500 group flex flex-col">
+                        class="group flex flex-col gap-3">
+                        
+                        
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-2 text-[10px] font-bold text-red-600 uppercase tracking-widest mb-1.5">
+                                <CalendarIcon class="w-3.5 h-3.5" />
+                                <span>{{ formatDate(event.event_date) }}</span>
+                            </div>
+                            <h3 class="text-3xl md:text-4xl font-black font-flux text-black leading-none group-hover:text-red-600 transition-colors line-clamp-2">
+                                {{ event.name }}
+                            </h3>
+                        </div>
                         
                     
-                        <div class="h-60 relative overflow-hidden bg-slate-100 flex-shrink-0">
+                        <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500 bg-slate-100 mt-1">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                                class="w-full h-full object-cover transition-transform duration-700 ease-in-out " 
+                                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
                                 @error="handleImageError" 
                             />
                         
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-black font-bold px-3 py-1.5 rounded text-xs shadow-sm">
+                            
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-black font-bold px-3 py-1.5 rounded-full text-[9px] uppercase tracking-widest shadow-sm">
                                 {{ event.is_private ? 'Privado' : 'Público' }}
                             </div>
                         </div>
-
+                        
                     
-                        <div class="p-6 flex-1 flex flex-col relative z-10">
-                            
-                        
-                            <div class="flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-wider mb-3">
-                                <CalendarIcon class="w-4 h-4" />
-                                <span>{{ formatDate(event.event_date) }}</span>
+                        <div class="flex items-center justify-between pt-1">
+                            <div v-if="event.location" class="flex items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <MapPinIcon class="w-3.5 h-3.5 mr-1" />
+                                <span class="truncate max-w-[150px] md:max-w-[200px]">{{ event.location }}</span>
                             </div>
+                            <div v-else></div>
 
-                            <h3 class="text-2xl font-black font-flux text-black mb-3 line-clamp-2 leading-tight group-hover:text-red-600 transition-colors">
-                                {{ event.name }}
-                            </h3>
-
-                            <p v-if="event.description" class="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow">
-                                {{ event.description }}
-                            </p>
-                            <p v-else class="text-slate-400 text-sm italic mb-6 flex-grow">
-                                Sin descripción detallada.
-                            </p>
-
-                        
-                            <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                                <div v-if="event.location" class="flex items-center text-xs font-bold text-slate-400 uppercase">
-                                    <MapPinIcon class="w-4 h-4 mr-1" />
-                                    <span class="truncate max-w-[120px]">{{ event.location }}</span>
-                                </div>
-                                <div v-else></div>
-
-                                <span class="text-black font-bold uppercase text-xs flex items-center gap-1 group-hover:text-red-600 transition-colors">
-                                    Ver Galería
-                                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                                </span>
-                            </div>
+                            <span class="text-black font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5 group-hover:text-red-600 transition-colors">
+                                Ver galería
+                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </span>
                         </div>
                     </Link>
                 </div>
+
+
+
+
+
 
                 <div v-if="events.data && events.data.length > 0 && events.last_page > 1" class="mt-16 flex justify-center">
                     <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
