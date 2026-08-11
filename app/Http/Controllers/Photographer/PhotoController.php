@@ -126,12 +126,22 @@ class PhotoController extends Controller
 
         $photographer = auth()->user()->photographer;
 
+        
         if ($request->event_id) {
-            $event = Event::find($request->event_id);
-            if (! $event || $event->photographer_id !== $photographer->id) {
-                \Log::error(' Evento no pertenece al fotógrafo');
+            $event = \App\Models\Event::find($request->event_id);
+            
+            if ($event) {
+                $isOwner = $event->photographer_id === $photographer->id;
+                
+                $isApprovedCollaborator = $event->collaborators()
+                    ->where('photographer_id', $photographer->id)
+                    ->where('event_photographer.status', 'approved')
+                    ->exists();
 
-                return redirect()->back()->with('error', 'No tenés permiso para subir fotos a este evento');
+                if (!$isOwner && !$isApprovedCollaborator) {
+                    \Log::error('Intento de subida denegado: Evento no pertenece al fotógrafo ni es colaborador.');
+                    return response()->json(['error' => 'No tenés permiso para subir fotos a este evento'], 403);
+                }
             }
         }
 
