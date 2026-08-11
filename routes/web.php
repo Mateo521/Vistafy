@@ -226,8 +226,8 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
         $photographer = auth()->user()->photographer;
 
         $pendingInvitations = $photographer->guestEvents()
-            ->wherePivot('status', 'invited')
-            ->with('photographer:id,business_name')  
+            ->wherePivotIn('status', ['invited', 'pending'])
+            ->with('photographer:id,business_name') 
             ->get();
 
 
@@ -255,6 +255,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             'photographer' => $photographer,
             'recentEvents' => $recentEvents,
             'recentPhotos' => $recentPhotos,
+            'pendingInvitations' => $pendingInvitations,
         ]);
     })->name('dashboard');
 
