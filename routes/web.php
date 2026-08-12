@@ -26,6 +26,34 @@ use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
+
+Route::get('/sitemap.xml', function () {
+    $sitemap = Sitemap::create()
+        ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY))
+        ->add(Url::create('/nosotros')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY))
+        ->add(Url::create('/contacto')->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY))
+        ->add(Url::create('/fotografos')->setPriority(0.9)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY))
+        ->add(Url::create('/eventos')->setPriority(0.9)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
+
+    \App\Models\Event::where('is_active', true)
+        ->where('is_private', false)
+        ->get()
+        ->each(function ($event) use ($sitemap) {
+            $sitemap->add(Url::create("/eventos/{$event->slug}")->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
+        });
+
+    \App\Models\Photographer::where('status', 'approved')
+        ->get()
+        ->each(function ($photographer) use ($sitemap) {
+            $sitemap->add(Url::create("/fotografos/{$photographer->slug}")->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
+        });
+
+    return $sitemap->toResponse(request());
+});
+
+
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
     Route::get('/auth/google/callback', [GoogleController::class, 'callback']);

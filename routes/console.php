@@ -22,4 +22,4 @@ Schedule::command('logs:clear')
     ->at('02:00');
 
 
-Schedule::command('sitemap:generate')->dailyAt('03:00');
+//Schedule::command('sitemap:generate')->dailyAt('03:00');

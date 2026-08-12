@@ -190,7 +190,7 @@ const handleImageError = (e) => {
                             </div>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Capturado por</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fotografía de </p>
                             <p class="text-xl font-flux text-black leading-none">{{ photo.photographer?.business_name || 'Fotógrafo F33' }}</p>
                         </div>
                     </div>
@@ -198,7 +198,7 @@ const handleImageError = (e) => {
                     <Link v-if="photo.photographer?.slug"
                         :href="route('photographers.show', photo.photographer.slug)"
                         class="px-8 py-3 rounded-full border border-slate-200 text-sm font-bold text-slate-600 hover:text-black hover:border-black transition-colors w-full sm:w-auto text-center">
-                        Ver Portafolio
+                        Ver portafolio
                     </Link>
                 </div>
 
