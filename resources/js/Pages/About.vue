@@ -212,7 +212,7 @@ import {
                                 class="w-12 h-12 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mb-6 border border-white/20">
                                 <SparklesIcon class="w-6 h-6 text-white" />
                             </div>
-                            <h3 class="text-2xl font-bold text-white mb-3">¿Eres fotógrafo?</h3>
+                            <h3 class="text-2xl font-bold text-white mb-3">¿sos fotógrafo?</h3>
                             <p class="text-gray-400 font-medium mb-8">
                                 Unite a la plataforma, publicá tu trabajo sin barreras y monetiza tu talento.
                             </p>
