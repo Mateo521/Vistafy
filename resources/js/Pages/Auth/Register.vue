@@ -23,7 +23,7 @@ const submit = () => {
         
         <div class="text-center mb-10 relative z-10">
             <h2 class="font-flux text-4xl md:text-5xl text-black leading-none mb-3 tracking-wide">
-                Crear <span class="text-[#E30613]">Cuenta</span>
+                Crear <span class="text-[#E30613]">cuenta</span>
             </h2>
             <p class="text-sm font-medium text-gray-500 max-w-sm mx-auto leading-relaxed">
                 Unite a nuestra plataforma para acceder a galerías exclusivas y gestionar tus pedidos fotográficos.

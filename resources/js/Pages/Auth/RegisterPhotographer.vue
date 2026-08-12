@@ -68,7 +68,7 @@ const submit = () => {
 
                     
                         <div class="bg-white border border-gray-200 rounded p-6 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-2 h-full bg-[#E30613]"></div>
+                        
                             <div class="flex items-start gap-4">
                                 <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center shrink-0">
                                     <InformationCircleIcon class="w-5 h-5 text-[#E30613]" />
@@ -76,8 +76,8 @@ const submit = () => {
                                 <div>
                                     <h4 class="font-bold text-black text-sm mb-1 uppercase tracking-wider">Proceso de Curaduría</h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        Al enviar tus datos, tu perfil quedará en estado <strong class="text-[#E30613]">En Espera</strong>. 
-                                        Recibirás una respuesta en un plazo de 48hs hábiles.
+                                        Al enviar tus datos, tu perfil quedará en estado <strong class="text-[#E30613]">en espera</strong>. 
+                                        Vas a recibir una respuesta en un plazo de 48hs hábiles.
                                     </p>
                                 </div>
                             </div>

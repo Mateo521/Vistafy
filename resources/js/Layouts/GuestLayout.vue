@@ -13,7 +13,7 @@ import { Link } from '@inertiajs/vue3';
             <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gray-100 rounded-full blur-[120px] translate-y-1/3 -translate-x-1/4"></div>
         </div>
 
-        <div class="w-full sm:max-w-md lg:max-w-lg px-4 py-8 z-10 relative flex flex-col items-center">
+        <div class="w-full max-w-7xl px-4 py-8 z-10 relative flex flex-col items-center">
             
            
             <div class="flex justify-center mb-10">

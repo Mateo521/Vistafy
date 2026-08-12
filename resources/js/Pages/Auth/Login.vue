@@ -31,7 +31,7 @@ const submit = () => {
         
         <div class="text-center mb-10 relative z-10">
             <h2 class="font-flux text-4xl md:text-5xl text-black leading-none mb-3 tracking-wide">
-                Iniciar <span class="text-[#E30613]">Sesión</span>
+                Iniciar <span class="text-[#E30613]">sesión</span>
             </h2>
             <p class="text-sm font-medium text-gray-500 max-w-sm mx-auto leading-relaxed">
                 Ingresá tus credenciales para acceder a tu cuenta y gestionar tu contenido.
