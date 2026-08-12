@@ -1,223 +1,232 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { 
-    FaceSmileIcon, 
-    ShieldCheckIcon, 
-    CursorArrowRaysIcon,
+import {
     CameraIcon,
-    UserGroupIcon,
+    GlobeAltIcon,
+    LightBulbIcon,
     ArrowLongRightIcon,
-    MapPinIcon
+    SparklesIcon
 } from '@heroicons/vue/24/outline';
 </script>
 
 <template>
-    <Head title="Nuestra Misión | Plataforma de Fotografía" />
+
+    <Head title="Nuestra misión | F33" />
 
     <AppLayout>
-        <section class="relative bg-white text-zinc-900 pt-32 pb-24 border-b border-zinc-100">
-            <div class="max-w-7xl mx-auto px-6 lg:px-8">
-                <div class="max-w-4xl mx-auto text-center">
-                    <p class="text-xs font-bold tracking-[0.25em] text-zinc-400 uppercase mb-8">
-                        La nueva era de la fotografía
-                    </p>
-                    <h1 class="text-5xl md:text-7xl font-sans font-medium mb-8 leading-[1.1] text-black">
-                        No busques tu foto.<br>
-                        <span class="italic text-zinc-500">Lorem ipsum dolor sit amet consectetur, adipisicing elit..</span>
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased">
+
+
+            <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+
+                <div
+                    class="absolute top-0 right-0 w-[600px] h-[600px] bg-red-50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none">
+                </div>
+                <div
+                    class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gray-100 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none">
+                </div>
+
+                <div class="max-w-[1200px] mx-auto px-6 lg:px-8 relative z-10 text-center">
+                    <span
+                        class="inline-flex items-center gap-2 bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-500 px-4 py-2 rounded-full mb-8 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Nuestra filosofía
+                    </span>
+
+                    <h1 class="text-5xl md:text-7xl lg:text-8xl font-flux text-black leading-[0.9] tracking-wide mb-8">
+                        La fotografía cambió,<br>
+                        <span class="text-[#E30613]">la forma de venderla no.</span>
                     </h1>
-                    <p class="text-xl text-zinc-600 mb-12 font-light max-w-2xl mx-auto leading-relaxed">
-                        Transformamos el caos de miles de imágenes en una experiencia personal. Conectamos fotógrafos profesionales con asistentes a eventos a través de tecnología invisible.
+
+                    <p class="text-xl md:text-2xl text-gray-500 font-medium max-w-3xl mx-auto leading-relaxed">
+                        Todos los momentos. Una sola plataforma.
                     </p>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!--section class="py-24 bg-zinc-50">
-            <div class="max-w-7xl mx-auto px-6 lg:px-8">
-                <div class="grid md:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-sans text-black mb-6 leading-tight">
-                            El fin de buscar una aguja en un pajar.
-                        </h2>
-                        <div class="h-0.5 w-16 bg-black mb-8"></div>
-                        <div class="space-y-6 text-lg text-zinc-600 font-light leading-relaxed">
-                            <p>
-                                Imagina haber asistido a una maratón, un concierto o una gran boda. Sabes que te tomaron fotos, pero encontrarlas implica revisar manualmente álbumes con miles de imágenes durante horas.
-                            </p>
-                            <p>
-                                <strong class="text-black font-medium">Esa era terminó.</strong>
-                            </p>
-                            <p>
-                                Creamos un ecosistema donde la Inteligencia Artificial hace el trabajo pesado. Solo necesitas una selfie para desbloquear tus recuerdos en segundos, protegiendo siempre tu privacidad y el trabajo del artista.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <div class="aspect-square bg-white border border-zinc-200 p-8 flex flex-col justify-center items-center text-center shadow-sm">
-                            <FaceSmileIcon class="w-24 h-24 text-zinc-200 stroke-1 mb-6" />
-                            <p class="font-sans text-2xl text-black mb-2">Reconocimiento facial</p>
-                            <p class="text-zinc-400 text-sm tracking-widest uppercase">Tecnología Biométrica</p>
-                        </div>
-                        <div class="absolute -bottom-6 -right-6 w-full h-full border border-zinc-300 -z-10"></div>
-                    </div>
-                </div>
-            </div>
-        </section-->
 
-        <section class="py-24 bg-white border-t border-zinc-100">
-            <div class="max-w-7xl mx-auto px-6 lg:px-8">
-                <div class="text-center mb-20">
-                    <h2 class="text-3xl font-sans text-black mb-4">Un ecosistema, dos protagonistas</h2>
-                    <p class="text-zinc-500 font-light">Diseñado para conectar creadores y protagonistas.</p>
-                </div>
+            <section class="py-16 md:py-24 bg-white border-y border-gray-100 relative z-10">
+                <div class="max-w-[1000px] mx-auto px-6 lg:px-8">
 
-                <div class="grid lg:grid-cols-2 gap-12 lg:divide-x lg:divide-zinc-100">
-                    
-                    <div class="lg:pr-12">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="p-3 bg-zinc-50 rounded-full border border-zinc-100">
-                                <UserGroupIcon class="w-6 h-6 text-black" />
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
+
+
+                        <div class="hidden md:block md:col-span-4 border-r border-gray-100 pr-8">
+                            <div class="sticky top-32 space-y-8">
+                                <div>
+                                    <LightBulbIcon class="w-8 h-8 text-gray-300 mb-4" />
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-black mb-2">El problema
+                                    </h3>
+                                    <p class="text-xs text-gray-500 leading-relaxed font-medium">El mayor desafío hoy no
+                                        es técnico, es comercial.</p>
+                                </div>
+                                <div>
+                                    <GlobeAltIcon class="w-8 h-8 text-gray-300 mb-4" />
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-black mb-2">La solución
+                                    </h3>
+                                    <p class="text-xs text-gray-500 leading-relaxed font-medium">Un único lugar donde
+                                        fotos y personas se encuentran.</p>
+                                </div>
+                                <div>
+                                    <SparklesIcon class="w-8 h-8 text-[#E30613] mb-4" />
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-[#E30613] mb-2">El
+                                        objetivo</h3>
+                                    <p class="text-xs text-gray-500 leading-relaxed font-medium">Más tiempo creando,
+                                        menos tiempo buscando clientes.</p>
+                                </div>
                             </div>
-                            <h3 class="text-2xl font-sans text-black">Para Asistentes</h3>
                         </div>
-                        <ul class="space-y-12">
-                            <li class="flex gap-6">
-                                <span class="text-4xl font-sans text-zinc-200">01</span>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black mb-2">Búsqueda Instantánea</h4>
-                                    <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Olvídate del scroll infinito. Subí una selfie y nuestra IA escaneará miles de fotos para encontrar tu rostro en menos de 3 segundos.
+
+
+                        <div class="md:col-span-8 space-y-16">
+
+
+                            <article>
+                                <h2 class="text-3xl font-flux text-black mb-6 tracking-wide">¿Por qué creamos F33?</h2>
+                                <div class="space-y-4 text-slate-600 font-medium leading-relaxed">
+                                    <p>
+                                        F33 nace a partir de una inquietud que compartimos quienes vivimos la fotografía
+                                        detrás de la cámara: hoy, el mayor desafío de un fotógrafo no es la calidad
+                                        técnica de su trabajo, sino encontrar la forma de comercializarlo (que las
+                                        personas accedan a las imágenes en un único lugar).
+                                    </p>
+                                    <p>
+                                        Durante años, desarrollar una carrera en la fotografía de eventos significó
+                                        enviar decenas de propuestas, competir por precio y depender de que alguien
+                                        decidiera contratarte antes siquiera de sacar la cámara de tu casa. Creemos que
+                                        ese modelo ya no refleja las posibilidades que ofrece la fotografía hoy.
                                     </p>
                                 </div>
-                            </li>
-                            <li class="flex gap-6">
-                                <span class="text-4xl font-sans text-zinc-200">02</span>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black mb-2">Compra Segura</h4>
-                                    <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Adquiere tus recuerdos en alta resolución. Pagos encriptados y precios transparentes definidos por el fotógrafo.
+                            </article>
+
+
+                            <article>
+                                <h2 class="text-3xl font-flux text-black mb-6 tracking-wide">¿Qué queremos lograr?</h2>
+                                <div class="space-y-4 text-slate-600 font-medium leading-relaxed">
+                                    <p>
+                                        Nuestra misión es transformar la forma en que las fotografías llegan a las
+                                        personas. Queremos que cualquier fotógrafa y fotógrafo pueda asistir a un
+                                        evento, crear grandes imágenes y ofrecerlas directamente al público de forma
+                                        simple, segura y transparente, sin depender de una contratación previa.
+                                    </p>
+                                    <p>
+                                        Al mismo tiempo, buscamos simplificar la experiencia de quienes están del otro
+                                        lado, nucleando todas las fotos en un único lugar donde cualquier persona pueda
+                                        encontrarlas y adquirirlas, sin limitaciones logísticas y con la certeza de que
+                                        siempre estarán ahí.
                                     </p>
                                 </div>
-                            </li>
-                            <li class="flex gap-6">
-                                <span class="text-4xl font-sans text-zinc-200">03</span>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black mb-2">Privacidad Total</h4>
-                                    <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Tus fotos originales están protegidas hasta la compra. Utilizamos enlaces temporales únicos para garantizar que solo tú tengas acceso a tu compra.
-                                    </p>
-                                </div>
-                            </li>
-                        </ul>
+                            </article>
+
+
+                            <article class="bg-gray-50 p-8 md:p-10 rounded border border-gray-100">
+                                <h3 class="text-xs font-bold uppercase tracking-widest text-[#E30613] mb-4">En
+                                    conclusión</h3>
+                                <p class="text-xl text-black font-bold leading-relaxed mb-6">
+                                    Queremos construir una nueva alternativa al modelo tradicional: un ecosistema donde
+                                    hacer un gran trabajo sea suficiente para tener la oportunidad de venderlo.
+                                </p>
+                                <p class="text-slate-600 font-medium leading-relaxed">
+                                    Nuestro objetivo es simple: que las fotógrafas y fotógrafos puedan dedicar más
+                                    tiempo a crear imágenes y menos tiempo a buscar quién las compre.
+                                </p>
+                            </article>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="py-20 md:py-28 bg-[#F8F9FA]">
+                <div class="max-w-[1200px] mx-auto px-6 lg:px-8">
+
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl font-flux text-black tracking-wide mb-4">¿Quién está detrás de F33?</h2>
+                        <p class="text-gray-500 font-medium">Un equipo dedicado a revolucionar la distribución
+                            fotográfica.</p>
                     </div>
 
-                    <div class="lg:pl-12 mt-16 lg:mt-0">
-                        <div class="flex items-center gap-4 mb-8">
-                            <div class="p-3 bg-zinc-50 rounded-full border border-zinc-100">
+                    <!--div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        
+                        
+                    
+
+                     
+                        <div class="bg-white rounded p-8 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 rounded-full bg-gray-100 mb-6 overflow-hidden border-4 border-white shadow-md">
+                                <img src="/images/team-2.jpg" alt="Socio Fundador" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://ui-avatars.com/api/?name=Co+Founder&background=f3f4f6&color=9ca3af&size=200'" />
+                            </div>
+                            <h3 class="text-xl font-bold text-black mb-1">Nombre</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#E30613] mb-4">Rol</p>
+                            <p class="text-sm text-gray-500 font-medium leading-relaxed">
+                                Descripción pendiente.
+                            </p>
+                        </div>
+
+                       
+                        <div class="bg-white rounded p-8 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center group">
+                            <div class="w-32 h-32 rounded-full bg-gray-100 mb-6 overflow-hidden border-4 border-white shadow-md">
+                                <img src="/images/team-3.jpg" alt="Socio Fundador" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://ui-avatars.com/api/?name=Co+Founder&background=f3f4f6&color=9ca3af&size=200'" />
+                            </div>
+                            <h3 class="text-xl font-bold text-black mb-1">Nombre</h3>
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#E30613] mb-4">rol</p>
+                            <p class="text-sm text-gray-500 font-medium leading-relaxed">
+                                Descripción pendiente.
+                            </p>
+                        </div>
+
+                    </div-->
+
+
+                </div>
+            </section>
+
+
+            <section class="py-24 bg-white border-t border-gray-100">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <div class="grid md:grid-cols-2 gap-8">
+
+
+                        <div
+                            class="bg-gray-50 p-10 rounded border border-gray-200 hover:shadow-md transition-all duration-300 group">
+                            <div
+                                class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm">
                                 <CameraIcon class="w-6 h-6 text-black" />
                             </div>
-                            <h3 class="text-2xl font-sans text-black">Para Fotógrafos</h3>
+                            <h3 class="text-2xl font-bold text-black mb-3">¿Buscas tus fotos?</h3>
+                            <p class="text-gray-500 font-medium mb-8">
+                                Encontrá ese momento único en segundos usando nuestro escáner biométrico.
+                            </p>
+                            <Link :href="route('events.index')"
+                                class="inline-flex items-center gap-3 text-black font-bold uppercase tracking-wider text-xs bg-white px-6 py-3.5 rounded-full shadow-sm hover:shadow-md hover:bg-black hover:text-white transition-all">
+                                Ir a las galerías
+                                <ArrowLongRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
                         </div>
-                        <ul class="space-y-12">
-                            <li class="flex gap-6">
-                                <span class="text-4xl font-sans text-zinc-200">01</span>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black mb-2">Monetización Directa</h4>
-                                    <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Tú defines el precio. Nosotros ponemos la plataforma para que vendas tu trabajo sin intermediarios ni complicaciones logísticas.
-                                    </p>
-                                </div>
-                            </li>
-                            <li class="flex gap-6">
-                                <span class="text-4xl font-sans text-zinc-200">02</span>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black mb-2">Protección de Autoría</h4>
-                                    <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Sistema automático de marcas de agua dinámicas y visualización protegida. Tu trabajo original nunca se expone sin pago previo.
-                                    </p>
-                                </div>
-                            </li>
-                            <li class="flex gap-6">
-                                <span class="text-4xl font-sans text-zinc-200">03</span>
-                                <div>
-                                    <h4 class="text-lg font-bold text-black mb-2">Oportunidades Futuras</h4>
-                                    <p class="text-zinc-600 font-light text-sm leading-relaxed">
-                                        Publica tu agenda. Permite que los asistentes sepan dónde estarás fotografiando próximamente a través de nuestro mapa interactivo.
-                                    </p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
 
-                </div>
-            </div>
-        </section>
 
-        <section class="py-24 bg-black text-white">
-            <div class="max-w-7xl mx-auto px-6 lg:px-8">
-                <div class="grid md:grid-cols-3 gap-12 text-center md:text-left">
-                    <div class="space-y-4">
-                        <CursorArrowRaysIcon class="w-10 h-10 text-white mx-auto md:mx-0 stroke-1" />
-                        <h3 class="text-xl font-sans">Simplicidad Radical</h3>
-                        <p class="text-zinc-400 font-light leading-relaxed">
-                            No necesitas registrarte para buscar. Diseñamos un flujo sin fricción: sube tu selfie, encuentra tus fotos, compra y descarga.
-                        </p>
-                    </div>
-                    <div class="space-y-4">
-                        <ShieldCheckIcon class="w-10 h-10 text-white mx-auto md:mx-0 stroke-1" />
-                        <h3 class="text-xl font-sans">Seguridad Bancaria</h3>
-                        <p class="text-zinc-400 font-light leading-relaxed">
-                            Integración con Mercado Pago y sistemas de tokens efímeros. Tus datos financieros y tus archivos personales nunca están en riesgo.
-                        </p>
-                    </div>
-                    <div class="space-y-4">
-                        <MapPinIcon class="w-10 h-10 text-white mx-auto md:mx-0 stroke-1" />
-                        <h3 class="text-xl font-sans">Siempre Conectados</h3>
-                        <p class="text-zinc-400 font-light leading-relaxed">
-                            Desde una maratón local hasta un festival internacional. Geolocalizamos eventos para que sepas qué fotógrafos cubrieron tu zona.
-                        </p>
+                        <div
+                            class="bg-black p-10 rounded border border-black hover:shadow-lg hover:shadow-red-500/20 transition-all duration-300 group">
+                            <div
+                                class="w-12 h-12 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mb-6 border border-white/20">
+                                <SparklesIcon class="w-6 h-6 text-white" />
+                            </div>
+                            <h3 class="text-2xl font-bold text-white mb-3">¿Eres fotógrafo?</h3>
+                            <p class="text-gray-400 font-medium mb-8">
+                                Unite a la plataforma, publicá tu trabajo sin barreras y monetiza tu talento.
+                            </p>
+                            <Link :href="route('register')"
+                                class="inline-flex items-center gap-3 text-white font-bold uppercase tracking-wider text-xs bg-[#E30613] px-6 py-3.5 rounded-full shadow-sm hover:bg-red-700 transition-all">
+                                Aplicar como creador
+                                <ArrowLongRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
+
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section class="py-32 bg-zinc-50">
-            <div class="max-w-7xl mx-auto px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-sans text-black mb-6">Empieza tu experiencia</h2>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <div class="bg-white p-10 border border-zinc-200 hover:border-zinc-400 transition-all duration-300 group">
-                        <h3 class="text-2xl font-sans text-black mb-4">¿Buscas tus fotos?</h3>
-                        <p class="text-zinc-600 font-light mb-8 h-12">
-                            Encontrá ese momento único en segundos.
-                        </p>
-                        <Link 
-                            :href="route('events.index')"
-                            class="inline-flex items-center gap-3 text-black font-bold tracking-wider text-sm border-b border-black pb-1 hover:text-zinc-600 hover:border-zinc-600 transition-all"
-                        >
-                            IR A LA GALERÍA
-                            <ArrowLongRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
-
-                    <div class="bg-black p-10 text-white group">
-                        <h3 class="text-2xl font-sans mb-4">Sos fotógrafo?</h3>
-                        <p class="text-zinc-400 font-light mb-8 h-12">
-                            Únete a la plataforma y monetiza tu talento.
-                        </p>
-                        <Link 
-                            :href="route('register')" 
-                            class="inline-flex items-center gap-3 text-white font-bold tracking-wider text-sm border-b border-white pb-1 hover:text-zinc-300 hover:border-zinc-300 transition-all"
-                        >
-                            APLICAR COMO FOTÓGRAFO
-                            <ArrowLongRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </AppLayout>
 </template>
