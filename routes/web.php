@@ -294,7 +294,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
 
     Route::post('/oportunidades/{event}/aceptar', [FutureEventManagementController::class, 'acceptInvitation'])->name('opportunities.accept');
     Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
-
+    Route::post('/eventos-futuros/{event}/postular', [\App\Http\Controllers\FutureEventController::class, 'apply'])->name('future-events.apply');
 
 });
 
