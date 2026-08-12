@@ -222,7 +222,7 @@ const formatDate = (date) => {
                                     <Link 
                                         :href="route('admin.messages.show', message.id)"
                                         class="w-10 h-10 flex items-center justify-center border border-zinc-700 bg-black hover:border-white hover:bg-white text-zinc-400 hover:text-black transition-colors"
-                                        title="Ver Detalles"
+                                        title="Ver detalles"
                                     >
                                         <EyeIcon class="w-4 h-4" />
                                     </Link>

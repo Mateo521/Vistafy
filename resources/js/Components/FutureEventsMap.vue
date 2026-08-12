@@ -121,7 +121,7 @@ const addMarkers = () => {
                             </div>
                             <a href="/eventos-futuros/${event.id || event.slug}" 
                                style="display:block; font-size: 12px; font-weight: 700; color: #ffffff; background: #0f172a; padding: 10px 16px; text-decoration:none; text-align: center; border-radius: 99px; transition: background 0.2s;">
-                               Ver Detalles
+                               Ver detalles
                             </a>
                         </div>
                     `);

@@ -102,7 +102,7 @@ const searchBib = () => {
                             class="group relative aspect-square overflow-hidden bg-zinc-950 border border-zinc-800 hover:border-[#E30613] rounded-none transition-colors block">
                             
                             <img :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100"
+                                class="w-full h-full object-cover transition-transform duration-700  filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100"
                                 loading="lazy" />
 
                             <div class="absolute inset-0 bg-[#E30613]/0 group-hover:bg-[#E30613]/20 transition-colors duration-300 mix-blend-multiply pointer-events-none"></div>

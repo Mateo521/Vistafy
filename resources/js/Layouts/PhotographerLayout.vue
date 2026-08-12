@@ -21,16 +21,16 @@ const dashboardRoute = computed(() => {
 
 <template>
     <div class="min-h-screen bg-gray-50">
-        <!-- Navigation para Fotógrafos -->
+        
         <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
 
-                    <!-- Logo -->
+                    
                     <Link :href="dashboardRoute" class="flex items-center space-x-3 group">
                         <div
                             class="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center transition-all group-hover:from-purple-700 group-hover:to-indigo-700">
-                            <svg class="w-6 h-6 text-white transition-transform group-hover:scale-110" fill="none"
+                            <svg class="w-6 h-6 text-white transition-transform" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -43,9 +43,9 @@ const dashboardRoute = computed(() => {
                         </div>
                     </Link>
 
-                    <!-- Menu Principal (Desktop) -->
+                    
                     <div class="hidden md:flex items-center space-x-1">
-                        <!-- Dashboard -->
+                        
                         <Link :href="dashboardRoute" :class="[
                             'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
                             ($page.url.startsWith('/fotografo/dashboard') || $page.url.startsWith('/admin/panel'))
@@ -59,7 +59,7 @@ const dashboardRoute = computed(() => {
                             <span>Mi panel</span>
                         </Link>
 
-                        <!-- Eventos (Solo Fotógrafo) -->
+                        
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.events.index')" :class="[
                             'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
                             $page.url.includes('/eventos')
@@ -73,7 +73,7 @@ const dashboardRoute = computed(() => {
                             <span>Eventos</span>
                         </Link>
 
-                        <!-- Fotos (Solo Fotógrafo) -->
+                        
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.photos.index')" :class="[
                             'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
                             $page.url.includes('/fotos')
@@ -88,7 +88,7 @@ const dashboardRoute = computed(() => {
                         </Link>
 
 
-                        <!-- Oportunidades (Solo Fotógrafo) -->
+                        
                         <Link v-if="user.role === 'photographer'" :href="route('photographer.opportunities.index')"
                             :class="[
                                 'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
@@ -106,7 +106,7 @@ const dashboardRoute = computed(() => {
 
 
 
-                        <!-- Perfil -->
+                        
                         <Link :href="route('profile.edit')" :class="[
                             'px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2',
                             $page.url.includes('/profile')
@@ -121,9 +121,9 @@ const dashboardRoute = computed(() => {
                         </Link>
                     </div>
 
-                    <!-- Right Side -->
+                    
                     <div class="hidden md:flex items-center space-x-3">
-                        <!-- Botón Ver Sitio Público -->
+                        
                         <Link href="/"
                             class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-all flex items-center space-x-2 border border-gray-300 rounded-lg hover:border-gray-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +133,7 @@ const dashboardRoute = computed(() => {
                             <span class="text-sm">Volver al sitio</span>
                         </Link>
 
-                        <!-- User Dropdown -->
+                        
                         <div class="relative">
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all">
@@ -154,7 +154,7 @@ const dashboardRoute = computed(() => {
                                 </svg>
                             </button>
 
-                            <!-- Dropdown Menu -->
+                            
                             <div v-show="showingNavigationDropdown" @click="showingNavigationDropdown = false"
                                 class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
                                 <div class="p-3 border-b border-gray-100">
@@ -182,14 +182,14 @@ const dashboardRoute = computed(() => {
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                         </svg>
-                                        <span>Cerrar Sesión</span>
+                                        <span>Cerrar sesión</span>
                                     </Link>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Mobile menu button -->
+                    
                     <div class="md:hidden">
                         <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                             class="p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
@@ -207,10 +207,10 @@ const dashboardRoute = computed(() => {
                 </div>
             </div>
 
-            <!-- Mobile Menu -->
+            
             <div v-show="showingNavigationDropdown" class="md:hidden border-t border-gray-200 bg-white">
                 <div class="px-4 py-4 space-y-2">
-                    <!-- User Info -->
+                    
                     <div class="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-lg mb-4">
                         <div
                             class="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center">
@@ -333,19 +333,19 @@ const dashboardRoute = computed(() => {
             </div>
         </nav>
 
-        <!-- Page Heading -->
+        
         <header v-if="$slots.header" class="bg-white shadow-sm border-b border-gray-200">
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <slot name="header" />
             </div>
         </header>
 
-        <!-- Page Content -->
+        
         <main class="py-6">
             <slot />
         </main>
 
-        <!-- Footer Simple -->
+        
         <footer class="bg-white border-t border-gray-200 py-8 mt-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center text-gray-500 text-sm">

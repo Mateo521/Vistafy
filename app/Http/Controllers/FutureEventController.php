@@ -161,9 +161,10 @@ class FutureEventController extends Controller
         ];
     }
 
-    public function show($id)
+   
+    
+public function show($id)
     {
-
         $event = FutureEvent::with(['photographer.user'])
             ->whereHas('photographer', function ($q) {
                 $q->where('status', 'approved');  
@@ -177,6 +178,18 @@ class FutureEventController extends Controller
             }
         }
 
+       
+        $userApplicationStatus = 'none';
+
+        if (auth()->check() && auth()->user()->photographer) {
+            
+            $pivot = $event->collaborators()->where('photographer_id', auth()->user()->photographer->id)->first();
+            if ($pivot) {
+                $userApplicationStatus = $pivot->pivot->status; // 'requested', 'approved', etc.
+            }
+        }
+       
+
         return Inertia::render('FutureEvents/Show', [
             'event' => [
                 'id' => $event->id,
@@ -187,6 +200,8 @@ class FutureEventController extends Controller
                 'longitude' => $event->longitude ? (float) $event->longitude : null,
                 'event_date' => $event->event_date->format('Y-m-d H:i:s'),
                 'formatted_date' => $event->formatted_date,
+                
+                'formatted_time' => $event->event_date->format('H:i'), 
                 'days_until' => $event->daysUntil(),
                 'cover_image' => $event->cover_image_url,
                 'status' => $event->status,
@@ -202,6 +217,47 @@ class FutureEventController extends Controller
                     'website' => $event->photographer->website,
                 ],
             ],
+            
+            'isPhotographer' => auth()->check() && auth()->user()->photographer !== null,
+            'isAuthenticated' => auth()->check(),
+            'userApplicationStatus' => $userApplicationStatus,
         ]);
     }
+
+   
+    public function apply(\App\Models\FutureEvent $event)
+    {
+        $applicant = auth()->user()->photographer;
+
+        
+        if ($event->photographer_id === $applicant->id) {
+            return redirect()->back()->with('error', 'Ya eres el organizador de este evento.');
+        }
+
+        
+        if ($event->collaborators()->where('photographer_id', $applicant->id)->exists()) {
+            return redirect()->back()->with('error', 'Ya tienes una solicitud en curso o eres parte de este evento.');
+        }
+
+        
+        $event->collaborators()->attach($applicant->id, ['status' => 'requested']);
+
+        
+        try {
+             
+            $event->load('photographer.user');
+
+            \Illuminate\Support\Facades\Mail::to($event->photographer->user->email)
+                ->send(new \App\Mail\PhotographerApplicationMail($event, $applicant));
+                
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando postulación: ' . $e->getMessage());
+            
+         
+            return redirect()->back()->with('success', 'Postulación guardada correctamente, aunque hubo un problema enviando el correo de aviso al organizador.');
+        }
+
+        return redirect()->back()->with('success', '¡Objetivo fijado! Tu postulación ha sido enviada al organizador.');
+    }
+
 }
