@@ -52,6 +52,23 @@ class User extends Authenticatable
         return $this->role === 'photographer';
     }
 
+    /**
+     * enviar notificación de restablecimiento de contraseña.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $url = url(route('password.reset', [
+            'token' => $token,
+            'email' => $this->getEmailForPasswordReset(),
+        ], false));
+
+        \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\CustomResetPasswordMail($url));
+    }
+
+
     public function isClient(): bool
     {
         return $this->role === 'client';
