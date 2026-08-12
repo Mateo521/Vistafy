@@ -3,42 +3,46 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-10 sm:pt-0 bg-black font-sans relative overflow-hidden selection:bg-[#E30613] selection:text-white text-white">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-10 sm:pt-0 bg-[#F8F9FA] font-sans relative overflow-hidden selection:bg-[#E30613] selection:text-white text-slate-800 antialiased">
         
-        <div class="absolute inset-0 z-0 pointer-events-none">
-            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black"></div>
+    
+        <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-red-50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
+            
+            <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gray-100 rounded-full blur-[120px] translate-y-1/3 -translate-x-1/4"></div>
         </div>
 
-        <div class="w-full sm:max-w-md lg:max-w-7xl px-6 py-4 z-10 relative">
+        <div class="w-full sm:max-w-md lg:max-w-lg px-4 py-8 z-10 relative flex flex-col items-center">
             
+           
             <div class="flex justify-center mb-10">
-                <Link :href="route('home')" class="text-center group flex flex-col items-center">
-                    <span class="text-4xl font-black tracking-tighter text-white group-hover:text-[#E30613] transition-colors duration-300">
-                        F33 <span class="text-[#E30613] group-hover:text-white transition-colors duration-300"></span>
-                    </span>
-                    <span class="font-mono text-[9px] uppercase tracking-[0.4em] text-gray-500 mt-2 group-hover:text-white transition-colors duration-300">
-                        [ ACCESO ]
+                <Link :href="route('home')" class="text-center group flex flex-col items-center gap-2">
+                    <div class="font-flux text-5xl md:text-6xl text-black flex items-center gap-1  transition-transform duration-300">
+                        f33<span class="w-3 h-3 rounded-full bg-[#E30613] block mb-2 shadow-sm shadow-red-500/30"></span>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors duration-300">
+                        Acceso
                     </span>
                 </Link>
             </div>
 
-            <div class="bg-zinc-950 border border-white/10 shadow-2xl relative overflow-hidden w-full mx-auto" style="max-width: 100%;">
-                
-               
-                
-                <div class="px-6 py-10 sm:px-12 md:py-12">
+            
+            <div class="bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded relative overflow-hidden w-full transition-all duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)]">
+                <div class="px-6 py-10 sm:px-10 md:py-12 relative z-10">
                     <slot />
                 </div>
             </div>
 
-            <div v-if="$slots.footer" class="mt-8 text-center">
+          
+            <div v-if="$slots.footer" class="mt-8 text-center w-full">
                 <slot name="footer" />
             </div>
             
-            <div class="mt-16 text-center">
-                <p class="font-mono text-[9px] text-gray-600 uppercase  font-bold">
-                    &copy; {{ new Date().getFullYear() }} F33. TODOS LOS DERECHOS RESERVADOS.
+        
+            <div class="mt-14 text-center">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    &copy; {{ new Date().getFullYear() }} F33. Todos los derechos reservados.
                 </p>
             </div>
         </div>
@@ -47,4 +51,10 @@ import { Link } from '@inertiajs/vue3';
 
 <style scoped>
 
+:deep(input) {
+    transition: all 0.3s ease;
+}
+:deep(button) {
+    transition: all 0.3s ease;
+}
 </style>

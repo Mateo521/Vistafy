@@ -797,7 +797,7 @@ const paginationPages = computed(() => {
                                 <PhotoIcon class="w-8 h-8 text-gray-300" />
                             </div>
                             <h4 class="font-bold text-lg text-slate-700 mb-1">Sin fotografías</h4>
-                            <p class="text-sm text-gray-500">No tienes fotografías pendientes de asignación en tu bóveda.</p>
+                            <p class="text-sm text-gray-500">No tenés fotografías pendientes de asignación en tu bóveda.</p>
                         </div>
                         
                         <div v-else>
