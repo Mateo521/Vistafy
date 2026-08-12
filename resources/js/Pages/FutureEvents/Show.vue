@@ -10,7 +10,8 @@ import {
     UserIcon,
     EnvelopeIcon,
     ArrowRightIcon,
-    CameraIcon
+    CameraIcon,
+    InformationCircleIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -18,7 +19,6 @@ const props = defineProps({
     isPhotographer: Boolean,
     isAuthenticated: Boolean,
 });
-
 
 const getDaysText = computed(() => {
     const days = Math.round(props.event.days_until);
@@ -38,11 +38,11 @@ const getDaysText = computed(() => {
 const getDaysBadgeColor = computed(() => {
     const days = Math.round(props.event.days_until);
 
-    if (days < 0) return 'border-zinc-800 text-zinc-500 bg-black'; // Pasado
-    if (days === 0) return 'border-[#E30613] text-black bg-[#E30613] animate-pulse'; // Hoy
-    if (days === 1) return 'border-[#E30613] text-[#E30613] bg-[#E30613]/10'; // Mañana
-    if (days <= 7) return 'border-white text-white bg-white/5'; // Próximo
-    return 'border-zinc-600 text-zinc-400 bg-black'; // Lejano
+    if (days < 0) return 'border-gray-200 text-gray-500 bg-gray-50'; // Pasado
+    if (days === 0) return 'border-red-200 text-[#E30613] bg-red-50 animate-pulse'; // Hoy
+    if (days === 1) return 'border-orange-200 text-orange-600 bg-orange-50'; // Mañana
+    if (days <= 7) return 'border-blue-200 text-blue-600 bg-blue-50'; // Próximo
+    return 'border-gray-200 text-gray-600 bg-white'; // Lejano
 });
 
 const handleImageError = (e) => {
@@ -50,9 +50,10 @@ const handleImageError = (e) => {
     const parent = e.target.parentElement;
     if (parent && !parent.querySelector('.placeholder')) {
         const placeholder = document.createElement('div');
-        placeholder.className = 'placeholder w-full h-full flex items-center justify-center bg-black border-b border-zinc-800';
+        placeholder.className = 'placeholder w-full h-full flex flex-col items-center justify-center bg-gray-100 text-gray-400';
         placeholder.innerHTML = `
-            <span class="font-mono text-xs font-bold tracking-widest uppercase text-zinc-800">>_ NO_IMG_DATA</span>
+            <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <span class="text-xs font-bold uppercase tracking-wider">Sin Portada</span>
         `;
         parent.appendChild(placeholder);
     }
@@ -60,190 +61,194 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-
-    <Head :title="`[EVT] ${event.title}`" />
+    <Head :title="`${event.title} | F33`" />
 
     <AppLayout>
-        <section class="relative min-h-[70vh] bg-[#050505] overflow-hidden border-b-2 border-[#E30613]">
-            <div class="absolute inset-0 bg-black">
-                <img :src="event.cover_image" :alt="event.title" 
-                    class="w-full h-full object-cover filter grayscale opacity-40 mix-blend-screen"
-                    @error="handleImageError" />
-            </div>
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')]"></div>
+               
+                <div class="mb-6">
+                    <Link :href="route('home')"
+                        class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all">
+                        <ArrowLeftIcon class="w-4 h-4" /> Volver al inicio
+                    </Link>
+                </div>
 
-            <div class="absolute top-32 left-0 w-full px-4 sm:px-6 lg:px-8 z-10 max-w-7xl mx-auto">
-                <Link :href="route('home')"
-                    class="inline-flex items-center text-zinc-500 hover:text-white font-mono text-[10px] font-bold uppercase tracking-widest transition-colors group bg-black border border-zinc-800 px-4 py-2 hover:border-white">
-                    <ArrowLeftIcon class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    CANCELAR / VOLVER
-                </Link>
-            </div>
+            
+                <div class="relative w-full h-[50vh] min-h-[400px] rounded-3xl overflow-hidden shadow-xl mb-12 flex flex-col justify-end group">
+                
+                    <div class="absolute inset-0 w-full h-full bg-slate-900">
+                        <img :src="event.cover_image" :alt="event.title" 
+                             class="w-full h-full object-cover opacity-80 mix-blend-overlay transition-transform duration-1000 group-hover:scale-105"
+                             @error="handleImageError" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    </div>
 
-            <div class="relative z-10 h-full min-h-[70vh] flex items-end">
-                <div class="w-full px-4 sm:px-6 lg:px-8 py-16">
-                    <div class="max-w-7xl mx-auto">
-                        
-                        <div class="mb-6 flex gap-3">
+                
+                    <div class="relative z-10 p-8 md:p-16">
+                        <div class="flex flex-wrap items-center gap-3 mb-6">
                             <span :class="[
-                                'inline-flex items-center px-4 py-1.5 rounded-none border font-mono text-[10px] font-bold uppercase tracking-widest',
+                                'inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm',
                                 getDaysBadgeColor
                             ]">
-                                <ClockIcon class="w-3.5 h-3.5 mr-2" />
+                                <ClockIcon class="w-4 h-4 mr-1.5" />
                                 {{ getDaysText }}
                             </span>
-                            <span v-if="event.is_private" class="inline-flex items-center px-4 py-1.5 rounded-none border border-[#E30613] text-[#E30613] bg-black font-mono text-[10px] font-bold uppercase tracking-widest">
-                                PRIVADO
+                            <span v-if="event.is_private" class="inline-flex items-center px-4 py-1.5 rounded-full bg-red-50/20 backdrop-blur-md border border-[#E30613]/50 text-red-100 text-xs font-bold uppercase tracking-wider">
+                                Privado
                             </span>
                         </div>
-
-                        <h1 class="text-5xl md:text-7xl lg:text-8xl font-flux text-white mb-6 max-w-5xl leading-none uppercase tracking-tighter mix-blend-difference">
+                        
+                        <h1 class="font-flux text-5xl md:text-7xl lg:text-8xl text-white leading-none tracking-wide mb-6">
                             {{ event.title }}
                         </h1>
 
-                        <div class="flex flex-wrap items-center gap-6 font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-                            <div class="flex items-center gap-2 bg-black/80 border border-zinc-800 px-3 py-1.5">
+                        <div class="flex flex-wrap items-center gap-4 text-white/90 text-xs font-bold uppercase tracking-wider">
+                            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full">
                                 <CalendarIcon class="w-4 h-4 text-[#E30613]" />
-                                <span>{{ event.formatted_date }} <span class="mx-2 text-zinc-700">|</span> {{ event.formatted_time }}HS</span>
+                                <span>{{ event.formatted_date }} <span class="mx-1 text-white/50">|</span> {{ event.formatted_time }} HS</span>
                             </div>
-                            <div class="flex items-center gap-2 bg-black/80 border border-zinc-800 px-3 py-1.5">
+                            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full">
                                 <MapPinIcon class="w-4 h-4 text-[#E30613]" />
-                                <span>{{ event.location }}</span>
+                                <span class="truncate max-w-[200px] md:max-w-none">{{ event.location }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section class="bg-[#050505] py-16 selection:bg-[#E30613] selection:text-black">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-8">
+            
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12 pb-16">
 
-                    <div class="lg:col-span-2">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] mb-6 flex items-center gap-3">
-                            >_ EVENTO
-                        </h2>
+                
+                    <div class="lg:col-span-2 space-y-8">
                         
-                        <div class="mb-16">
-                            <p class="font-mono text-xs md:text-sm text-zinc-400 leading-relaxed uppercase border-l-2 border-zinc-800 pl-4">
+                    
+                        <div>
+                            <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                                <span class="w-4 h-px bg-gray-200"></span> Acerca del evento
+                            </h2>
+                            <p class="text-lg md:text-xl text-slate-700 leading-relaxed font-medium">
                                 {{ event.description }}
                             </p>
                         </div>
 
-                        <div class="mb-12 p-8 bg-[#09090b] border border-zinc-800 relative overflow-hidden group hover:border-white transition-colors">
-                            <CameraIcon class="absolute -right-8 -bottom-8 w-48 h-48 text-zinc-900 opacity-50 transform -rotate-12 group-hover:scale-110 group-hover:text-zinc-800 transition-all duration-700 pointer-events-none" />
+                        
+                        <div class="bg-blue-50 border border-blue-100 rounded-3xl p-6 md:p-8 flex flex-col sm:flex-row items-start gap-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0 relative z-10">
+                                <CameraIcon class="w-6 h-6" />
+                            </div>
+                            <div class="relative z-10">
+                                <h3 class="font-bold text-xl text-slate-800 mb-2">
+                                    Fotografías en espera
+                                </h3>
+                                <p class="text-sm text-blue-800/80 leading-relaxed">
+                                    Las capturas fotográficas de este evento van a estar disponibles acá próximamente. 
+                                    <span class="font-bold text-blue-600 block mt-1">Estatus: Planificación / Organización.</span>
+                                </p>
+                            </div>
+                        </div>
+
+                    
+                        <div class="bg-white border border-gray-100 shadow-sm rounded-3xl p-8 md:p-10 relative overflow-hidden group">
+                            <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+                                <CameraIcon class="w-64 h-64 text-black" />
+                            </div>
                             
-                            <div class="relative z-10 flex flex-col sm:flex-row items-start gap-6">
-                                <div class="text-white bg-black border border-zinc-800 p-3 shrink-0 group-hover:border-[#E30613] group-hover:text-[#E30613] transition-colors">
-                                    <CameraIcon class="w-6 h-6" />
+                            <div class="relative z-10">
+                                <div class="inline-block bg-red-50 text-[#E30613] text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-md border border-red-100 mb-4">
+                                    Convocatoria abierta
                                 </div>
-                                <div>
-                                    <h3 class="font-flux text-3xl text-white mb-2 uppercase tracking-wider">
-                                        FOTOGRAFÍAS PENDIENTES
-                                    </h3>
-                                    <p class="font-mono text-[10px] text-zinc-500 leading-relaxed max-w-xl uppercase tracking-widest">
-                                        Las fotografias van a estar disponibles en este evento. <span class="text-[#E30613] font-bold">> STATUS: EN ESPERA.</span>
-                                    </p>
+                                <h3 class="font-flux text-4xl md:text-5xl text-black mb-4">
+                                    ¿Eres Fotógrafo? <span class="text-[#E30613] block md:inline">Participa.</span>
+                                </h3>
+                                <p class="text-sm text-gray-500 mb-8 max-w-2xl leading-relaxed font-medium">
+                                    Se requieren operadores de cámara. Envía tu solicitud de cobertura, documentá la instancia y comercializá tus fotos.
+                                </p>
+                                
+                                <div class="flex flex-wrap gap-4">
+                                    <button v-if="isPhotographer"
+                                        class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all hover:-translate-y-1 group/btn">
+                                        Enviar Postulación
+                                        <ArrowRightIcon class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                    </button>
+
+                                    <template v-else>
+                                        <Link :href="route('photographer.register')"
+                                            class="inline-flex items-center justify-center px-8 py-4 bg-[#E30613] text-white font-bold text-xs uppercase tracking-wider rounded-full hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 transition-all hover:-translate-y-1 text-center">
+                                            Crear cuenta profesional
+                                        </Link>
+                                        <Link :href="route('login')"
+                                            class="inline-flex items-center justify-center px-8 py-4 bg-white border border-gray-200 text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-gray-50 hover:text-black transition-colors rounded-full text-center">
+                                            Iniciar Sesión
+                                        </Link>
+                                    </template>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-10 bg-black border border-[#E30613] shadow-[8px_8px_0px_0px_rgba(227,6,19,1)] relative overflow-hidden">
-                            <div class="absolute top-0 right-0 bg-[#E30613] text-black font-mono text-[8px] font-bold uppercase tracking-widest px-2 py-1">
-                                SISTEMA ABIERTO
-                            </div>
-                            
-                            <h3 class="font-flux text-4xl md:text-5xl text-white mb-4 uppercase tracking-tight">
-                                ¿SOS FOTÓGRAFO? <span class="text-[#E30613]">ASIGNATE A ESTE EVENTO</span>
-                            </h3>
-                            <p class="font-mono text-xs text-zinc-400 mb-8 max-w-2xl leading-relaxed uppercase">
-                                Se requieren operadores de cámara. Envía tu solicitud de cobertura para este evento, documenta la instancia y comercializa tus fotos mediante la red f33.
-                            </p>
-                            
-                            <div class="flex flex-wrap gap-4">
-                                <button v-if="isPhotographer"
-                                    class="inline-flex items-center gap-3 px-8 py-4 bg-[#E30613] text-black font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors rounded-none border border-[#E30613] hover:border-white group">
-                                    POSTULACIÓN
-                                    <ArrowRightIcon class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </button>
-
-                                <template v-else>
-                                    <Link :href="route('photographer.register')"
-                                        class="px-8 py-4 bg-[#E30613] text-black font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white transition-colors rounded-none border border-[#E30613] hover:border-white text-center">
-                                        INICIAR CUENTA FOTÓGRAFO
-                                    </Link>
-                                    <Link :href="route('login')"
-                                        class="px-8 py-4 bg-black border border-zinc-700 text-zinc-400 font-mono text-[10px] font-bold uppercase tracking-widest hover:border-white hover:text-white transition-colors rounded-none text-center">
-                                        LOGIN
-                                    </Link>
-                                </template>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="lg:col-span-1">
-                        <div class="sticky top-32 space-y-6">
+                    
+                    <div class="lg:col-span-1 space-y-6">
+                        
+                    
+                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                                <UserIcon class="w-4 h-4 text-[#E30613]" /> Organizador
+                            </h3>
                             
-                            <div class="bg-[#09090b] border border-zinc-800 p-8 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
-                                <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-4 flex items-center gap-2">
-                                    <UserIcon class="w-3 h-3 text-[#E30613]" />  ORGANIZADOR
-                                </h3>
-                                <div class="flex flex-col gap-4">
-                                    <div>
-                                        <h4 class="font-flux text-3xl text-white uppercase tracking-wider mb-1">
+                            <div class="flex flex-col gap-5">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-14 h-14 bg-gray-50 rounded-full border border-gray-200 flex items-center justify-center text-xl font-bold text-gray-400 shrink-0">
+                                        {{ event.photographer.business_name.charAt(0) }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold text-lg text-black truncate">
                                             {{ event.photographer.business_name }}
                                         </h4>
-                                        <p class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest mb-4">
-                                            > OP: {{ event.photographer.name }}
-                                        </p>
-                                    </div>
-                                    <a :href="`mailto:${event.photographer.email}`"
-                                        class="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-black border border-zinc-700 text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-300 hover:text-white hover:border-[#E30613] transition-colors">
-                                        <EnvelopeIcon class="w-3.5 h-3.5" />
-                                        CONTACTAR
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="bg-[#09090b] border border-zinc-800 p-8 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
-                                <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-4 flex items-center gap-2">
-                                    <ClockIcon class="w-3 h-3 text-[#E30613]" /> FICHA
-                                </h3>
-                                <div class="space-y-6">
-                                    <div>
-                                        <div class="font-mono text-[9px] font-bold uppercase tracking-widest text-zinc-600 mb-1">
-                                            >_ FECHA
-                                        </div>
-                                        <p class="font-mono text-sm text-white uppercase">
-                                            {{ event.formatted_date }}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="font-mono text-[9px] font-bold uppercase tracking-widest text-zinc-600 mb-1">
-                                            >_ HORA_COMIENZO
-                                        </div>
-                                        <p class="font-mono text-sm text-white uppercase">
-                                            {{ event.formatted_time }}HS
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="font-mono text-[9px] font-bold uppercase tracking-widest text-zinc-600 mb-1">
-                                            >_ COORDENADAS_MAPA
-                                        </div>
-                                        <p class="font-mono text-xs text-white uppercase leading-relaxed">
-                                            {{ event.location }}
+                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider truncate">
+                                            Dirige: {{ event.photographer.name }}
                                         </p>
                                     </div>
                                 </div>
+                                
+                                <a :href="`mailto:${event.photographer.email}`"
+                                    class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-gray-100 text-xs font-bold uppercase tracking-wider text-slate-600 hover:border-black hover:text-black rounded-full transition-colors">
+                                    <EnvelopeIcon class="w-4 h-4" /> Contactar
+                                </a>
                             </div>
-
                         </div>
-                    </div>
 
+                        
+                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                                <InformationCircleIcon class="w-4 h-4 text-[#E30613]" /> Ficha técnica
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Fecha</p>
+                                    <p class="text-sm font-bold text-slate-700">{{ event.formatted_date }}</p>
+                                </div>
+                                <div class="w-full h-px bg-gray-50"></div>
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Horario</p>
+                                    <p class="text-sm font-bold text-slate-700">{{ event.formatted_time }} HS</p>
+                                </div>
+                                <div class="w-full h-px bg-gray-50"></div>
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Ubicación / Coordenadas</p>
+                                    <p class="text-sm font-medium text-slate-700 leading-relaxed">{{ event.location }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+
             </div>
-        </section>
+        </div>
     </AppLayout>
 </template>
