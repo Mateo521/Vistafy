@@ -182,10 +182,10 @@ const handleImageError = (e) => {
                                     Convocatoria abierta
                                 </div>
                                 <h3 class="font-flux text-4xl md:text-5xl text-black mb-4">
-                                    ¿Sos fotógrafo? <span class="text-[#E30613] block md:inline">Participa.</span>
+                                    ¿Sos fotógrafo? <span class="text-[#E30613] block md:inline">Participá.</span>
                                 </h3>
                                 <p class="text-sm text-gray-500 mb-8 max-w-2xl leading-relaxed font-medium">
-                                    Se requieren operadores de cámara. Envía tu solicitud de cobertura, documentá la
+                                    Se requieren operadores de cámara. Enviá tu solicitud de cobertura, documentá la
                                     instancia y comercializá tus fotos.
                                 </p>
 
