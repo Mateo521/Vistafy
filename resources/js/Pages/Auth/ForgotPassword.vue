@@ -45,7 +45,7 @@ const submit = () => {
                     
                     <div class="relative z-10">
                         <h2 class="font-flux text-4xl text-black leading-none mb-3 tracking-wide">
-                            Recuperar <span class="text-[#E30613]">Acceso</span>
+                            Recuperar <span class="text-[#E30613]">acceso</span>
                         </h2>
 
                         <p class="text-sm font-medium text-gray-500 mb-8 leading-relaxed">
