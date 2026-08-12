@@ -117,7 +117,8 @@ public function getCoverImageUrlAttribute()
 
     public function collaborators()
     {
-        return $this->belongsToMany(\App\Models\Photographer::class, 'event_photographer', 'future_event_id', 'photographer_id')
+        
+        return $this->belongsToMany(\App\Models\Photographer::class, 'future_event_photographer', 'future_event_id', 'photographer_id')
                     ->withPivot('status')
                     ->withTimestamps();
     }
