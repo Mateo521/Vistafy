@@ -21,3 +21,5 @@ Schedule::command('logs:clear')
     ->sundays()
     ->at('02:00');
 
+
+Schedule::command('sitemap:generate')->dailyAt('03:00');
