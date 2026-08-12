@@ -61,7 +61,7 @@ const getDaysText = (days) => {
                         
                         <div class="relative h-56 bg-gray-100 overflow-hidden shrink-0">
                             <img v-if="opportunity.cover_image" :src="opportunity.cover_image" :alt="opportunity.title"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                class="w-full h-full object-cover transition-transform duration-700 " />
                             
                             <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-300">
                                 <CalendarIcon class="w-12 h-12 mb-2" />

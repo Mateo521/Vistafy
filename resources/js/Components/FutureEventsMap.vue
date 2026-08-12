@@ -16,10 +16,8 @@ let map = null;
 let markers = [];
 
 watch(() => props.events, (newEvents) => {
-    newEvents.forEach((event, index) => {
-
-    });
-}, { immediate: true, deep: true });
+    if (map) addMarkers();
+}, { deep: true });
 
 const initMap = () => {
     if (!mapContainer.value) return;
@@ -28,6 +26,7 @@ const initMap = () => {
         map.remove();
     }
 
+  
     const boundsArgentina = L.latLngBounds(
         [-55.051258, -73.576081],  
         [-21.781134, -53.637568]   
@@ -43,9 +42,11 @@ const initMap = () => {
         maxZoom: 19  
     }).setView([-38.4161, -63.6167], 5);  
 
+  
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+   
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         minZoom: 4
     }).addTo(map);
@@ -65,7 +66,7 @@ const addMarkers = () => {
     let validEvents = 0;
     let invalidEvents = 0;
 
-    props.events.forEach((event, index) => {
+    props.events.forEach((event) => {
         if (event.latitude && event.longitude) {
             validEvents++;
 
@@ -73,56 +74,57 @@ const addMarkers = () => {
             const lng = parseFloat(event.longitude);
 
             if (isNaN(lat) || isNaN(lng)) {
-                console.error(` Coordenadas inválidas para "${event.title}":`, { lat, lng });
+                console.error(`Coordenadas inválidas para "${event.title}":`, { lat, lng });
                 invalidEvents++;
                 return;
             }
 
-
+        
             const customIcon = L.divIcon({
                 className: 'custom-event-marker',
                 html: `<div style="
-                    width: 16px; 
-                    height: 16px; 
-                    background-color: #dc2626; 
+                    width: 20px; 
+                    height: 20px; 
+                    background-color: #E30613; 
                     border-radius: 50%; 
-                    border: 2px solid #fff; 
-                    box-shadow: 0 0 10px rgba(220, 38, 38, 0.8);
-                    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                "></div>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
+                    border: 3px solid #ffffff; 
+                    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.4);
+                    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                " class="marker-dot"></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+                popupAnchor: [0, -12]
             });
 
             try {
-
                 const marker = L.marker([lat, lng], { icon: customIcon })
                     .addTo(map)
                     .bindPopup(`
-        <div style="font-family: 'Space Mono', monospace; min-width: 200px; max-width: 260px; padding: 0;">
-            <div style="margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden;">
-                <img 
-                    src="${event.cover_image || event.cover_image_url || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80'}"
-                    alt="${event.title || event.name}"
-                    style="width: 100%; height: 120px; object-fit: cover; filter: grayscale(100%) contrast(120%);"
-                    onerror="this.src='https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80'"
-                />
-            </div>
-            <strong style="display:block; font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 900; color: #ffffff; text-transform: uppercase; margin-bottom: 4px; line-height: 1.1; letter-spacing: -0.05em;">
-                ${event.title || event.name}
-            </strong>
-            <div style="font-size: 10px; font-weight: 700; color: #dc2626; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
-                ${event.location || 'Ubicación a confirmar'}
-            </div>
-            <div style="font-size: 10px; color: #9ca3af; margin-bottom: 16px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.1em;">
-                ${event.formatted_date || (event.event_date ? new Date(event.event_date).toLocaleDateString('es-ES') : '')}
-            </div>
-            <a href="/eventos-futuros/${event.id || event.slug}" 
-               style="display:block; font-size:10px; font-weight:700; color:#000000; background: #ffffff; padding: 10px 12px; text-decoration:none; text-align: center; text-transform: uppercase; letter-spacing: 0.2em; transition: all 0.3s; border: 1px solid #ffffff;">
-               [ RASTREAR OBJETIVO ]
-            </a>
-        </div>
-    `);
+                        <div style="font-family: 'Inter', system-ui, sans-serif; min-width: 240px; max-width: 280px; padding: 0;">
+                            <div style="margin-bottom: 12px; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); background: #f8fafc;">
+                                <img 
+                                    src="${event.cover_image || event.cover_image_url || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80'}"
+                                    alt="${event.title || event.name}"
+                                    style="width: 100%; height: 140px; object-fit: cover;"
+                                    onerror="this.src='https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=400&q=80'"
+                                />
+                            </div>
+                            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; line-height: 1.2;">
+                                ${event.title || event.name}
+                            </h3>
+                            <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                                <svg style="width: 14px; height: 14px; color: #E30613;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                ${event.location || 'Ubicación a confirmar'}
+                            </div>
+                            <div style="font-size: 12px; color: #E30613; font-weight: 700; margin-bottom: 16px; padding-left: 18px;">
+                                ${event.formatted_date || (event.event_date ? new Date(event.event_date).toLocaleDateString('es-ES') : '')}
+                            </div>
+                            <a href="/eventos-futuros/${event.id || event.slug}" 
+                               style="display:block; font-size: 12px; font-weight: 700; color: #ffffff; background: #0f172a; padding: 10px 16px; text-decoration:none; text-align: center; border-radius: 99px; transition: background 0.2s;">
+                               Ver Detalles
+                            </a>
+                        </div>
+                    `);
 
                 markers.push(marker);
             } catch (error) {
@@ -148,111 +150,122 @@ onMounted(async () => {
     await nextTick();
     setTimeout(initMap, 100);
 });
-
-watch(() => props.events, () => {
-    if (map) addMarkers();
-}, { deep: true });
 </script>
 
 <template>
-    <div class="relative w-full h-[100vh] min-h-[400px] bg-black">
-        <div ref="mapContainer" class="w-full h-full z-0 outline-none map-future-events"></div>
+    <div class="relative w-full h-[100vh] min-h-[500px] bg-[#F8F9FA] overflow-hidden rounded-3xl shadow-sm border border-gray-100">
+        
+    
+        <div ref="mapContainer" class="w-full h-full z-0 outline-none map-sleek-events"></div>
 
+       
         <transition enter-active-class="transition-opacity duration-300"
             leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0"
             leave-to-class="opacity-0">
-            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-black z-20">
-                <div class="flex flex-col items-center">
-                    <div class="h-10 w-10 border-2 border-white/20 border-t-red-600 rounded-full animate-spin mb-4"></div>
-                    <span class="text-white font-mono text-[10px] font-bold uppercase tracking-widest">Estableciendo enlace satelital...</span>
+            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm"></div>
+                    <span class="text-slate-600 font-bold text-xs uppercase tracking-wider">Cargando mapa...</span>
                 </div>
             </div>
         </transition>
         
-        <div class="absolute left-[4vw] top-[8vh] z-10 h-16 w-16  border-t-2 border-white pointer-events-none opacity-50"></div>
-        <div class="absolute right-[4vw] top-[8vh] z-10 h-16 w-16 border-r-2 border-t-2 border-red-600 pointer-events-none opacity-50"></div>
-        <div class="absolute bottom-[8vh] left-[4vw] z-10 h-16 w-16 border-b-2  border-red-600 pointer-events-none opacity-50"></div>
-        <div class="absolute bottom-[8vh] right-[4vw] z-10 h-16 w-16 border-b-2 border-r-2 border-white pointer-events-none opacity-50"></div>
     </div>
 </template>
 
 <style>
 
-.map-future-events .leaflet-tile-pane {
-    filter: brightness(1.3) contrast(1.1) grayscale(0.5);
-}
 
-.map-future-events {
-    font-family: 'Space Mono', monospace;
-    background: #000000;
+.map-sleek-events {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #F8F9FA;
 }
 
 
-.map-future-events .leaflet-control-zoom a {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    transition: all 0.3s;
+.map-sleek-events .leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 4px !important;
+    overflow: hidden;
+    margin-right: 20px !important;
+    margin-bottom: 20px !important;
 }
 
-.map-future-events .leaflet-control-zoom a:hover {
-    background-color: #dc2626 !important;
-    color: #ffffff !important;
-    border-color: #dc2626 !important;
+.map-sleek-events .leaflet-control-zoom a {
+    background-color: #ffffff !important;
+    color: #334155 !important;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    transition: all 0.2s ease;
+}
+
+.map-sleek-events .leaflet-control-zoom a:last-child {
+    border-bottom: none !important;
+}
+
+.map-sleek-events .leaflet-control-zoom a:hover {
+    background-color: #f8fafc !important;
+    color: #E30613 !important;
 }
 
 
 .leaflet-popup-content-wrapper {
-    background-color: #000000 !important;
-    border: 1px solid #dc2626 !important;
-    border-radius: 0 !important;
+    background-color: #ffffff !important;
+    border-radius: 4px !important;
     padding: 0 !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.2) !important;
+    color: #334155 !important;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15), 0 0 20px rgba(0,0,0,0.05) !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
 }
 
 .leaflet-popup-content {
     margin: 16px !important;
+    line-height: 1.5 !important;
 }
 
 
+.leaflet-popup-tip-container {
+    margin-top: -1px !important;
+}
+
 .leaflet-popup-tip {
-    background-color: #000000 !important;
-    border: 1px solid #dc2626 !important;
-    border-top: none !important;
-    border-left: none !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15) !important;
 }
 
 
 .leaflet-popup-close-button {
-    color: #dc2626 !important;
-    font-family: 'Space Mono', monospace;
-    font-size: 16px !important;
-    padding: 4px !important;
+    color: #94a3b8 !important;
+    font-size: 20px !important;
+    padding: 8px 8px 0 0 !important;
+    font-weight: 300 !important;
+    transition: color 0.2s;
+    z-index: 10;
 }
 
 .leaflet-popup-close-button:hover {
-    color: #ffffff !important;
+    color: #E30613 !important;
     background-color: transparent !important;
 }
 
 
-.custom-event-marker:hover div {
-    transform: scale(1.5);
-    background-color: #ffffff !important;
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8) !important;
+.custom-event-marker .marker-dot {
+    transform: scale(1);
 }
 
+.custom-event-marker:hover .marker-dot {
+    transform: scale(1.3) !important;
+    background-color: #E30613 !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(227, 6, 19, 0.5) !important;
+}
 
 .leaflet-popup-content a:hover {
-    background-color: #dc2626 !important;
-    color: #ffffff !important;
-    border-color: #dc2626 !important;
+    background-color: #E30613 !important;
 }
-
 
 .leaflet-control-attribution {
     display: none !important;
