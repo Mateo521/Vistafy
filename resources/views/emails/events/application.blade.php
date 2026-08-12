@@ -10,8 +10,8 @@
 <body>
     <div class="container">
         <h2>Hola, {{ $event->photographer->name }}.</h2>
-        <p>El fotógrafo <strong>{{ $applicant->business_name }}</strong> solicitó unirse a la cobertura de tu evento <strong>"{{ $event->name }}"</strong>.</p>
-        
+        <p>El fotógrafo <strong>{{ $applicant->business_name }}</strong> solicitó unirse a la cobertura de tu evento <strong>"{{ $event->title }}"</strong>.</p>
+
         <p>Ingresá a tu panel de control en F33 para revisar su perfil, aceptar su solicitud o rechazarla:</p>
         
         <a href="{{ route('photographer.dashboard') }}" class="btn">Ir a mi panel de control</a>
