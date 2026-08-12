@@ -161,7 +161,7 @@ const submit = () => {
                                         <div class="relative">
                                             <select id="region" v-model="form.region" required
                                                 class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none appearance-none cursor-pointer">
-                                                <option value="" disabled selected>Selecciona tu región...</option>
+                                                <option value="" disabled selected>Seleccioná tu región...</option>
                                                 <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
                                             </select>
                                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
@@ -185,7 +185,7 @@ const submit = () => {
                                     <label for="bio" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Biografía / Equipamiento
                                     </label>
-                                    <textarea id="bio" v-model="form.bio" rows="3" placeholder="Cuéntanos sobre tu experiencia, equipo actual y estilo fotográfico..."
+                                    <textarea id="bio" v-model="form.bio" rows="3" placeholder="Contanos sobre tu experiencia, equipo actual y estilo fotográfico..."
                                         class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none resize-none placeholder-gray-400"></textarea>
                                     <div class="flex justify-end mt-1">
                                         <span class="text-xs text-gray-400 font-medium">{{ form.bio?.length || 0 }} / 1000</span>
@@ -230,7 +230,7 @@ const submit = () => {
                                     <label for="website" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
                                         Portafolio web (Opcional)
                                     </label>
-                                    <input id="website" type="url" v-model="form.website" placeholder="https://tu-sitio.com"
+                                    <input id="website" type="url" v-model="form.website" placeholder="https://tu-web.com"
                                         class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400" />
                                     <p v-if="form.errors.website" class="text-[#E30613] text-xs font-bold mt-2 ml-1">{{ form.errors.website }}</p>
                                 </div>
