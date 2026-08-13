@@ -307,8 +307,8 @@ const navigationItems = [
             <div class="max-w-7xl mx-auto px-8 md:px-16 py-20">
                 <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-10 md:space-y-0">
                     <Link href="/" class="group relative flex items-center">
-                        <img src="/images/logo-dark.png" alt="f33 Photography"
-                            class="h-10 w-auto transition-opacity duration-300 group-hover:opacity-80" />
+                        <img src="/images/logo.png" alt="f33 Photography"
+                            class="h-24 w-auto transition-opacity duration-300 group-hover:opacity-80" />
                     </Link>
 
                     <div class="flex flex-wrap justify-center gap-8 text-[11px] font-bold uppercase text-gray-500">
@@ -321,8 +321,8 @@ const navigationItems = [
                 <div class="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center text-[11px] tracking-wider text-gray-400">
                     <p>© {{ new Date().getFullYear() }} f33. Todos los derechos reservados.</p>
                     <div class="flex space-x-8 mt-6 md:mt-0 uppercase tracking-widest text-[10px]">
-                        <a href="#" class="hover:text-black transition-colors">Privacidad</a>
-                        <a href="#" class="hover:text-black transition-colors">Términos</a>
+                        <Link :href="route('privacy')" class="hover:text-black transition-colors">Privacidad</Link>
+                        <Link :href="route('terms')" class="hover:text-black transition-colors">Términos de servicio</Link>
                     </div>
                 </div>
             </div>

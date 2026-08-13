@@ -59,6 +59,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 });
 
+Route::get('/terminos-y-condiciones', function () {
+    return Inertia::render('Terms'); 
+})->name('terms');
+
 Route::get(
     'foto/{photographer}/{year}/{month}/{day}/{type}/{filename}',
     [PhotoViewController::class, 'show']

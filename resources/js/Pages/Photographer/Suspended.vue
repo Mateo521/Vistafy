@@ -53,10 +53,10 @@ import {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="border border-zinc-800 bg-zinc-950 p-8">
                             <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-2">
-                                Causas Frecuentes de Suspensión
+                                Causas Frecuentes de suspensión
                             </h3>
                             <ul class="space-y-3 font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
-                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Violación a los términos de servicio.</li>
+                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Violación a los <Link :href="route('terms')" class="text-zinc-400 hover:text-white transition-colors">términos de servicio</Link>.</li>
                                 <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Reportes negativos o disputas de clientes.</li>
                                 <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Material que incumple los estándares de calidad.</li>
                                 <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Abandono o falta de respuesta comercial.</li>

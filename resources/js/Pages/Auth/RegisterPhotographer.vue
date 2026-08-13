@@ -269,7 +269,7 @@ const submit = () => {
                                 <ArrowRightIcon v-if="!form.processing" class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </button>
                             <p class="text-xs text-gray-400 text-center mt-4 font-medium px-4">
-                                Al enviar esta solicitud, aceptas los <a href="#" class="text-gray-600 font-bold hover:text-black hover:underline transition-colors">Términos de Servicio</a> y normas de publicación de F33.
+                                Al enviar esta solicitud, aceptas los <Link :href="route('terms')" class="text-gray-600 font-bold hover:text-black hover:underline transition-colors">Términos de Servicio</Link> y normas de publicación de F33.
                             </p>
                         </div>
 

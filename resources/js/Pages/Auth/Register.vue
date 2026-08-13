@@ -121,9 +121,9 @@ const submit = () => {
         
             <p class="text-[10px] text-gray-400 font-medium text-center leading-relaxed px-4 pt-2">
                 Al registrarte, aceptas nuestros
-                <a href="#" class="font-bold text-gray-500 hover:text-black transition-colors">Términos de Servicio</a>
+                <Link :href="route('terms')" class="font-bold text-gray-500 hover:text-black transition-colors">Términos de Servicio</Link>
                 y confirmas haber leído nuestra
-                <a href="#" class="font-bold text-gray-500 hover:text-black transition-colors">Política de Privacidad</a>.
+                <Link :href="route('privacy')" class="font-bold text-gray-500 hover:text-black transition-colors">Política de Privacidad</Link>.
             </p>
 
             
