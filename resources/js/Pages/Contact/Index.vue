@@ -28,7 +28,7 @@ const submit = () => {
     <Head title="Contacto" />
 
     <AppLayout>
-        <!-- Header -->
+        
         <div class="bg-white border-b border-gray-100 pt-24 pb-12 md:pt-32 md:pb-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-3xl">
@@ -39,7 +39,7 @@ const submit = () => {
                         Contacto
                     </h1>
                     <p class="text-lg text-slate-600 mt-4 font-light">
-                        ¿Tenés alguna pregunta? Completa el formulario y te vamos a responder a la brevedad.
+                        ¿Tenés alguna pregunta? Completá el formulario y te vamos a responder a la brevedad.
                     </p>
                 </div>
             </div>
@@ -48,7 +48,7 @@ const submit = () => {
         <div class="min-h-screen bg-gray-50 py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                <!-- Alerta de éxito -->
+                
                 <div v-if="$page.props.flash.success" 
                     class="mb-8 bg-emerald-50 border-2 border-emerald-200 rounded-sm p-6 flex items-start gap-4 animate-fade-in-down">
                     <CheckCircleIcon class="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -60,7 +60,7 @@ const submit = () => {
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     
-                    <!-- Información de contacto -->
+                    
                     <div class="lg:col-span-1 space-y-8">
                         <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
                             <h2 class="text-sm font-bold uppercase tracking-widest text-slate-900 mb-6">
@@ -74,9 +74,9 @@ const submit = () => {
                                     </div>
                                     <div>
                                         <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Email</p>
-                                        <a href="mailto:info@tudominio.com" 
+                                        <a href="mailto:contacto@f33.click" 
                                             class="text-slate-900 hover:text-blue-600 transition">
-                                            info@tudominio.com
+                                            contacto@f33.click
                                         </a>
                                     </div>
                                 </div>
@@ -87,9 +87,9 @@ const submit = () => {
                                     </div>
                                     <div>
                                         <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Teléfono</p>
-                                        <a href="tel:+1234567890" 
+                                        <a href="tel:+5492664567890" 
                                             class="text-slate-900 hover:text-blue-600 transition">
-                                            +1 (234) 567-890
+                                            +54 9 (2664) 567-890
                                         </a>
                                     </div>
                                 </div>
@@ -101,8 +101,8 @@ const submit = () => {
                                     <div>
                                         <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Ubicación</p>
                                         <p class="text-slate-900">
-                                            Ciudad de México<br>
-                                            México
+                                            San Luis<br>
+                                            Argentina
                                         </p>
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@ const submit = () => {
                         </div>
 
                         <div class="bg-slate-900 text-white p-8 rounded-sm">
-                            <h3 class="text-sm font-bold uppercase tracking-widest mb-4">Horario de Atención</h3>
+                            <h3 class="text-sm font-bold uppercase tracking-widest mb-4">Horario de atención</h3>
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between border-b border-white/10 pb-2">
                                     <span class="text-white/60">Lunes - Viernes</span>
@@ -124,19 +124,19 @@ const submit = () => {
                         </div>
                     </div>
 
-                    <!-- Formulario -->
+                
                     <div class="lg:col-span-2">
                         <div class="bg-white border border-gray-200 p-8 md:p-12 rounded-sm shadow-sm">
                             <h2 class="text-2xl font-sans font-bold text-slate-900 mb-8">
-                                Envíanos un mensaje
+                                Envianos un mensaje
                             </h2>
 
                             <form @submit.prevent="submit" class="space-y-6">
                                 
-                                <!-- Nombre -->
+                            
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
-                                        Nombre Completo *
+                                        Nombre completo *
                                     </label>
                                     <input 
                                         v-model="form.name"
@@ -154,7 +154,7 @@ const submit = () => {
                                     <!-- Email -->
                                     <div>
                                         <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
-                                            Correo Electrónico *
+                                            Correo *
                                         </label>
                                         <input 
                                             v-model="form.email"
@@ -168,7 +168,7 @@ const submit = () => {
                                         </p>
                                     </div>
 
-                                    <!-- Teléfono -->
+                                   
                                     <div>
                                         <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                             Teléfono (Opcional)
@@ -182,7 +182,7 @@ const submit = () => {
                                     </div>
                                 </div>
 
-                                <!-- Asunto -->
+                             
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                         Asunto *
@@ -199,7 +199,7 @@ const submit = () => {
                                     </p>
                                 </div>
 
-                                <!-- Mensaje -->
+                              
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                         Mensaje *

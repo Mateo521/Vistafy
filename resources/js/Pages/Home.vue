@@ -19,7 +19,7 @@ const props = defineProps({
 <template>
 
     <Head>
-        <title>f33.click | Fotografía Deportiva</title>
+        <title>f33.click | Fotografía deportiva</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
