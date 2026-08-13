@@ -62,6 +62,9 @@ Route::middleware('guest')->group(function () {
 Route::get('/terminos-y-condiciones', function () {
     return Inertia::render('Terms'); 
 })->name('terms');
+Route::get('/politica-de-privacidad', function () {
+    return Inertia::render('Privacy');  
+})->name('privacy');
 
 Route::get(
     'foto/{photographer}/{year}/{month}/{day}/{type}/{filename}',
