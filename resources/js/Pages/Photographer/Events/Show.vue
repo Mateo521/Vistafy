@@ -38,6 +38,7 @@ import {
     PhotoIcon,
     ArrowDownTrayIcon,
     TrashIcon,
+    MagnifyingGlassIcon,
     CloudArrowUpIcon,
     HashtagIcon,
     CheckIcon,
@@ -504,11 +505,11 @@ const paginationPages = computed(() => {
                     <div class="flex flex-wrap gap-3">
                         <Link :href="route('photographer.events.edit', event.id)"
                             class="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors rounded-full flex items-center gap-2">
-                            <Cog6ToothIcon class="w-4 h-4" /> Editar Evento
+                            <Cog6ToothIcon class="w-4 h-4" /> Editar evento
                         </Link>
                         <button @click="showUploadModal = true"
                             class="px-6 py-3 bg-[#E30613] text-white text-xs font-bold uppercase tracking-wider hover:bg-red-700 transition-colors rounded-full flex items-center gap-2 shadow-lg shadow-red-500/30">
-                            <PlusCircleIcon class="w-5 h-5" /> Asignar Fotos
+                            <PlusCircleIcon class="w-5 h-5" /> Asignar fotos
                         </button>
                     </div>
                 </div>
@@ -562,7 +563,7 @@ const paginationPages = computed(() => {
                                         <MagnifyingGlassIcon class="w-5 h-5 text-[#E30613]" />
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-sm text-black">Escáner Facial</h4>
+                                        <h4 class="font-bold text-sm text-black">Escáner facial</h4>
                                         <p class="text-xs text-gray-500">Probar búsqueda</p>
                                     </div>
                                 </div>
