@@ -108,7 +108,7 @@ const handleImageError = (e) => {
                         </div>
 
                         <h1
-                            class="font-flux text-5xl md:text-7xl lg:text-8xl text-white leading-none tracking-wide mb-6">
+                            class="font-flux text-xl md:text-2xl lg:text-5xl text-white leading-none tracking-wide mb-6">
                             {{ event.title }}
                         </h1>
 

@@ -38,7 +38,7 @@ public function inviteColleague(Request $request, Event $event)
     $invitedPhotographer = $invitedUser->photographer;
 
     if ($invitedPhotographer->id === $event->photographer_id) {
-        return redirect()->back()->withErrors(['email' => 'Ya eres el creador de este evento.']);
+        return redirect()->back()->withErrors(['email' => 'Ya sos el creador de este evento.']);
     }
 
     if ($event->collaborators()->where('photographer_id', $invitedPhotographer->id)->exists()) {
@@ -163,7 +163,7 @@ public function inviteColleague(Request $request, Event $event)
             ->with('success', 'Evento creado exitosamente');
     }
 
-    public function show($id)
+   public function show($id)
     {
         $photographer = auth()->user()->photographer;
 
@@ -171,8 +171,12 @@ public function inviteColleague(Request $request, Event $event)
             ->findOrFail($id);
 
         $isOwner = $event->photographer_id === $photographer->id;
-        $isCollaborator = $event->collaborators->contains($photographer->id);
+        
+    
+        $collaboratorRecord = $event->collaborators->firstWhere('id', $photographer->id);
+        $isCollaborator = $collaboratorRecord && $collaboratorRecord->pivot->status === 'approved';
 
+    
         if (! $isOwner && ! $isCollaborator) {
             abort(403, 'No tenés permiso para gestionar este evento.');
         }
@@ -189,6 +193,7 @@ public function inviteColleague(Request $request, Event $event)
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
+    
         $unassignedPhotos = Photo::where('photographer_id', $photographer->id)
             ->whereNull('event_id')
             ->latest()
@@ -201,8 +206,6 @@ public function inviteColleague(Request $request, Event $event)
                     'original_name' => $photo->original_name,
                 ];
             });
-
-$event->load('collaborators');
 
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
@@ -236,6 +239,13 @@ $event->load('collaborators');
                     ];
                 }),
             ],
+        
+            'permissions' => [
+                'is_creator' => $isOwner,
+                'can_edit_event' => $isOwner,
+                'can_delete_event' => $isOwner,
+            ],
+            'current_photographer_id' => $photographer->id,  
             'photos' => $photos,
             'stats' => $stats,
             'unassignedPhotos' => $unassignedPhotos,  

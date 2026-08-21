@@ -434,7 +434,7 @@ const totalResults = () => {
                                                 class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
                                                 <SparklesIcon class="w-4 h-4 text-[#E30613]" />
                                             </div>
-                                            <h3 class="font-bold text-lg text-black">Búsqueda Facial</h3>
+                                            <h3 class="font-bold text-lg text-black">Búsqueda facial</h3>
                                         </div>
 
                                         <div v-if="isLoadingModels"
@@ -488,7 +488,7 @@ const totalResults = () => {
                                                 class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
                                                 <HashtagIcon class="w-4 h-4 text-black" />
                                             </div>
-                                            <h3 class="font-bold text-lg text-black">Búsqueda por Dorsal</h3>
+                                            <h3 class="font-bold text-lg text-black">Búsqueda por dorsal</h3>
                                         </div>
 
                                         <div class="space-y-4">

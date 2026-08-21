@@ -87,11 +87,11 @@ const handleImageError = (e) => {
                     <div class="flex flex-wrap gap-3">
                         <Link :href="route('photographer.photos.create')"
                             class="px-6 py-3 bg-white border border-gray-200 text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-50 hover:shadow-sm transition-all rounded-full flex items-center gap-2">
-                            <PhotoIcon class="w-4 h-4" /> Cargar Fotos
+                            <PhotoIcon class="w-4 h-4" /> Cargar fotos
                         </Link>
                         <Link :href="route('photographer.events.create')"
                             class="px-6 py-3 bg-[#E30613] text-white text-xs font-bold uppercase tracking-wider hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 transition-all rounded-full flex items-center gap-2">
-                            <CalendarIcon class="w-4 h-4" /> Nuevo Evento
+                            <CalendarIcon class="w-4 h-4" /> Nuevo evento
                         </Link>
                     </div>
                 </div>
@@ -356,7 +356,7 @@ const handleImageError = (e) => {
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <Link v-for="event in collaboratingEvents" :key="event.id"
-                                :href="route('photographer.photos.create')" 
+                                :href="route('photographer.events.show', event.id)"
                                 class="group bg-white border border-gray-100 p-5 rounded hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                                 
                                 <div>

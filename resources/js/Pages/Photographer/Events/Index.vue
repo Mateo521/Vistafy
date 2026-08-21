@@ -220,10 +220,12 @@ const handleImageError = (e) => {
                                         class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-600 hover:bg-black hover:text-white transition-colors">
                                         <PencilSquareIcon class="w-5 h-5" />
                                     </Link>
-                                    <button @click="deleteEvent(event.id)" title="Eliminar evento"
+
+                                    <button  @click="deleteEvent(event.id)" title="Eliminar evento"
                                         class="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 text-[#E30613] hover:bg-[#E30613] hover:text-white hover:shadow-lg hover:shadow-red-500/30 transition-all">
                                         <TrashIcon class="w-5 h-5" />
                                     </button>
+
                                 </div>
                             </div>
                         </div>
