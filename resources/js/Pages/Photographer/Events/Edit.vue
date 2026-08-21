@@ -98,202 +98,215 @@ const deleteEvent = () => {
 </script>
 
 <template>
-    <Head :title="`[EDITAR] ${event.name}`" />
+    <Head :title="`Editar: ${event.name}`" />
 
     <AuthenticatedLayout>
-        <div class="min-h-screen bg-[#050505] text-white selection:bg-[#E30613] selection:text-black py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-800 pb-6">
+
+                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
                     <div>
                         <Link :href="route('photographer.events.index')" 
-                            class="inline-flex items-center font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors mb-6 border border-zinc-800 bg-[#09090b] px-4 py-2 hover:border-white w-max">
-                            <ArrowLeftIcon class="w-3 h-3 mr-2" />
-                            CANCELAR / VOLVER
+                            class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
+                            <ArrowLeftIcon class="w-4 h-4" /> Volver a eventos
                         </Link>
                         
-                        <span class="font-mono text-[10px] font-bold text-[#E30613] uppercase tracking-widest mb-2 block flex items-center gap-2">
-                            <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
-                            >_ MODO_EDICIÓN
-                        </span>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span>
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Modo edición</span>
+                        </div>
                         
-                        <h1 class="text-4xl md:text-5xl font-flux font-black text-white uppercase tracking-tighter leading-none mb-2">
-                            MODIFICAR EVENTO
+                        <h1 class="text-5xl md:text-7xl font-flux text-black tracking-wide leading-none mb-3">
+                            Modificar <span class="text-[#E30613]">evento</span>
                         </h1>
-                        <p class="font-mono text-xs text-zinc-500 uppercase tracking-widest  pl-3">
-                            Alterar parámetros, visibilidad o purgar galería
+                        <p class="text-sm font-medium text-gray-500">
+                            Modificá los detalles, la portada o la visibilidad de tu galería.
                         </p>
                     </div>
                     
                     <Link :href="route('photographer.events.show', event.id)" 
-                        class="bg-transparent border border-zinc-700 text-zinc-400 hover:border-white hover:text-white px-6 py-3 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors text-center">
-                        INSPECCIONAR GALERÍA
+                        class="bg-white border border-gray-200 text-black hover:bg-gray-50 px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-2 w-max">
+                        <EyeIcon class="w-4 h-4" /> Inspeccionar galería
                     </Link>
                 </div>
 
                 <form @submit.prevent="submit" class="space-y-8">
 
-                    <div class="bg-[#09090b] border border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.05)]">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-4">
-                            >_ PARÁMETROS_PRINCIPALES
+
+                    <div class="bg-white border border-gray-100 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 flex items-center gap-2">
+                            <span class="w-4 h-px bg-gray-200"></span> Parámetros principales
                         </h2>
 
                         <div class="space-y-6">
                             <div>
-                                <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                    IDENTIFICADOR (NOMBRE)
+                                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    Nombre del evento
                                 </label>
                                 <input v-model="form.name" type="text" required
-                                    class="w-full bg-black border border-zinc-700 text-white font-mono text-xs uppercase focus:border-[#E30613] focus:ring-0 rounded-none transition-colors"
-                                    placeholder="NOMBRE DEL EVENTO" />
-                                <div v-if="form.errors.name" class="font-mono text-[10px] text-[#E30613] mt-2 tracking-widest uppercase">ERR: {{ form.errors.name }}</div>
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-lg py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400"
+                                    placeholder="Ej: Boda Smith & Jones" />
+                                <div v-if="form.errors.name" class="text-[#E30613] text-xs font-bold mt-2 ml-1">{{ form.errors.name }}</div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                        FECHA_REGISTRO
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                        Fecha del evento
                                     </label>
                                     <input v-model="form.event_date" type="date" required
-                                        class="w-full bg-black border border-zinc-700 text-white font-mono text-xs uppercase focus:border-[#E30613] focus:ring-0 rounded-none transition-colors" />
-                                    <div v-if="form.errors.event_date" class="font-mono text-[10px] text-[#E30613] mt-2 tracking-widest uppercase">ERR: {{ form.errors.event_date }}</div>
+                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded transition-all outline-none" />
+                                    <div v-if="form.errors.event_date" class="text-[#E30613] text-xs font-bold mt-2 ml-1">{{ form.errors.event_date }}</div>
                                 </div>
                                 <div>
-                                    <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                        UBICACIÓN
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                        Ubicación
                                     </label>
                                     <input v-model="form.location" type="text"
-                                        class="w-full bg-black border border-zinc-700 text-white font-mono text-xs uppercase focus:border-[#E30613] focus:ring-0 rounded-none transition-colors"
-                                        placeholder="COORDENADAS O LUGAR" />
+                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400"
+                                        placeholder="Ciudad o establecimiento" />
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                    DESCRIPCIÓN_CORTA
+                                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    Resumen corto
                                 </label>
                                 <textarea v-model="form.description" rows="2" maxlength="500"
-                                    class="w-full bg-black border border-zinc-700 text-white font-mono text-xs focus:border-[#E30613] focus:ring-0 rounded-none transition-colors resize-none uppercase"></textarea>
-                                <p class="text-[10px] font-mono text-zinc-600 mt-1 uppercase tracking-widest text-right">{{ form.description?.length || 0 }}/500 BYTES</p>
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none resize-none placeholder-gray-400"></textarea>
+                                <p class="text-xs text-gray-400 text-right mt-2 font-medium">{{ form.description?.length || 0 }}/500 caracteres</p>
                             </div>
 
                             <div>
-                                <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-2">
-                                    DATOS_ADICIONALES (DESCRIPCIÓN LARGA)
+                                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">
+                                    Detalles completos
                                 </label>
                                 <textarea v-model="form.long_description" rows="5" maxlength="2000"
-                                    class="w-full bg-black border border-zinc-700 text-white font-mono text-xs focus:border-[#E30613] focus:ring-0 rounded-none transition-colors uppercase"></textarea>
-                                <p class="text-[10px] font-mono text-zinc-600 mt-1 uppercase tracking-widest text-right">{{ form.long_description?.length || 0 }}/2000 BYTES</p>
+                                    class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-medium text-sm py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400"></textarea>
+                                <p class="text-xs text-gray-400 text-right mt-2 font-medium">{{ form.long_description?.length || 0 }}/2000 caracteres</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-[#09090b] border border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.05)]">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-4">
-                            >_ ASSET_PORTADA
+
+                    <div class="bg-white border border-gray-100 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 flex items-center gap-2">
+                            <span class="w-4 h-px bg-gray-200"></span> Imagen de portada
                         </h2>
 
-                        <div class="flex flex-col md:flex-row gap-8">
-                            <div class="w-full md:w-1/2">
-                                <div class="aspect-video bg-black border border-zinc-700 rounded-none overflow-hidden relative group">
-                                    <img v-if="previewImage" :src="previewImage" class="w-full h-full object-cover filter grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
-                                    <div v-else class="w-full h-full flex items-center justify-center text-zinc-800">
-                                        <PhotoIcon class="w-12 h-12" />
-                                    </div>
-                                    <div class="absolute inset-0 bg-[#E30613]/0 group-hover:bg-[#E30613]/20 flex items-center justify-center transition-colors mix-blend-multiply pointer-events-none"></div>
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            
+
+                            <div class="w-full md:w-5/12 aspect-video bg-gray-50 rounded border border-gray-200 flex items-center justify-center overflow-hidden relative shadow-inner">
+                                <img v-if="previewImage" :src="previewImage" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+                                <div v-else class="text-gray-300 flex flex-col items-center">
+                                    <PhotoIcon class="w-12 h-12 mb-2" />
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Sin portada</span>
                                 </div>
                             </div>
                             
-                            <div class="flex-1 flex flex-col justify-center">
-                                <label class="block font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4">
-                                    MODIFICAR ASSET
+
+                            <div class="flex-1 w-full">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 ml-1">
+                                    Modificar imagen
                                 </label>
-                                <input type="file" accept="image/jpeg,image/png,image/jpg" @change="handleImageChange"
-                                    class="block w-full text-xs font-mono text-zinc-500
-                                    file:mr-4 file:py-3 file:px-6
-                                    file:rounded-none file:border-0
-                                    file:text-[10px] file:font-bold file:uppercase file:tracking-widest
-                                    file:bg-black file:text-white file:border file:border-zinc-700
-                                    hover:file:border-white hover:file:bg-white hover:file:text-black transition-colors cursor-pointer" 
-                                />
-                                <p class="text-[10px] font-mono text-zinc-600 mt-4 uppercase tracking-widest">
-                                    FORMATOS ADMITIDOS: JPG, PNG. AUTO-COMPRESIÓN HABILITADA.
-                                </p>
-                                <div v-if="form.errors.cover_image" class="font-mono text-[10px] text-[#E30613] mt-2 tracking-widest uppercase">ERR: {{ form.errors.cover_image }}</div>
+                                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 bg-white rounded cursor-pointer hover:bg-gray-50 hover:border-black transition-all group">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <CloudArrowUpIcon class="w-8 h-8 text-gray-400 group-hover:text-black mb-2 transition-colors" />
+                                        <p class="mb-1 text-sm font-bold text-gray-600 group-hover:text-black transition-colors">Seleccioná una nueva imagen</p>
+                                        <p class="text-xs text-gray-400 font-medium">JPG, PNG. Auto-compresión habilitada.</p>
+                                    </div>
+                                    <input type="file" accept="image/jpeg,image/png,image/jpg" @change="handleImageChange" class="hidden" />
+                                </label>
+                                <div v-if="form.errors.cover_image" class="text-[#E30613] text-xs font-bold mt-2 ml-1">{{ form.errors.cover_image }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-[#09090b] border border-zinc-800 p-8 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.05)]">
-                        <h2 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-4">
-                            >_ POLÍTICAS_DE_ACCESO
+
+                    <div class="bg-white border border-gray-100 rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 transition-all duration-300 hover:shadow-md">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 flex items-center gap-2">
+                            <span class="w-4 h-px bg-gray-200"></span> Visibilidad y acceso
                         </h2>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <label class="cursor-pointer group">
+
+                            <label class="cursor-pointer group relative flex-1">
                                 <input type="radio" class="peer sr-only" :checked="form.is_active && !form.is_private" @change="form.is_active = true; form.is_private = false">
-                                <div class="p-6 border border-zinc-800 bg-black hover:border-zinc-500 peer-checked:border-emerald-500 peer-checked:bg-emerald-500/10 transition-all h-full rounded-none">
-                                    <div class="flex items-center gap-3 mb-3 text-emerald-500">
-                                        <GlobeAltIcon class="w-5 h-5" />
-                                        <span class="font-flux text-xl uppercase tracking-wider">Público</span>
+                                <div class="p-6 bg-white border-2 border-gray-100 rounded hover:border-gray-200 peer-checked:border-black peer-checked:shadow-md transition-all h-full">
+                                    <div class="flex items-center gap-3 mb-4 text-gray-400 peer-checked:text-black">
+                                        <GlobeAltIcon class="w-6 h-6" />
+                                        <span class="font-bold text-sm uppercase tracking-wider">Público</span>
                                     </div>
-                                    <p class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest leading-relaxed">Visible para todos los usuarios en el directorio general.</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed font-medium">Visible para todos los usuarios.</p>
                                 </div>
                             </label>
 
-                            <label class="cursor-pointer group">
+
+                            <label class="cursor-pointer group relative flex-1">
                                 <input type="radio" class="peer sr-only" :checked="form.is_active && form.is_private" @change="form.is_active = true; form.is_private = true">
-                                <div class="p-6 border border-zinc-800 bg-black hover:border-zinc-500 peer-checked:border-[#E30613] peer-checked:bg-[#E30613]/10 transition-all h-full rounded-none">
-                                    <div class="flex items-center gap-3 mb-3 text-[#E30613]">
-                                        <LockClosedIcon class="w-5 h-5" />
-                                        <span class="font-flux text-xl uppercase tracking-wider">Privado</span>
+                                <div class="p-6 bg-white border-2 border-gray-100 rounded hover:border-gray-200 peer-checked:border-[#E30613] peer-checked:bg-red-50/30 peer-checked:shadow-md transition-all h-full">
+                                    <div class="flex items-center gap-3 mb-4 text-gray-400 peer-checked:text-[#E30613]">
+                                        <LockClosedIcon class="w-6 h-6" />
+                                        <span class="font-bold text-sm uppercase tracking-wider">Privado</span>
                                     </div>
-                                    <p class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest leading-relaxed">Acceso restringido. Requiere enlace directo o token.</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed font-medium">Acceso restringido. Requiere enlace directo para verlo.</p>
                                 </div>
                             </label>
 
-                            <label class="cursor-pointer group">
+
+                            <label class="cursor-pointer group relative flex-1">
                                 <input type="radio" class="peer sr-only" :checked="!form.is_active" @change="form.is_active = false; form.is_private = false">
-                                <div class="p-6 border border-zinc-800 bg-black hover:border-zinc-500 peer-checked:border-white peer-checked:bg-white/5 transition-all h-full rounded-none">
-                                    <div class="flex items-center gap-3 mb-3 text-white">
-                                        <EyeSlashIcon class="w-5 h-5" />
-                                        <span class="font-flux text-xl uppercase tracking-wider">Borrador</span>
+                                <div class="p-6 bg-white border-2 border-gray-100 rounded hover:border-gray-200 peer-checked:border-gray-400 peer-checked:bg-gray-50 peer-checked:shadow-md transition-all h-full">
+                                    <div class="flex items-center gap-3 mb-4 text-gray-300 peer-checked:text-gray-600">
+                                        <EyeSlashIcon class="w-6 h-6" />
+                                        <span class="font-bold text-sm uppercase tracking-wider">Borrador</span>
                                     </div>
-                                    <p class="font-mono text-[10px] text-zinc-500 uppercase tracking-widest leading-relaxed">Instancia oculta. Visibilidad exclusiva para el administrador.</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed font-medium">Evento oculto. Visibilidad exclusiva para vos como administrador.</p>
                                 </div>
                             </label>
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4">
+
+                    <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
                         <Link :href="route('photographer.events.index')" 
-                            class="w-full sm:w-auto px-8 py-4 border border-zinc-700 bg-transparent text-zinc-400 font-mono text-[10px] font-bold uppercase tracking-widest hover:border-white hover:text-white transition-colors text-center rounded-none">
-                            CANCELAR
+                            class="px-8 py-3.5 rounded-full border border-gray-200 bg-white text-gray-600 font-bold text-xs uppercase tracking-wider hover:bg-gray-50 hover:text-black transition-colors text-center shadow-sm">
+                            Cancelar
                         </Link>
                         <button type="submit" :disabled="form.processing" 
-                            class="w-full sm:w-auto px-10 py-4 bg-[#E30613] border border-[#E30613] text-black font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:border-white transition-colors rounded-none disabled:opacity-50">
-                            {{ form.processing ? 'PROCESANDO...' : 'SOBRESCRIBIR EVENTO' }}
+                            class="px-10 py-3.5 rounded-full bg-black text-white font-bold text-xs uppercase tracking-wider hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none text-center flex items-center justify-center gap-2">
+                            <span v-if="form.processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            {{ form.processing ? 'Guardando...' : 'Guardar cambios' }}
                         </button>
                     </div>
 
                 </form>
 
-                <div class="mt-16 pt-10 border-t border-zinc-800">
-                    <div class="bg-[#E30613]/5 border border-[#E30613] p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                        <TrashIcon class="absolute -left-10 -bottom-10 w-48 h-48 text-[#E30613] opacity-10 pointer-events-none" />
+
+                <div class="mt-16 pt-8 border-t border-gray-200">
+                    <div class="bg-red-50 border border-red-100 rounded p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                         
-                        <div class="relative z-10">
-                            <h3 class="font-flux text-3xl text-[#E30613] uppercase tracking-wider mb-2 flex items-center gap-3">
-                                <TrashIcon class="w-6 h-6" />  PURGA
-                            </h3>
-                            <p class="font-mono text-xs text-zinc-400 uppercase tracking-widest max-w-2xl leading-relaxed">
-                                Esta acción va a eliminar permanentemente el evento y todos los activos digitales asociados. Los datos no podrán ser recuperados.
-                            </p>
+                        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-red-100 rounded-full blur-2xl pointer-events-none"></div>
+                        
+                        <div class="relative z-10 flex items-start gap-4">
+                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#E30613] shadow-sm shrink-0">
+                                <ExclamationTriangleIcon class="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-[#E30613] mb-1">
+                                    Peligro: Eliminar evento
+                                </h3>
+                                <p class="text-sm text-red-800/80 leading-relaxed max-w-2xl font-medium">
+                                    Esta acción eliminará permanentemente el evento y <strong>todas las fotos asociadas</strong>. Los datos no podrán ser recuperados.
+                                </p>
+                            </div>
                         </div>
                         
                         <button @click="deleteEvent" 
-                            class="relative z-10 px-8 py-4 bg-transparent border border-[#E30613] text-[#E30613] font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-[#E30613] hover:text-black transition-colors rounded-none whitespace-nowrap">
-                            ACTIVAR - IRREVERSIBLE
+                            class="relative z-10 px-6 py-3.5 bg-white border border-red-200 text-[#E30613] text-xs font-bold uppercase tracking-wider hover:bg-[#E30613] hover:text-white transition-colors rounded-full shadow-sm w-full md:w-auto flex items-center justify-center gap-2 shrink-0">
+                            <TrashIcon class="w-4 h-4" /> Eliminar definitivamente
                         </button>
                     </div>
                 </div>
