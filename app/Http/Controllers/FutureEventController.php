@@ -101,6 +101,30 @@ class FutureEventController extends Controller
     }
 
 
+
+    public function acceptApplication(\App\Models\FutureEvent $futureEvent, \App\Models\Photographer $photographer)
+    {
+        if ($futureEvent->photographer_id !== auth()->user()->photographer->id) {
+            abort(403, 'No tienes permiso para gestionar este evento.');
+        }
+
+        $futureEvent->collaborators()->updateExistingPivot($photographer->id, ['status' => 'approved']);
+
+        return redirect()->back()->with('success', '¡Postulante aceptado! ' . $photographer->business_name . ' ya es colaborador del evento.');
+    }
+
+    public function rejectApplication(\App\Models\FutureEvent $futureEvent, \App\Models\Photographer $photographer)
+    {
+        if ($futureEvent->photographer_id !== auth()->user()->photographer->id) {
+            abort(403, 'No tienes permiso para gestionar este evento.');
+        }
+
+        $futureEvent->collaborators()->detach($photographer->id);
+
+        return redirect()->back()->with('success', 'Postulación de ' . $photographer->business_name . ' rechazada.');
+    }
+
+
     public function acceptInvitation(\App\Models\Event $event)
     {
         $photographerId = auth()->user()->photographer->id;
@@ -236,7 +260,7 @@ public function show($id)
 
         
         if ($event->collaborators()->where('photographer_id', $applicant->id)->exists()) {
-            return redirect()->back()->with('error', 'Ya tienes una solicitud en curso o eres parte de este evento.');
+            return redirect()->back()->with('error', 'Ya tenés una solicitud en curso o eres parte de este evento.');
         }
 
         

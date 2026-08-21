@@ -11,7 +11,7 @@ import { ArrowLeftIcon, LockClosedIcon, DocumentTextIcon } from '@heroicons/vue/
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
 
-                <!-- Botón Volver -->
+                
                 <div class="mb-8">
                     <Link :href="route('home')"
                         class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all">
@@ -19,7 +19,7 @@ import { ArrowLeftIcon, LockClosedIcon, DocumentTextIcon } from '@heroicons/vue/
                     </Link>
                 </div>
 
-               
+            
                 <div class="mb-10">
                     <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-blue-100">
                         <LockClosedIcon class="w-8 h-8 text-blue-600" />

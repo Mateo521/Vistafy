@@ -23,6 +23,10 @@ defineProps({
     collaboratingEvents: {
         type: Array,
         default: () => []
+    },
+    receivedApplications: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -132,6 +136,46 @@ const handleImageError = (e) => {
                                 as="button"
                                 class="flex-1 md:flex-none px-6 py-2.5 bg-black text-white hover:bg-gray-800 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-md text-center">
                                 Aceptar
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div v-if="receivedApplications && receivedApplications.length > 0" class="mb-8 space-y-3">
+                    <h3 class="text-xl font-flux text-black tracking-wide mb-4">Postulaciones a tus eventos futuros</h3>
+                    
+                    <div v-for="app in receivedApplications" :key="app.event_id + '-' + app.applicant_id"
+                        class="bg-white border border-orange-100 p-5 md:p-6 rounded shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden">
+
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+
+                        <div class="flex items-start gap-4 relative z-10">
+                            <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center shrink-0 text-orange-600">
+                                <PlusCircleIcon class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-sm font-bold text-black">{{ app.event_title }}</span>
+                                    <span class="bg-orange-100 text-orange-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                                        Solicitud recibida
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-500">
+                                    <strong class="text-slate-700">{{ app.applicant_name }}</strong> quiere cubrir este evento.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 shrink-0 relative z-10 w-full md:w-auto">
+                            <Link :href="route('photographer.future-events.applications.reject', { futureEvent: app.event_id, photographer: app.applicant_id })" method="post" as="button"
+                                class="flex-1 md:flex-none px-6 py-2.5 bg-gray-50 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-full text-xs font-bold uppercase tracking-wider transition-colors text-center border border-gray-200">
+                                Rechazar
+                            </Link>
+                            <Link :href="route('photographer.future-events.applications.accept', { futureEvent: app.event_id, photographer: app.applicant_id })" method="post" as="button"
+                                class="flex-1 md:flex-none px-6 py-2.5 bg-[#E30613] text-white hover:bg-red-700 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-md text-center">
+                                Aceptar fotógrafo
                             </Link>
                         </div>
                     </div>

@@ -265,7 +265,6 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             ->with('photographer:id,business_name') 
             ->get();
 
-
         $collaboratingEvents = $photographer->guestEvents()
             ->wherePivot('status', 'approved')
             ->with('photographer:id,business_name') 
@@ -273,6 +272,24 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             ->take(4) 
             ->get();
 
+        $receivedApplications = \App\Models\FutureEvent::where('photographer_id', $photographer->id)
+            ->whereHas('collaborators', function ($query) {
+                $query->where('future_event_photographer.status', 'requested');
+            })
+            ->with(['collaborators' => function ($query) {
+                $query->where('future_event_photographer.status', 'requested');
+            }])
+            ->get()
+            ->flatMap(function ($event) {
+                return $event->collaborators->map(function ($applicant) use ($event) {
+                    return [
+                        'event_id' => $event->id,
+                        'event_title' => $event->title,
+                        'applicant_id' => $applicant->id,
+                        'applicant_name' => $applicant->business_name,
+                    ];
+                });
+            });
 
         $stats = [
             'total_events' => \App\Models\Event::where('photographer_id', $photographer->id)->count(),
@@ -282,16 +299,10 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
         ];
 
         $recentEvents = \App\Models\Event::where('photographer_id', $photographer->id)
-            ->withCount('photos')
-            ->latest()
-            ->take(6)
-            ->get();
+            ->withCount('photos')->latest()->take(6)->get();
 
         $recentPhotos = \App\Models\Photo::where('photographer_id', $photographer->id)
-            ->with('event:id,name')
-            ->latest()
-            ->take(8)
-            ->get();
+            ->with('event:id,name')->latest()->take(8)->get();
 
         return Inertia::render('Photographer/Dashboard', [
             'stats' => $stats,
@@ -300,6 +311,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             'recentPhotos' => $recentPhotos,
             'pendingInvitations' => $pendingInvitations,
             'collaboratingEvents' => $collaboratingEvents,
+            'receivedApplications' => $receivedApplications,  
         ]);
     })->name('dashboard');
 
@@ -330,6 +342,10 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::post('/oportunidades/{event}/aceptar', [FutureEventManagementController::class, 'acceptInvitation'])->name('opportunities.accept');
     Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
     Route::post('/eventos-futuros/{event}/postular', [\App\Http\Controllers\FutureEventController::class, 'apply'])->name('future-events.apply');
+
+    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])->name('future-events.applications.accept');
+    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])->name('future-events.applications.reject');
+
 
 });
 
