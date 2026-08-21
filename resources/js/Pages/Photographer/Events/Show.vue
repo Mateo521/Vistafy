@@ -39,6 +39,8 @@ import {
     ArrowDownTrayIcon,
     TrashIcon,
     MagnifyingGlassIcon,
+    Cog6ToothIcon,
+    PlusCircleIcon,
     CloudArrowUpIcon,
     HashtagIcon,
     CheckIcon,

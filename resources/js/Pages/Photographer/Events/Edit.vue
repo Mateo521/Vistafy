@@ -8,6 +8,7 @@ import {
     LockClosedIcon, 
     EyeSlashIcon, 
     TrashIcon,
+    ExclamationTriangleIcon,
     ArrowLeftIcon
 } from '@heroicons/vue/24/outline';
 
