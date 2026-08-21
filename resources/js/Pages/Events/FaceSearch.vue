@@ -256,9 +256,9 @@ onMounted(async () => {
                                 <MagnifyingGlassIcon v-if="!searching && !modelsLoading" class="w-4 h-4 group-hover:-rotate-12 transition-transform" />
                                 <div v-if="searching || modelsLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
 
-                                <span v-if="processingStage === 'detecting'">Analizando Rostro...</span>
-                                <span v-else-if="processingStage === 'searching'">Buscando en Galería...</span>
-                                <span v-else-if="modelsLoading">Sistema Cargando...</span>
+                                <span v-if="processingStage === 'detecting'">Analizando rostro...</span>
+                                <span v-else-if="processingStage === 'searching'">Buscando en galería...</span>
+                                <span v-else-if="modelsLoading">Sistema cargando...</span>
                                 <span v-else>Iniciar Escáner</span>
                             </button>
 
@@ -268,10 +268,10 @@ onMounted(async () => {
                                     <InformationCircleIcon class="w-4 h-4" /> Consejos
                                 </p>
                                 <ul class="space-y-2 text-xs font-medium text-blue-700/80">
-                                    <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Sube una foto de frente.</li>
+                                    <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Subí una foto de frente.</li>
                                     <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Buena iluminación natural.</li>
                                     <li class="flex items-start gap-2"><span class="text-blue-500">•</span> Evita fotos grupales.</li>
-                                    <li class="flex items-start gap-2"><span class="text-[#E30613] font-bold">×</span> Evita gafas de sol grandes.</li>
+                                    <li class="flex items-start gap-2"><span class="text-[#E30613] font-bold">×</span> Evita lentes de sol.</li>
                                 </ul>
                             </div>
                         </div>
@@ -284,7 +284,7 @@ onMounted(async () => {
                         <div v-if="results.length > 0" class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-gray-200 pb-4 mb-8 gap-4">
                             <div>
                                 <h2 class="font-flux text-3xl md:text-4xl text-black">
-                                    Coincidencias <span class="text-[#E30613]">Detectadas</span>
+                                    Coincidencias <span class="text-[#E30613]">detectadas</span>
                                 </h2>
                             </div>
                             <div class="bg-gray-100 text-slate-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider shadow-inner w-max">
@@ -322,9 +322,9 @@ onMounted(async () => {
                             <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                                 <FaceSmileIcon class="w-10 h-10 text-gray-300" />
                             </div>
-                            <h3 class="font-flux text-3xl text-black mb-3">Esperando Datos</h3>
+                            <h3 class="font-flux text-3xl text-black mb-3">Esperando datos</h3>
                             <p class="text-sm font-medium text-gray-500 max-w-md text-center leading-relaxed">
-                                Sube una fotografía de referencia en el panel izquierdo para que nuestra inteligencia artificial encuentre todas las fotos en las que apareces.
+                                Subí una foto de referencia en el panel izquierdo para que nuestra IA encuentre todas las fotos en las que aparecés.
                             </p>
                         </div>
 
@@ -333,9 +333,9 @@ onMounted(async () => {
                             <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
                                 <ExclamationTriangleIcon class="w-10 h-10 text-[#E30613]" />
                             </div>
-                            <h3 class="font-flux text-3xl text-black mb-3">Búsqueda Fallida</h3>
+                            <h3 class="font-flux text-3xl text-black mb-3">Búsqueda fallida</h3>
                             <p class="text-sm font-medium text-gray-500 mb-8 max-w-md text-center leading-relaxed">
-                                No logramos encontrar coincidencias exactas en esta galería. Prueba subiendo otra fotografía con mejor iluminación frontal.
+                                No logramos encontrar coincidencias exactas en esta galería. Probá subiendo otra foto con mejor iluminación.
                             </p>
                             <button @click="resetSearch" class="bg-black text-white hover:bg-[#E30613] px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-md">
                                 Reintentar
