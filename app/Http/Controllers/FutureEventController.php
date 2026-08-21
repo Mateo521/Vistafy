@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ApplicationAcceptedMail;
+use App\Mail\ApplicationRejectedMail;
 use App\Models\FutureEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class FutureEventController extends Controller
 {
@@ -19,11 +22,10 @@ class FutureEventController extends Controller
 
             $mode = $request->query('mode', 'default');
 
-            
             $baseQuery = FutureEvent::with('photographer.user')
                 ->upcoming()
                 ->whereHas('photographer', function ($q) {
-                    $q->where('status', 'approved');  
+                    $q->where('status', 'approved');
                 })
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
@@ -52,7 +54,7 @@ class FutureEventController extends Controller
             if ($isPhotographer) {
                 $paginatedEvents = $baseQuery->paginate(perPage: 12);
 
-                $futureEvents = $paginatedEvents->map(fn($event) => $this->mapEventData($event));
+                $futureEvents = $paginatedEvents->map(fn ($event) => $this->mapEventData($event));
 
                 return response()->json([
                     'future_events' => $futureEvents,
@@ -67,7 +69,7 @@ class FutureEventController extends Controller
                 ]);
             }
 
-            $futureEvents = $baseQuery->take(6)->get()->map(fn($event) => $this->mapEventData($event));
+            $futureEvents = $baseQuery->take(6)->get()->map(fn ($event) => $this->mapEventData($event));
 
             return response()->json([
                 'future_events' => $futureEvents,
@@ -100,30 +102,39 @@ class FutureEventController extends Controller
         }
     }
 
-
-
     public function acceptApplication(\App\Models\FutureEvent $futureEvent, \App\Models\Photographer $photographer)
     {
         if ($futureEvent->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para gestionar este evento.');
+            abort(403, 'No tenés permiso para gestionar este evento.');
         }
 
         $futureEvent->collaborators()->updateExistingPivot($photographer->id, ['status' => 'approved']);
 
-        return redirect()->back()->with('success', '¡Postulante aceptado! ' . $photographer->business_name . ' ya es colaborador del evento.');
+        try {
+            Mail::to($photographer->user->email)->send(new ApplicationAcceptedMail($futureEvent, $photographer));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando correo de aceptación: '.$e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Postulante aceptado '.$photographer->business_name.' ya es colaborador del evento.');
     }
 
     public function rejectApplication(\App\Models\FutureEvent $futureEvent, \App\Models\Photographer $photographer)
     {
         if ($futureEvent->photographer_id !== auth()->user()->photographer->id) {
-            abort(403, 'No tienes permiso para gestionar este evento.');
+            abort(403, 'No tenés permiso para gestionar este evento.');
         }
 
         $futureEvent->collaborators()->detach($photographer->id);
 
-        return redirect()->back()->with('success', 'Postulación de ' . $photographer->business_name . ' rechazada.');
-    }
+        try {
+            Mail::to($photographer->user->email)->send(new ApplicationRejectedMail($futureEvent, $photographer));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando correo de rechazo: '.$e->getMessage());
+        }
 
+        return redirect()->back()->with('success', 'Postulación de '.$photographer->business_name.' rechazada.');
+    }
 
     public function acceptInvitation(\App\Models\Event $event)
     {
@@ -131,7 +142,7 @@ class FutureEventController extends Controller
 
         $pivot = $event->collaborators()->where('photographer_id', $photographerId)->first();
 
-        if (!$pivot || !in_array($pivot->pivot->status, ['pending', 'invited'])) {
+        if (! $pivot || ! in_array($pivot->pivot->status, ['pending', 'invited'])) {
             return redirect()->back()->with('error', 'No tenés invitaciones pendientes para este evento.');
         }
 
@@ -144,12 +155,10 @@ class FutureEventController extends Controller
     {
         $photographerId = auth()->user()->photographer->id;
 
-
         $event->collaborators()->detach($photographerId);
 
         return redirect()->back()->with('success', 'Invitación rechazada.');
     }
-
 
     public function page()
     {
@@ -185,13 +194,11 @@ class FutureEventController extends Controller
         ];
     }
 
-   
-    
-public function show($id)
+    public function show($id)
     {
         $event = FutureEvent::with(['photographer.user'])
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->findOrFail($id);
 
@@ -202,17 +209,15 @@ public function show($id)
             }
         }
 
-       
         $userApplicationStatus = 'none';
 
         if (auth()->check() && auth()->user()->photographer) {
-            
+
             $pivot = $event->collaborators()->where('photographer_id', auth()->user()->photographer->id)->first();
             if ($pivot) {
                 $userApplicationStatus = $pivot->pivot->status; // 'requested', 'approved', etc.
             }
         }
-       
 
         return Inertia::render('FutureEvents/Show', [
             'event' => [
@@ -224,8 +229,8 @@ public function show($id)
                 'longitude' => $event->longitude ? (float) $event->longitude : null,
                 'event_date' => $event->event_date->format('Y-m-d H:i:s'),
                 'formatted_date' => $event->formatted_date,
-                
-                'formatted_time' => $event->event_date->format('H:i'), 
+
+                'formatted_time' => $event->event_date->format('H:i'),
                 'days_until' => $event->daysUntil(),
                 'cover_image' => $event->cover_image_url,
                 'status' => $event->status,
@@ -241,47 +246,40 @@ public function show($id)
                     'website' => $event->photographer->website,
                 ],
             ],
-            
+
             'isPhotographer' => auth()->check() && auth()->user()->photographer !== null,
             'isAuthenticated' => auth()->check(),
             'userApplicationStatus' => $userApplicationStatus,
         ]);
     }
 
-   
     public function apply(\App\Models\FutureEvent $event)
     {
         $applicant = auth()->user()->photographer;
 
-        
         if ($event->photographer_id === $applicant->id) {
             return redirect()->back()->with('error', 'Ya eres el organizador de este evento.');
         }
 
-        
         if ($event->collaborators()->where('photographer_id', $applicant->id)->exists()) {
             return redirect()->back()->with('error', 'Ya tenés una solicitud en curso o eres parte de este evento.');
         }
 
-        
         $event->collaborators()->attach($applicant->id, ['status' => 'requested']);
 
-        
         try {
-             
+
             $event->load('photographer.user');
 
             \Illuminate\Support\Facades\Mail::to($event->photographer->user->email)
                 ->send(new \App\Mail\PhotographerApplicationMail($event, $applicant));
-                
+
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error enviando postulación: ' . $e->getMessage());
-            
-         
+            \Illuminate\Support\Facades\Log::error('Error enviando postulación: '.$e->getMessage());
+
             return redirect()->back()->with('success', 'Postulación guardada correctamente, aunque hubo un problema enviando el correo de aviso al organizador.');
         }
 
         return redirect()->back()->with('success', '¡Objetivo fijado! Tu postulación ha sido enviada al organizador.');
     }
-
 }

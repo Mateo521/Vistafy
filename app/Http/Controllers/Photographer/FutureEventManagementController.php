@@ -185,9 +185,9 @@ class FutureEventManagementController extends Controller
 
 
 
-    /**
-     *  Actualizar oportunidad (CON COORDENADAS)
-     */
+
+
+    
     public function update(Request $request, $id)
     {
         $photographer = Auth::user()->photographer;
@@ -240,13 +240,13 @@ class FutureEventManagementController extends Controller
             $coverImagePath = $filename;
         }
 
-        //  CONVERSIÓN EXPLÍCITA A FLOAT
+
         $opportunity->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'location' => $validated['location'],
-            'latitude' => (float) $validated['latitude'],      //  FORZAR FLOAT
-            'longitude' => (float) $validated['longitude'],    //  FORZAR FLOAT
+            'latitude' => (float) $validated['latitude'],      //   
+            'longitude' => (float) $validated['longitude'],    //   
             'event_date' => $eventDateTime,
             'expiry_date' => $expiryDate,
             'cover_image' => $coverImagePath,
@@ -256,9 +256,7 @@ class FutureEventManagementController extends Controller
             ->with('success', 'Oportunidad actualizada exitosamente');
     }
 
-    /**
-     *  Eliminar oportunidad
-     */
+    
     public function destroy($id)
     {
         $photographer = Auth::user()->photographer;
