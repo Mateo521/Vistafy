@@ -49,7 +49,7 @@ const handleImageError = (e) => {
 
                     <div class="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative">
                         
-                        <div class="absolute w-full inset-0 h-48 md:h-full md:w-1/3 right-0 opacity-10 md:opacity-20 pointer-events-none overflow-hidden">
+                        <div class="absolute w-full inset-0 h-48 md:h-full  right-0 opacity-10 md:opacity-20 pointer-events-none overflow-hidden">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url" class="w-full h-full object-cover grayscale mask-image-gradient" />
                         </div>
 
