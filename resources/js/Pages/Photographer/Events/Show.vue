@@ -42,6 +42,7 @@ import {
     Cog6ToothIcon,
     PlusCircleIcon,
     CloudArrowUpIcon,
+    LinkIcon,
     HashtagIcon,
     CheckIcon,
     XMarkIcon,
@@ -62,19 +63,23 @@ const props = defineProps({
 
 const { confirm } = useConfirm();
 const { success, error } = useToast();
+
 const copyEventUrl = async () => {
     try {
-
-        const publicUrl = route('events.show', props.event.slug);
+        let url = route('events.show', props.event.slug);
         
-        await navigator.clipboard.writeText(publicUrl);
+        if (props.event.is_private && props.event.private_token) {
+            url += `?token=${props.event.private_token}`;
+        }
         
-
-        success('Enlace público copiado al portapapeles');
+        await navigator.clipboard.writeText(url);
+        success(props.event.is_private ? 'Enlace privado copiado' : 'Enlace público copiado');
     } catch (err) {
-        console.error('Error al copiar el enlace: ', err);
+        console.error('Error al copiar:', err);
+        error('No se pudo copiar el enlace.');
     }
 };
+
 const modelsLoaded = ref(false);
 const processingFaces = ref(false);
 const faceDetectionResults = ref([]);
@@ -546,13 +551,15 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
 
                             <button @click="copyEventUrl"
-                                class="mt-6 w-full bg-white border-2 border-gray-200 hover:border-black text-gray-600 hover:text-black transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
-                                <LinkIcon class="w-4 h-4" /> Copiar enlace público
+                                class="mt-6 w-full border-2 transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+                                :class="event.is_private ? 'bg-red-50 border-red-200 hover:border-[#E30613] text-[#E30613] hover:text-[#E30613]' : 'bg-white border-gray-200 hover:border-black text-gray-600 hover:text-black'">
+                                <LinkIcon class="w-4 h-4" />
+                                {{ event.is_private ? 'Copiar enlace privado' : 'Copiar enlace público' }}
                             </button>
                         </div>
 

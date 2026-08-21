@@ -354,34 +354,41 @@ public function inviteColleague(Request $request, Event $event)
     }
 
     
-    public function updateCoverImage(Request $request, Event $event)
+public function updateCoverImage(Request $request, Event $event)
     {
+
         if ($event->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tenés permiso para actualizar este evento');
         }
 
+
         $request->validate([
-            'cover_image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'photo_id' => 'required|exists:photos,id',
         ]);
 
-        try {
-            
-            if ($event->cover_image) {
-                Storage::disk('b2')->delete($event->cover_image);
-            }
 
-            
-            $path = $request->file('cover_image')->store('events/covers', 'b2');
+        $photo = \App\Models\Photo::findOrFail($request->photo_id);
+
+
+        if ($photo->photographer_id !== auth()->user()->photographer->id) {
+            abort(403, 'No autorizado para usar esta fotografía');
+        }
+
+        try {
 
             $event->update([
-                'cover_image' => $path,
+                'cover_image' => $photo->thumbnail_path, 
             ]);
 
-            return back()->with('success', 'Imagen de portada actualizada correctamente');
+            return back()->with('success', 'Portada actualizada correctamente');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al subir la imagen: '.$e->getMessage());
+            \Log::error('Error al actualizar portada: ' . $e->getMessage());
+            return back()->with('error', 'Error al establecer la portada.');
         }
     }
+
+
 
     public function bibSearch(Event $event)
     {
