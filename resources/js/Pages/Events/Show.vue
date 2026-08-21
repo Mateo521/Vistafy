@@ -1,15 +1,22 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+
+import { Head, Link, usePage } from '@inertiajs/vue3';
+
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
+
+import { useToast } from '@/Composables/useToast';
+import axios from 'axios';
+
 
 import { 
     ArrowLeftIcon, 
     MapPinIcon, 
     CalendarIcon,
-    CameraIcon
+    CameraIcon,
+    ShoppingCartIcon
 } from '@heroicons/vue/24/outline';
-
 
 const props = defineProps({
     event: Object,
@@ -19,6 +26,39 @@ const props = defineProps({
     },
     filters: Object
 });
+
+const { success, error } = useToast();
+const page = usePage();
+
+const isAuthenticated = computed(() => page.props.auth.user !== null);
+const addingToCartIds = ref([]);
+
+const addToCart = async (photo) => {
+    if (!isAuthenticated.value) {
+        window.location.href = route('login');
+        return;
+    }
+
+    if (addingToCartIds.value.includes(photo.id)) return;
+
+    addingToCartIds.value.push(photo.id);
+
+    try {
+        const response = await axios.post(route('cart.add', photo.id));
+
+        if (response.data.success) {
+            success('Fotografía agregada al carrito');
+            window.dispatchEvent(new Event('cart-updated'));
+        } else {
+            error('La fotografía ya está en el carrito');
+        }
+    } catch (err) {
+        console.error('Error agregando al carrito:', err);
+        error('Error de conexión');
+    } finally {
+        addingToCartIds.value = addingToCartIds.value.filter(id => id !== photo.id);
+    }
+};
 
 const handleImageError = (e) => {
     e.target.style.display = 'none';
@@ -142,30 +182,43 @@ const handleImageError = (e) => {
 
                         
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            <Link v-for="photo in gallery.photos" :key="photo.id"
-                                :href="route('gallery.show', photo.unique_id)" 
-                                class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
-                                
-                                <ProtectedImage :src="photo.thumbnail_url"
-                                    class="w-full h-full object-cover transition-transform duration-700  pointer-events-none"
-                                    @error="handleImageError" />
-                                
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 md:p-4">
-                                    
-                                    
-                                    <div class="flex justify-end">
-                                        <span v-if="photo.location_role" class="bg-white/90 backdrop-blur-sm text-black font-bold text-[9px] px-2 py-1 rounded shadow-sm uppercase tracking-widest truncate max-w-[100px]">
-                                            {{ photo.location_role }}
-                                        </span>
-                                    </div>
+    <Link v-for="photo in gallery.photos" :key="photo.id"
+        :href="route('gallery.show', photo.unique_id)" 
+        class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
+        
+        <ProtectedImage :src="photo.thumbnail_url"
+            class="w-full h-full object-cover transition-transform duration-700 pointer-events-none"
+            @error="handleImageError" />
+        
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 md:p-4 pointer-events-none">
+            
+            <div class="flex justify-between items-start w-full">
+                <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
+                    class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center gap-0 group/cart hover:bg-black hover:text-white transition-all duration-300 pointer-events-auto z-20">
+                    
+                    <svg v-if="addingToCartIds?.includes(photo.id)" class="animate-spin w-4 h-4 text-black group-hover/cart:text-white shrink-0 m-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <ShoppingCartIcon v-else class="w-4 h-4 text-black group-hover/cart:text-white transition-colors shrink-0 m-0.5" />
+                    
+                    <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover/cart:max-w-[100px] text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out group-hover/cart:px-1.5 group-hover/cart:mr-1">
+                        Añadir
+                    </span>
+                </button>
 
-                                    <div class="w-full flex justify-between items-end">
-                                        <span class="text-white font-mono text-[9px] md:text-[10px] tracking-widest">{{ photo.unique_id }}</span>
-                                        <span class="bg-red-600 text-white font-bold text-xs px-2 py-1 rounded-lg">${{ photo.price }}</span>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
+                <span v-if="photo.location_role" class="bg-white/90 backdrop-blur-sm text-black font-bold text-[9px] px-2 py-1 rounded shadow-sm uppercase tracking-widest truncate max-w-[100px]">
+                    {{ photo.location_role }}
+                </span>
+            </div>
+
+            <div class="w-full flex justify-between items-end">
+                <span class="text-white font-mono text-[9px] md:text-[10px] tracking-widest">{{ photo.unique_id }}</span>
+                <span class="bg-red-600 text-white font-bold text-xs px-2 py-1 rounded-lg">${{ photo.price }}</span>
+            </div>
+        </div>
+    </Link>
+</div>
 
                     </div>
                 </div>
