@@ -50,9 +50,7 @@ class Photo extends Model
         return $this->belongsTo(Event::class);
     }
 
-    /**
-     * URL de la foto Original (Privada en B2)
-     */
+    
     public function getOriginalUrlAttribute()
     {
         if (! $this->original_path) {
@@ -69,9 +67,7 @@ class Photo extends Model
         return $disk->url($this->original_path);
     }
 
-    /**
-     * URL del Thumbnail (Pública en B2)
-     */
+    
     public function getThumbnailUrlAttribute()
     {
         if (! $this->thumbnail_path) {
@@ -88,9 +84,7 @@ class Photo extends Model
         return $disk->url($this->thumbnail_path);
     }
 
-    /**
-     * URL con Marca de Agua (Pública en B2)
-     */
+     
     public function getWatermarkedUrlAttribute()
     {
         if (! $this->watermarked_path) {

@@ -26,15 +26,13 @@ class SeedImages extends Command
 
         $force = $this->option('force');
 
-        // Crear directorios temporales
+    
         $tempDir = storage_path('app/temp-seeds');
         if (!is_dir($tempDir)) {
             mkdir($tempDir, 0755, true);
         }
 
-        // ================================================================
-        //  IMÁGENES PARA EVENTOS FUTUROS (cover images - SIN marca de agua)
-        // ================================================================
+
         $this->info("\n Descargando covers de eventos futuros...");
 
         $futureEventImages = [
@@ -67,9 +65,7 @@ class SeedImages extends Command
 
         $this->downloadEventImages($futureEventImages, $force);
 
-        // ================================================================
-        //  IMÁGENES GENÉRICAS PARA FOTOS DE EVENTOS (CON marca de agua)
-        // ================================================================
+     
         $this->info("\n Descargando y procesando fotos de eventos (con marca de agua)...");
 
         $photoImages = [
@@ -164,10 +160,10 @@ class SeedImages extends Command
             'https://images.unsplash.com/photo-1445264718223-106271a51cab?w=1200&h=800&fit=crop',
         ];
 
-        // No procesamos fotos acá, lo haremos en el seeder con photographerId real
+    
         $this->info("     Las fotos se procesarán durante el seeding con marcas de agua personalizadas");
 
-        // Guardar las URLs en un archivo JSON para el seeder
+      
         Storage::disk('local')->put(
             'seed-photo-urls.json',
             json_encode($photoImages, JSON_PRETTY_PRINT)
@@ -175,9 +171,7 @@ class SeedImages extends Command
 
         $this->info("    " . count($photoImages) . " URLs de fotos guardadas para el seeder");
 
-        // ================================================================
-        //  IMÁGENES DE PERFIL PARA FOTÓGRAFOS (SIN marca de agua)
-        // ================================================================
+
         $this->info("\n Descargando avatares de fotógrafos...");
 
         $photographerImages = [];
@@ -187,20 +181,18 @@ class SeedImages extends Command
 
         $this->downloadPhotographerImages($photographerImages,  'profiles', $force);
 
-        // ================================================================
-//  IMÁGENES DE BANNER PARA FOTÓGRAFOS (SIN marca de agua)
-// ================================================================
+
         $this->info("\n  Descargando banners de fotógrafos...");
 
         $bannerImages = [];
         for ($i = 1; $i <= 25; $i++) {
-            // Banners horizontales (landscape)
+         
             $bannerImages["banner_{$i}"] = "https://picsum.photos/seed/banner{$i}/1920/600";
         }
 
         $this->downloadPhotographerImages($bannerImages, 'banners', $force); 
 
-        // Limpiar archivos temporales
+
         $this->info("\n Limpiando archivos temporales...");
         array_map('unlink', glob("{$tempDir}/*.*"));
         @rmdir($tempDir);
@@ -215,9 +207,7 @@ class SeedImages extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * Descargar imágenes de eventos futuros (sin marca de agua)
-     */
+
     private function downloadEventImages(array $images, bool $force)
     {
         $bar = $this->output->createProgressBar(count($images));
@@ -248,16 +238,14 @@ class SeedImages extends Command
             }
 
             $bar->advance();
-            usleep(100000); // 100ms delay para no saturar
+            usleep(100000); 
         }
 
         $bar->finish();
         $this->newLine();
     }
 
-    /**
-     * Descargar imágenes de fotógrafos (perfiles o banners)
-     */
+
     private function downloadPhotographerImages(array $images, string $folder, bool $force)
     {
         $bar = $this->output->createProgressBar(count($images));

@@ -13,10 +13,10 @@ class PurchaseItem extends Model
         'purchase_payment_id',
         'photo_id',
         'unit_price',     
-        // Quitamos title y description (se obtienen de la relación Photo)
-        // Quitamos quantity (por ahora es siempre 1 en tu lógica)
+        //   title y description  
+        //   quantity  
         
-        // Agregamos estos para controlar la descarga individual
+      
         'download_token', 
         'download_count', 
     ];
@@ -26,9 +26,7 @@ class PurchaseItem extends Model
         'download_count' => 'integer',
     ];
 
-    /**
-     * Boot: Generar token de descarga único automáticamente
-     */
+   
     protected static function boot()
     {
         parent::boot();
@@ -40,17 +38,13 @@ class PurchaseItem extends Model
         });
     }
 
-    /**
-     * Compra asociada (Cabecera)
-     */
+     
     public function purchase(): BelongsTo
     {
         return $this->belongsTo(Purchase::class);
     }
 
-    /**
-     * Foto asociada (Producto)
-     */
+    
     public function photo(): BelongsTo
     {
         return $this->belongsTo(Photo::class);

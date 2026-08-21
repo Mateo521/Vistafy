@@ -15,12 +15,12 @@ class Purchase extends Model
 
     protected $fillable = [
         'user_id',
-        // 'photo_id',  <-- YA NO VA (está en purchase_items)
-        // 'event_id',  <-- Opcional, si no lo pusiste en la migración nueva, quítalo.
+        // 'photo_id',  <--  (está en purchase_items)
+        // 'event_id',   
         'buyer_email',
         'buyer_name',
         'guest_email',
-        'total_amount',      // <--- CAMBIADO (antes amount)
+        'total_amount',      // <---  (antes amount)
         'currency',
         'status',
         'mp_preference_id',
@@ -30,9 +30,9 @@ class Purchase extends Model
         'payment_details',
         'metadata',
         'rejection_reason',
-        // 'downloaded_at',   <-- Si los moviste a items, quítalos. Si están en purchases, déjalos.
+        // 'downloaded_at',   
         // 'download_count', 
-        'order_token',       // <--- CAMBIADO (antes download_token)
+        'order_token',       // <---   (antes download_token)
     ];
 
     protected $casts = [
@@ -46,7 +46,7 @@ class Purchase extends Model
         parent::boot();
 
         static::creating(function ($purchase) {
-            // Generamos el token de la ORDEN
+        
             if (empty($purchase->order_token)) {
                 $purchase->order_token = Str::random(64);
             }

@@ -53,7 +53,7 @@ class User extends Authenticatable
     }
 
     /**
-     * enviar notificación de restablecimiento de contraseña.
+     * noti de restablecimiento de contraseña.
      *
      * @param  string  $token
      * @return void

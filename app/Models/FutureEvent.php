@@ -35,71 +35,50 @@ class FutureEvent extends Model
 
     protected $appends = ['cover_image_url', 'formatted_date', 'days_until'];
 
-    // ============================================
-    //  RELACIONES
-    // ============================================
 
-    /**
-     * Relación: Fotógrafo del evento futuro
-     */
+
+ 
     public function photographer()
     {
         return $this->belongsTo(Photographer::class);
     }
 
-    /**
-     * Relación: Evento normal creado tras conversión
-     */
+
     public function convertedEvent()
     {
         return $this->belongsTo(Event::class, 'converted_event_id');
     }
 
-    // ============================================
-    //  SCOPES
-    // ============================================
 
-    /**
-     * Scope: Solo eventos upcoming (futuro y activos)
-     */
+
+ 
     public function scopeUpcoming($query)
     {
         return $query->where('status', 'upcoming')
             ->where('event_date', '>', now());
     }
 
-    /**
-     * Scope: Eventos listos para convertir (ya pasaron pero aún no convertidos)
-     */
+
     public function scopeReadyToConvert($query)
     {
         return $query->where('status', 'upcoming')
             ->where('event_date', '<=', now());
     }
 
-    /**
-     * Scope: Por fotógrafo
-     */
+ 
     public function scopeByPhotographer($query, $photographerId)
     {
         return $query->where('photographer_id', $photographerId);
     }
 
-    /**
-     * Scope: Por ubicación
-     */
+ 
     public function scopeByLocation($query, $location)
     {
         return $query->where('location', 'LIKE', "%{$location}%");
     }
 
-    // ============================================
-    //  ACCESSORS & MUTATORS
-    // ============================================
 
-    /**
-     * Accessor: URL de cover image
-     */
+  
 public function getCoverImageUrlAttribute()
     {
         if (!$this->cover_image) return null;
@@ -124,49 +103,37 @@ public function getCoverImageUrlAttribute()
     }
 
 
-    /**
-     * Accessor: Fecha formateada para humanos
-     */
+  
     public function getFormattedDateAttribute()
     {
         return $this->event_date->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY [a las] HH:mm');
     }
 
-    /**
-     * Accessor: Días hasta el evento
-     */
+   
     public function daysUntil()
     {
         return now()->diffInDays($this->event_date, false); // false = puede ser negativo
     }
 
-    /**
-     * Accessor: ¿Ya pasó?
-     */
+  
     public function isPast()
     {
         return $this->event_date->isPast();
     }
 
-    /**
-     * Accessor: ¿Es hoy?
-     */
+ 
     public function isToday()
     {
         return $this->event_date->isToday();
     }
 
-    /**
-     * Accessor: ¿Es esta semana?
-     */
+
     public function isThisWeek()
     {
         return $this->event_date->isCurrentWeek();
     }
 
-    /**
-     * Accessor: Badge de estado
-     */
+  
     public function getStatusBadgeAttribute()
     {
         return match ($this->status) {
@@ -178,13 +145,8 @@ public function getCoverImageUrlAttribute()
         };
     }
 
-    // ============================================
-    //  MÉTODOS HELPER
-    // ============================================
-
-    /**
-     * Generar slug único para el título
-     */
+ 
+   
     public static function generateUniqueSlug($title)
     {
         $slug = Str::slug($title);
@@ -193,9 +155,7 @@ public function getCoverImageUrlAttribute()
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
-    /**
-     * Verificar si está expirado
-     */
+  
     public function isExpired()
     {
         if (!$this->expiry_date) {
@@ -205,9 +165,7 @@ public function getCoverImageUrlAttribute()
         return now()->isAfter($this->expiry_date);
     }
 
-    /**
-     * Marcar como convertido
-     */
+  
     public function markAsConverted($eventId)
     {
         $this->update([
@@ -216,9 +174,7 @@ public function getCoverImageUrlAttribute()
         ]);
     }
 
-    /**
-     * Cancelar evento
-     */
+  
     public function cancel()
     {
         $this->update(['status' => 'cancelled']);
