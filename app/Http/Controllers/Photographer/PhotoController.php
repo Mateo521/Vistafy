@@ -408,7 +408,7 @@ class PhotoController extends Controller
 
             DB::commit();
 
-            return redirect()->route('photographer.photos.show', $photo)->with('success', 'Foto actualizada exitosamente');
+            return back()->with('success', 'Foto actualizada exitosamente');
 
         } catch (\Exception $e) {
             DB::rollBack();

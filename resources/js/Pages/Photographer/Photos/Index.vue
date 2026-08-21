@@ -21,7 +21,7 @@ const props = defineProps({
 });
 
 const deletePhoto = (photoId) => {
-    if (confirm('ATENCIÓN: ¿Confirmar eliminación definitiva de este activo digital? La acción es irreversible.')) {
+    if (confirm('ATENCIÓN: ¿Confirmar eliminación definitiva de esta foto? La acción es irreversible.')) {
         router.delete(route('photographer.photos.destroy', photoId), {
             preserveScroll: true,
         });
