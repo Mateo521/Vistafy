@@ -439,7 +439,7 @@ const deletePhoto = async (photoId) => {
 };
 
 const updateCoverImage = async (photoId) => {
-    const confirmed = await confirm({ title: 'Cambiar Portada', message: '¿Establecer esta foto como portada?', confirmText: 'Establecer', cancelText: 'Cancelar', type: 'info' });
+    const confirmed = await confirm({ title: 'Cambiar portada', message: '¿Establecer esta foto como portada?', confirmText: 'Establecer', cancelText: 'Cancelar', type: 'info' });
     if (confirmed) {
         router.post(route('photographer.events.cover-image', props.event.id), { photo_id: photoId }, { preserveScroll: true, onSuccess: () => success('Portada actualizada') });
     }
