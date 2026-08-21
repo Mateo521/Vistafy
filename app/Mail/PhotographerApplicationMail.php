@@ -26,7 +26,7 @@ class PhotographerApplicationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '¡' . $this->applicant->business_name . ' quiere cubrir tu evento!',
+            subject: '¡' . $this->applicant->business_name . ' quiere cubrir tu evento',
         );
     }
 

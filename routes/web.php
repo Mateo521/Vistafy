@@ -25,7 +25,6 @@ use App\Http\Controllers\WebhookController;
 use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
@@ -53,17 +52,16 @@ Route::get('/sitemap.xml', function () {
     return $sitemap->toResponse(request());
 });
 
-
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
     Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 });
 
 Route::get('/terminos-y-condiciones', function () {
-    return Inertia::render('Terms'); 
+    return Inertia::render('Terms');
 })->name('terms');
 Route::get('/politica-de-privacidad', function () {
-    return Inertia::render('Privacy');  
+    return Inertia::render('Privacy');
 })->name('privacy');
 
 Route::get(
@@ -118,11 +116,9 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
 Route::prefix('eventos')->name('events.')->group(function () {
     Route::get('/', [PublicGalleryController::class, 'events'])->name('index');
     Route::get('/{event:slug}', [PublicGalleryController::class, 'showEvent'])->name('show');
-    
 
     Route::get('/{event:slug}/fotografo/{photographer:slug}', [PublicGalleryController::class, 'showEventPhotographer'])->name('show-photographer');
 
-    
     Route::get('/{event:slug}/buscar-rostro', [EventFaceSearchController::class, 'show'])
         ->name('face-search.show');
 
@@ -262,14 +258,14 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
 
         $pendingInvitations = $photographer->guestEvents()
             ->wherePivotIn('status', ['invited', 'pending'])
-            ->with('photographer:id,business_name') 
+            ->with('photographer:id,business_name')
             ->get();
 
         $collaboratingEvents = $photographer->guestEvents()
             ->wherePivot('status', 'approved')
-            ->with('photographer:id,business_name') 
+            ->with('photographer:id,business_name')
             ->latest()
-            ->take(4) 
+            ->take(4)
             ->get();
 
         $receivedApplications = \App\Models\FutureEvent::where('photographer_id', $photographer->id)
@@ -311,7 +307,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
             'recentPhotos' => $recentPhotos,
             'pendingInvitations' => $pendingInvitations,
             'collaboratingEvents' => $collaboratingEvents,
-            'receivedApplications' => $receivedApplications,  
+            'receivedApplications' => $receivedApplications,
         ]);
     })->name('dashboard');
 
@@ -338,14 +334,12 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
     Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
 
-
     Route::post('/oportunidades/{event}/aceptar', [FutureEventManagementController::class, 'acceptInvitation'])->name('opportunities.accept');
     Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
     Route::post('/eventos-futuros/{event}/postular', [\App\Http\Controllers\FutureEventController::class, 'apply'])->name('future-events.apply');
 
-    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])->name('future-events.applications.accept');
-    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])->name('future-events.applications.reject');
-
+    Route::post('/eventos-futuros/{futureEvent:id}/postulantes/{photographer:id}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])->name('future-events.applications.accept');
+    Route::post('/eventos-futuros/{futureEvent:id}/postulantes/{photographer:id}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])->name('future-events.applications.reject');
 
 });
 
