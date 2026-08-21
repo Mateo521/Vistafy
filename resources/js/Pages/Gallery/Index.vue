@@ -1,11 +1,9 @@
 <script setup>
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed, nextTick } from 'vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import axios from 'axios';
-import { ref, computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 import { useToast } from '@/Composables/useToast';
 import {
     MagnifyingGlassIcon,
