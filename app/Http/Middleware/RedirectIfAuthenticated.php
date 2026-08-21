@@ -18,11 +18,11 @@ class RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 $user = Auth::guard($guard)->user();
                 
-                // Redirigir según el rol del usuario
+                
                 if ($user->isPhotographer()) {
                     return redirect()->route('photographer.dashboard');
                 } elseif ($user->isAdmin()) {
-                    return redirect('/admin/panel'); // Si lo implementas después
+                    return redirect('/admin/panel'); 
                 }
                 
                 // Cliente normal va a la galería

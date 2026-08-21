@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
+import { useToast } from '@/Composables/useToast';
 import { 
     ArrowLeftIcon, 
     CalendarIcon, 
@@ -14,10 +15,14 @@ const props = defineProps({
     photo: Object
 });
 
+
+
 const addToCart = () => {
     
     console.log('Agregar al carrito:', props.photo.id);
 };
+
+
 
 const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';

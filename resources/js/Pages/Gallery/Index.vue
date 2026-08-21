@@ -3,9 +3,11 @@ import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { ref, onMounted, computed, nextTick } from 'vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+
 import {
     MagnifyingGlassIcon,
     AdjustmentsHorizontalIcon,
+    ShoppingCartIcon,
     XMarkIcon,
     SparklesIcon,
     FaceSmileIcon,
@@ -19,8 +21,40 @@ const randomHeroImage = computed(() => {
         const randomIndex = Math.floor(Math.random() * allPhotos.value.length);
         return allPhotos.value[randomIndex].thumbnail_url;
     }
-    return '/05a8862db26a1bed8ac22cdbf6944145.jpg';
+    return '/banners/portada.jpg';
 });
+const { success, error } = useToast();
+const page = usePage();
+
+const isAuthenticated = computed(() => page.props.auth.user !== null);
+
+const addingToCartIds = ref([]);
+const addToCart = async (photo) => {
+    if (!isAuthenticated.value) {
+        window.location.href = route('login');
+        return;
+    }
+
+    if (addingToCartIds.value.includes(photo.id)) return;
+
+    addingToCartIds.value.push(photo.id);
+
+    try {
+        const response = await axios.post(route('cart.add', photo.id));
+
+        if (response.data.success) {
+            success('Fotografía agregada al carrito');
+            window.dispatchEvent(new Event('cart-updated'));
+        } else {
+            error('La fotografía ya está en el carrito');
+        }
+    } catch (err) {
+        console.error('Error agregando al carrito:', err);
+        error('Error de conexión');
+    } finally {
+        addingToCartIds.value = addingToCartIds.value.filter(id => id !== photo.id);
+    }
+};
 
 
 const props = defineProps({
@@ -298,7 +332,7 @@ const totalResults = () => {
                 </div>
                 <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        
+
                         <h1 class="font-flux text-6xl md:text-8xl text-white leading-none tracking-wide">
                             Galería
                         </h1>
@@ -309,7 +343,8 @@ const totalResults = () => {
                             {{ totalResults() }}
                         </span>
                         <span class="text-xs font-bold uppercase tracking-widest text-gray-300 mt-2 block">
-                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias encontradas' : 'Fotos totales' }}
+                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias encontradas' : 'Fotos totales'
+                            }}
                         </span>
                     </div>
                 </div>
@@ -328,7 +363,8 @@ const totalResults = () => {
                         </div>
                         <div>
                             <h3 class="font-bold text-lg text-black">Reconocimiento Activo</h3>
-                            <p class="text-sm text-gray-500"><strong>{{ faceSearchResults.count }}</strong> coincidencias biométricas localizadas.</p>
+                            <p class="text-sm text-gray-500"><strong>{{ faceSearchResults.count }}</strong>
+                                coincidencias biométricas localizadas.</p>
                         </div>
                     </div>
                     <button @click="clearFaceSearch"
@@ -474,7 +510,7 @@ const totalResults = () => {
                                             </button>
                                             <p v-if="errorMessage"
                                                 class="text-[#E30613] text-xs font-bold mt-2 text-center">{{
-                                                errorMessage }}</p>
+                                                    errorMessage }}</p>
                                         </div>
                                     </div>
 
@@ -503,7 +539,7 @@ const totalResults = () => {
                                             </button>
                                             <p v-if="bibErrorMessage"
                                                 class="text-[#E30613] text-xs font-bold mt-2 text-center">{{
-                                                bibErrorMessage }}</p>
+                                                    bibErrorMessage }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -557,6 +593,17 @@ const totalResults = () => {
                                     ${{ photo.price }}
                                 </div>
 
+                                <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
+                                    class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center gap-0 group/cart hover:bg-black hover:text-white transition-all duration-300 pointer-events-auto z-20">
+
+                                    <ShoppingCartIcon
+                                        class="w-4 h-4 text-black group-hover/cart:text-white transition-colors shrink-0 m-0.5" />
+
+                                    <span
+                                        class="max-w-0 overflow-hidden whitespace-nowrap group-hover/cart:max-w-[100px] text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out group-hover/cart:px-1.5 group-hover/cart:mr-1">
+                                        Añadir
+                                    </span>
+                                </button>
 
                                 <div v-if="showingFaceResults && photo.similarity"
                                     class="absolute bottom-3 left-3 bg-[#E30613] text-white px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider shadow-md pointer-events-none z-10">
@@ -585,10 +632,13 @@ const totalResults = () => {
                             class="px-8 py-4 bg-white border border-gray-200 rounded-full text-black hover:bg-gray-50 hover:shadow-md font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center gap-2">
                             <span v-if="loadingMore"
                                 class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                            {{ loadingMore ? 'Cargando...' : 'Cargar Más Fotos' }}
+                            {{ loadingMore ? 'Cargando...' : 'Cargar más fotos' }}
                         </button>
                     </div>
                 </div>
+
+
+
 
 
                 <div v-else

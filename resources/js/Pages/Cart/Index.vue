@@ -167,7 +167,7 @@ const handleImageError = (e) => {
                         <ShoppingBagIcon class="w-12 h-12 text-gray-300" />
                     </div>
                     <h2 class="text-4xl font-flux text-black mb-3">
-                        Carrito Vacío
+                        Carrito vacío
                     </h2>
                     <p class="text-sm font-medium text-gray-500 mb-10 max-w-md mx-auto">
                         Todavía no agregaste ninguna fotografía. Explorá nuestras galerías para encontrar y descargar las mejores fotos.

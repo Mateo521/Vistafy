@@ -158,12 +158,12 @@ const handleImageError = (e) => {
                             </div>
                             <div class="relative z-10">
                                 <h3 class="font-bold text-xl text-slate-800 mb-2">
-                                    Fotografías en espera
+                                    Fotos en espera
                                 </h3>
                                 <p class="text-sm text-blue-800/80 leading-relaxed">
-                                    Las capturas fotográficas de este evento van a estar disponibles acá próximamente.
-                                    <span class="font-bold text-blue-600 block mt-1">Estatus: Planificación /
-                                        Organización.</span>
+                                    Las fotos de este evento van a estar disponibles acá próximamente.
+                                    <span class="font-bold text-blue-600 block mt-1">Estatus: planificación /
+                                        organización.</span>
                                 </p>
                             </div>
                         </div>
@@ -185,7 +185,7 @@ const handleImageError = (e) => {
                                     ¿Sos fotógrafo? <span class="text-[#E30613] block md:inline">Participá.</span>
                                 </h3>
                                 <p class="text-sm text-gray-500 mb-8 max-w-2xl leading-relaxed font-medium">
-                                    Se requieren operadores de cámara. Enviá tu solicitud de cobertura, documentá la
+                                    Se necesitan operadores de cámara. Enviá tu solicitud de cobertura, documentá la
                                     instancia y comercializá tus fotos.
                                 </p>
 
@@ -224,7 +224,7 @@ const handleImageError = (e) => {
                                         </Link>
                                         <Link :href="route('login')"
                                             class="inline-flex items-center justify-center px-8 py-4 bg-white border border-gray-200 text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-gray-50 hover:text-black transition-colors rounded-full text-center">
-                                            Iniciar Sesión
+                                            Iniciar sesión
                                         </Link>
                                     </template>
 
