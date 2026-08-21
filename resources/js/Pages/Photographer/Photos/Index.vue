@@ -91,16 +91,19 @@ const handleImageError = (e) => {
 </script>
 
 <template>
+
     <Head title="Archivo fotográfico" />
 
     <AuthenticatedLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-8 gap-6">
+
+                <div
+                    class="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-8 gap-6">
                     <div>
-                        <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span
+                            class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span>
                             Gestión de activos
                         </span>
@@ -108,7 +111,7 @@ const handleImageError = (e) => {
                             Archivo <span class="text-[#E30613]">de fotos</span>
                         </h1>
                     </div>
-                    
+
                     <div class="flex flex-wrap gap-3">
                         <Link :href="route('photographer.events.index')"
                             class="px-6 py-3.5 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-gray-50 hover:text-black transition-colors flex items-center justify-center">
@@ -121,26 +124,31 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-            
+
                 <div v-if="stats" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
-                    
-                
-                    <div class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+
+
+                    <div
+                        class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
                                 <ArchiveBoxIcon class="h-5 w-5 text-gray-400 group-hover:text-black" />
                             </div>
                         </div>
                         <div>
                             <span class="text-4xl md:text-5xl font-flux text-black block mb-1">{{ stats.total }}</span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Archivos Totales</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Archivos
+                                Totales</span>
                         </div>
                     </div>
 
-                    
-                    <div class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+
+                    <div
+                        class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-green-50 transition-colors">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-green-50 transition-colors">
                                 <CheckBadgeIcon class="h-5 w-5 text-gray-400 group-hover:text-green-600" />
                             </div>
                         </div>
@@ -150,34 +158,42 @@ const handleImageError = (e) => {
                         </div>
                     </div>
 
-                    
-                    <div class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+
+                    <div
+                        class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-100 transition-colors">
                                 <EyeSlashIcon class="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
                             </div>
                         </div>
                         <div>
-                            <span class="text-4xl md:text-5xl font-flux text-gray-400 block mb-1">{{ stats.inactive }}</span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Ocultas / borrador</span>
+                            <span class="text-4xl md:text-5xl font-flux text-gray-400 block mb-1">{{ stats.inactive
+                                }}</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Ocultas /
+                                borrador</span>
                         </div>
                     </div>
 
-                    
-                    <div class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+
+                    <div
+                        class="bg-white p-6 md:p-8 rounded border border-gray-100 flex flex-col justify-between group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
                                 <ArrowDownTrayIcon class="h-5 w-5 text-gray-400 group-hover:text-[#E30613]" />
                             </div>
                         </div>
                         <div>
-                            <span class="text-4xl md:text-5xl font-flux text-[#E30613] block mb-1">{{ stats.total_downloads }}</span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Descargas totales</span>
+                            <span class="text-4xl md:text-5xl font-flux text-[#E30613] block mb-1">{{
+                                stats.total_downloads }}</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Descargas
+                                totales</span>
                         </div>
                     </div>
                 </div>
 
-            
+
                 <div v-if="!photos.data || photos.data.length === 0"
                     class="text-center py-24 bg-white rounded border border-gray-100 shadow-sm flex flex-col items-center">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
@@ -193,59 +209,77 @@ const handleImageError = (e) => {
                     </Link>
                 </div>
 
-            
+
                 <div v-else>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6 mb-16">
 
                         <div v-for="photo in photos.data" :key="photo.id"
                             class="bg-white rounded border border-gray-100 shadow-sm overflow-hidden group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
 
-                        
+
                             <div class="relative aspect-square bg-gray-100 overflow-hidden shrink-0">
                                 <img :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                    class="w-full h-full object-cover transition-transform duration-700 "
-                                    loading="lazy" @error="handleImageError" />
+                                    class="w-full h-full object-cover transition-transform duration-700 " loading="lazy"
+                                    @error="handleImageError" />
 
-                            
-                                <div class="absolute top-3 left-3 z-10">
+                                <div class="absolute top-3 left-3 z-10 pointer-events-none">
                                     <span :class="[
                                         'px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md border border-white/20',
                                         photo.is_active ? 'bg-green-500/90 text-white' : 'bg-gray-800/90 text-white'
-                                    ]" :title="photo.is_active ? 'Visible en galería' : 'Oculto al público'">
+                                    ]">
                                         {{ photo.is_active ? 'Visible' : 'Oculta' }}
                                     </span>
                                 </div>
 
-                            
-                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                                    <Link :href="route('photographer.photos.show', photo.id)" title="Inspeccionar"
-                                        class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors">
-                                        <EyeIcon class="h-5 w-5" />
+                                <div
+                                    class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-2.5 p-4">
+
+                                    <Link :href="route('photographer.photos.show', photo.id)"
+                                        title="Ver detalles de la foto"
+                                        class="w-full max-w-[160px] py-2 px-3 bg-white text-black font-bold text-[10px] uppercase tracking-wider rounded shadow-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                                        <EyeIcon class="h-4 w-4" />
+                                        Inspeccionar
                                     </Link>
-                                    <button @click.stop.prevent="toggleActive(photo)" :title="photo.is_active ? 'Ocultar foto' : 'Publicar foto'"
-                                        class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors">
-                                        <EyeSlashIcon v-if="photo.is_active" class="h-5 w-5" />
-                                        <CheckBadgeIcon v-else class="h-5 w-5" />
+
+
+                                    <button @click.stop.prevent="toggleActive(photo)"
+                                        class="w-full max-w-[160px] py-2 px-3 text-white font-bold text-[10px] uppercase tracking-wider rounded flex items-center justify-center gap-2 transition-colors border border-white/30 backdrop-blur-sm"
+                                        :class="photo.is_active ? 'hover:border-orange-400 hover:text-orange-400 hover:bg-orange-400/10' : 'hover:border-green-400 hover:text-green-400 hover:bg-green-400/10'">
+
+                                        <template v-if="photo.is_active">
+                                            <EyeSlashIcon class="h-4 w-4" />
+                                            Ocultar foto
+                                        </template>
+                                        <template v-else>
+                                            <CheckBadgeIcon class="h-4 w-4" />
+                                            Publicar foto
+                                        </template>
                                     </button>
-                                    <button @click.stop.prevent="deletePhoto(photo.id)" title="Borrar foto"
-                                        class="w-10 h-10 bg-[#E30613]/80 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-[#E30613] transition-colors">
-                                        <TrashIcon class="h-5 w-5" />
+
+                                    <button @click.stop.prevent="deletePhoto(photo.id)"
+                                        title="Borrar foto permanentemente"
+                                        class="w-full max-w-[160px] py-2 px-3 text-white font-bold text-[10px] uppercase tracking-wider rounded flex items-center justify-center gap-2 transition-colors border border-[#E30613]/50 hover:bg-[#E30613] hover:border-[#E30613] mt-2">
+                                        <TrashIcon class="h-4 w-4" />
+                                        Eliminar
                                     </button>
                                 </div>
                             </div>
 
-                        
                             <div class="p-4 flex flex-col flex-1 bg-white">
                                 <div class="flex justify-between items-start mb-3">
-                                    <div class="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded">
-                                        #{{ photo.unique_id.substring(0,6) }}
+                                    <div
+                                        class="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded">
+                                        #{{ photo.unique_id.substring(0, 6) }}
                                     </div>
-                                    <div v-if="photo.downloads > 0" class="flex items-center gap-1 text-[10px] font-bold text-[#E30613]">
+                                    <div v-if="photo.downloads > 0"
+                                        class="flex items-center gap-1 text-[10px] font-bold text-[#E30613]">
                                         <ArrowDownTrayIcon class="h-3 w-3" /> {{ photo.downloads }}
                                     </div>
                                 </div>
-                                
-                                <div v-if="photo.event" class="text-sm font-bold text-slate-700 truncate group-hover:text-[#E30613] transition-colors" :title="photo.event.name">
+
+                                <div v-if="photo.event"
+                                    class="text-sm font-bold text-slate-700 truncate group-hover:text-[#E30613] transition-colors"
+                                    :title="photo.event.name">
                                     {{ photo.event.name }}
                                 </div>
                                 <div v-else class="text-xs font-bold text-gray-400 italic">
@@ -256,24 +290,27 @@ const handleImageError = (e) => {
 
                     </div>
 
-                
+
                     <div v-if="photos.last_page > 1" class="mt-16 flex justify-center">
-                        <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
-                            
-                            
+                        <div
+                            class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
+
+
                             <Link v-if="photos.prev_page_url" :href="photos.prev_page_url"
                                 class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
                                 Ant
                             </Link>
-                            <span v-else class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-300 cursor-not-allowed">Ant</span>
+                            <span v-else
+                                class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-300 cursor-not-allowed">Ant</span>
 
-                            
+
                             <template v-for="(page, index) in paginationPages" :key="index">
                                 <span v-if="page === photos.current_page"
                                     class="h-10 w-10 flex items-center justify-center text-xs font-bold bg-black text-white rounded-full shadow-md">
                                     {{ page }}
                                 </span>
-                                <span v-else-if="page === '...'" class="h-10 w-10 flex items-center justify-center text-xs text-gray-400 font-bold">
+                                <span v-else-if="page === '...'"
+                                    class="h-10 w-10 flex items-center justify-center text-xs text-gray-400 font-bold">
                                     ...
                                 </span>
                                 <Link v-else :href="photos.path + '?page=' + page"
@@ -282,17 +319,22 @@ const handleImageError = (e) => {
                                 </Link>
                             </template>
 
-                        
+
                             <Link v-if="photos.next_page_url" :href="photos.next_page_url"
                                 class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
                                 Sig
                             </Link>
-                            <span v-else class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-300 cursor-not-allowed">Sig</span>
-                            
+                            <span v-else
+                                class="h-10 px-4 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-gray-300 cursor-not-allowed">Sig</span>
+
                         </div>
                     </div>
 
                 </div>
+
+
+
+
             </div>
         </div>
     </AuthenticatedLayout>
