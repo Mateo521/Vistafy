@@ -59,11 +59,19 @@ const props = defineProps({
 
 const { confirm } = useConfirm();
 const { success, error } = useToast();
-const copyEventUrl = () => {
-    navigator.clipboard.writeText(window.location.href);
-    success('ENLACE EN PORTAPAPELES');
-};
+const copyEventUrl = async () => {
+    try {
 
+        const publicUrl = route('events.show', props.event.slug);
+        
+        await navigator.clipboard.writeText(publicUrl);
+        
+
+        success('Enlace público copiado al portapapeles');
+    } catch (err) {
+        console.error('Error al copiar el enlace: ', err);
+    }
+};
 const modelsLoaded = ref(false);
 const processingFaces = ref(false);
 const faceDetectionResults = ref([]);
@@ -525,7 +533,7 @@ const paginationPages = computed(() => {
 
                             <div class="space-y-4">
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
-                                    <span class="text-sm font-medium text-gray-600">Total Archivos</span>
+                                    <span class="text-sm font-medium text-gray-600">Total archivos</span>
                                     <span class="text-xl font-black text-black">{{ stats?.total_photos || 0 }}</span>
                                 </div>
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
@@ -533,7 +541,7 @@ const paginationPages = computed(() => {
                                     <span class="text-xl font-black text-black">{{ stats?.active_photos || 0 }}</span>
                                 </div>
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
-                                    <span class="text-sm font-medium text-gray-600">Descargas Totales</span>
+                                    <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
                                         }}</span>
                                 </div>
@@ -541,7 +549,7 @@ const paginationPages = computed(() => {
 
                             <button @click="copyEventUrl"
                                 class="mt-6 w-full bg-white border-2 border-gray-200 hover:border-black text-gray-600 hover:text-black transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
-                                <LinkIcon class="w-4 h-4" /> Copiar Enlace Público
+                                <LinkIcon class="w-4 h-4" /> Copiar enlace público
                             </button>
                         </div>
 

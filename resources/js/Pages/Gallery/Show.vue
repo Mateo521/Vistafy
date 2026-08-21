@@ -140,7 +140,7 @@ const handleImageError = (e) => {
                             
                     
                             <h1 class="font-flux text-5xl md:text-6xl text-black mb-8 leading-none">
-                                {{ photo.title || 'Captura Deportiva' }}
+                                {{ photo.title || 'Foto deportiva' }}
                             </h1>
 
                         

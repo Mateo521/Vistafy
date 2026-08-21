@@ -298,10 +298,7 @@ const totalResults = () => {
                 </div>
                 <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <span
-                            class="text-[#E30613] font-bold tracking-widest uppercase text-sm mb-3 block flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-[#E30613]"></span> Catálogo F33
-                        </span>
+                        
                         <h1 class="font-flux text-6xl md:text-8xl text-white leading-none tracking-wide">
                             Galería
                         </h1>
@@ -312,7 +309,7 @@ const totalResults = () => {
                             {{ totalResults() }}
                         </span>
                         <span class="text-xs font-bold uppercase tracking-widest text-gray-300 mt-2 block">
-                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias encontradas' : 'Fotografías totales' }}
+                            {{ (showingFaceResults || showingBibResults) ? 'Coincidencias encontradas' : 'Fotos totales' }}
                         </span>
                     </div>
                 </div>
