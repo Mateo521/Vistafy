@@ -29,20 +29,15 @@ const loadImage = () => {
 
     const img = new Image();
     
-
-    img.crossOrigin = 'anonymous'; 
-    
     img.onload = () => {
         imageSrc.value = props.src;
         loading.value = false;
     };
     
     img.onerror = () => {
-        console.error('Error cargando imagen:', props.src);
         error.value = true;
         loading.value = false;
     };
-
 
     const separator = props.src.includes('?') ? '&' : '?';
     img.src = `${props.src}${separator}v=f33`;
@@ -70,7 +65,6 @@ watch(() => props.src, () => loadImage());
         :src="imageSrc" 
         :alt="props.alt"
         :class="props.class"
-        crossorigin="anonymous" 
         v-bind="$attrs"
         @error="error = true"
         @contextmenu.prevent
