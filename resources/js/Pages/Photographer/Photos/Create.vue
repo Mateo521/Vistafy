@@ -6,6 +6,7 @@ import {
     CloudArrowUpIcon,
     XMarkIcon,
     PhotoIcon,
+    ArrowLeftIcon,
     InformationCircleIcon,
     HashtagIcon
 } from '@heroicons/vue/24/outline';
@@ -481,7 +482,7 @@ const submitPhotos = () => {
                                     </label>
                                     <select v-model="form.event_id"
                                         class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
-                                        <option :value="null">-- Guardar en mi bóveda personal --</option>
+                                        <option :value="null">-- Guardar en mis archivos --</option>
                                         <option v-for="event in events" :key="event.id" :value="event.id">
                                             {{ event.name }}
                                         </option>
@@ -590,8 +591,7 @@ const submitPhotos = () => {
                                         Protección F33
                                     </h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan en
-                                        bóveda segura hasta la confirmación de transacción.
+                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan de forma segura hasta la confirmación de transacción.
                                     </p>
                                 </div>
                             </div>

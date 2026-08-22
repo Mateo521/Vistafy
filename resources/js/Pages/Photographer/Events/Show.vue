@@ -429,7 +429,7 @@ const uploadPhotos = () => {
 };
 
 const deletePhoto = async (photoId) => {
-    const confirmed = await confirm({ title: 'Eliminar Fotografía', message: '¿Confirmar eliminación definitiva?', confirmText: 'Eliminar', cancelText: 'Cancelar', type: 'danger' });
+    const confirmed = await confirm({ title: 'Eliminar foto', message: '¿Confirmar eliminación definitiva?', confirmText: 'Eliminar', cancelText: 'Cancelar', type: 'danger' });
     if (confirmed) {
         router.delete(route('photographer.photos.destroy', photoId), {
             preserveScroll: true,
