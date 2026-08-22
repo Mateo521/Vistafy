@@ -15,6 +15,11 @@ import ProtectedImage from '@/Components/ProtectedImage.vue';
 import { useToast } from '@/Composables/useToast';
 import axios from 'axios';
 
+const getCorsUrl = (url) => {
+    if (!url) return null;
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${new Date().getTime()}`;
+};
 
 import {
     ArrowLeftIcon,
@@ -237,7 +242,7 @@ const handleImageError = (e) => {
                             <div v-for="(photo, index) in gallery.photos" :key="photo.id" @click="openLightbox(index)"
                                 class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
 
-                                <ProtectedImage :src="photo.thumbnail_url + '?v=1'"
+                                <ProtectedImage :src="getCorsUrl(photo.thumbnail_url)"
                                     class="w-full h-full object-cover transition-transform duration-700 pointer-events-none"
                                     @error="handleImageError" />
 
@@ -305,14 +310,14 @@ const handleImageError = (e) => {
                 <swiper :modules="swiperModules" :initialSlide="activeIndex" :navigation="true"
                     :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
                     class="h-full w-full">
-                    <swiper-slide v-if="photos && photos.data" v-for="photo in photos.data" :key="'main-'+photo.id"
+                    <swiper-slide v-if="photos && photos.data" v-for="photo in photos.data" :key="'main-' + photo.id"
                         class="flex items-center justify-center p-4 md:p-12">
 
 
                         <div class="relative max-h-full max-w-full flex items-center justify-center">
 
 
-                            <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                            <ProtectedImage :src="getCorsUrl(photo.watermarked_url || photo.thumbnail_url)"
                                 class="max-h-full max-w-full object-contain rounded shadow-2xl"
                                 @error="handleImageError" />
 
@@ -341,7 +346,7 @@ const handleImageError = (e) => {
             <div class="h-24 md:h-32 w-full bg-black shrink-0 px-4 py-2 border-t border-white/10">
                 <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'"
                     :freeMode="true" :watchSlidesProgress="true" class="h-full thumbs-gallery">
-                    <swiper-slide v-if="photos && photos.data" v-for="photo in photos.data" :key="'thumb-'+photo.id"
+                    <swiper-slide v-if="photos && photos.data" v-for="photo in photos.data" :key="'thumb-' + photo.id"
                         class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
                         <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
                     </swiper-slide>
@@ -367,11 +372,12 @@ const handleImageError = (e) => {
 :deep(.swiper-button-next),
 :deep(.swiper-button-prev) {
     color: white;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
 }
+
 :deep(.swiper-button-next:after),
 :deep(.swiper-button-prev:after) {
     font-size: 1.2rem;
