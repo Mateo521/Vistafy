@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
-import { CameraIcon, ShoppingCartIcon } from '@heroicons/vue/24/outline'; // <-- Importamos el ícono del carrito
+import { CameraIcon, ShoppingCartIcon } from '@heroicons/vue/24/outline';  
 import { useToast } from '@/Composables/useToast';
 import axios from 'axios';
 
