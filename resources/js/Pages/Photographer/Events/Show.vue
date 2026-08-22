@@ -571,7 +571,7 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
 
@@ -905,20 +905,20 @@ const paginationPages = computed(() => {
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
 
                                 <div v-for="photo in unassignedPhotos" :key="photo.id"
-                                    @click="!photo.is_private ? togglePhotoSelection(photo.id) : null"
+                                    @click="photo.is_active ? togglePhotoSelection(photo.id) : null"
                                     class="relative aspect-square rounded overflow-hidden shadow-sm transition-all duration-200 group"
                                     :class="[
-                                        photo.is_private ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md',
+                                        !photo.is_active ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md',
                                         selectedExistingPhotos.includes(photo.id) ? 'ring-4 ring-[#E30613] ring-offset-2 scale-95' : ''
                                     ]">
 
 
                                     <img :src="photo.thumbnail_url"
                                         class="w-full h-full object-cover transition-transform duration-500"
-                                        :class="photo.is_private ? 'grayscale-[50%] opacity-80' : ''" />
+                                        :class="!photo.is_active ? 'grayscale-[50%] opacity-80' : ''" />
 
 
-                                    <div v-if="photo.is_private"
+                                    <div v-if="!photo.is_active"
                                         class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center backdrop-blur-[1px]">
                                         <LockClosedIcon class="w-6 h-6 text-white mb-1 opacity-90" />
                                         <span
