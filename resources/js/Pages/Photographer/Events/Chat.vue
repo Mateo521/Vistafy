@@ -33,7 +33,7 @@ const scrollToBottom = () => {
 const sendMessage = () => {
     if (!form.message.trim()) return;
 
-    form.post(route('events.chat.store', props.event.id), {
+    form.post(route('photographer.events.chat.store', props.event.id), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
@@ -78,7 +78,7 @@ const getFallbackAvatar = (name) => {
             <div class="bg-white border border-gray-200 rounded-t-lg shadow-sm p-3 md:p-4 flex items-center justify-between z-10 shrink-0 relative">
                 
                 <div class="flex items-center gap-4">
-                    <Link :href="route('events.show', event.id)" 
+                    <Link :href="route('photographer.events.show', event.id)" 
                         class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 transition-all shrink-0">
                         <ArrowLeftIcon class="w-5 h-5" />
                     </Link>
