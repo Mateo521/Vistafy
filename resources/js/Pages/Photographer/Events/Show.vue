@@ -193,6 +193,11 @@ const closeModal = () => {
     selectedExistingPhotos.value = [];
     uploadForm.reset('photos', 'face_data');
 };
+const getCorsUrl = (url) => {
+    if (!url) return null;
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${new Date().getTime()}`;
+};
 
 onMounted(async () => {
     try {
@@ -1067,15 +1072,15 @@ const paginationPages = computed(() => {
     <div ref="qrCardRef" class="w-full max-w-[380px] bg-white rounded overflow-hidden shadow-2xl relative my-8 shrink-0">
         
         <div class="h-32 bg-black relative">
-            <img v-if="event.cover_image_url" :src="event.cover_image_url" crossorigin="anonymous" 
-                class="w-full h-full object-cover opacity-50" />
+            <img v-if="event.cover_image_url" :src="getCorsUrl(event.cover_image_url)" crossorigin="anonymous" 
+    class="w-full h-full object-cover opacity-50" />
             <div v-else class="w-full h-full bg-gradient-to-tr from-gray-900 to-gray-800"></div>
         </div>
 
         <div class="absolute top-16 left-1/2 -translate-x-1/2">
-            <img :src="event.photographer.profile_photo_url || `https://ui-avatars.com/api/?name=${event.photographer.business_name}&background=random`" 
-                crossorigin="anonymous"
-                class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-md bg-white" />
+            <img :src="event.photographer.profile_photo_url ? getCorsUrl(event.photographer.profile_photo_url) : `https://ui-avatars.com/api/?name=${event.photographer.business_name}&background=random`" 
+    crossorigin="anonymous"
+    class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-md bg-white" />
         </div>
 
         <div class="pt-14 pb-8 px-8 text-center flex flex-col items-center">
