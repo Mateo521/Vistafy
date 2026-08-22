@@ -209,7 +209,7 @@ const submit = () => {
                                         rows="6"
                                         class="w-full px-4 py-3 border-2 border-gray-200 focus:border-slate-900 focus:ring-0 rounded-sm resize-none"
                                         :class="{ 'border-red-500': form.errors.message }"
-                                        placeholder="Escribe tu mensaje acá..."
+                                        placeholder="Escribí tu mensaje acá..."
                                     ></textarea>
                                     <p v-if="form.errors.message" class="mt-2 text-xs text-red-600">
                                         {{ form.errors.message }}

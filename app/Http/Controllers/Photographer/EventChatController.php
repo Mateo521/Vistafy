@@ -30,7 +30,7 @@ class EventChatController extends Controller
                 'id' => $event->id,
                 'name' => $event->name,
                 'location' => $event->location,
-                'cover_image' => $event->cover_image,
+                'cover_image' => $event->cover_image_url, 
             ],
             'messages' => $messages,
             'currentPhotographerId' => $photographer->id

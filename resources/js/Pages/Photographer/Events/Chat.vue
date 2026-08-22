@@ -33,7 +33,7 @@ const scrollToBottom = () => {
 const sendMessage = () => {
     if (!form.message.trim()) return;
 
-    form.post(route('events.chat.store', props.event.id), {
+    form.post(route('photographer.events.store', props.event.id), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {
@@ -70,7 +70,7 @@ onUnmounted(() => {
             
 
             <div class="flex items-center gap-4 mb-6">
-                <Link :href="route('events.show', event.id)" 
+                <Link :href="route('photographer.events.show', event.id)" 
                     class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:shadow-md transition-all shadow-sm border border-gray-100">
                     <ArrowLeftIcon class="w-5 h-5" />
                 </Link>
@@ -135,7 +135,7 @@ onUnmounted(() => {
 
                     <div class="bg-white border-t border-gray-200 p-3 md:p-4">
                         <form @submit.prevent="sendMessage" class="flex gap-2 items-center">
-                            <input type="text" v-model="form.message" placeholder="Escribe un mensaje al equipo..."
+                            <input type="text" v-model="form.message" placeholder="Escribí un mensaje al equipo..."
                                 class="flex-1 bg-gray-50 border-gray-200 focus:border-black focus:ring-black rounded-full px-4 py-3 text-sm transition-colors"
                                 :disabled="form.processing"
                                 autocomplete="off">

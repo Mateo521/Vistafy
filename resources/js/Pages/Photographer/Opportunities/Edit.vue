@@ -144,7 +144,7 @@ const updateLocation = (address) => {
                         Descripción *
                     </label>
                     <textarea v-model="form.description" rows="4"
-                        placeholder="Describe los detalles del evento, qué tipo de cobertura necesitás, etc."
+                        placeholder="Describí los detalles del evento, qué tipo de cobertura necesitás, etc."
                         class="w-full px-4 py-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-slate-900 focus:border-transparent"
                         required></textarea>
                     <span v-if="form.errors.description" class="text-xs text-red-600 mt-1">
