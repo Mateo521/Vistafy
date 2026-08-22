@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class EventChatController extends Controller
 {
-    // Mostrar la sala de chat
+
     public function index(Event $event)
     {
         $photographer = auth()->user()->photographer;
@@ -29,9 +29,11 @@ class EventChatController extends Controller
             'event' => [
                 'id' => $event->id,
                 'name' => $event->name,
+                'location' => $event->location,
+                'cover_image' => $event->cover_image,
             ],
             'messages' => $messages,
-            'currentPhotographerId' => $photographer->id 
+            'currentPhotographerId' => $photographer->id
         ]);
     }
 
