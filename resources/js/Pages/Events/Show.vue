@@ -237,7 +237,7 @@ const handleImageError = (e) => {
                             <div v-for="(photo, index) in gallery.photos" :key="photo.id" @click="openLightbox(index)"
                                 class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
 
-                                <ProtectedImage :src="photo.thumbnail_url"
+                                <ProtectedImage :src="photo.thumbnail_url + '?v=1'"
                                     class="w-full h-full object-cover transition-transform duration-700 pointer-events-none"
                                     @error="handleImageError" />
 
