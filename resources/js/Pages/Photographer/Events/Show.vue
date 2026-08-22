@@ -7,6 +7,8 @@ import { useToast } from '@/Composables/useToast';
 import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
+import QrcodeVue from 'qrcode.vue';
+import html2canvas from 'html2canvas';
 
 
 const showInviteModal = ref(false);
@@ -38,7 +40,9 @@ import {
     PhotoIcon,
     ArrowDownTrayIcon,
     TrashIcon,
-    MagnifyingGlassIcon,
+    ArrowLeftIcon,
+    MagnifyingGlassIcon, QrCodeIcon,
+
     Cog6ToothIcon,
     PlusCircleIcon,
     CloudArrowUpIcon,
@@ -96,6 +100,41 @@ const totalFacesDetected = computed(() => faceDetectionResults.value.reduce((sum
 const totalBibsDetected = computed(() => bibDetectionResults.value.reduce((sum, result) => sum + result.numbers.length, 0));
 const photosWithFaces = computed(() => faceDetectionResults.value.filter(r => r.count > 0).length);
 const photosWithBibs = computed(() => bibDetectionResults.value.filter(r => r.numbers.length > 0).length);
+
+
+
+
+
+const showQrModal = ref(false);
+const qrCardRef = ref(null);
+
+
+const privateEventUrl = computed(() => {
+
+    return `${window.location.origin}/eventos/${props.event.slug}?token=${props.event.private_token}`;
+});
+
+
+const downloadQrCard = async () => {
+    if (!qrCardRef.value) return;
+
+    try {
+        const canvas = await html2canvas(qrCardRef.value, {
+            scale: 3,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
+
+        const link = document.createElement('a');
+        link.download = `Tarjeta-QR-${props.event.slug}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.click();
+    } catch (error) {
+        console.error("Error al generar la imagen:", error);
+        alert("Hubo un error al generar la tarjeta. Intentá nuevamente.");
+    }
+};
+
 
 const addBibTag = (index, event) => {
     const val = event.target.value.trim();
@@ -571,7 +610,7 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
 
@@ -581,6 +620,14 @@ const paginationPages = computed(() => {
                                 <LinkIcon class="w-4 h-4" />
                                 {{ event.is_private ? 'Copiar enlace privado' : 'Copiar enlace público' }}
                             </button>
+
+                            <button v-if="event.is_private" @click="showQrModal = true"
+                                class="mt-3 w-full bg-black border border-black hover:bg-gray-800 text-white transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm">
+                                <QrCodeIcon class="w-4 h-4" />
+                                Generar tarjeta QR
+                            </button>
+
+
                         </div>
 
 
@@ -735,7 +782,7 @@ const paginationPages = computed(() => {
                             <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                                 <PhotoIcon class="h-10 w-10 text-gray-300" />
                             </div>
-                            <h4 class="font-flux text-4xl text-black mb-2">Bóveda Vacía</h4>
+                            <h4 class="font-flux text-4xl text-black mb-2">Evento sin fotos</h4>
                             <p class="text-gray-500 mb-8 max-w-sm">No hay fotografías disponibles bajo estos filtros o
                                 aún no se han
                                 asignado fotos.</p>
@@ -857,7 +904,7 @@ const paginationPages = computed(() => {
             leave-from-class="opacity-100" leave-to-class="opacity-0">
 
             <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-                <!-- Backdrop -->
+
                 <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeModal"></div>
 
 
@@ -986,7 +1033,7 @@ const paginationPages = computed(() => {
                             <div class="relative">
                                 <EnvelopeIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input v-model="inviteForm.email" type="email" required
-                                    class="w-full bg-white border border-gray-200 focus:bg-white focus:border-red-600 focus:ring-1 focus:ring-red-600 text-slate-800 font-bold text-sm py-3 pl-12 pr-4 rounded-xl transition-all outline-none"
+                                    class="w-full bg-white border border-gray-200 focus:bg-white focus:border-red-600 focus:ring-1 focus:ring-red-600 text-slate-800 font-bold text-sm py-3 pl-12 pr-4 rounded transition-all outline-none"
                                     placeholder="ejemplo@correo.com">
                             </div>
                             <p v-if="inviteForm.errors.email" class="text-[#E30613] text-xs font-bold mt-2">{{
@@ -1009,6 +1056,53 @@ const paginationPages = computed(() => {
             </div>
         </transition>
 
+
+
+        <div v-if="showQrModal" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto">
+    
+    <button @click="showQrModal = false" class="absolute top-6 right-6 text-white hover:text-gray-300">
+        <XMarkIcon class="w-8 h-8" />
+    </button>
+
+    <div ref="qrCardRef" class="w-full max-w-[380px] bg-white rounded overflow-hidden shadow-2xl relative my-8 shrink-0">
+        
+        <div class="h-32 bg-black relative">
+            <img v-if="event.cover_image_url" :src="event.cover_image_url" crossorigin="anonymous" 
+                class="w-full h-full object-cover opacity-50" />
+            <div v-else class="w-full h-full bg-gradient-to-tr from-gray-900 to-gray-800"></div>
+        </div>
+
+        <div class="absolute top-16 left-1/2 -translate-x-1/2">
+            <img :src="event.photographer.profile_photo_url || `https://ui-avatars.com/api/?name=${event.photographer.business_name}&background=random`" 
+                crossorigin="anonymous"
+                class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-md bg-white" />
+        </div>
+
+        <div class="pt-14 pb-8 px-8 text-center flex flex-col items-center">
+            
+            <h3 class="font-bold text-xl text-black leading-tight">{{ event.photographer.business_name }}</h3>
+            <p class="text-[10px] font-bold text-[#E30613] uppercase tracking-widest mt-1 mb-6">Fotografía</p>
+            
+            <h4 class="font-flux text-2xl text-black leading-none">{{ event.name }}</h4>
+            <p class="text-xs text-gray-500 mt-2 uppercase font-bold tracking-wider">{{ event.event_date }}</p>
+
+            <div class="mt-8 p-3 bg-white border-2 border-gray-100 rounded shadow-sm inline-block">
+                <qrcode-vue :value="privateEventUrl" :size="180" level="H" foreground="#000000" />
+            </div>
+
+            <p class="text-xs font-bold text-gray-800 uppercase tracking-widest mt-6">Escaneá para ver tus fotos</p>
+            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Acceso privado</p>
+            
+        </div>
+    </div>
+
+    <button @click="downloadQrCard"
+        class="bg-[#E30613] hover:bg-red-700 text-white font-bold uppercase tracking-wider text-sm px-8 py-4 rounded-full shadow-lg flex items-center gap-2 transition-transform transform hover:scale-105 shrink-0 mb-8">
+        <ArrowDownTrayIcon class="w-5 h-5" />
+        Descargar tarjeta (jpg)
+    </button>
+
+</div>
     </AuthenticatedLayout>
 </template>
 
