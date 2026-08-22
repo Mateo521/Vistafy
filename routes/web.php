@@ -336,8 +336,8 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
     Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
 
-    Route::get('eventos/{event}/chat', [EventChatController::class, 'index'])->name('photographer.events.chat');
-    Route::post('eventos/{event}/chat', [EventChatController::class, 'store'])->name('photographer.events.chat.store');
+Route::get('/eventos/{event}/chat', [EventChatController::class, 'index'])->name('events.chat');
+Route::post('/eventos/{event}/chat', [EventChatController::class, 'store'])->name('events.chat.store');
 
     Route::post('/oportunidades/{event}/aceptar', [FutureEventManagementController::class, 'acceptInvitation'])->name('opportunities.accept');
     Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
