@@ -33,7 +33,7 @@ const scrollToBottom = () => {
 const sendMessage = () => {
     if (!form.message.trim()) return;
 
-    form.post(route('photographer.events.store', props.event.id), {
+    form.post(route('photographer.events.chat.store', props.event.id), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {

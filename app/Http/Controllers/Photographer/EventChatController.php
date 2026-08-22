@@ -55,7 +55,7 @@ public function store(Request $request, Event $event)
         ]);
 
 
-         dd('Intentando guardar...', $request->message, $photographer->id, $event->id);
+        // dd('Intentando guardar...', $request->message, $photographer->id, $event->id);
 
         EventMessage::create([
             'event_id' => $event->id,
