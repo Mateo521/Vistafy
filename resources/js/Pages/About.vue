@@ -46,7 +46,7 @@ import {
 
 
             <section class="py-16 md:py-24 bg-white border-y border-gray-100 relative z-10">
-                <div class="max-w-[1000px] mx-auto px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16">
 
