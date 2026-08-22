@@ -47,6 +47,7 @@ const sendMessage = () => {
 onMounted(() => {
     scrollToBottom();
     
+/*
     pollingInterval = setInterval(() => {
         router.reload({
             only: ['messages'], 
@@ -57,6 +58,8 @@ onMounted(() => {
             }
         });
     }, 10000); 
+*/
+
 });
 
 onUnmounted(() => {
@@ -65,7 +68,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <AppLayout title="Sala de Operaciones">
+    <AppLayout title="Chat">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             
 
@@ -75,7 +78,7 @@ onUnmounted(() => {
                     <ArrowLeftIcon class="w-5 h-5" />
                 </Link>
                 <div>
-                    <h2 class="text-2xl font-flux text-black leading-none">Sala de Operaciones</h2>
+                    <h2 class="text-2xl font-flux text-black leading-none">Chat</h2>
                     <p class="text-sm text-gray-500 font-bold uppercase tracking-wider mt-1">Coordinación de equipo</p>
                 </div>
             </div>

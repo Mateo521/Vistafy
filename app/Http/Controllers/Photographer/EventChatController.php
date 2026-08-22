@@ -40,6 +40,9 @@ class EventChatController extends Controller
 
     public function store(Request $request, Event $event)
     {
+
+        dd('El mensaje llegó al controlador', $request->message);
+
         $request->validate([
             'message' => 'required|string|max:1000'
         ]);
