@@ -80,7 +80,7 @@ class FutureEventManagementController extends Controller
                 'event_date' => $futureEvent->event_date,
                 'location' => $futureEvent->location,
                 'is_private' => false, // Por defecto público
-                'cover_image' => clone $futureEvent->cover_image, 
+                'cover_image' => $futureEvent->cover_image,
             ]);
 
 
