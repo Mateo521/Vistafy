@@ -38,16 +38,24 @@ class EventChatController extends Controller
     }
 
 
-    public function store(Request $request, Event $event)
+public function store(Request $request, Event $event)
     {
+        $photographer = auth()->user()->photographer;
 
-        dd('El mensaje llegó al controlador', $request->message);
+        $isCreator = $event->photographer_id === $photographer->id;
+        $isCollaborator = $event->collaborators()->where('photographer_id', $photographer->id)->where('event_photographer.status', 'approved')->exists();
+
+        if (!$isCreator && !$isCollaborator) {
+            abort(403, 'No tienes permiso para escribir aquí.');
+        }
+
 
         $request->validate([
             'message' => 'required|string|max:1000'
         ]);
 
-        $photographer = auth()->user()->photographer;
+
+         dd('Intentando guardar...', $request->message, $photographer->id, $event->id);
 
         EventMessage::create([
             'event_id' => $event->id,
