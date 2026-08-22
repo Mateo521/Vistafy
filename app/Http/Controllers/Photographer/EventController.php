@@ -197,16 +197,16 @@ public function inviteColleague(Request $request, Event $event)
         $unassignedPhotos = Photo::where('photographer_id', $photographer->id)
             ->whereNull('event_id')
             ->latest()
-            ->get(['id', 'unique_id', 'thumbnail_path', 'watermarked_path', 'original_name'])
+            ->get(['id', 'unique_id', 'thumbnail_path', 'watermarked_path', 'original_name', 'is_active'])
             ->map(function ($photo) {
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
                     'thumbnail_url' => $photo->thumbnail_url,
                     'original_name' => $photo->original_name,
+                    'is_active' => $photo->is_active, 
                 ];
             });
-
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
                 'id' => $event->id,
