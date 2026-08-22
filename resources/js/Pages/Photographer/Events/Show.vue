@@ -67,11 +67,11 @@ const { success, error } = useToast();
 const copyEventUrl = async () => {
     try {
         let url = route('events.show', props.event.slug);
-        
+
         if (props.event.is_private && props.event.private_token) {
             url += `?token=${props.event.private_token}`;
         }
-        
+
         await navigator.clipboard.writeText(url);
         success(props.event.is_private ? 'Enlace privado copiado' : 'Enlace público copiado');
     } catch (err) {
@@ -518,6 +518,24 @@ const paginationPages = computed(() => {
                             class="px-6 py-3 bg-[#E30613] text-white text-xs font-bold uppercase tracking-wider hover:bg-red-700 transition-colors rounded-full flex items-center gap-2 shadow-lg shadow-red-500/30">
                             <PlusCircleIcon class="w-5 h-5" /> Asignar fotos
                         </button>
+
+
+                        <div v-if="event.collaborators && event.collaborators.length > 0"
+                            class="mt-4 pt-4 border-t border-gray-100">
+                            <Link :href="route('photographer.events.chat', event.id)"
+                                class="w-full bg-black text-white hover:bg-gray-800 transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm">
+
+
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                                Sala de operaciones
+                            </Link>
+                            <p class="text-[10px] text-gray-500 text-center mt-2 font-bold uppercase tracking-wider">
+                                Chat con tus colaboradores
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -551,7 +569,7 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
 

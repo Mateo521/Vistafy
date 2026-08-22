@@ -97,7 +97,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Nueva Oportunidad | F33" />
+    <Head title="Nueva oportunidad | F33" />
 
     <AuthenticatedLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">

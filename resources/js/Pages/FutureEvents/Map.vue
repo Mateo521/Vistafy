@@ -34,7 +34,6 @@ onMounted(loadEvents);
 
         <Head title="Mapa de Próximos eventos" />
 
-        <!-- El mapa ocupa toda el área del layout -->
         <div class="w-full h-full">
             <div v-if="loading" class="w-full h-full flex items-center justify-center bg-slate-950">
                 <div class="flex flex-col items-center gap-3 text-slate-300">

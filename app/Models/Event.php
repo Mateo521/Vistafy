@@ -88,6 +88,7 @@ class Event extends Model
                     ->withTimestamps();
     }
     
+    public function messages() { return $this->hasMany(EventMessage::class); }
     
     public function canUpload(Photographer $photographer)
     {
