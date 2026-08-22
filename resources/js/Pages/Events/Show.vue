@@ -302,7 +302,7 @@ const handleImageError = (e) => {
                 <swiper :modules="swiperModules" :initialSlide="activeIndex" :navigation="true"
                     :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
                     class="h-full w-full">
-                    <swiper-slide v-for="photo in gallery.photos" :key="'main-' + photo.id"
+                    <swiper-slide v-for="photo in photos.data" :key="'main-'+photo.id"
                         class="flex items-center justify-center p-4 md:p-12">
 
 
@@ -338,7 +338,7 @@ const handleImageError = (e) => {
             <div class="h-24 md:h-32 w-full bg-black shrink-0 px-4 py-2 border-t border-white/10">
                 <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'"
                     :freeMode="true" :watchSlidesProgress="true" class="h-full thumbs-gallery">
-                    <swiper-slide v-for="photo in gallery.photos" :key="'thumb-' + photo.id"
+                    <swiper-slide v-for="photo in photos.data" :key="'thumb-'+photo.id"
                         class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
                         <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
                     </swiper-slide>
