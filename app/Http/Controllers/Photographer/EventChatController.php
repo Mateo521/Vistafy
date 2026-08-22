@@ -22,17 +22,31 @@ class EventChatController extends Controller
             abort(403, 'No tienes acceso a la sala de operaciones de este evento.');
         }
 
-
+        
         $messages = $event->messages()->with('photographer.user')->oldest()->get();
+
+        
+        $creator = $event->photographer; 
+        $collaborators = $event->collaborators()->where('event_photographer.status', 'approved')->get();
+        
+        $participants = collect([$creator])->merge($collaborators)->map(function ($p) {
+            return [
+                'id' => $p->id,
+                
+                'name' => $p->user->name ?? $p->business_name ?? 'Fotógrafo',
+                'profile_photo_url' => $p->profile_photo_url,
+            ];
+        })->unique('id')->values();
 
         return Inertia::render('Photographer/Events/Chat', [
             'event' => [
                 'id' => $event->id,
                 'name' => $event->name,
                 'location' => $event->location,
-                'cover_image' => $event->cover_image_url, 
+                'cover_image' => $event->cover_image_url,
             ],
             'messages' => $messages,
+            'participants' => $participants, 
             'currentPhotographerId' => $photographer->id
         ]);
     }
