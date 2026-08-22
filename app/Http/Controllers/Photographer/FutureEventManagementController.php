@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Photographer;
 
 use App\Http\Controllers\Controller;
 use App\Models\FutureEvent;
+use App\Models\Event;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +17,7 @@ use Intervention\Image\ImageManager;
 
 class FutureEventManagementController extends Controller
 {
-    /**
-     *  Listar oportunidades del fotógrafo
-     */
+
     public function index()
     {
         $photographer = Auth::user()->photographer;
@@ -47,14 +47,75 @@ class FutureEventManagementController extends Controller
         ]);
     }
 
-    /**
-     *  Formulario para crear oportunidad (CON DATOS DEL FOTÓGRAFO)
-     */
+
+    public function convertToEvent($id)
+    {
+        $photographer = Auth::user()->photographer;
+
+
+        $futureEvent = FutureEvent::where('photographer_id', $photographer->id)
+            ->with(['collaborators' => function ($q) {
+                $q->where('future_event_photographer.status', 'approved');
+            }])
+            ->findOrFail($id);
+
+
+        if ($futureEvent->converted_event_id) {
+            return redirect()->route('photographer.photos.create', ['event_id' => $futureEvent->converted_event_id])
+                ->with('info', 'Este evento ya había sido convertido.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            $slug = Str::slug($futureEvent->title) . '-' . Str::random(6);
+
+            $event = Event::create([
+                'photographer_id' => $photographer->id,
+                'name' => $futureEvent->title,
+                'slug' => $slug,
+                'description' => Str::limit($futureEvent->description, 500), // 
+                'long_description' => $futureEvent->description,
+                'event_date' => $futureEvent->event_date,
+                'location' => $futureEvent->location,
+                'is_private' => false, // Por defecto público
+                'cover_image' => clone $futureEvent->cover_image, 
+            ]);
+
+
+            $approvedPhotographerIds = $futureEvent->collaborators->pluck('id')->toArray();
+            if (!empty($approvedPhotographerIds)) {
+                
+                $syncData = array_fill_keys($approvedPhotographerIds, ['status' => 'approved']);
+                $event->collaborators()->sync($syncData);
+            }
+
+
+            $futureEvent->update([
+                'converted_event_id' => $event->id,
+                'status' => 'converted'
+            ]);
+
+            DB::commit();
+
+
+            return redirect()->route('photographer.photos.create', ['event_id' => $event->id])
+                ->with('success', 'El evento fue creado y los colaboradores fueron notificados.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error convirtiendo evento futuro: ' . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error al convertir el evento.');
+        }
+    }
+
+
     public function create()
     {
         $photographer = Auth::user()->photographer;
 
-        //  Verificar que el fotógrafo existe
+
         if (! $photographer) {
             return redirect()->route('photographer.dashboard')
                 ->with('error', 'No se encontró el perfil de fotógrafo');
@@ -88,17 +149,17 @@ class FutureEventManagementController extends Controller
             'event_date.after' => 'La fecha del evento debe ser una fecha posterior a hoy.',
         ]);
 
-        // Combinar fecha + hora
+
         $eventDateTime = Carbon::parse($validated['event_date']);
         if (isset($validated['event_time'])) {
             $time = Carbon::parse($validated['event_time']);
             $eventDateTime->setTime($time->hour, $time->minute);
         }
 
-        // Calcular expiry_date (7 días después del evento)
+
         $expiryDate = $eventDateTime->copy()->addDays(7);
 
-        // Subir imagen
+
         $coverImagePath = null;
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
@@ -130,9 +191,7 @@ class FutureEventManagementController extends Controller
             ->with('success', 'Oportunidad creada exitosamente');
     }
 
-    /**
-     *  Formulario para editar oportunidad (CON COORDENADAS)
-     */
+
     public function edit($id)
     {
         $photographer = Auth::user()->photographer;
@@ -264,7 +323,7 @@ class FutureEventManagementController extends Controller
         $opportunity = FutureEvent::where('photographer_id', $photographer->id)
             ->findOrFail($id);
 
-        // Eliminar imagen si existe
+
         if ($opportunity->cover_image) {
             Storage::disk('b2')->delete($opportunity->cover_image);
         }

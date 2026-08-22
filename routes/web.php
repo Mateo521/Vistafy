@@ -250,6 +250,7 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
         Route::post('/', [FutureEventManagementController::class, 'store'])->name('store');
         Route::get('/{id}/editar', [FutureEventManagementController::class, 'edit'])->name('edit');
         Route::post('/{id}', [FutureEventManagementController::class, 'update'])->name('update');
+        Route::post('/{id}/convertir', [FutureEventManagementController::class, 'convertToEvent'])->name('convert');
         Route::delete('/{id}', [FutureEventManagementController::class, 'destroy'])->name('destroy');
     });
 
