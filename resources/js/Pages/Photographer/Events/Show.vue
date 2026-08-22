@@ -44,6 +44,7 @@ import {
     CloudArrowUpIcon,
     LinkIcon,
     HashtagIcon,
+    LockClosedIcon,
     CheckIcon,
     XMarkIcon,
     UserIcon
@@ -520,8 +521,7 @@ const paginationPages = computed(() => {
                         </button>
 
 
-                        <div v-if="event.collaborators && event.collaborators.length > 0"
-                            >
+                        <div v-if="event.collaborators && event.collaborators.length > 0">
                             <Link :href="route('photographer.events.chat', event.id)"
                                 class="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors rounded-full flex items-center justify-center gap-2 shadow-lg">
 
@@ -537,7 +537,7 @@ const paginationPages = computed(() => {
                             </p-->
                         </div>
 
-                        
+
                     </div>
                 </div>
             </div>
@@ -571,7 +571,7 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
 
@@ -903,16 +903,30 @@ const paginationPages = computed(() => {
                             </div>
 
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+
                                 <div v-for="photo in unassignedPhotos" :key="photo.id"
-                                    @click="togglePhotoSelection(photo.id)"
-                                    class="relative aspect-square rounded overflow-hidden cursor-pointer shadow-sm transition-all duration-200 group"
-                                    :class="selectedExistingPhotos.includes(photo.id) ? 'ring-4 ring-[#E30613] ring-offset-2 scale-95' : 'hover:shadow-md'">
+                                    @click="!photo.is_private ? togglePhotoSelection(photo.id) : null"
+                                    class="relative aspect-square rounded overflow-hidden shadow-sm transition-all duration-200 group"
+                                    :class="[
+                                        photo.is_private ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md',
+                                        selectedExistingPhotos.includes(photo.id) ? 'ring-4 ring-[#E30613] ring-offset-2 scale-95' : ''
+                                    ]">
+
 
                                     <img :src="photo.thumbnail_url"
-                                        class="w-full h-full object-cover transition-transform duration-500 " />
+                                        class="w-full h-full object-cover transition-transform duration-500"
+                                        :class="photo.is_private ? 'grayscale-[50%] opacity-80' : ''" />
 
 
-                                    <div class="absolute inset-0 transition-colors duration-200"
+                                    <div v-if="photo.is_private"
+                                        class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center backdrop-blur-[1px]">
+                                        <LockClosedIcon class="w-6 h-6 text-white mb-1 opacity-90" />
+                                        <span
+                                            class="text-white text-[10px] font-bold uppercase tracking-widest text-center px-2 opacity-90">Privada</span>
+                                    </div>
+
+
+                                    <div v-else class="absolute inset-0 transition-colors duration-200"
                                         :class="selectedExistingPhotos.includes(photo.id) ? 'bg-[#E30613]/20' : 'bg-black/0 group-hover:bg-black/10'">
                                         <div v-if="selectedExistingPhotos.includes(photo.id)"
                                             class="absolute top-2 right-2 w-6 h-6 bg-[#E30613] text-white rounded-full flex items-center justify-center shadow-md transform scale-100 transition-transform">
@@ -920,6 +934,9 @@ const paginationPages = computed(() => {
                                         </div>
                                     </div>
                                 </div>
+
+
+
                             </div>
                         </div>
                     </div>
