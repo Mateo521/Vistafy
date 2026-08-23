@@ -42,6 +42,7 @@ const { success, error } = useToast();
 const page = usePage();
 
 const swiperModules = [Navigation, Thumbs, Keyboard, FreeMode];
+const lightboxPhotos = ref([]);
 
 const isLightboxOpen = ref(false);
 const activeIndex = ref(0);
@@ -53,11 +54,11 @@ const setThumbsSwiper = (swiper) => {
 };
 
 
-const openLightbox = (index) => {
+const openLightbox = (index, photosArray) => {
+    lightboxPhotos.value = photosArray;
     activeIndex.value = index;
     isLightboxOpen.value = true;
 };
-
 
 const closeLightbox = () => {
     isLightboxOpen.value = false;
@@ -235,7 +236,8 @@ const handleImageError = (e) => {
 
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
 
-                            <div v-for="(photo, index) in gallery.photos" :key="photo.id" @click="openLightbox(index)"
+                            <div v-for="(photo, index) in gallery.photos" :key="photo.id"
+                                @click="openLightbox(index, gallery.photos)"
                                 class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 bg-slate-100">
 
                                 <ProtectedImage :src="photo.thumbnail_url"
@@ -306,8 +308,8 @@ const handleImageError = (e) => {
                 <swiper :modules="swiperModules" :initialSlide="activeIndex" :navigation="true"
                     :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
                     class="h-full w-full">
-                    <swiper-slide v-if="gallery && gallery.photos" v-for="(photo, index) in gallery.photos"
-                        :key="'main-' + photo.id" class="flex items-center justify-center p-4 md:p-12">
+                    <swiper-slide v-for="photo in lightboxPhotos" :key="'main-' + photo.id"
+                        class="flex items-center justify-center p-4 md:p-12">
 
 
                         <div class="relative max-h-full max-w-full flex items-center justify-center">
@@ -342,8 +344,7 @@ const handleImageError = (e) => {
             <div class="h-24 md:h-32 w-full bg-black shrink-0 px-4 py-2 border-t border-white/10">
                 <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'"
                     :freeMode="true" :watchSlidesProgress="true" class="h-full thumbs-gallery">
-                    <swiper-slide v-if="gallery && gallery.photos" v-for="(photo, index) in gallery.photos"
-                        :key="'thumb-' + photo.id"
+                    <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
                         class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
                         <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
                     </swiper-slide>
