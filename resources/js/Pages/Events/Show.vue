@@ -296,7 +296,7 @@ const handleImageError = (e) => {
 
 
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-0">
-                    <img src="/images/logo.png" class="w-[160%] md:w-[80%] opacity-5  select-none"
+                    <img src="/images/logo.png" class="w-[160%] md:w-[80%] opacity-5 grayscale  select-none"
                         alt="F33 Background" />
                 </div>
 
