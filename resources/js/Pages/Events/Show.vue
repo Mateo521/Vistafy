@@ -319,9 +319,9 @@ const handleImageError = (e) => {
                     :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
                     class="h-full w-full">
                     <swiper-slide v-for="photo in lightboxPhotos" :key="'main-' + photo.id"
-                        class="flex items-center justify-center p-4 md:p-12">
+                        class="flex items-center justify-center">
 
-                        <div class="relative max-h-full max-w-full flex items-center justify-center">
+                        <div class="relative h-full max-w-full flex items-center justify-center">
 
                             <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
                                 class="max-h-full max-w-full object-contain rounded shadow-2xl"
