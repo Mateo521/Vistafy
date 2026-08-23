@@ -62,6 +62,7 @@ const openLightbox = (index, photosArray) => {
 
 const closeLightbox = () => {
     isLightboxOpen.value = false;
+    thumbsSwiper.value = null;
 };
 
 const isAuthenticated = computed(() => page.props.auth.user !== null);
@@ -292,11 +293,8 @@ const handleImageError = (e) => {
 
         <div v-if="isLightboxOpen" class="fixed inset-0 z-[100] bg-black/95 flex flex-col backdrop-blur-sm">
 
-
             <div class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
-                <div class="text-white/50 text-xs font-mono px-4 pointer-events-auto">
-
-                </div>
+                <div class="text-white/50 text-xs font-mono px-4 pointer-events-auto"></div>
                 <button @click="closeLightbox"
                     class="w-12 h-12 bg-black/50 hover:bg-[#E30613] text-white rounded-full flex items-center justify-center transition-colors pointer-events-auto backdrop-blur-md">
                     <XMarkIcon class="w-6 h-6" />
@@ -304,21 +302,30 @@ const handleImageError = (e) => {
             </div>
 
 
-            <div class="flex-1 w-full min-h-0 relative mt-12">
+            <div class="h-24 md:h-32 w-full bg-black shrink-0 px-4 py-2 border-t border-white/10 order-last">
+                <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'"
+                    :freeMode="true" :watchSlidesProgress="true" :initialSlide="activeIndex"
+                    class="h-full thumbs-gallery">
+                    <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
+                        class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
+                        <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
+                    </swiper-slide>
+                </swiper>
+            </div>
+
+
+            <div class="flex-1 w-full min-h-0 relative mt-12 order-1" v-if="thumbsSwiper">
                 <swiper :modules="swiperModules" :initialSlide="activeIndex" :navigation="true"
                     :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
                     class="h-full w-full">
                     <swiper-slide v-for="photo in lightboxPhotos" :key="'main-' + photo.id"
                         class="flex items-center justify-center p-4 md:p-12">
 
-
                         <div class="relative max-h-full max-w-full flex items-center justify-center">
-
 
                             <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
                                 class="max-h-full max-w-full object-contain rounded shadow-2xl"
                                 @error="handleImageError" />
-
 
                             <div
                                 class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-black/90 to-transparent rounded-b flex justify-between items-end">
@@ -337,16 +344,6 @@ const handleImageError = (e) => {
 
                         </div>
 
-                    </swiper-slide>
-                </swiper>
-            </div>
-
-            <div class="h-24 md:h-32 w-full bg-black shrink-0 px-4 py-2 border-t border-white/10">
-                <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'"
-                    :freeMode="true" :watchSlidesProgress="true" class="h-full thumbs-gallery">
-                    <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
-                        class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
-                        <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
                     </swiper-slide>
                 </swiper>
             </div>
