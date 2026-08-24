@@ -176,7 +176,7 @@ class FutureEventController extends Controller
             'longitude' => $event->longitude ? (float) $event->longitude : null,
             'event_date' => $event->event_date->format('Y-m-d H:i:s'),
             'formatted_date' => $event->formatted_date,
-            'days_until' => $event->daysUntil(),
+            'days_until' => $event->days_until,
             'cover_image' => $event->cover_image_url,
             'status' => $event->status,
             'photographer' => [
@@ -231,7 +231,7 @@ class FutureEventController extends Controller
                 'formatted_date' => $event->formatted_date,
 
                 'formatted_time' => $event->event_date->format('H:i'),
-                'days_until' => $event->daysUntil(),
+                'days_until' => $event->days_until,
                 'cover_image' => $event->cover_image_url,
                 'status' => $event->status,
                 'photographer' => [

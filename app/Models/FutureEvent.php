@@ -104,7 +104,7 @@ public function getCoverImageUrlAttribute()
         )->withPivot('status')->withTimestamps();
     }
 
-
+ 
   
     public function getFormattedDateAttribute()
     {

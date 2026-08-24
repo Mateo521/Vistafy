@@ -35,7 +35,7 @@ class FutureEventManagementController extends Controller
                     'longitude' => $event->longitude,        //
                     'event_date' => $event->event_date,
                     'formatted_date' => $event->formatted_date,
-                    'days_until' => $event->daysUntil(),
+                    'days_until' => $event->days_until,
                     'cover_image' => $event->cover_image_url,
                     'status' => $event->status,
                     'created_at' => $event->created_at->format('d/m/Y'),
