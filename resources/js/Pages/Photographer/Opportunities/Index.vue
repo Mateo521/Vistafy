@@ -205,10 +205,7 @@ const getDaysText = (days) => {
                     </div>
                 </div>
 
-            </div>
-
-
-            <div v-if="participating_opportunities && participating_opportunities.length > 0" class="mt-20 mb-16">
+                <div v-if="participating_opportunities && participating_opportunities.length > 0" class="mt-20 mb-16">
                     <div class="mb-8 border-b border-gray-200 pb-4">
                         <h2 class="text-3xl font-flux text-black">Mis postulaciones y <span class="text-[#E30613]">colaboraciones</span></h2>
                         <p class="text-sm text-gray-500 mt-2">Eventos de otros organizadores donde enviaste solicitud o ya sos parte del equipo.</p>
@@ -252,6 +249,11 @@ const getDaysText = (days) => {
                         </div>
                     </div>
                 </div>
+
+            </div>
+
+
+            
         </div>
 
         
