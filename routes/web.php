@@ -343,8 +343,9 @@ Route::post('/eventos/{event}/chat', [EventChatController::class, 'store'])->nam
     Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
     Route::post('/eventos-futuros/{event}/postular', [\App\Http\Controllers\FutureEventController::class, 'apply'])->name('future-events.apply');
 
-    Route::post('/eventos-futuros/{futureEvent:id}/postulantes/{photographer:id}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])->name('future-events.applications.accept');
-    Route::post('/eventos-futuros/{futureEvent:id}/postulantes/{photographer:id}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])->name('future-events.applications.reject');
+    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])->name('future-events.applications.accept');
+
+    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])->name('future-events.applications.reject');
 
 });
 
