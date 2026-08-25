@@ -5,8 +5,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
     opportunities: Object,
+    participating_opportunities: Array,  
 });
-
 const deleteOpportunity = (id) => {
     if (confirm('¿Estás seguro de eliminar esta oportunidad? Se borrará del sistema de forma permanente.')) {
         router.delete(route('photographer.opportunities.destroy', id), {
@@ -121,7 +121,30 @@ const getDaysText = (days) => {
                                 </div>
                             </div>
 
+                            <div v-if="opportunity.collaborators && opportunity.collaborators.length > 0"
+                                class="mb-6 flex items-center justify-between bg-gray-50/50 p-3 rounded-lg border border-gray-100">
+                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                    Equipo ({{ opportunity.collaborators.length }})
+                                </span>
 
+
+                                <div class="flex items-center -space-x-2 overflow-hidden">
+                                    <template v-for="(collaborator, index) in opportunity.collaborators.slice(0, 4)"
+                                        :key="collaborator.id">
+                                        <img :src="collaborator.profile_photo_url || `https://ui-avatars.com/api/?name=${collaborator.business_name}&background=random`"
+                                            :title="collaborator.business_name"
+                                            class="inline-block h-7 w-7 rounded-full ring-2 ring-white object-cover hover:z-10 hover:scale-110 transition-transform cursor-help"
+                                            :style="{ zIndex: 10 - index }" />
+                                    </template>
+
+
+                                    <div v-if="opportunity.collaborators.length > 4"
+                                        class="inline-block h-7 w-7 rounded-full ring-2 ring-white bg-gray-200 flex items-center justify-center z-0">
+                                        <span class="text-[9px] font-bold text-gray-600">+{{
+                                            opportunity.collaborators.length - 4 }}</span>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div v-if="opportunity.days_until > 0" class="flex gap-3">
                                 <Link :href="route('photographer.opportunities.edit', opportunity.id)"
@@ -183,6 +206,54 @@ const getDaysText = (days) => {
                 </div>
 
             </div>
+
+
+            <div v-if="participating_opportunities && participating_opportunities.length > 0" class="mt-20 mb-16">
+                    <div class="mb-8 border-b border-gray-200 pb-4">
+                        <h2 class="text-3xl font-flux text-black">Mis postulaciones y <span class="text-[#E30613]">colaboraciones</span></h2>
+                        <p class="text-sm text-gray-500 mt-2">Eventos de otros organizadores donde enviaste solicitud o ya sos parte del equipo.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="participation in participating_opportunities" :key="participation.id" 
+                             class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 flex flex-col hover:shadow-md transition-shadow">
+                            
+                            <div class="flex items-center gap-4 mb-4 border-b border-gray-50 pb-4">
+                                <img v-if="participation.cover_image" :src="participation.cover_image" class="w-16 h-16 rounded object-cover" />
+                                <div v-else class="w-16 h-16 rounded bg-gray-100 flex items-center justify-center">
+                                    <CalendarIcon class="w-6 h-6 text-gray-400" />
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-black line-clamp-1">{{ participation.title }}</h4>
+                                    <p class="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                                        Organiza: <span class="font-bold text-gray-700">{{ participation.owner_name }}</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 mb-6 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                <p class="flex items-center gap-2"><CalendarIcon class="w-4 h-4 text-[#E30613]"/> {{ participation.formatted_date }}</p>
+                                <p class="flex items-center gap-2"><MapPinIcon class="w-4 h-4 text-[#E30613]"/> {{ participation.location }}</p>
+                            </div>
+
+
+                            <div class="mt-auto">
+                                <div v-if="participation.my_status === 'approved'" class="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Equipo Confirmado
+                                </div>
+                                <div v-else-if="participation.my_status === 'requested'" class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-center">
+                                    En revisión
+                                </div>
+                                <div v-else-if="participation.my_status === 'rejected'" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-center">
+                                    No seleccionado
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
         </div>
+
+        
     </AuthenticatedLayout>
 </template>

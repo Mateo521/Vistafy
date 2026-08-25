@@ -21,29 +21,71 @@ class FutureEventManagementController extends Controller
     {
         $photographer = Auth::user()->photographer;
 
-        $opportunities = FutureEvent::where('photographer_id', $photographer->id)
+
+        $opportunities = FutureEvent::with(['collaborators' => function ($query) {
+
+                $query->where('future_event_photographer.status', 'approved');
+            }])
+            ->where('photographer_id', $photographer->id)
             ->whereNull('converted_event_id')
             ->orderBy('event_date', 'asc')
             ->paginate(12)
-            ->through(function ($event) {
+            ->through(function (\App\Models\FutureEvent $event) {
                 return [
                     'id' => $event->id,
                     'title' => $event->title,
                     'description' => $event->description,
                     'location' => $event->location,
-                    'latitude' => $event->latitude,          //
-                    'longitude' => $event->longitude,        //
+                    'latitude' => $event->latitude,          
+                    'longitude' => $event->longitude,        
                     'event_date' => $event->event_date,
                     'formatted_date' => $event->formatted_date,
                     'days_until' => $event->days_until,
                     'cover_image' => $event->cover_image_url,
                     'status' => $event->status,
                     'created_at' => $event->created_at->format('d/m/Y'),
+
+                    'collaborators' => $event->collaborators->map(function ($collab) {
+                        return [
+                            'id' => $collab->id,
+                            'business_name' => $collab->business_name,
+                            'profile_photo_url' => $collab->profile_photo_url,
+                        ];
+                    }),
+                ];
+            });
+
+
+        $participatingOpportunities = FutureEvent::with(['photographer.user', 'collaborators' => function ($query) use ($photographer) {
+            $query->where('photographer_id', $photographer->id);
+            }])
+            ->whereHas('collaborators', function ($query) use ($photographer) {
+                $query->where('photographer_id', $photographer->id);
+            })
+            ->where('photographer_id', '!=', $photographer->id)  
+            ->whereNull('converted_event_id')
+            ->orderBy('event_date', 'asc')
+            ->get()
+            ->map(function (\App\Models\FutureEvent $event) {  
+                
+                
+                $myPivot = $event->collaborators->first(); 
+                $myStatus = $myPivot ? $myPivot->pivot->status : 'unknown';
+
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'location' => $event->location,
+                    'formatted_date' => $event->formatted_date,
+                    'cover_image' => $event->cover_image_url,
+                    'owner_name' => $event->photographer->business_name,
+                    'my_status' => $myStatus, // 'requested', 'approved', 'rejected'
                 ];
             });
 
         return Inertia::render('Photographer/Opportunities/Index', [
             'opportunities' => $opportunities,
+            'participating_opportunities' => $participatingOpportunities,  
         ]);
     }
 
