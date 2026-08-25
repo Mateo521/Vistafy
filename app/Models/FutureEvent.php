@@ -112,9 +112,11 @@ public function getCoverImageUrlAttribute()
     }
 
    
-    public function daysUntil()
+    public function getDaysUntilAttribute()
     {
-        return now()->diffInDays($this->event_date, false); // false = puede ser negativo
+        if (!$this->event_date) return 0;
+        
+        return (int) now()->startOfDay()->diffInDays($this->event_date->startOfDay(), false);
     }
 
   

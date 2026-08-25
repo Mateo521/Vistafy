@@ -102,8 +102,18 @@ class FutureEventController extends Controller
         }
     }
 
-    public function acceptApplication(\App\Models\FutureEvent $futureEvent, \App\Models\Photographer $photographer)
+    public function acceptApplication($futureEventId, $photographerId)
     {
+        $futureEvent = \App\Models\FutureEvent::find($futureEventId);
+        if (!$futureEvent) {
+            dd("Error: El Evento Futuro con ID {$futureEventId} NO existe en la base de datos (o tiene un SoftDelete/GlobalScope que lo oculta).");
+        }
+
+        $photographer = \App\Models\Photographer::find($photographerId);
+        if (!$photographer) {
+            dd("Error: El Fotógrafo con ID {$photographerId} NO existe en la base de datos.");
+        }
+
         if ($futureEvent->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tenés permiso para gestionar este evento.');
         }
@@ -111,7 +121,7 @@ class FutureEventController extends Controller
         $futureEvent->collaborators()->updateExistingPivot($photographer->id, ['status' => 'approved']);
 
         try {
-            Mail::to($photographer->user->email)->send(new ApplicationAcceptedMail($futureEvent, $photographer));
+            \Illuminate\Support\Facades\Mail::to($photographer->user->email)->send(new \App\Mail\ApplicationAcceptedMail($futureEvent, $photographer));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Error enviando correo de aceptación: '.$e->getMessage());
         }
