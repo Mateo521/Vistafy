@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitud Recibida - f33</title>
+    <title>Solicitud recibida - f33</title>
 </head>
 <body style="font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0; background-color: #000000;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #000000; padding: 40px 20px;">
@@ -17,7 +17,7 @@
                                 F33 <span style="color: #dc2626;"></span>
                             </h1>
                             <p style="color: #71717a; margin: 0; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;">
-                                [ Solicitud Recibida ]
+                                [ Solicitud recibida ]
                             </p>
                         </td>
                     </tr>

@@ -35,7 +35,7 @@ defineProps({
                     </div>
 
                     <h1 class="text-3xl font-sans font-bold text-slate-900 mb-4">
-                        Solicitud No Aprobada
+                        Solicitud no aprobada
                     </h1>
                     <p class="text-slate-500 font-light text-sm leading-relaxed max-w-lg mx-auto mb-10">
                         Tras revisar su perfil, lamentamos informarle que su solicitud de ingreso como fotógrafo no ha cumplido con nuestros criterios actuales de selección.
@@ -43,7 +43,7 @@ defineProps({
 
                     <div v-if="reason" class="bg-red-50 border border-red-100 rounded-sm p-6 mb-8 text-left">
                         <h4 class="text-xs font-bold uppercase tracking-widest text-red-800 mb-2 flex items-center gap-2">
-                            <XCircleIcon class="w-4 h-4" /> Motivo del Rechazo
+                            <XCircleIcon class="w-4 h-4" /> Motivo del rechazo
                         </h4>
                         <p class="text-sm text-red-700 font-light leading-relaxed">
                             {{ reason }}
@@ -52,7 +52,7 @@ defineProps({
 
                     <div class="text-left mb-10">
                         <h3 class="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-gray-100 pb-2">
-                            Criterios de Evaluación
+                            Criterios de evaluación
                         </h3>
                         <ul class="space-y-3">
                             <li class="flex items-start gap-3 text-sm text-slate-600 font-light">

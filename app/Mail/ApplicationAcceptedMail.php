@@ -21,7 +21,7 @@ class ApplicationAcceptedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('¡Solicitud Aprobada! - ' . $this->event->title)
+        return $this->subject('¡Solicitud aprobada! - ' . $this->event->title)
                     ->view('emails.application_accepted');
     }
 }

@@ -379,7 +379,9 @@ const handleImageError = (e) => {
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     width: 3rem;
+    padding:10px;
     height: 3rem;
+    margin: 0 10px;
     border-radius: 50%;
 }
 
