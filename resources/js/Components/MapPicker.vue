@@ -34,7 +34,7 @@ const initMap = () => {
     }).setView([props.initialCenter.lat, props.initialCenter.lng], props.zoom);
 
     // Capa base
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2gqk_1_77e379e8d2f7f215be887004', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
