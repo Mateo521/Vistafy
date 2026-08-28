@@ -15,29 +15,34 @@ const isMapReady = ref(false);
 let map = null;
 let markers = [];
 
-// Función "Jitter" para evitar superposición exacta
-const jitter = (coord) => {
-    return parseFloat(coord) + (Math.random() - 0.5) * 0.005;
-};
-
 const initMap = () => {
     if (!mapContainer.value) return;
 
     if (map) map.remove();
 
-    // 1. Configuración: Habilitamos Zoom
+
+    const boundsArgentina = L.latLngBounds(
+        [-55.051258, -73.576081],  
+        [-21.781134, -53.637568]   
+    );
+
     map = L.map(mapContainer.value, {
         scrollWheelZoom: true,
         zoomControl: false, 
-        attributionControl: false
-    }).setView([-38.4161, -63.6167], 4);
+        attributionControl: false,
+        maxBounds: boundsArgentina,
+        maxBoundsViscosity: 1.0,
+        minZoom: 4,
+        maxZoom: 19
+    }).setView([-38.4161, -63.6167], 5);
 
-    // 2. Control de Zoom (Abajo a la derecha)
+
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // 3. Capa Base (CartoDB Dark Matter - Esencial para el tema)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        minZoom: 4
     }).addTo(map);
 
     addMarkers();
@@ -52,7 +57,7 @@ const addMarkers = () => {
     markers.forEach(marker => marker.remove());
     markers = [];
 
-    // Agrupar por ubicación exacta
+
     const grouped = {};
     
     props.photographers.forEach(p => {
@@ -70,44 +75,53 @@ const addMarkers = () => {
             let lat = parseFloat(photographer.latitude);
             let lng = parseFloat(photographer.longitude);
 
-            // Dispersión circular si hay múltiples en el mismo punto
+
             if (count > 1) {
-                const radius = 0.05; 
+                const radius = 0.03; 
                 const angle = (index / count) * (2 * Math.PI);
                 lat += Math.cos(angle) * radius;
                 lng += Math.sin(angle) * radius;
             }
 
-            // Marcador personalizado (Naranja f33)
+
             const customIcon = L.divIcon({
-                className: 'custom-map-marker',
+                className: 'custom-photographer-marker',
                 html: `<div style="
-                    width: 12px; 
-                    height: 12px; 
-                    background-color: #FFB162; 
+                    width: 16px; 
+                    height: 16px; 
+                    background-color: #E30613; 
                     border-radius: 50%; 
-                    border: 2px solid #1B2632; 
-                    box-shadow: 0 0 12px rgba(255,177,98,0.6);
-                    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                "></div>`,
-                iconSize: [12, 12],
-                iconAnchor: [6, 6]
+                    border: 3px solid #ffffff; 
+                    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.4);
+                    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                " class="marker-dot"></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8],
+                popupAnchor: [0, -10]
             });
 
-            // Popup HTML Estilizado al Dark Theme
+
             const marker = L.marker([lat, lng], { icon: customIcon })
                 .addTo(map)
                 .bindPopup(`
-                    <div style="text-align: center; font-family: 'Syne', sans-serif; min-width: 150px; padding-top: 4px;">
-                        <strong style="display:block; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: #EEE9DF; margin-bottom: 4px; line-height: 1.1;">
+                    <div style="text-align: center; font-family: 'Inter', system-ui, sans-serif; min-width: 180px; padding: 8px 0 4px 0;">
+                        
+                        <div style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color: #f1f5f9; border-radius: 50%; margin: 0 auto 12px auto; color: #94a3b8;">
+                            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        
+                        <strong style="display:block; font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px; line-height: 1.2;">
                             ${photographer.business_name}
                         </strong>
-                        <div style="font-size: 9px; font-weight: 700; color: #C9C1B1; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 12px;">
+                        
+                        <div style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <svg style="width: 12px; height: 12px; color: #E30613;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             ${photographer.region}
                         </div>
+                        
                         <a href="/fotografos/${photographer.slug}" 
-                           style="display:block; font-size:9px; font-weight:bold; color:#1B2632; background: #FFB162; padding: 8px 12px; text-decoration:none; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.2em; transition: background 0.3s;">
-                           VER PERFIL
+                        style="display:block; font-size:10px; font-weight:700; color:#ffffff; background: #0f172a; padding: 10px 16px; text-decoration:none; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.1em; transition: background 0.2s;">
+                        Ver Perfil
                         </a>
                     </div>
                 `);
@@ -116,7 +130,6 @@ const addMarkers = () => {
         });
     });
 
-    // AJUSTE DE ZOOM AUTOMÁTICO
     if (markers.length > 0) {
         const group = new L.featureGroup(markers);
         map.fitBounds(group.getBounds().pad(0.1), {
@@ -137,22 +150,22 @@ watch(() => props.photographers, () => {
 </script>
 
 <template>
-    <div class="relative w-full h-full bg-[#111920]">
-        <div ref="mapContainer" class="w-full h-full z-0 outline-none map-editorial"></div>
+    <div class="relative w-full h-full bg-[#F8F9FA] rounded-3xl overflow-hidden shadow-sm border border-gray-100">
         
+
+        <div ref="mapContainer" class="w-full h-full z-0 outline-none map-sleek-directory"></div>
+        
+
         <transition 
             enter-active-class="transition-opacity duration-300"
             leave-active-class="transition-opacity duration-500"
             enter-from-class="opacity-0"
             leave-to-class="opacity-0"
         >
-            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-[#1B2632] z-20">
-                <div class="flex flex-col items-center">
-                    <svg class="animate-spin h-6 w-6 text-[#FFB162] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span class="text-[#C9C1B1] font-['Syne'] text-[10px] font-bold uppercase ">Inicializando Mapa...</span>
+            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20 rounded-3xl">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm"></div>
+                    <span class="text-slate-600 font-bold text-xs uppercase tracking-wider">Cargando directorio...</span>
                 </div>
             </div>
         </transition>
@@ -160,52 +173,97 @@ watch(() => props.photographers, () => {
 </template>
 
 <style>
-/* Estilos base Leaflet */
+
 .leaflet-pane { z-index: 10 !important; }
 .leaflet-top, .leaflet-bottom { z-index: 20 !important; }
 
-/* Personalización de Controles de Zoom (Estilo Editorial Oscuro) */
-.map-editorial .leaflet-control-zoom a {
-    background-color: #1B2632 !important;
-    color: #C9C1B1 !important;
-    border: 1px solid rgba(201, 193, 177, 0.1) !important;
-    border-radius: 0 !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-    transition: all 0.3s;
-}
-.map-editorial .leaflet-control-zoom a:hover {
-    background-color: #FFB162 !important; 
-    color: #1B2632 !important; 
-    border-color: #FFB162 !important;
+
+.map-sleek-directory .leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    margin-right: 20px !important;
+    margin-bottom: 20px !important;
 }
 
-/* Popups Estilo Cinemático */
-.leaflet-popup-content-wrapper { 
-    background-color: #1B2632 !important;
-    border-radius: 2px !important; 
-    padding: 0 !important; 
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5) !important;
-    border: 1px solid rgba(255, 177, 98, 0.15);
-}
-.leaflet-popup-content { margin: 16px 20px !important; }
-
-/* Triángulo del Popup */
-.leaflet-popup-tip { 
-    background: #1B2632 !important; 
-    border: 1px solid rgba(255, 177, 98, 0.15); 
-    border-top: none; 
-    border-left: none; 
+.map-sleek-directory .leaflet-control-zoom a {
+    background-color: #ffffff !important;
+    color: #334155 !important;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    transition: all 0.2s ease;
 }
 
-/* Efecto Hover del Marcador */
-.custom-map-marker:hover div { 
-    transform: scale(1.6); 
-    background-color: #EEE9DF !important; 
-    border-color: #A35139 !important;
-    box-shadow: 0 0 20px rgba(238, 233, 223, 0.6) !important;
+.map-sleek-directory .leaflet-control-zoom a:last-child {
+    border-bottom: none !important;
 }
 
-/* Ocultar el enlace de "Leaflet" por defecto si se desea más limpio (opcional) */
+.map-sleek-directory .leaflet-control-zoom a:hover {
+    background-color: #f8fafc !important;
+    color: #E30613 !important;
+}
+
+
+.leaflet-popup-content-wrapper {
+    background-color: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 0 !important;
+    color: #334155 !important;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15), 0 0 20px rgba(0,0,0,0.05) !important;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.leaflet-popup-content {
+    margin: 16px !important;
+    line-height: 1.5 !important;
+}
+
+
+.leaflet-popup-tip-container {
+    margin-top: -1px !important;
+}
+
+.leaflet-popup-tip {
+    background-color: #ffffff !important;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15) !important;
+}
+
+
+.leaflet-popup-close-button {
+    color: #94a3b8 !important;
+    font-size: 20px !important;
+    padding: 8px 8px 0 0 !important;
+    font-weight: 300 !important;
+    transition: color 0.2s;
+    z-index: 10;
+}
+
+.leaflet-popup-close-button:hover {
+    color: #E30613 !important;
+    background-color: transparent !important;
+}
+
+
+.custom-photographer-marker .marker-dot {
+    transform: scale(1);
+}
+
+.custom-photographer-marker:hover .marker-dot { 
+    transform: scale(1.4) !important; 
+    background-color: #E30613 !important; 
+    border-color: #ffffff !important;
+    box-shadow: 0 6px 15px rgba(227, 6, 19, 0.5) !important;
+}
+
+
+.leaflet-popup-content a:hover {
+    background-color: #E30613 !important;
+}
+
 .leaflet-control-attribution {
     display: none !important;
 }
