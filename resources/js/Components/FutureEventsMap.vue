@@ -48,7 +48,9 @@ const initMap = () => {
    
     L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2gqk_1_77e379e8d2f7f215be887004', {
         maxZoom: 19,
-        minZoom: 4
+        minZoom: 4,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+
     }).addTo(map);
 
     addMarkers();
@@ -153,7 +155,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="relative w-full h-[100vh] min-h-[500px] bg-[#F8F9FA] overflow-hidden rounded-3xl shadow-sm border border-gray-100">
+    <div class="relative w-full h-[100vh] min-h-[500px] bg-[#F8F9FA] overflow-hidden rounded shadow-sm border border-gray-100">
         
     
         <div ref="mapContainer" class="w-full h-full z-0 outline-none map-sleek-events"></div>

@@ -27,19 +27,19 @@ let marker = null;
 const initMap = () => {
     if (!mapContainer.value || map) return;
 
-    // Inicializar mapa centrado en coordenadas del fotógrafo
+
     map = L.map(mapContainer.value, {
         scrollWheelZoom: true,
         zoomControl: true,
     }).setView([props.initialCenter.lat, props.initialCenter.lng], props.zoom);
 
-    // Capa base
+
     L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2gqk_1_77e379e8d2f7f215be887004', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Marcador inicial
+
     const customIcon = L.divIcon({
         className: 'custom-marker',
         html: `<div style="
@@ -60,12 +60,12 @@ const initMap = () => {
         draggable: true
     }).addTo(map);
 
-    // Evento: Click en el mapa
+
     map.on('click', (e) => {
         updateMarker(e.latlng.lat, e.latlng.lng);
     });
 
-    // Evento: Arrastrar marcador
+
     marker.on('dragend', (e) => {
         const pos = e.target.getLatLng();
         updateMarker(pos.lat, pos.lng);
@@ -79,7 +79,7 @@ const updateMarker = async (lat, lng) => {
     
     emit('update:modelValue', { lat, lng });
 
-    // Geocodificación inversa (Nominatim)
+
     try {
         const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
