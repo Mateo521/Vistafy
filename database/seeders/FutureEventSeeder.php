@@ -20,7 +20,7 @@ class FutureEventSeeder extends Seeder
             $photographers = Photographer::factory(5)->create(['status' => 'approved']);
         }
 
-        //  EVENTOS CON UBICACIONES REALES
+        
         $specificEvents = [
             [
                 'title' => 'Tech Summit Argentina 2025',

@@ -152,7 +152,7 @@ watch(() => props.photographers, () => {
 </script>
 
 <template>
-    <div class="relative w-full h-full bg-[#F8F9FA] rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+    <div class="relative w-full h-full bg-[#F8F9FA] rounded-xl overflow-hidden shadow-sm border border-gray-100">
         
 
         <div ref="mapContainer" class="w-full h-full z-0 outline-none map-sleek-directory"></div>
@@ -164,7 +164,7 @@ watch(() => props.photographers, () => {
             enter-from-class="opacity-0"
             leave-to-class="opacity-0"
         >
-            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20 rounded-3xl">
+            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20 rounded-xl">
                 <div class="flex flex-col items-center gap-4">
                     <div class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm"></div>
                     <span class="text-slate-600 font-bold text-xs uppercase tracking-wider">Cargando directorio...</span>

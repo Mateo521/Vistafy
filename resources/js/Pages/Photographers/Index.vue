@@ -97,20 +97,7 @@ const handleImageError = (e) => {
             <div class="max-w-7xl mx-auto px-4 md:px-8">
 
 
-                <div
-                    class="mb-10 relative bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-[400px]">
-                    <PhotographerMap :photographers="photographers.data" class="w-full h-full" />
-
-                    <div
-                        class="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-md border border-gray-100 flex items-center gap-2">
-                        <span class="relative flex h-3 w-3">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-[#E30613]"></span>
-                        </span>
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Ubicaciones</span>
-                    </div>
-                </div>
+                
 
 
                 <div
@@ -197,7 +184,7 @@ const handleImageError = (e) => {
 
                 <div class="flex justify-between items-center mb-8 px-2">
                     <span class="text-sm font-bold text-slate-700">
-                        Mostrando <strong class="text-black">{{ photographers.data.length }}</strong> profesionales
+                        Mostrando <strong class="text-black">{{ photographers.data.length }}</strong> fotógrafos
                     </span>
                 </div>
 
@@ -315,6 +302,23 @@ const handleImageError = (e) => {
                         </template>
                     </div>
                 </div>
+
+
+                <div
+                    class="mb-10 relative bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-xl border border-gray-100 h-[400px]">
+                    <PhotographerMap :photographers="photographers.data" class="w-full h-full" />
+
+                    <div
+                        class="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-md border border-gray-100 flex items-center gap-2">
+                        <span class="relative flex h-3 w-3">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-[#E30613]"></span>
+                        </span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Ubicaciones</span>
+                    </div>
+                </div>
+
 
             </div>
         </div>
