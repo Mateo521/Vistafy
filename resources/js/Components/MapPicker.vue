@@ -35,7 +35,7 @@ const initMap = () => {
     }).setView([props.initialCenter.lat, props.initialCenter.lng], props.zoom);
 
 
-    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}', {
+    L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`, {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
