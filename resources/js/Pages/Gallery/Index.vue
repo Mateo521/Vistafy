@@ -649,7 +649,7 @@ const totalResults = () => {
                     </div>
                     <h3 class="font-flux text-4xl text-black mb-3">No hay resultados</h3>
                     <p class="text-gray-500 mb-8 max-w-md">No hemos encontrado fotografías que coincidan con tus filtros
-                        actuales. Intenta modificar tu búsqueda.</p>
+                        actuales. Intentá modificar tu búsqueda.</p>
                     <button @click="clearFilters"
                         class="bg-black text-white px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors">
                         Limpiar Filtros

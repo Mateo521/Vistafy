@@ -5,7 +5,7 @@ import { ArrowLeftIcon, ShieldCheckIcon, DocumentTextIcon } from '@heroicons/vue
 </script>
 
 <template>
-    <Head title="Términos y Condiciones | F33" />
+    <Head title="Términos y Condiciones" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">

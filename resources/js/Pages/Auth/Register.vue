@@ -18,7 +18,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Registro de Usuario | F33" />
+        <Head title="Registro de Usuario" />
 
         
         <div class="text-center mb-10 relative z-10">

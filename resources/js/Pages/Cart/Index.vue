@@ -130,7 +130,7 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-    <Head title="Carrito de Compras | F33" />
+    <Head title="Carrito de Compras" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans selection:bg-[#E30613] selection:text-white pb-24 pt-24 md:pt-28">
@@ -263,7 +263,7 @@ const handleImageError = (e) => {
                                 <p class="font-bold text-[#E30613] mb-1">Pago no disponible</p>
                                 <p>
                                     {{ unavailablePaymentPhotographers.map(photographer => photographer.name).join(', ') }}
-                                    debe vincular Mercado Pago para recibir pagos. Quita esas fotos del carrito o intenta más tarde.
+                                    debe vincular Mercado Pago para recibir pagos. Quita esas fotos del carrito o Intentá más tarde.
                                 </p>
                             </div>
 

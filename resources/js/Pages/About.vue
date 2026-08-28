@@ -12,7 +12,7 @@ import {
 
 <template>
 
-    <Head title="Nuestra misión | F33" />
+    <Head title="Nuestra misión" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased">

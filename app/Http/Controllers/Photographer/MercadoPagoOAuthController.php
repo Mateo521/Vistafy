@@ -82,7 +82,7 @@ class MercadoPagoOAuthController extends Controller
             ]);
 
             return redirect()->route('photographer.profile.edit')
-                ->with('error', 'Hubo un problema al validar tu cuenta con Mercado Pago. Por favor, intenta de nuevo.');
+                ->with('error', 'Hubo un problema al validar tu cuenta con Mercado Pago. Por favor, intentá de nuevo.');
 
         } catch (\Exception $e) {
             Log::error('Excepción crítica en callback de MP', ['error' => $e->getMessage()]);

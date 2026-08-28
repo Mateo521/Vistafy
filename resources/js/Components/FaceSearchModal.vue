@@ -84,7 +84,7 @@ const performSearch = async () => {
             .withFaceDescriptor();
 
         if (!detection) {
-            errorMessage.value = 'No se detectó ningún rostro en la imagen. Intenta con otra foto donde tu rostro sea visible.';
+            errorMessage.value = 'No se detectó ningún rostro en la imagen. Intentá con otra foto donde tu rostro sea visible.';
             isSearching.value = false;
             progressMessage.value = '';
             return;
@@ -108,7 +108,7 @@ const performSearch = async () => {
 
     } catch (error) {
         console.error('Error en búsqueda:', error);
-        errorMessage.value = error.response?.data?.message || 'Error al buscar. Intenta nuevamente.';
+        errorMessage.value = error.response?.data?.message || 'Error al buscar. Intentá nuevamente.';
     } finally {
         isSearching.value = false;
         progressMessage.value = '';

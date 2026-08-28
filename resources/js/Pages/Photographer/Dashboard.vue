@@ -57,7 +57,7 @@ const handleImageError = (e) => {
 
 <template>
 
-    <Head title="Panel de Control | F33" />
+    <Head title="Panel de Control" />
 
     <AuthenticatedLayout>
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-24 md:pt-28">

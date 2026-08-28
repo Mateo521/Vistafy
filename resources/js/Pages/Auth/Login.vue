@@ -26,7 +26,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Iniciar Sesión | F33" />
+        <Head title="Iniciar sesión" />
 
         
         <div class="text-center mb-10 relative z-10">

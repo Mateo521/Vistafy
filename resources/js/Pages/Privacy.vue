@@ -5,7 +5,7 @@ import { ArrowLeftIcon, LockClosedIcon, DocumentTextIcon } from '@heroicons/vue/
 </script>
 
 <template>
-    <Head title="Política de Privacidad | F33" />
+    <Head title="Política de Privacidad" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">

@@ -30,7 +30,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Restablecer contraseña | F33" />
+        <Head title="Restablecer contraseña" />
 
    
         <div class="text-center mb-10 relative z-10">

@@ -20,7 +20,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Recuperar Contraseña | F33" />
+        <Head title="Recuperar Contraseña" />
 
         <div class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F8F9FA] antialiased font-sans">
             

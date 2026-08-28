@@ -39,7 +39,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Alta de Fotógrafo | F33" />
+        <Head title="Alta de Fotógrafo" />
 
         <div class="min-h-screen bg-[#F8F9FA] font-sans antialiased py-12 md:py-24 text-slate-800">
             <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">

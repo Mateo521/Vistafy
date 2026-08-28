@@ -111,7 +111,7 @@ async function searchByFace() {
 
         if (detections.length === 0) {
             faceError.value = 'No se detectó ningún rostro en la imagen';
-            alert('No se detectó ningún rostro. Intenta con otra foto más clara.');
+            alert('No se detectó ningún rostro. Intentá con otra foto más clara.');
             searching.value = false;
             processingStage.value = '';
             return;
@@ -176,7 +176,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Head :title="`Escáner Facial - ${event.name} | F33`" />
+    <Head :title="`Escáner Facial - ${event.name}`" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans selection:bg-[#E30613] selection:text-white pb-24 pt-24 md:pt-28">
