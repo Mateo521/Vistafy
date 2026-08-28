@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY;
 
 const props = defineProps({
     modelValue: {
@@ -34,7 +35,7 @@ const initMap = () => {
     }).setView([props.initialCenter.lat, props.initialCenter.lng], props.zoom);
 
 
-    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2gqk_1_77e379e8d2f7f215be887004', {
+    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);

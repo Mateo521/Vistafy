@@ -2,7 +2,7 @@
 import { onMounted, ref, watch, nextTick } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-
+const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY;
 const props = defineProps({
     photographers: {
         type: Array,
@@ -40,7 +40,7 @@ const initMap = () => {
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 
-    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2gqk_1_77e379e8d2f7f215be887004', {
+    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}', {
         maxZoom: 19,
         minZoom: 4,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
