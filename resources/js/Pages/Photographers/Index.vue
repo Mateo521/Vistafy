@@ -305,7 +305,7 @@ const handleImageError = (e) => {
 
 
                 <div
-                    class="mb-10 relative bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-xl border border-gray-100 h-[400px]">
+                    class="mt-10 relative bg-white rounded overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-xl border border-gray-100 h-[650px]">
                     <PhotographerMap :photographers="photographers.data" class="w-full h-full" />
 
                     <div
