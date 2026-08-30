@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ArrowLeftIcon, HashtagIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
+import { ArrowLeftIcon, HashtagIcon, MagnifyingGlassIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     event: Object,
@@ -22,139 +22,166 @@ const searchBib = () => {
 </script>
 
 <template>
-    <Head :title="`[BÚSQUEDA DORSAL] ${event.name}`" />
+    <Head :title="`Buscar Dorsal - ${event.name} | F33`" />
 
     <AppLayout>
-        <div class="relative h-[40vh] min-h-[300px] bg-black overflow-hidden border-b-2 border-[#E30613]">
-            <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                class="absolute inset-0 w-full h-full object-cover filter grayscale opacity-40 mix-blend-screen" />
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-24 md:pt-28">
+            <div class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')]"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
-
-            <div class="absolute top-32 left-0 w-full px-4 sm:px-6 lg:px-8 z-10 max-w-7xl mx-auto">
-                <Link :href="route('events.show', event.slug)"
-                    class="inline-flex items-center text-zinc-500 hover:text-white font-mono text-[10px] font-bold uppercase tracking-widest transition-colors group bg-black border border-zinc-800 px-4 py-2 hover:border-white w-max">
-                    <ArrowLeftIcon class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    CANCELAR / VOLVER AL EVENTO
-                </Link>
-            </div>
-
-            <div class="absolute bottom-0 left-0 w-full p-8 z-10">
-                <div class="max-w-4xl mx-auto text-center">
-                    <HashtagIcon class="w-12 h-12 text-[#E30613] mx-auto mb-4" />
-                    <h1 class="text-5xl md:text-7xl font-flux text-white mb-2 uppercase tracking-tighter mix-blend-difference">
-                        Extracción por Dorsal
-                    </h1>
-                    <p class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-widest">> {{ event.name }}</p>
+                <div class="mb-6 relative z-20">
+                    <Link :href="route('events.show', event.slug)"
+                        class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all">
+                        <ArrowLeftIcon class="w-4 h-4" /> Volver al evento
+                    </Link>
                 </div>
-            </div>
-        </div>
 
-        <div class="bg-[#09090b] border-b border-zinc-800">
-            <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <form @submit.prevent="searchBib" class="space-y-4">
-                    <div class="bg-black border border-zinc-800 p-6 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
-                        <label for="bib_number" class="block font-mono text-[10px] font-bold uppercase tracking-widest text-[#E30613] mb-4 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-[#E30613] animate-pulse"></span>
-                            >_REQUERIDO: NÚMERO DE DORSAL
+                <div class="relative w-full h-[35vh] min-h-[300px] rounded-3xl overflow-hidden shadow-sm mb-12 flex flex-col justify-end group">
+                    <div class="absolute inset-0 w-full h-full bg-slate-900">
+                        <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
+                            class="w-full h-full object-cover opacity-70 mix-blend-overlay transition-transform duration-1000 " />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    </div>
+
+                    <div class="relative z-10 p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6 pb-24 md:pb-16">
+                        <div>
+                            <div class="inline-flex items-center gap-2 bg-[#E30613] text-white px-3 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-widest shadow-sm mb-4">
+                                <HashtagIcon class="w-4 h-4" /> Búsqueda por dorsal
+                            </div>
+                            <h1 class="font-flux text-4xl md:text-6xl text-white leading-none tracking-wide">
+                                {{ event.name }}
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="max-w-2xl mx-auto -mt-24 md:-mt-20 relative z-20 mb-16 px-4 sm:px-0">
+                    <form @submit.prevent="searchBib" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-gray-100">
+                        <label for="bib_number" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 text-center">
+                            Ingresá tu número de corredor
                         </label>
-                        <input
-                            id="bib_number"
-                            v-model="searchForm.bib_number"
-                            type="text"
-                            placeholder="EJ: 120, 529, 1234..."
-                            class="w-full px-4 py-4 bg-[#050505] border border-zinc-700 text-white focus:border-[#E30613] focus:ring-0 text-xl font-mono uppercase tracking-widest rounded-none transition-colors text-center"
-                            required
-                        />
-                        <p class="mt-3 text-[10px] font-mono uppercase text-zinc-600 tracking-widest text-center">
-                            INGRESÁ ÚNICAMENTE CARACTERES NUMÉRICOS
+                        
+                        <div class="relative mb-4">
+                            <HashtagIcon class="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-300" />
+                            <input
+                                id="bib_number"
+                                v-model="searchForm.bib_number"
+                                type="text"
+                                placeholder="Ej: 120, 529..."
+                                class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-flux text-3xl md:text-4xl text-center py-5 rounded transition-all outline-none placeholder-gray-300 uppercase tracking-widest"
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            :disabled="searchForm.processing"
+                            class="w-full bg-black text-white font-bold text-xs uppercase tracking-wider py-4 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+                        >
+                            <span v-if="searchForm.processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            <MagnifyingGlassIcon v-else class="w-5 h-5 group-hover:-rotate-12 transition-transform" />
+                            {{ searchForm.processing ? 'Buscando...' : 'Iniciar búsqueda' }}
+                        </button>
+                    </form>
+                </div>
+
+
+                <div class="max-w-[1500px] mx-auto">
+                    
+
+                    <div v-if="searchedBib && photos && photos.data.length > 0">
+                        
+
+                        <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-gray-200 pb-4 mb-8 gap-4">
+                            <div>
+                                <h2 class="font-flux text-3xl md:text-4xl text-black">
+                                    Dorsal <span class="text-[#E30613]">#{{ searchedBib }}</span>
+                                </h2>
+                            </div>
+                            <div class="bg-gray-100 text-slate-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider shadow-inner w-max">
+                                {{ photos.total }} {{ photos.total === 1 ? 'Captura Encontrada' : 'Capturas Encontradas' }}
+                            </div>
+                        </div>
+
+
+                        <div class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+                            <Link v-for="photo in photos.data" :key="photo.id"
+                                :href="route('gallery.show', photo.unique_id)"
+                                class="break-inside-avoid block group relative bg-gray-100 rounded overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full h-auto">
+
+                                <img :src="photo.thumbnail_url" :alt="photo.unique_id"
+                                    class="w-full h-auto object-cover transition-transform duration-700  pointer-events-none select-none"
+                                    loading="lazy" />
+
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+
+                                <div class="absolute top-3 left-3 pointer-events-none flex flex-wrap gap-1 max-w-[80%]">
+                                    <span class="bg-white/90 backdrop-blur-md text-[#E30613] font-bold text-[10px] uppercase tracking-wider px-2 py-1 rounded-md shadow-sm">
+                                        #{{ photo.bib_numbers.join(', #') }}
+                                    </span>
+                                </div>
+
+
+                                <div class="absolute bottom-3 right-3 bg-white text-black px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity shadow-sm flex items-center gap-1">
+                                    Ver foto
+                                </div>
+                            </Link>
+                        </div>
+
+                        <div v-if="photos.last_page > 1" class="mt-16 flex justify-center">
+                            <div class="flex flex-wrap items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-100">
+                                <template v-for="(link, index) in photos.links" :key="index">
+                                    <Link v-if="link.url" :href="link.url"
+                                        class="min-w-[40px] h-10 flex items-center justify-center px-4 rounded-full text-xs font-bold transition-colors"
+                                        :class="link.active 
+                                            ? 'bg-[#E30613] text-white shadow-md' 
+                                            : 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-black'"
+                                        v-html="link.label" />
+                                    <span v-else v-html="link.label" class="min-w-[40px] h-10 flex items-center justify-center px-4 rounded-full text-xs font-bold text-gray-300 cursor-not-allowed"></span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else-if="searchedBib" class="flex flex-col items-center justify-center py-24 bg-white border border-red-100 rounded-3xl shadow-sm h-full">
+                        <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                            <ExclamationTriangleIcon class="w-10 h-10 text-[#E30613]" />
+                        </div>
+                        <h3 class="font-flux text-3xl text-black mb-3">Sin Coincidencias</h3>
+                        <p class="text-sm font-medium text-gray-500 max-w-md text-center leading-relaxed">
+                            No pudimos encontrar fotos vinculadas al dorsal <strong class="text-[#E30613]">#{{ searchedBib }}</strong> en este evento. Verificá el número e intenta nuevamente.
                         </p>
                     </div>
 
-                    <button
-                        type="submit"
-                        :disabled="searchForm.processing"
-                        class="w-full bg-[#E30613] border border-[#E30613] hover:bg-white hover:border-white text-black font-mono text-[10px] font-bold uppercase tracking-widest px-6 py-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 rounded-none"
-                    >
-                        <MagnifyingGlassIcon class="w-5 h-5" />
-                        <span v-if="!searchForm.processing">Iniciar Búsqueda de Activos</span>
-                        <span v-else>Procesando Consulta...</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <div class="min-h-screen bg-[#050505] selection:bg-[#E30613] selection:text-black">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                
-                <div v-if="searchedBib && photos && photos.data.length > 0">
-                    <div class="mb-10 text-center border-y border-zinc-800 py-4 bg-[#09090b]">
-                        <p class="font-mono text-xs uppercase tracking-widest text-zinc-400">
-                            > STATUS_OK: <span class="text-white">{{ photos.total }}</span> ACTIVOS ENCONTRADOS PARA DORSAL 
-                            <strong class="text-[#E30613] ml-1">#{{ searchedBib }}</strong>
+                    <div v-else class="flex flex-col items-center justify-center py-24 bg-white border border-gray-100 rounded-3xl shadow-sm h-full">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                            <HashtagIcon class="w-10 h-10 text-gray-300" />
+                        </div>
+                        <h3 class="font-flux text-3xl text-black mb-3">Sistema OCR</h3>
+                        <p class="text-sm font-medium text-gray-500 max-w-sm text-center leading-relaxed">
+                            Ingresá tu número de corredor en el buscador superior para escanear.
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-4">
-                        <Link v-for="photo in photos.data" :key="photo.id"
-                            :href="route('gallery.show', photo.unique_id)"
-                            class="group relative aspect-square overflow-hidden bg-zinc-950 border border-zinc-800 hover:border-[#E30613] rounded-none transition-colors block">
-                            
-                            <img :src="photo.thumbnail_url" :alt="photo.unique_id"
-                                class="w-full h-full object-cover transition-transform duration-700  filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100"
-                                loading="lazy" />
-
-                            <div class="absolute inset-0 bg-[#E30613]/0 group-hover:bg-[#E30613]/20 transition-colors duration-300 mix-blend-multiply pointer-events-none"></div>
-
-                            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none">
-                                <span class="text-[10px] font-mono font-bold text-[#E30613] uppercase tracking-widest mb-1">>_ INSPECCIONAR</span>
-                                <span class="text-[9px] text-zinc-400 font-mono uppercase">ASSET_#{{ photo.unique_id }}</span>
-                            </div>
-
-                            <div class="absolute top-2 left-2 bg-black/80 backdrop-blur-sm border border-zinc-700 text-white px-2 py-1 rounded-none font-mono text-[9px] font-bold uppercase tracking-widest group-hover:border-[#E30613] transition-colors">
-                                #{{ photo.bib_numbers.join(', #') }}
-                            </div>
-                        </Link>
-                    </div>
-
-                    <div v-if="photos.last_page > 1" class="flex flex-wrap justify-center gap-2 pt-12 mt-12 border-t border-zinc-800">
-                        <template v-for="(link, index) in photos.links" :key="index">
-                            <Link v-if="link.url" :href="link.url"
-                                class="h-10 min-w-[2.5rem] px-3 flex items-center justify-center font-mono text-[10px] font-bold uppercase tracking-widest rounded-none transition-colors border"
-                                :class="link.active 
-                                    ? 'bg-[#E30613] text-black border-[#E30613]' 
-                                    : 'bg-black text-zinc-500 border-zinc-800 hover:border-white hover:text-white'"
-                                v-html="link.label" />
-                            <span v-else v-html="link.label" class="h-10 min-w-[2.5rem] px-3 flex items-center justify-center font-mono text-[10px] font-bold uppercase text-zinc-700 border border-transparent cursor-not-allowed"></span>
-                        </template>
-                    </div>
                 </div>
-
-                <div v-else-if="searchedBib" class="text-center py-24 border-2 border-dashed border-zinc-800 bg-[#09090b] mt-8">
-                    <HashtagIcon class="w-16 h-16 text-zinc-700 mx-auto mb-4 stroke-1" />
-                    <h3 class="font-flux text-2xl uppercase tracking-widest text-zinc-500 mb-2">
-                        ERR_NOT_FOUND // 0 RESULTADOS
-                    </h3>
-                    <p class="font-mono text-xs text-zinc-400 mb-2 uppercase tracking-widest">
-                        NO EXISTEN REGISTROS VINCULADOS AL DORSAL <strong class="text-[#E30613] ml-1">#{{ searchedBib }}</strong>
-                    </p>
-                    <p class="font-mono text-[10px] text-zinc-600 uppercase tracking-widest">
-                        VERIFICÁ LOS DATOS INGRESADOS O INTENTÁ CON OTRO NÚMERO
-                    </p>
-                </div>
-
-                <div v-else class="text-center py-24 border border-zinc-800 bg-[#09090b] mt-8">
-                    <HashtagIcon class="w-16 h-16 text-zinc-800 mx-auto mb-4" />
-                    <h3 class="font-flux text-3xl uppercase tracking-widest text-zinc-600 mb-4">
-                     LISTO
-                    </h3>
-                    <p class="font-mono text-xs text-zinc-500 uppercase tracking-widest">
-                        INGRESÁ EL NÚMERO DE DORSAL
-                    </p>
-                </div>
-
             </div>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+</style>
