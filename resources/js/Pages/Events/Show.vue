@@ -23,6 +23,9 @@ import {
     CalendarIcon,
     XMarkIcon,
     CameraIcon,
+    HashtagIcon,
+    ArrowRightIcon,
+    MagnifyingGlassIcon,
     ShoppingCartIcon
 } from '@heroicons/vue/24/outline';
 
@@ -267,7 +270,7 @@ const handleImageError = (e) => {
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
                             <div v-for="(photo, index) in gallery.photos" :key="photo.id"
                                 @click="openLightbox(index, gallery.photos)"
-                                class="group relative rounded-2xl overflow-hidden aspect-[4/5] cursor-pointer shadow-sm border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300 bg-gray-100">
+                                class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300 bg-gray-100">
 
                                 <ProtectedImage :src="photo.thumbnail_url"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none"
@@ -330,7 +333,7 @@ const handleImageError = (e) => {
                         :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true" :initialSlide="activeIndex"
                         class="h-full thumbs-gallery">
                         <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
-                            class="!w-16 md:!w-20 h-full rounded-xl cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
+                            class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
                             <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
                         </swiper-slide>
                     </swiper>
@@ -346,10 +349,10 @@ const handleImageError = (e) => {
                             class="flex items-center justify-center p-4">
                             <div class="relative h-full max-w-full flex items-center justify-center">
                                 <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
-                                    class="max-h-full max-w-full object-contain rounded-2xl shadow-2xl"
+                                    class="max-h-full max-w-full object-contain rounded shadow-2xl"
                                     @error="handleImageError" />
                                 
-                                <div class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 backdrop-blur-md rounded-2xl shadow-lg flex justify-between items-center border border-white">
+                                <div class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 backdrop-blur-md rounded shadow-lg flex justify-between items-center border border-white">
                                     <div>
                                         <p class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">Ref: {{ photo.unique_id }}</p>
                                         <p class="text-[#E30613] font-flux text-3xl leading-none">${{ photo.price }}</p>

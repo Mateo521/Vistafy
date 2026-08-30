@@ -35,7 +35,7 @@ const searchBib = () => {
                     </Link>
                 </div>
 
-                <div class="relative w-full h-[35vh] min-h-[300px] rounded-3xl overflow-hidden shadow-sm mb-12 flex flex-col justify-end group">
+                <div class="relative w-full h-[35vh] min-h-[300px] rounded overflow-hidden shadow-sm mb-12 flex flex-col justify-end group">
                     <div class="absolute inset-0 w-full h-full bg-slate-900">
                         <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
                             class="w-full h-full object-cover opacity-70 mix-blend-overlay transition-transform duration-1000 " />
@@ -55,7 +55,7 @@ const searchBib = () => {
                 </div>
 
                 <div class="max-w-2xl mx-auto -mt-24 md:-mt-20 relative z-20 mb-16 px-4 sm:px-0">
-                    <form @submit.prevent="searchBib" class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-gray-100">
+                    <form @submit.prevent="searchBib" class="bg-white rounded p-6 md:p-8 shadow-xl border border-gray-100">
                         <label for="bib_number" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 text-center">
                             Ingresá tu número de corredor
                         </label>
@@ -143,7 +143,7 @@ const searchBib = () => {
                         </div>
                     </div>
 
-                    <div v-else-if="searchedBib" class="flex flex-col items-center justify-center py-24 bg-white border border-red-100 rounded-3xl shadow-sm h-full">
+                    <div v-else-if="searchedBib" class="flex flex-col items-center justify-center py-24 bg-white border border-red-100 rounded shadow-sm h-full">
                         <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
                             <ExclamationTriangleIcon class="w-10 h-10 text-[#E30613]" />
                         </div>
@@ -153,7 +153,7 @@ const searchBib = () => {
                         </p>
                     </div>
 
-                    <div v-else class="flex flex-col items-center justify-center py-24 bg-white border border-gray-100 rounded-3xl shadow-sm h-full">
+                    <div v-else class="flex flex-col items-center justify-center py-24 bg-white border border-gray-100 rounded shadow-sm h-full">
                         <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                             <HashtagIcon class="w-10 h-10 text-gray-300" />
                         </div>
