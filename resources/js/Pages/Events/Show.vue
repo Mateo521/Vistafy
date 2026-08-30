@@ -111,7 +111,7 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-    <Head :title="`${event.name} | F33`" />
+    <Head :title="`${event.name}`" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-24 md:pt-28">
@@ -126,7 +126,7 @@ const handleImageError = (e) => {
                 </div>
 
 
-                <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 relative mb-12 flex flex-col lg:flex-row">
+                <div class="bg-white rounded overflow-hidden shadow-sm border border-gray-100 relative mb-12 flex flex-col lg:flex-row">
 
                     <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 h-64 lg:h-full order-1 lg:order-2">
                         <img v-if="event.cover_image_url" :src="event.cover_image_url"
@@ -173,7 +173,7 @@ const handleImageError = (e) => {
                     
 
                     <Link :href="route('events.face-search', event.slug)"
-                        class="group bg-white border border-gray-100 p-6 md:p-8 rounded-3xl shadow-sm hover:shadow-md hover:border-red-100 transition-all flex items-center justify-between">
+                        class="group bg-white border border-gray-100 p-6 md:p-8 rounded shadow-sm hover:shadow-md hover:border-red-100 transition-all flex items-center justify-between">
                         <div class="flex items-center gap-5">
                             <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                 <MagnifyingGlassIcon class="w-6 h-6 text-[#E30613]" />
@@ -193,7 +193,7 @@ const handleImageError = (e) => {
                     </Link>
 
                     <Link :href="route('events.bib-search', event.slug)"
-                        class="group bg-white border border-gray-100 p-6 md:p-8 rounded-3xl shadow-sm hover:shadow-md hover:border-gray-300 transition-all flex items-center justify-between">
+                        class="group bg-white border border-gray-100 p-6 md:p-8 rounded shadow-sm hover:shadow-md hover:border-gray-300 transition-all flex items-center justify-between">
                         <div class="flex items-center gap-5">
                             <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                 <HashtagIcon class="w-6 h-6 text-black" />
@@ -216,7 +216,7 @@ const handleImageError = (e) => {
 
 
                 <div v-if="!galleries || galleries.length === 0"
-                    class="text-center py-24 bg-white rounded-3xl shadow-sm border border-gray-100 mt-8 flex flex-col items-center">
+                    class="text-center py-24 bg-white rounded shadow-sm border border-gray-100 mt-8 flex flex-col items-center">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                         <CameraIcon class="w-10 h-10 text-gray-300" />
                     </div>

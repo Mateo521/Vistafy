@@ -22,7 +22,7 @@ const searchBib = () => {
 </script>
 
 <template>
-    <Head :title="`Buscar Dorsal - ${event.name} | F33`" />
+    <Head :title="`Buscar Dorsal - ${event.name}`" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-24 md:pt-28">
