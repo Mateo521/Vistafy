@@ -85,7 +85,6 @@ const groupedPhotos = computed(() => {
     const groups = {};
 
     allPhotos.value.forEach(photo => {
-
         const authorId = photo.photographer_name || 'Anónimo';
 
         if (!groups[authorId]) {
@@ -93,8 +92,8 @@ const groupedPhotos = computed(() => {
                 photographer: {
                     id: authorId,
                     name: photo.photographer_name || 'Fotógrafo Anónimo',
-                    profile_photo_url: photo.photographer?.profile_photo_url || null,
-                    slug: photo.photographer?.slug || null
+                    profile_photo_url: photo.photographer_avatar || null,
+                    slug: photo.photographer_slug || '#'
                 },
                 photos: []
             };
@@ -103,12 +102,12 @@ const groupedPhotos = computed(() => {
         groups[authorId].photos.push(photo);
     });
 
-
     return Object.values(groups);
 });
 
-
 const allPhotos = ref(props.photos.data);
+
+
 const nextUrl = ref(props.photos.next_page_url);
 const loadingMore = ref(false);
 
@@ -618,15 +617,15 @@ const totalResults = () => {
 
 
 
-                <div v-if="groupedPhotos && groupedPhotos.length > 0" class="space-y-16 pb-12">
+                <div v-if="groupedPhotos && groupedPhotos.length > 0" class="space-y-16 pb-12 w-full overflow-hidden">
 
                     <div v-for="(group, index) in groupedPhotos" :key="index" class="w-full">
 
 
                         <div class="flex items-center justify-between mb-6 px-4 md:px-8 max-w-[90rem] mx-auto">
-                            <Link :href="route('photographers.show', group.photographer.slug || group.photographer.id)"
+                            <Link :href="route('photographers.show', group.photographer.slug)"
                                 class="flex items-center gap-4 group/author">
-                                <img :src="group.photographer.profile_photo_url || getFallbackAvatar(group.photographer.name)"
+                                <img :src="group.photographer.profile_photo_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'"
                                     :alt="group.photographer.name"
                                     class="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover/author:border-[#E30613] transition-colors shadow-sm">
                                 <div>
@@ -635,7 +634,7 @@ const totalResults = () => {
                                         {{ group.photographer.name }}
                                     </h3>
                                     <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">
-                                        {{ group.photos.length }} fotografías en pantalla
+                                        {{ group.photos.length }} fotografías disponibles
                                     </p>
                                 </div>
                             </Link>
@@ -647,31 +646,26 @@ const totalResults = () => {
                                 :navigation="{
                                     nextEl: `.swiper-next-${index}`,
                                     prevEl: `.swiper-prev-${index}`,
-                                }" class="!overflow-visible">
+                                }" class="!overflow-visible w-full">
 
                                 <swiper-slide v-for="photo in group.photos" :key="photo.id"
                                     class="!w-[240px] md:!w-[280px]">
-
-                                    <div @click="router.visit(route('gallery.show', photo.unique_id))"
+                                    <div @click="router.visit(route('gallery.show', { uniqueId: photo.unique_id || photo.id }))"
                                         @contextmenu.prevent
                                         class="break-inside-avoid block group/card relative bg-white rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200 aspect-[3/4]">
-
 
                                         <ProtectedImage :src="fixImageCache(photo.thumbnail_url)" :alt="photo.unique_id"
                                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 pointer-events-none"
                                             loading="lazy" @error="handleImageError" />
 
-
                                         <div
                                             class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none">
                                         </div>
-
 
                                         <div
                                             class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold text-black shadow-sm pointer-events-none">
                                             ${{ photo.price || '0.00' }}
                                         </div>
-
 
                                         <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
                                             class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center gap-0 group/cart hover:bg-black hover:text-white transition-all duration-300 pointer-events-auto z-20">
@@ -682,27 +676,6 @@ const totalResults = () => {
                                                 Añadir
                                             </span>
                                         </button>
-
-
-                                        <div v-if="showingFaceResults && photo.similarity"
-                                            class="absolute bottom-3 left-3 bg-[#E30613] text-white px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider shadow-md pointer-events-none z-10">
-                                            Match: {{ Math.round(photo.similarity * 100) }}%
-                                        </div>
-
-
-                                        <div v-if="showingBibResults && photo.bib_numbers"
-                                            class="absolute bottom-3 left-3 bg-black text-white px-3 py-1.5 rounded-full font-bold text-[10px] tracking-wider shadow-md pointer-events-none z-10">
-                                            #{{ photo.bib_numbers.join(', ') }}
-                                        </div>
-
-
-                                        <div
-                                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white opacity-0 group-hover/card:opacity-100 transition-all duration-300 pointer-events-none">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                            </svg>
-                                        </div>
                                     </div>
                                 </swiper-slide>
                             </swiper>
