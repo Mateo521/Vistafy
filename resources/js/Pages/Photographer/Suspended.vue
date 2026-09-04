@@ -4,116 +4,141 @@ import { Head, Link } from '@inertiajs/vue3';
 import {
     NoSymbolIcon,
     ExclamationTriangleIcon,
-    EnvelopeIcon
+    EnvelopeIcon,
+    InformationCircleIcon
 } from '@heroicons/vue/24/outline';
 </script>
 
 <template>
-    <Head title="Acceso Revocado" />
+    <Head title="Acceso Restringido | F33" />
 
     <AuthenticatedLayout>
-        <div class="min-h-screen bg-black py-12 text-white selection:bg-red-600 selection:text-black">
-            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div class="mb-12 border-l-4 border-red-600 pl-8">
-                    <span class="font-mono text-[10px] font-bold text-red-600 uppercase tracking-widest mb-2 block animate-pulse">
-                        [STATUS: ERROR_403] Restricción de Acceso
-                    </span>
-                    <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">
-                        Cuenta<br>Suspendida.
-                    </h1>
-                    <p class="font-mono text-xs text-zinc-500 mt-6 uppercase tracking-widest max-w-xl">
-                        Los privilegios operativos de este perfil fotográfico han sido revocados temporalmente por el sistema.
-                    </p>
+
+                <div class="mb-10 text-center md:text-left flex flex-col md:flex-row items-center gap-6">
+                    <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center border-4 border-white shadow-sm shrink-0 relative">
+                        <div class="absolute inset-0 rounded-full border border-red-100 animate-ping opacity-20"></div>
+                        <NoSymbolIcon class="w-12 h-12 text-[#E30613]" />
+                    </div>
+                    <div>
+                        <span class="inline-flex items-center gap-2 bg-red-50 text-[#E30613] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 border border-red-100">
+                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span>
+                            Error 403: Acceso restringido
+                        </span>
+                        <h1 class="text-4xl md:text-6xl font-flux text-black tracking-wide leading-none mb-3">
+                            Cuenta <span class="text-[#E30613]">suspendida</span>
+                        </h1>
+                        <p class="text-sm font-medium text-gray-500 max-w-lg">
+                            Los privilegios operativos de este perfil fueron revocados temporalmente.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="space-y-8">
-                    <div class="border-2 border-red-600 bg-red-600/5 p-8 md:p-10 relative overflow-hidden">
-                        <NoSymbolIcon class="absolute -right-8 -top-8 w-48 h-48 text-red-600 opacity-5 pointer-events-none" />
+                <div class="space-y-6">
+
+                
+                    <div class="bg-white rounded-3xl p-6 md:p-8 border border-red-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
                         
-                        <h2 class="font-mono text-xs font-bold uppercase tracking-widest text-red-600 mb-6 border-b border-red-600/20 pb-2">
-                            1. Estado actual
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4 relative z-10">
+                            <span class="w-6 h-6 rounded-full bg-red-50 text-[#E30613] flex items-center justify-center">1</span> 
+                            Estado actual
                         </h2>
-                        <ul class="space-y-4 font-mono text-xs text-zinc-300 uppercase tracking-wide">
-                            <li class="flex items-start gap-4">
-                                <span class="text-red-600 font-black">>></span> 
-                                <span>Acceso denegado al panel de administración y métricas.</span>
+                        
+                        <ul class="space-y-4 text-sm font-medium text-slate-600 relative z-10">
+                            <li class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-full bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
+                                    <NoSymbolIcon class="w-3 h-3" />
+                                </span> 
+                                Acceso denegado al panel de administración y herramientas.
                             </li>
-                            <li class="flex items-start gap-4">
-                                <span class="text-red-600 font-black">>></span> 
-                                <span>Eventos y galerías fotográficas ocultas al público general.</span>
+                            <li class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-full bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
+                                    <NoSymbolIcon class="w-3 h-3" />
+                                </span> 
+                                Eventos y galerías ocultas al público general.
                             </li>
-                            <li class="flex items-start gap-4">
-                                <span class="text-red-600 font-black">>></span> 
-                                <span>Restricción total para la carga de nuevos activos o creación de eventos.</span>
+                            <li class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-full bg-red-50 text-[#E30613] flex items-center justify-center shrink-0 mt-0.5">
+                                    <NoSymbolIcon class="w-3 h-3" />
+                                </span> 
+                                Restricción total para la carga de nuevas fotos o creación de eventos.
                             </li>
                         </ul>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="border border-zinc-800 bg-zinc-950 p-8">
-                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-2">
-                                Causas Frecuentes de suspensión
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+
+                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                                <InformationCircleIcon class="w-4 h-4 text-gray-400" /> Posibles causas
                             </h3>
-                            <ul class="space-y-3 font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
-                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Violación a los <Link :href="route('terms')" class="text-zinc-400 hover:text-white transition-colors">términos de servicio</Link>.</li>
-                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Reportes negativos o disputas de clientes.</li>
-                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Material que incumple los estándares de calidad.</li>
-                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Abandono o falta de respuesta comercial.</li>
-                                <li class="flex items-start gap-3"><span class="text-zinc-600">--</span> Detección de tráfico anómalo o fraude.</li>
+                            <ul class="space-y-3 text-sm font-medium text-slate-600">
+                                <li class="flex items-start gap-2"><span class="text-gray-300">•</span> Violación a los <Link :href="route('terms')" class="text-black hover:underline font-bold transition-all">términos de servicio</Link>.</li>
+                                <li class="flex items-start gap-2"><span class="text-gray-300">•</span> Reportes negativos o disputas de clientes.</li>
+                                <li class="flex items-start gap-2"><span class="text-gray-300">•</span> Material que incumple los estándares de calidad.</li>
+                                <li class="flex items-start gap-2"><span class="text-gray-300">•</span> Abandono o falta de respuesta comercial.</li>
+                                <li class="flex items-start gap-2"><span class="text-gray-300">•</span> Detección de tráfico anómalo o fraude.</li>
                             </ul>
                         </div>
 
-                        <div class="border border-zinc-800 bg-zinc-950 p-8">
-                            <h3 class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6 border-b border-zinc-800 pb-2">
-                                Recuperación
+                        
+                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                                <span class="w-4 h-px bg-gray-200"></span> Proceso de recuperación
                             </h3>
-                            <ol class="space-y-4 font-mono text-[10px] text-zinc-400 uppercase tracking-wider">
-                                <li class="flex items-start gap-3">
-                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">01</span> 
-                                    <span>Revisar la notificación de auditoría enviada al correo registrado.</span>
+                            <ol class="space-y-4 text-sm font-medium text-slate-600 relative">
+                                <div class="absolute left-2.5 top-2 bottom-2 w-px bg-gray-100 -z-10"></div>
+                                <li class="flex items-start gap-3 bg-white">
+                                    <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 text-[10px] font-bold">1</span> 
+                                    <span>Revisar la notificación enviada al correo registrado.</span>
                                 </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">02</span> 
-                                    <span>Iniciar protocolo de apelación mediante el canal oficial.</span>
+                                <li class="flex items-start gap-3 bg-white">
+                                    <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 text-[10px] font-bold">2</span> 
+                                    <span>Iniciar protocolo de apelación.</span>
                                 </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">03</span> 
+                                <li class="flex items-start gap-3 bg-white">
+                                    <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 text-[10px] font-bold">3</span> 
                                     <span>Adjuntar documentación respaldatoria si es requerida.</span>
                                 </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="text-white font-black bg-zinc-800 px-2 py-0.5">04</span> 
-                                    <span>Aguardar resolución (Tiempo estimado: 24-48 hs hábiles).</span>
+                                <li class="flex items-start gap-3 bg-white">
+                                    <span class="w-5 h-5 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center shrink-0 text-[10px] font-bold">4</span> 
+                                    <span>Esperar resolución (Tiempo estimado: 24-48 hs hábiles).</span>
                                 </li>
                             </ol>
                         </div>
                     </div>
 
-                    <div class="border-2 border-amber-500 bg-amber-500/5 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <ExclamationTriangleIcon class="w-8 h-8 text-amber-500 flex-shrink-0" />
+
+                    <div class="bg-orange-50 border border-orange-100 rounded p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm">
+                        <ExclamationTriangleIcon class="w-8 h-8 text-orange-500 shrink-0" />
                         <div>
-                            <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-500">Advertencia del Sistema</p>
-                            <p class="font-mono text-xs text-zinc-400 uppercase tracking-wide mt-1">
-                                Las suspensiones reiteradas derivarán en la terminación permanente de la cuenta y la purga irrecuperable de todos los activos digitales almacenados.
+                            <p class="text-xs font-bold uppercase tracking-wider text-orange-600 mb-1">Advertencia</p>
+                            <p class="text-sm font-medium text-orange-800/80 leading-relaxed">
+                                Las suspensiones reiteradas derivarán en la terminación permanente de la cuenta y el borrado irrecuperable de todas las fotos almacenadas.
                             </p>
                         </div>
                     </div>
 
-                    <div class="border border-zinc-800 bg-zinc-950 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div>
-                            <p class="font-mono text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Soporte técnico</p>
-                            <p class="font-mono text-sm text-white flex items-center gap-2">
-                                <EnvelopeIcon class="w-4 h-4 text-zinc-400" /> contacto@f33.click
+                
+                    <div class="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                        <div class="text-center md:text-left">
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Soporte</p>
+                            <p class="text-sm font-bold text-slate-700 flex items-center justify-center md:justify-start gap-2">
+                                <EnvelopeIcon class="w-4 h-4 text-gray-400" /> contacto@f33.click
                             </p>
                         </div>
                         
-                        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <Link :href="route('home')"
-                                class="border-2 border-zinc-700 bg-black text-zinc-400 px-8 py-4 font-black uppercase tracking-widest text-[10px] hover:bg-white hover:text-black hover:border-white transition-colors text-center text-nowrap">
+                                class="flex-1 md:flex-none px-6 py-3.5 bg-white border border-gray-200 text-gray-600 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-gray-50 hover:text-black transition-colors text-center shadow-sm">
                                 Volver al inicio
                             </Link>
                             <a href="mailto:contacto@f33.click?subject=Apelación%20de%20suspensión"
-                                class="border-2 border-red-600 bg-red-600 text-black px-8 py-4 font-black uppercase tracking-widest text-[10px] hover:bg-white hover:border-white transition-colors text-center text-nowrap">
+                                class="flex-1 md:flex-none px-6 py-3.5 bg-black text-white rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all text-center">
                                 Iniciar apelación
                             </a>
                         </div>
