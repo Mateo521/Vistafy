@@ -63,19 +63,42 @@ public function store(Request $request, Event $event)
             abort(403, 'No tienes permiso para escribir aquí.');
         }
 
-
         $request->validate([
             'message' => 'required|string|max:1000'
         ]);
-
-
-        // dd('Intentando guardar...', $request->message, $photographer->id, $event->id);
 
         EventMessage::create([
             'event_id' => $event->id,
             'photographer_id' => $photographer->id,
             'message' => $request->message
         ]);
+
+
+        if ($event->messages()->count() === 1) {
+            
+            $creator = $event->photographer; 
+            $collaborators = $event->collaborators()->where('event_photographer.status', 'approved')->get();
+            
+
+            $recipients = collect([$creator])
+                ->merge($collaborators)
+                ->unique('id')
+                ->reject(function ($p) use ($photographer) {
+                    return $p->id === $photographer->id;
+                });
+
+
+            foreach ($recipients as $recipient) {
+                if ($recipient->user && $recipient->user->email) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($recipient->user->email)
+                            ->send(new \App\Mail\EventChatStartedMail($event, $photographer));
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Error enviando aviso de chat: ' . $e->getMessage());
+                    }
+                }
+            }
+        }
 
         return back(); 
     }
