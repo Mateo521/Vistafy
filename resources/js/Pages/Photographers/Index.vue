@@ -67,7 +67,7 @@ const handleImageError = (e) => {
 
 <template>
 
-    <Head title="Staff y Fotógrafos — F33.CLICK" />
+    <Head title="Staff y fotógrafos — f33.click" />
 
     <AppLayout>
 

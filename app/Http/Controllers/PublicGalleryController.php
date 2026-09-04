@@ -18,7 +18,7 @@ class PublicGalleryController extends Controller
             ->where('is_active', true)
             ->where('is_private', false)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->orderBy('event_date', 'desc')
             ->take(15)
@@ -40,10 +40,10 @@ class PublicGalleryController extends Controller
                 ];
             });
 
-        $recentPhotos = Photo::with(['event', 'photographer.user'])
+        $groupedPhotos = Photo::with(['event', 'photographer.user'])
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->where(function ($query) {
                 $query->whereNull('event_id')
@@ -53,31 +53,43 @@ class PublicGalleryController extends Controller
                     });
             })
             ->latest('created_at')
-            ->take(20)
+            ->take(50)
             ->get()
-            ->map(function ($photo) {
+            ->groupBy('photographer_id')
+            ->map(function ($photos, $photographerId) {
+                $photographer = $photos->first()->photographer;
+
                 return [
-                    'id' => $photo->id,
-                    'unique_id' => $photo->unique_id,
-                    'event_id' => $photo->event_id,
-                    'original_url' => $photo->original_url,
-                    'thumbnail_url' => $photo->thumbnail_url,
-                    'watermarked_url' => $photo->watermarked_url,
-                    'downloads' => $photo->downloads ?? 0,
-                    'created_at' => $photo->created_at->toISOString(),
-                    'event_name' => optional($photo->event)->name,
-                    'event_slug' => optional($photo->event)->slug,
-                    'event_is_private' => optional($photo->event)->is_private,
-                    'photographer_name' => optional($photo->photographer)->business_name
-                        ?? optional(optional($photo->photographer)->user)->name
-                        ?? null,
+                    'photographer' => [
+                        'id' => $photographer->id,
+                        'name' => $photographer->business_name ?? optional($photographer->user)->name ?? 'Fotógrafo Anónimo',
+                        'profile_photo_url' => $photographer->profile_photo_url,
+                        'slug' => $photographer->slug,
+                    ],
+
+                    'photos' => $photos->map(function ($photo) {
+                        return [
+                            'id' => $photo->id,
+                            'unique_id' => $photo->unique_id,
+                            'event_id' => $photo->event_id,
+                            'original_url' => $photo->original_url,
+                            'thumbnail_url' => $photo->thumbnail_url,
+                            'watermarked_url' => $photo->watermarked_url,
+                            'downloads' => $photo->downloads ?? 0,
+                            'created_at' => $photo->created_at->toISOString(),
+                            'event_name' => optional($photo->event)->name,
+                            'event_slug' => optional($photo->event)->slug,
+                            'event_is_private' => optional($photo->event)->is_private,
+                        ];
+                    })->values(),
                 ];
-            });
+            })
+            ->values();
 
         $futureEvents = \App\Models\FutureEvent::with('photographer.user')
             ->upcoming()
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->orderBy('event_date', 'asc')
             ->get()
@@ -109,11 +121,17 @@ class PublicGalleryController extends Controller
 
         $stats = [
             'total_photos' => Photo::where('is_active', true)
-                ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count(),
+                ->whereHas('photographer', function ($q) {
+                    $q->where('status', 'approved');
+                })->count(),
             'total_events' => Event::where('is_active', true)
-                ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count()
+                ->whereHas('photographer', function ($q) {
+                    $q->where('status', 'approved');
+                })->count()
                 + \App\Models\FutureEvent::upcoming()
-                ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count(),
+                    ->whereHas('photographer', function ($q) {
+                        $q->where('status', 'approved');
+                    })->count(),
             'total_photographers' => Photographer::where('status', 'approved')->count(),
         ];
 
@@ -129,8 +147,8 @@ class PublicGalleryController extends Controller
 
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
-            'recentPhotos' => $recentPhotos,
-            'futureEvents' => $futureEvents,  
+            'recentPhotos' => $groupedPhotos,
+            'futureEvents' => $futureEvents,
             'stats' => $stats,
             'videoList' => $videoFiles,
             'banners' => $bannerFiles,
@@ -144,7 +162,7 @@ class PublicGalleryController extends Controller
         $query = Photo::with(['photographer', 'event'])
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved'); 
+                $q->where('status', 'approved');
             })
             ->where(function ($q) {
                 $q->whereNull('event_id')
@@ -219,7 +237,7 @@ class PublicGalleryController extends Controller
 
         $events = Event::where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved'); 
+                $q->where('status', 'approved');
             })
             ->where('is_private', false)
             ->select('id', 'name')
@@ -249,7 +267,7 @@ class PublicGalleryController extends Controller
 
         $photos = Photo::where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->where('bib_processed', true)
             ->whereNotNull('bib_numbers')
@@ -304,7 +322,7 @@ class PublicGalleryController extends Controller
             ->whereNotNull('face_encodings')
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->with(['photographer:id,slug,business_name', 'event:id,name,slug'])
             ->get();
@@ -371,7 +389,7 @@ class PublicGalleryController extends Controller
         $photo = Photo::where('unique_id', strtoupper($uniqueId))
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->with([
                 'photographer' => function ($query) {
@@ -385,7 +403,7 @@ class PublicGalleryController extends Controller
         $relatedPhotos = Photo::where('is_active', true)
             ->where('id', '!=', $photo->id)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved'); 
+                $q->where('status', 'approved');
             })
             ->where(function ($q) use ($photo) {
                 $q->where('photographer_id', $photo->photographer_id)
@@ -452,7 +470,7 @@ class PublicGalleryController extends Controller
         $photo = Photo::where('unique_id', $uniqueId)
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->first();
 
@@ -463,7 +481,7 @@ class PublicGalleryController extends Controller
         $similarPhotos = Photo::where('is_active', true)
             ->where('unique_id', 'like', "%{$uniqueId}%")
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->take(10)
             ->get();
@@ -476,12 +494,12 @@ class PublicGalleryController extends Controller
             ->with('info', "No se encontró la foto exacta '{$uniqueId}'. Mostrando resultados similares.");
     }
 
-public function showEvent(Request $request, $slug)
+    public function showEvent(Request $request, $slug)
     {
-       
+
         $event = Event::where('slug', $slug)
             ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');  
+                $q->where('status', 'approved');
             })
             ->with([
                 'photographer' => function ($query) {
@@ -503,26 +521,21 @@ public function showEvent(Request $request, $slug)
             }
         }
 
-        
         $photographersQuery = Photographer::whereHas('photos', function ($q) use ($event) {
-                $q->where('event_id', $event->id)->where('is_active', true);
-            })
+            $q->where('event_id', $event->id)->where('is_active', true);
+        })
             ->where('status', 'approved')
             ->with('user:id,name,email')
             ->inRandomOrder();
 
-      
         if ($request->filled('photographer_id')) {
             $photographersQuery->where('id', $request->photographer_id);
         }
 
         $activePhotographers = $photographersQuery->get();
 
-      
-        
         $galleries = $activePhotographers->map(function ($photographer) use ($event) {
-            
-            
+
             $roles = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
@@ -532,7 +545,6 @@ public function showEvent(Request $request, $slug)
                 ->pluck('location_role')
                 ->toArray();
 
-            
             $photos = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
@@ -545,9 +557,8 @@ public function showEvent(Request $request, $slug)
                         'title' => $photo->title,
                         'price' => $photo->price,
                         'location_role' => $photo->location_role,
-                        
-                        
-                        'thumbnail_url' => $photo->thumbnail_url, 
+
+                        'thumbnail_url' => $photo->thumbnail_url,
                         'watermarked_url' => $photo->watermarked_url,
                     ];
                 });
@@ -556,7 +567,7 @@ public function showEvent(Request $request, $slug)
                 'photographer' => [
                     'id' => $photographer->id,
                     'business_name' => $photographer->business_name ?? $photographer->user->name ?? 'Fotógrafo',
-                    'slug' => $photographer->slug,  
+                    'slug' => $photographer->slug,
                     'profile_photo_url' => $photographer->profile_photo_url,
                 ],
                 'roles' => $roles,
@@ -564,12 +575,12 @@ public function showEvent(Request $request, $slug)
                 'photos' => $photos,
             ];
         });
-        
+
         $filterPhotographers = Photographer::select('photographers.id', 'photographers.business_name')
             ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
             ->where('photos.event_id', $event->id)
             ->where('photos.is_active', true)
-            ->where('photographers.status', 'approved')  
+            ->where('photographers.status', 'approved')
             ->selectRaw('COUNT(photos.id) as photos_count')
             ->groupBy('photographers.id', 'photographers.business_name')
             ->get();
@@ -595,7 +606,7 @@ public function showEvent(Request $request, $slug)
                     'profile_photo_url' => $event->photographer->profile_photo_url,
                 ],
             ],
-            
+
             'galleries' => $galleries,
             'photographers' => $filterPhotographers,
             'filters' => [
@@ -604,7 +615,7 @@ public function showEvent(Request $request, $slug)
         ]);
     }
 
-public function showEventPhotographer(Request $request, $eventSlug, $photographerSlug)
+    public function showEventPhotographer(Request $request, $eventSlug, $photographerSlug)
     {
         $event = \App\Models\Event::where('slug', $eventSlug)->where('is_active', true)->firstOrFail();
 
@@ -619,7 +630,6 @@ public function showEventPhotographer(Request $request, $eventSlug, $photographe
             ->where('status', 'approved')
             ->firstOrFail();
 
-       
         $photos = \App\Models\Photo::where('event_id', $event->id)
             ->where('photographer_id', $photographer->id)
             ->where('is_active', true)
@@ -637,7 +647,6 @@ public function showEventPhotographer(Request $request, $eventSlug, $photographe
             ];
         });
 
-         
         $roles = \App\Models\Photo::where('event_id', $event->id)
             ->where('photographer_id', $photographer->id)
             ->where('is_active', true)
@@ -662,7 +671,7 @@ public function showEventPhotographer(Request $request, $eventSlug, $photographe
 
     public function photographers(Request $request)
     {
-        $query = Photographer::where('status', 'approved')  
+        $query = Photographer::where('status', 'approved')
             ->with('user:id,name,email')
             ->withCount('photos');
 
@@ -694,7 +703,7 @@ public function showEventPhotographer(Request $request, $eventSlug, $photographe
     public function showPhotographer($id)
     {
         $photographer = Photographer::where('id', $id)
-            ->where('status', 'approved')  
+            ->where('status', 'approved')
             ->with('user:id,name,email')
             ->withCount('photos')
             ->firstOrFail();
