@@ -166,9 +166,8 @@ const props = defineProps({
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <Link v-for="photo in recentPhotos.slice(0, 8)" :key="photo.id"
-                                :href="route('gallery.show', photo.unique_id)"
+                                :href="route('gallery.show', { uniqueId: photo.unique_id || photo.id })"
                                 class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300">
-
                                 <img :src="photo.watermarked_url || photo.thumbnail_url" :alt="photo.unique_id"
                                     class="w-full h-full object-cover transition-transform duration-700  pointer-events-none select-none">
 
