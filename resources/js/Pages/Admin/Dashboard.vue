@@ -50,7 +50,7 @@ defineProps({
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
                     
 
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="bg-white rounded p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                             <UsersIcon class="w-16 h-16 text-black" />
                         </div>
@@ -59,7 +59,7 @@ defineProps({
                     </div>
 
 
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="bg-white rounded p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                             <CalendarIcon class="w-16 h-16 text-black" />
                         </div>
@@ -68,7 +68,7 @@ defineProps({
                     </div>
 
 
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="bg-white rounded p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                             <PhotoIcon class="w-16 h-16 text-black" />
                         </div>
@@ -77,7 +77,7 @@ defineProps({
                     </div>
 
 
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="bg-white rounded p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                             <UsersIcon class="w-16 h-16 text-black" />
                         </div>
@@ -86,7 +86,7 @@ defineProps({
                     </div>
 
 
-                    <div class="bg-red-50 rounded-3xl p-6 border border-red-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="bg-red-50 rounded p-6 border border-red-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                             <EnvelopeIcon class="w-16 h-16 text-[#E30613]" />
                         </div>
@@ -109,7 +109,7 @@ defineProps({
                             
 
                             <Link :href="route('admin.photographers.index', { status: 'pending' })"
-                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-yellow-200 transition-all group relative overflow-hidden">
+                                class="bg-white p-8 rounded border border-gray-100 shadow-sm hover:shadow-md hover:border-yellow-200 transition-all group relative overflow-hidden">
                                 <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-50 rounded-full blur-2xl group-hover:bg-yellow-100 transition-colors pointer-events-none"></div>
                                 <div class="flex items-center gap-3 mb-6 relative z-10">
                                     <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600">
@@ -123,7 +123,7 @@ defineProps({
 
 
                             <Link :href="route('admin.photographers.index', { status: 'approved' })"
-                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all group relative overflow-hidden">
+                                class="bg-white p-8 rounded border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all group relative overflow-hidden">
                                 <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-2xl group-hover:bg-green-100 transition-colors pointer-events-none"></div>
                                 <div class="flex items-center gap-3 mb-6 relative z-10">
                                     <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
@@ -137,7 +137,7 @@ defineProps({
 
                             <!-- Rechazados -->
                             <Link :href="route('admin.photographers.index', { status: 'rejected' })"
-                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-300 transition-all group relative overflow-hidden">
+                                class="bg-white p-8 rounded border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-300 transition-all group relative overflow-hidden">
                                 <div class="flex items-center gap-3 mb-6">
                                     <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500">
                                         <NoSymbolIcon class="w-5 h-5" />
@@ -150,7 +150,7 @@ defineProps({
 
 
                             <Link :href="route('admin.photographers.index', { status: 'suspended' })"
-                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all group relative overflow-hidden">
+                                class="bg-white p-8 rounded border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all group relative overflow-hidden">
                                 <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-50 rounded-full blur-2xl group-hover:bg-orange-100 transition-colors pointer-events-none"></div>
                                 <div class="flex items-center gap-3 mb-6 relative z-10">
                                     <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
@@ -167,7 +167,7 @@ defineProps({
 
 
                     <div class="lg:col-span-1">
-                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 h-full">
+                        <div class="bg-white rounded shadow-sm border border-gray-100 p-6 md:p-8 h-full">
                             <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                                 <span class="w-4 h-px bg-gray-200"></span> Enlaces rápidos
                             </h2>
@@ -175,7 +175,7 @@ defineProps({
                             <div class="space-y-4">
 
                                 <Link :href="route('admin.photographers.index')"
-                                    class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-black hover:text-white group transition-colors">
+                                    class="flex items-center justify-between p-4 rounded bg-gray-50 hover:bg-black hover:text-white group transition-colors">
                                     <div class="flex items-center gap-4">
                                         <div class="w-10 h-10 bg-white group-hover:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 group-hover:text-white transition-colors shadow-sm">
                                             <UsersIcon class="w-5 h-5" />
@@ -189,7 +189,7 @@ defineProps({
 
 
                                 <Link :href="route('admin.photographers.index', { status: 'pending' })"
-                                    class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-black hover:text-white group transition-colors">
+                                    class="flex items-center justify-between p-4 rounded bg-gray-50 hover:bg-black hover:text-white group transition-colors">
                                     <div class="flex items-center gap-4">
                                         <div class="w-10 h-10 bg-white group-hover:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 group-hover:text-white transition-colors shadow-sm relative">
                                             <div v-if="stats.pending_photographers > 0" class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 border-2 border-white rounded-full"></div>
@@ -204,7 +204,7 @@ defineProps({
 
 
                                 <Link :href="route('admin.messages.index')"
-                                    class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-black hover:text-white group transition-colors">
+                                    class="flex items-center justify-between p-4 rounded bg-gray-50 hover:bg-black hover:text-white group transition-colors">
                                     <div class="flex items-center gap-4">
                                         <div class="w-10 h-10 bg-white group-hover:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 group-hover:text-white transition-colors shadow-sm relative">
                                             <div v-if="stats.unread_messages > 0" class="absolute -top-1 -right-1 w-3 h-3 bg-[#E30613] border-2 border-white rounded-full"></div>
@@ -221,7 +221,7 @@ defineProps({
 
 
                                 <Link :href="route('home')"
-                                    class="w-full flex items-center justify-center gap-2 p-4 rounded-2xl bg-black text-white hover:bg-[#E30613] transition-colors shadow-sm group">
+                                    class="w-full flex items-center justify-center gap-2 p-4 rounded bg-black text-white hover:bg-[#E30613] transition-colors shadow-sm group">
                                     <ArrowTopRightOnSquareIcon class="w-5 h-5" />
                                     <span class="font-bold text-sm uppercase tracking-wider">Ver sitio público</span>
                                 </Link>

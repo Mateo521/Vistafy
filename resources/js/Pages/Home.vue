@@ -19,7 +19,7 @@ const props = defineProps({
 <template>
 
     <Head>
-        <title>f33.click | Fotografía deportiva</title>
+        <title>f33.click fotografía deportiva</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,60 +82,71 @@ const props = defineProps({
                 </section>
 
 
-            
+
                 <section id="eventos" class="py-20 px-4 md:px-8 max-w-[90rem] mx-auto">
-                    
+
                     <div class="text-center mb-16">
-                        <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Todos los eventos y coberturas</span>
+                        <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Todos los eventos y
+                            coberturas</span>
                         <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">
                             Eventos <span class="text-slate-300 font-sans font-light">/</span> Destacados
                         </h2>
                     </div>
 
-                
+
                     <div v-if="recentEvents.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Link v-for="event in recentEvents.slice(0, 8)" :key="event.id"
                             :href="route('events.show', event.slug || event.id)"
                             class="group relative block w-full aspect-[4/5] overflow-hidden rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.15)] transition-all duration-500 bg-black">
 
-                        
+
                             <img :src="event.cover_image_url" :alt="event.name"
                                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out  opacity-100 group-hover:opacity-40">
 
-                        
-                            <div class="absolute inset-0 flex flex-col justify-center items-center p-6 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                
-                            
-                                <span class="bg-red-600 text-white font-bold px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
+
+                            <div
+                                class="absolute inset-0 flex flex-col justify-center items-center p-6 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+
+
+                                <span
+                                    class="bg-red-600 text-white font-bold px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
                                     {{ event.is_private ? 'Privado' : 'Público' }}
                                 </span>
 
-                            
-                                <h3 class="font-flux text-4xl lg:text-5xl text-white mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100 drop-shadow-lg">
+
+                                <h3 :title="event.name"
+                                    class="font-flux text-3xl lg:text-4xl text-white mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100 drop-shadow-lg line-clamp-3 leading-tight w-full px-4">
                                     {{ event.name }}
                                 </h3>
 
-                            
-                                <span class="inline-flex items-center gap-2 text-white font-bold uppercase text-xs tracking-widest border-b-2 border-red-600 pb-1 mt-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150 hover:text-red-500">
+
+                                <span
+                                    class="inline-flex items-center gap-2 text-white font-bold uppercase text-xs tracking-widest border-b-2 border-red-600 pb-1 mt-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150 hover:text-red-500">
                                     Ir a la galería
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                     </svg>
                                 </span>
                             </div>
                         </Link>
                     </div>
 
-                    
+
                     <div v-else class="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
-                        <p class="font-lato font-bold text-slate-400 uppercase tracking-widest">Aún no hay eventos registrados.</p>
+                        <p class="font-lato font-bold text-slate-400 uppercase tracking-widest">Aún no hay eventos
+                            registrados.</p>
                     </div>
 
-                    
+
                     <div v-if="recentEvents.length > 8" class="mt-16 text-center">
-                        <Link :href="route('events.index')" class="inline-flex items-center gap-2 text-black font-bold uppercase text-sm hover:text-red-600 transition-colors bg-white px-8 py-4 rounded-full shadow-sm border border-slate-200 hover:shadow-md">
+                        <Link :href="route('events.index')"
+                            class="inline-flex items-center gap-2 text-black font-bold uppercase text-sm hover:text-red-600 transition-colors bg-white px-8 py-4 rounded-full shadow-sm border border-slate-200 hover:shadow-md">
                             Explorar eventos
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
                         </Link>
                     </div>
                 </section>
@@ -149,7 +160,8 @@ const props = defineProps({
                         <div class="text-center mb-16">
                             <span class="font-bold tracking-widest text-red-600 uppercase text-sm">Portafolio</span>
                             <h2 class="font-flux text-5xl md:text-7xl text-black mt-2">Últimas fotos</h2>
-                            <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-lato">Nuestra selección más reciente.</p>
+                            <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-lato">Nuestra selección más reciente.
+                            </p>
                         </div>
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -184,8 +196,6 @@ const props = defineProps({
 </template>
 
 <style>
-
-
 .marquee-swiper .swiper-wrapper {
     transition-timing-function: linear !important;
 }

@@ -27,7 +27,7 @@ import {
                     class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gray-100 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none">
                 </div>
 
-                <div class="max-w-[1200px] mx-auto px-6 lg:px-8 relative z-10 text-center">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
                     <span
                         class="inline-flex items-center gap-2 bg-white border border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-500 px-4 py-2 rounded-full mb-8 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Nuestra filosofía
@@ -139,7 +139,7 @@ import {
 
 
             <section class="py-20 md:py-28 bg-[#F8F9FA]">
-                <div class="max-w-[1200px] mx-auto px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
                     <div class="text-center mb-16">
                         <h2 class="text-4xl font-flux text-black tracking-wide mb-4">¿Quién está detrás de F33?</h2>
