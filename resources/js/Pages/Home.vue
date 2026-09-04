@@ -188,7 +188,6 @@ const props = defineProps({
                         </div>
                     </div>
                 </section>
-
             </main>
         </div>
     </AppLayout>
