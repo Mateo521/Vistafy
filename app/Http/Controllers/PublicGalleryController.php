@@ -121,93 +121,108 @@ class PublicGalleryController extends Controller
     }
 
     public function gallery(Request $request)
-    {
-        $query = Photo::with(['photographer.user', 'event'])
-            ->where('is_active', true)
-            ->whereHas('photographer', function ($q) {
-                $q->where('status', 'approved');
-            })
-            ->where(function ($q) {
-                $q->whereNull('event_id')
-                    ->orWhereHas('event', function ($eventQuery) {
-                        $eventQuery->where('is_active', true)
-                            ->where('is_private', false);
-                    });
-            });
+{
+    
+    $query = Photographer::with(['user', 'photos' => function ($q) use ($request) {
+        $q->where('is_active', true);
 
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('unique_id', 'like', '%'.$request->search.'%')
-                    ->orWhere('title', 'like', '%'.$request->search.'%')
-                    ->orWhereHas('photographer', function ($q2) use ($request) {
-                        $q2->where('business_name', 'like', '%'.$request->search.'%');
-                    });
-            });
-        }
-
-        if ($request->filled('region') && $request->region !== 'all') {
-            $query->whereHas('photographer', function ($q) use ($request) {
-                $q->where('region', $request->region);
-            });
-        }
-
+        
         if ($request->filled('event')) {
-            $query->where('event_id', $request->event);
+            $q->where('event_id', $request->event);
         }
 
+        
+        if ($request->filled('search')) {
+            $q->where(function ($sub) use ($request) {
+                $sub->where('unique_id', 'like', '%'.$request->search.'%')
+                    ->orWhere('title', 'like', '%'.$request->search.'%');
+            });
+        }
+
+        
         switch ($request->get('sort', 'recent')) {
             case 'popular':
-                $query->orderByDesc('downloads');
+                $q->orderByDesc('downloads');
                 break;
             case 'price_low':
-                $query->orderBy('price', 'asc');
+                $q->orderBy('price', 'asc');
                 break;
             case 'price_high':
-                $query->orderBy('price', 'desc');
+                $q->orderBy('price', 'desc');
                 break;
             default:
-                $query->latest();
+                $q->latest();
         }
 
-        $photos = $query->paginate(25)->withQueryString();
+        $q->take(20); 
+    }])
+    ->where('status', 'approved')
+    ->whereHas('photos', function ($q) use ($request) {
+        $q->where('is_active', true);
+        if ($request->filled('event')) {
+            $q->where('event_id', $request->event);
+        }
+    });
 
-        $photos->getCollection()->transform(function ($photo) {
-            return [
-                'id' => $photo->id,
-                'unique_id' => $photo->unique_id,
-                'title' => $photo->title,
-                'price' => number_format($photo->price, 2),
-                'thumbnail_url' => $photo->thumbnail_url,
-                'watermarked_url' => $photo->watermarked_url,
-                
-                'photographer_name' => $photo->photographer->business_name ?? optional($photo->photographer->user)->name ?? 'Fotógrafo Anónimo',
-                'photographer_slug' => $photo->photographer->slug ?? $photo->photographer->id,
-                'photographer_avatar' => $photo->photographer->profile_photo_url,
-                'has_faces' => $photo->has_faces,
-                'bib_numbers' => $photo->bib_numbers ? (is_string($photo->bib_numbers) ? json_decode($photo->bib_numbers, true) : $photo->bib_numbers) : null,
-            ];
-        });
-
-        $regions = \App\Models\Photographer::where('status', 'approved')
-            ->whereNotNull('region')->distinct()->pluck('region')->sort()->values()->toArray();
-
-        $events = Event::where('is_active', true)
-            ->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })
-            ->where('is_private', false)
-            ->select('id', 'name')->orderBy('name')->get();
-
-        return Inertia::render('Gallery/Index', [
-            'photos' => $photos,  
-            'events' => $events,
-            'regions' => $regions,
-            'filters' => [
-                'search' => $request->search,
-                'region' => $request->region ?? 'all',
-                'event' => $request->event,
-                'sort' => $request->sort ?? 'recent',
-            ],
-        ]);
+    
+    if ($request->filled('region') && $request->region !== 'all') {
+        $query->where('region', $request->region);
     }
+
+    
+    if ($request->filled('search')) {
+        $query->where('business_name', 'like', '%'.$request->search.'%');
+    }
+
+    
+    $photographersPaginator = $query->paginate(5)->withQueryString();
+
+    
+    $groupedPhotos = collect($photographersPaginator->items())->map(function ($photographer) {
+        return [
+            'photographer' => [
+                'id' => $photographer->id,
+                'name' => $photographer->business_name ?? optional($photographer->user)->name ?? 'Fotógrafo Anónimo',
+                'slug' => $photographer->slug ?? $photographer->id,
+                'profile_photo_url' => $photographer->profile_photo_url,
+            ],
+            'photos' => $photographer->photos->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'unique_id' => $photo->unique_id,
+                    'title' => $photo->title,
+                    'price' => number_format($photo->price, 2),
+                    'thumbnail_url' => $photo->thumbnail_url,
+                    'watermarked_url' => $photo->watermarked_url,
+                    'has_faces' => $photo->has_faces,
+                    'bib_numbers' => $photo->bib_numbers ? (is_string($photo->bib_numbers) ? json_decode($photo->bib_numbers, true) : $photo->bib_numbers) : null,
+                ];
+            })->values(),
+        ];
+    })->values();
+
+    
+    $paginatedData = [
+        'data' => $groupedPhotos,
+        'next_page_url' => $photographersPaginator->nextPageUrl(),
+        'total' => $photographersPaginator->total(),
+    ];
+
+    $regions = Photographer::where('status', 'approved')->whereNotNull('region')->distinct()->pluck('region')->sort()->values()->toArray();
+    $events = Event::where('is_active', true)->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->where('is_private', false)->select('id', 'name')->orderBy('name')->get();
+
+    return Inertia::render('Gallery/Index', [
+        'photos' => $paginatedData,
+        'events' => $events,
+        'regions' => $regions,
+        'filters' => [
+            'search' => $request->search,
+            'region' => $request->region ?? 'all',
+            'event' => $request->event,
+            'sort' => $request->sort ?? 'recent',
+        ],
+    ]);
+}
 
     public function bibSearch(Request $request)
     {

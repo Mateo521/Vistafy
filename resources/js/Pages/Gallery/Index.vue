@@ -82,28 +82,11 @@ const props = defineProps({
 
 
 const groupedPhotos = computed(() => {
-    const groups = {};
-
-    allPhotos.value.forEach(photo => {
-        const authorId = photo.photographer_name || 'Anónimo';
-
-        if (!groups[authorId]) {
-            groups[authorId] = {
-                photographer: {
-                    id: authorId,
-                    name: photo.photographer_name || 'Fotógrafo Anónimo',
-                    profile_photo_url: photo.photographer_avatar || null,
-                    slug: photo.photographer_slug || '#'
-                },
-                photos: []
-            };
-        }
-
-        groups[authorId].photos.push(photo);
-    });
-
-    return Object.values(groups);
+    return allPhotos.value || [];
 });
+
+
+
 
 const allPhotos = ref(props.photos.data);
 
