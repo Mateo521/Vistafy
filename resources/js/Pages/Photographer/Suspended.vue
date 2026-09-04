@@ -10,7 +10,7 @@ import {
 </script>
 
 <template>
-    <Head title="Acceso Restringido | F33" />
+    <Head title="Acceso restringido" />
 
     <AuthenticatedLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
