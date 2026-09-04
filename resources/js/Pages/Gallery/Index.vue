@@ -12,6 +12,13 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/free-mode';
 
+
+const fixImageCache = (url) => {
+    if (!url) return '';
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}v=${Date.now()}`;
+};
+
 const modules = [Navigation, FreeMode];
 import {
     MagnifyingGlassIcon,
