@@ -1,6 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import {
+    UsersIcon,
+    CameraIcon,
+    PhotoIcon,
+    EnvelopeIcon,
+    CheckBadgeIcon,
+    ExclamationTriangleIcon,
+    ArrowTopRightOnSquareIcon,
+    ShieldCheckIcon
+} from '@heroicons/vue/24/outline';
 
 defineProps({
     stats: {
@@ -11,226 +21,215 @@ defineProps({
 </script>
 
 <template>
+    <Head title="Panel de control admin" />
+
     <AuthenticatedLayout>
-        <Head title="Panel de Control" />
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-28">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="min-h-screen bg-black py-12 text-white selection:bg-red-600 selection:text-black">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-                <div class="mb-12 border-b-2 border-zinc-800 pb-8 relative">
-                    <div class="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-red-600 opacity-20 pointer-events-none"></div>
+                <div class="mb-10 text-center md:text-left flex flex-col md:flex-row items-center gap-6 border-b border-gray-200 pb-8">
+                    <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+                        <ShieldCheckIcon class="w-10 h-10 text-[#E30613]" />
+                    </div>
+                    <div>
+                        <span class="inline-flex items-center gap-2 bg-red-50 text-[#E30613] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 border border-red-100">
+                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span>
+                            Administración del sistema
+                        </span>
+                        <h1 class="text-4xl md:text-6xl font-flux text-black tracking-wide leading-none mb-3">
+                            Panel de <span class="text-[#E30613]">control</span>
+                        </h1>
+                        <p class="text-sm font-medium text-gray-500 max-w-xl">
+                            Visión general del rendimiento, métricas clave y gestión de flujos de trabajo.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
                     
-                    <span class="font-mono text-xs font-bold text-red-600 uppercase tracking-widest mb-4 block animate-pulse">
-                        [SYS_ADMIN] Administración
-                    </span>
-                    <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">
-                        Panel de<br>Control.
-                    </h1>
-                    <p class="font-mono text-xs text-zinc-500 mt-6 uppercase tracking-wider max-w-2xl border-l-2 border-red-600 pl-4">
-                        Visión general del rendimiento de la plataforma y gestión de flujos de trabajo.
-                    </p>
+
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                            <UsersIcon class="w-16 h-16 text-black" />
+                        </div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 relative z-10">Total fotógrafos</p>
+                        <p class="text-4xl md:text-5xl font-flux text-black relative z-10">{{ stats.total_photographers }}</p>
+                    </div>
+
+
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                            <CalendarIcon class="w-16 h-16 text-black" />
+                        </div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 relative z-10">Total eventos</p>
+                        <p class="text-4xl md:text-5xl font-flux text-black relative z-10">{{ stats.total_events }}</p>
+                    </div>
+
+
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                            <PhotoIcon class="w-16 h-16 text-black" />
+                        </div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 relative z-10">Total fotografías</p>
+                        <p class="text-4xl md:text-5xl font-flux text-black relative z-10">{{ stats.total_photos }}</p>
+                    </div>
+
+
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                            <UsersIcon class="w-16 h-16 text-black" />
+                        </div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 relative z-10">Usuarios registrados</p>
+                        <p class="text-4xl md:text-5xl font-flux text-black relative z-10">{{ stats.total_users }}</p>
+                    </div>
+
+
+                    <div class="bg-red-50 rounded-3xl p-6 border border-red-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                            <EnvelopeIcon class="w-16 h-16 text-[#E30613]" />
+                        </div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-2 relative z-10">Mensajes no leídos</p>
+                        <p class="text-4xl md:text-5xl font-flux text-[#E30613] relative z-10">{{ stats.unread_messages }}</p>
+                    </div>
+
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-16">
-                    <div class="group relative bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between h-40 hover:border-red-600 transition-colors overflow-hidden">
-                        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        
-                        <div class="flex justify-between items-start relative z-10">
-                            <span class="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">Fotógrafos</span>
-                            <svg class="w-5 h-5 text-zinc-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </div>
-                        <span class="text-6xl font-black tracking-tighter text-white group-hover:text-red-600 transition-colors mt-4">{{ stats.total_photographers }}</span>
-                    </div>
-
-                    <div class="group relative bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between h-40 hover:border-red-600 transition-colors overflow-hidden">
-                        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                        <div class="flex justify-between items-start relative z-10">
-                            <span class="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">Eventos</span>
-                            <svg class="w-5 h-5 text-zinc-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-6xl font-black tracking-tighter text-white group-hover:text-red-600 transition-colors mt-4">{{ stats.total_events }}</span>
-                    </div>
-
-                    <div class="group relative bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between h-40 hover:border-red-600 transition-colors overflow-hidden">
-                        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                        <div class="flex justify-between items-start relative z-10">
-                            <span class="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">Fotografías</span>
-                            <svg class="w-5 h-5 text-zinc-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-6xl font-black tracking-tighter text-white group-hover:text-red-600 transition-colors mt-4">{{ stats.total_photos }}</span>
-                    </div>
-
-                    <div class="group relative bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between h-40 hover:border-red-600 transition-colors overflow-hidden">
-                        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                        <div class="flex justify-between items-start relative z-10">
-                            <span class="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">Usuarios</span>
-                            <svg class="w-5 h-5 text-zinc-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                        </div>
-                        <span class="text-6xl font-black tracking-tighter text-white group-hover:text-red-600 transition-colors mt-4">{{ stats.total_users }}</span>
-                    </div>
-
-                    <div class="group relative bg-zinc-950 border border-zinc-800 p-6 flex flex-col justify-between h-40 hover:border-red-600 transition-colors overflow-hidden">
-                        <div class="absolute inset-0 bg-red-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-red-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-red-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                        <div class="flex justify-between items-start relative z-10">
-                            <span class="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-red-600 transition-colors">Mensajes</span>
-                            <svg class="w-5 h-5 text-zinc-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-6xl font-black tracking-tighter text-white group-hover:text-red-600 transition-colors mt-4">{{ stats.unread_messages }}</span>
-                    </div>
-                </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
+
                     <div class="lg:col-span-2">
-                        <div class="mb-6 flex items-center gap-3">
-                            <div class="w-3 h-3 bg-white"></div>
-                            <h3 class="font-mono text-sm font-bold uppercase tracking-widest text-white">Estado de Solicitudes</h3>
-                        </div>
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                            <span class="w-4 h-px bg-gray-300"></span> Estado de profesionales
+                        </h2>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            
+
                             <Link :href="route('admin.photographers.index', { status: 'pending' })"
-                                class="group relative bg-zinc-950 p-6 border border-zinc-800 hover:border-white hover:bg-white transition-all duration-300">
-                                <div class="flex justify-between items-start mb-6">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-3 h-3 bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]"></span>
-                                        <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-black">Pendientes</span>
+                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-yellow-200 transition-all group relative overflow-hidden">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-yellow-50 rounded-full blur-2xl group-hover:bg-yellow-100 transition-colors pointer-events-none"></div>
+                                <div class="flex items-center gap-3 mb-6 relative z-10">
+                                    <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600">
+                                        <ExclamationTriangleIcon class="w-5 h-5" />
                                     </div>
-                                    <svg class="w-5 h-5 text-zinc-700 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <span class="font-bold text-sm uppercase tracking-wider text-slate-700">Pendientes</span>
                                 </div>
-                                <p class="text-7xl font-black tracking-tighter text-white group-hover:text-black transition-colors">{{ stats.pending_photographers }}</p>
-                                <p class="font-mono text-[10px] text-zinc-600 uppercase mt-2 group-hover:text-zinc-500">Requieren revisión</p>
+                                <p class="text-5xl md:text-6xl font-flux text-black mb-2 relative z-10">{{ stats.pending_photographers }}</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Requieren revisión</p>
                             </Link>
+
 
                             <Link :href="route('admin.photographers.index', { status: 'approved' })"
-                                class="group relative bg-zinc-950 p-6 border border-zinc-800 hover:border-white hover:bg-white transition-all duration-300">
-                                <div class="flex justify-between items-start mb-6">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-3 h-3 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                                        <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-black">Activos</span>
+                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all group relative overflow-hidden">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-50 rounded-full blur-2xl group-hover:bg-green-100 transition-colors pointer-events-none"></div>
+                                <div class="flex items-center gap-3 mb-6 relative z-10">
+                                    <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                                        <CheckBadgeIcon class="w-5 h-5" />
                                     </div>
-                                    <svg class="w-5 h-5 text-zinc-700 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <span class="font-bold text-sm uppercase tracking-wider text-slate-700">Activos</span>
                                 </div>
-                                <p class="text-7xl font-black tracking-tighter text-white group-hover:text-black transition-colors">{{ stats.approved_photographers }}</p>
-                                <p class="font-mono text-[10px] text-zinc-600 uppercase mt-2 group-hover:text-zinc-500">Operando normalmente</p>
+                                <p class="text-5xl md:text-6xl font-flux text-black mb-2 relative z-10">{{ stats.approved_photographers }}</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Operando normalmente</p>
                             </Link>
 
+                            <!-- Rechazados -->
                             <Link :href="route('admin.photographers.index', { status: 'rejected' })"
-                                class="group relative bg-zinc-950 p-6 border border-zinc-800 hover:border-red-600 hover:bg-red-600 transition-all duration-300">
-                                <div class="flex justify-between items-start mb-6">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-3 h-3 bg-red-600 group-hover:bg-black transition-colors"></span>
-                                        <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-black transition-colors">Rechazados</span>
+                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-300 transition-all group relative overflow-hidden">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500">
+                                        <NoSymbolIcon class="w-5 h-5" />
                                     </div>
-                                    <svg class="w-5 h-5 text-zinc-700 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <span class="font-bold text-sm uppercase tracking-wider text-slate-700">Rechazados</span>
                                 </div>
-                                <p class="text-7xl font-black tracking-tighter text-white group-hover:text-black transition-colors">{{ stats.rejected_photographers }}</p>
-                                <p class="font-mono text-[10px] text-zinc-600 uppercase mt-2 group-hover:text-red-950 transition-colors">Histórico</p>
+                                <p class="text-5xl md:text-6xl font-flux text-gray-400 mb-2">{{ stats.rejected_photographers }}</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Histórico de rechazos</p>
                             </Link>
+
 
                             <Link :href="route('admin.photographers.index', { status: 'suspended' })"
-                                class="group relative bg-zinc-950 p-6 border border-zinc-800 hover:border-white hover:bg-white transition-all duration-300">
-                                <div class="flex justify-between items-start mb-6">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-3 h-3 bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
-                                        <span class="font-mono text-xs font-bold text-zinc-400 uppercase tracking-widest group-hover:text-black">Suspendidos</span>
+                                class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all group relative overflow-hidden">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-50 rounded-full blur-2xl group-hover:bg-orange-100 transition-colors pointer-events-none"></div>
+                                <div class="flex items-center gap-3 mb-6 relative z-10">
+                                    <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
+                                        <ExclamationTriangleIcon class="w-5 h-5" />
                                     </div>
-                                    <svg class="w-5 h-5 text-zinc-700 group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <span class="font-bold text-sm uppercase tracking-wider text-slate-700">Suspendidos</span>
                                 </div>
-                                <p class="text-7xl font-black tracking-tighter text-white group-hover:text-black transition-colors">{{ stats.suspended_photographers }}</p>
-                                <p class="font-mono text-[10px] text-zinc-600 uppercase mt-2 group-hover:text-zinc-500">Acceso revocado</p>
+                                <p class="text-5xl md:text-6xl font-flux text-black mb-2 relative z-10">{{ stats.suspended_photographers }}</p>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest relative z-10">Acceso revocado</p>
                             </Link>
+
                         </div>
                     </div>
+
 
                     <div class="lg:col-span-1">
-                        <div class="bg-black border-l-4 md:border-l-0 md:border-t-4 border-red-600 pt-6 h-full flex flex-col">
-                            <h3 class="font-mono text-sm font-bold uppercase tracking-widest text-red-600 mb-6 flex items-center gap-2">
-                                <span class="w-2 h-2 bg-red-600"></span> Accesos Directos
-                            </h3>
+                        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 h-full">
+                            <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                                <span class="w-4 h-px bg-gray-200"></span> Enlaces rápidos
+                            </h2>
 
-                            <div class="space-y-3 flex-1">
+                            <div class="space-y-4">
+
                                 <Link :href="route('admin.photographers.index')"
-                                    class="group flex items-center gap-4 p-4 bg-zinc-950 border border-zinc-900 hover:bg-white hover:border-white transition-colors">
-                                    <div class="text-zinc-600 group-hover:text-black transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <span class="font-sans text-lg font-black uppercase text-white group-hover:text-black leading-none block transition-colors">Gestión Usuarios</span>
-                                        <span class="font-mono text-[10px] uppercase text-zinc-500 group-hover:text-zinc-500 mt-1 block">Base de datos completa</span>
+                                    class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-black hover:text-white group transition-colors">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 bg-white group-hover:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 group-hover:text-white transition-colors shadow-sm">
+                                            <UsersIcon class="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm text-slate-800 group-hover:text-white transition-colors">Base de datos</p>
+                                            <p class="text-[10px] font-medium text-gray-500 group-hover:text-gray-400 transition-colors uppercase tracking-wider">Directorio completo</p>
+                                        </div>
                                     </div>
                                 </Link>
+
 
                                 <Link :href="route('admin.photographers.index', { status: 'pending' })"
-                                    class="group flex items-center gap-4 p-4 bg-zinc-950 border border-zinc-900 hover:bg-white hover:border-white transition-colors">
-                                    <div class="text-zinc-600 group-hover:text-black transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <span class="font-sans text-lg font-black uppercase text-white group-hover:text-black leading-none block transition-colors">Aprobaciones</span>
-                                        <span class="font-mono text-[10px] uppercase text-zinc-500 group-hover:text-zinc-500 mt-1 block">{{ stats.pending_photographers }} pendientes</span>
+                                    class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-black hover:text-white group transition-colors">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 bg-white group-hover:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 group-hover:text-white transition-colors shadow-sm relative">
+                                            <div v-if="stats.pending_photographers > 0" class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 border-2 border-white rounded-full"></div>
+                                            <CheckBadgeIcon class="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm text-slate-800 group-hover:text-white transition-colors">Aprobaciones</p>
+                                            <p class="text-[10px] font-medium text-gray-500 group-hover:text-gray-400 transition-colors uppercase tracking-wider">{{ stats.pending_photographers }} solicitudes</p>
+                                        </div>
                                     </div>
                                 </Link>
+
 
                                 <Link :href="route('admin.messages.index')"
-                                    class="group flex items-center gap-4 p-4 bg-zinc-950 border border-zinc-900 hover:bg-white hover:border-white transition-colors">
-                                    <div class="text-zinc-600 group-hover:text-black transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <span class="font-sans text-lg font-black uppercase text-white group-hover:text-black leading-none block transition-colors">Mensajes</span>
-                                        <span class="font-mono text-[10px] uppercase text-zinc-500 group-hover:text-zinc-500 mt-1 block">{{ stats.unread_messages }} sin leer</span>
+                                    class="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-black hover:text-white group transition-colors">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 bg-white group-hover:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 group-hover:text-white transition-colors shadow-sm relative">
+                                            <div v-if="stats.unread_messages > 0" class="absolute -top-1 -right-1 w-3 h-3 bg-[#E30613] border-2 border-white rounded-full"></div>
+                                            <EnvelopeIcon class="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-sm text-slate-800 group-hover:text-white transition-colors">Mensajería</p>
+                                            <p class="text-[10px] font-medium text-gray-500 group-hover:text-gray-400 transition-colors uppercase tracking-wider">{{ stats.unread_messages }} sin leer</p>
+                                        </div>
                                     </div>
                                 </Link>
 
+                                <hr class="border-gray-100 my-4" />
+
+
                                 <Link :href="route('home')"
-                                    class="group flex items-center gap-4 p-4 mt-6 bg-red-600 border border-red-600 hover:bg-white hover:border-white transition-colors">
-                                    <div class="text-black group-hover:text-red-600 transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <span class="font-sans text-lg font-black uppercase text-black leading-none block transition-colors">Ir al Sitio Público</span>
-                                        <span class="font-mono text-[10px] uppercase text-black/70 mt-1 block">Live Market</span>
-                                    </div>
+                                    class="w-full flex items-center justify-center gap-2 p-4 rounded-2xl bg-black text-white hover:bg-[#E30613] transition-colors shadow-sm group">
+                                    <ArrowTopRightOnSquareIcon class="w-5 h-5" />
+                                    <span class="font-bold text-sm uppercase tracking-wider">Ver sitio público</span>
                                 </Link>
                             </div>
+
                         </div>
                     </div>
+
                 </div>
 
             </div>
