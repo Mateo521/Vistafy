@@ -27,31 +27,32 @@ const initMap = () => {
         map.remove();
     }
 
-  
+
     const boundsArgentina = L.latLngBounds(
-        [-55.051258, -73.576081],  
-        [-21.781134, -53.637568]   
+        [-55.051258, -73.576081],
+        [-21.781134, -53.637568]
     );
 
     map = L.map(mapContainer.value, {
         scrollWheelZoom: true,
         zoomControl: false,
         attributionControl: false,
-        maxBounds: boundsArgentina,  
-        maxBoundsViscosity: 1.0,  
-        minZoom: 4, 
-        maxZoom: 19  
-    }).setView([-38.4161, -63.6167], 5);  
+        maxBounds: boundsArgentina,
+        maxBoundsViscosity: 1.0,
+        minZoom: 4,
+        maxZoom: 19
+    }).setView([-38.4161, -63.6167], 5);
 
-  
+
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-   
-    L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`, {
+
+
+    L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
         maxZoom: 19,
         minZoom: 4,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-
+        tms: true,
+        attribution: '&copy; <a href="https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2">IGN Argentina</a>',
     }).addTo(map);
 
     addMarkers();
@@ -82,7 +83,7 @@ const addMarkers = () => {
                 return;
             }
 
-        
+
             const customIcon = L.divIcon({
                 className: 'custom-event-marker',
                 html: `<div style="
@@ -156,29 +157,31 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="relative w-full h-[100vh] min-h-[500px] bg-[#F8F9FA] overflow-hidden rounded shadow-sm border border-gray-100">
-        
-    
+    <div
+        class="relative w-full h-[100vh] min-h-[500px] bg-[#F8F9FA] overflow-hidden rounded shadow-sm border border-gray-100">
+
+
         <div ref="mapContainer" class="w-full h-full z-0 outline-none map-sleek-events"></div>
 
-       
+
         <transition enter-active-class="transition-opacity duration-300"
             leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0"
             leave-to-class="opacity-0">
-            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20">
+            <div v-if="!isMapReady"
+                class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20">
                 <div class="flex flex-col items-center gap-4">
-                    <div class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm"></div>
+                    <div
+                        class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm">
+                    </div>
                     <span class="text-slate-600 font-bold text-xs uppercase tracking-wider">Cargando mapa...</span>
                 </div>
             </div>
         </transition>
-        
+
     </div>
 </template>
 
 <style>
-
-
 .map-sleek-events {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: #F8F9FA;
@@ -220,8 +223,8 @@ onMounted(async () => {
     border-radius: 4px !important;
     padding: 0 !important;
     color: #334155 !important;
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15), 0 0 20px rgba(0,0,0,0.05) !important;
-    border: 1px solid rgba(0,0,0,0.05) !important;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .leaflet-popup-content {
@@ -236,7 +239,7 @@ onMounted(async () => {
 
 .leaflet-popup-tip {
     background-color: #ffffff !important;
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15) !important;
 }
 
 
