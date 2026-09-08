@@ -35,9 +35,9 @@ const initMap = () => {
     }).setView([props.initialCenter.lat, props.initialCenter.lng], props.zoom);
 
 
-    L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`, {
+    L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
         maxZoom: 19,
-        attribution: '© OpenStreetMap contributors'
+        attribution: '&copy; <a href="https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2">IGN Argentina</a>',
     }).addTo(map);
 
 

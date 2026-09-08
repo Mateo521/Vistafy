@@ -22,13 +22,13 @@ const initMap = () => {
 
 
     const boundsArgentina = L.latLngBounds(
-        [-55.051258, -73.576081],  
-        [-21.781134, -53.637568]   
+        [-55.051258, -73.576081],
+        [-21.781134, -53.637568]
     );
 
     map = L.map(mapContainer.value, {
         scrollWheelZoom: true,
-        zoomControl: false, 
+        zoomControl: false,
         attributionControl: false,
         maxBounds: boundsArgentina,
         maxBoundsViscosity: 1.0,
@@ -40,10 +40,11 @@ const initMap = () => {
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
 
-    L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`, {
+    L.tileLayer(`https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png`, {
         maxZoom: 19,
         minZoom: 4,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        tms: true,
+        attribution: '&copy; <a href="https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2">IGN Argentina</a>',
 
     }).addTo(map);
 
@@ -61,9 +62,9 @@ const addMarkers = () => {
 
 
     const grouped = {};
-    
+
     props.photographers.forEach(p => {
-        if(p.latitude && p.longitude) {
+        if (p.latitude && p.longitude) {
             const key = `${p.latitude},${p.longitude}`;
             if (!grouped[key]) grouped[key] = [];
             grouped[key].push(p);
@@ -72,14 +73,14 @@ const addMarkers = () => {
 
     Object.values(grouped).forEach(group => {
         const count = group.length;
-        
+
         group.forEach((photographer, index) => {
             let lat = parseFloat(photographer.latitude);
             let lng = parseFloat(photographer.longitude);
 
 
             if (count > 1) {
-                const radius = 0.03; 
+                const radius = 0.03;
                 const angle = (index / count) * (2 * Math.PI);
                 lat += Math.cos(angle) * radius;
                 lng += Math.sin(angle) * radius;
@@ -127,7 +128,7 @@ const addMarkers = () => {
                         </a>
                     </div>
                 `);
-            
+
             markers.push(marker);
         });
     });
@@ -135,7 +136,7 @@ const addMarkers = () => {
     if (markers.length > 0) {
         const group = new L.featureGroup(markers);
         map.fitBounds(group.getBounds().pad(0.1), {
-            maxZoom: 11, 
+            maxZoom: 11,
             padding: [50, 50]
         });
     }
@@ -153,21 +154,22 @@ watch(() => props.photographers, () => {
 
 <template>
     <div class="relative w-full h-full bg-[#F8F9FA] rounded-xl overflow-hidden shadow-sm border border-gray-100">
-        
+
 
         <div ref="mapContainer" class="w-full h-full z-0 outline-none map-sleek-directory"></div>
-        
 
-        <transition 
-            enter-active-class="transition-opacity duration-300"
-            leave-active-class="transition-opacity duration-500"
-            enter-from-class="opacity-0"
-            leave-to-class="opacity-0"
-        >
-            <div v-if="!isMapReady" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20 rounded-xl">
+
+        <transition enter-active-class="transition-opacity duration-300"
+            leave-active-class="transition-opacity duration-500" enter-from-class="opacity-0"
+            leave-to-class="opacity-0">
+            <div v-if="!isMapReady"
+                class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-md z-20 rounded-xl">
                 <div class="flex flex-col items-center gap-4">
-                    <div class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm"></div>
-                    <span class="text-slate-600 font-bold text-xs uppercase tracking-wider">Cargando directorio...</span>
+                    <div
+                        class="h-10 w-10 border-4 border-gray-100 border-t-[#E30613] rounded-full animate-spin shadow-sm">
+                    </div>
+                    <span class="text-slate-600 font-bold text-xs uppercase tracking-wider">Cargando
+                        directorio...</span>
                 </div>
             </div>
         </transition>
@@ -175,9 +177,14 @@ watch(() => props.photographers, () => {
 </template>
 
 <style>
+.leaflet-pane {
+    z-index: 10 !important;
+}
 
-.leaflet-pane { z-index: 10 !important; }
-.leaflet-top, .leaflet-bottom { z-index: 20 !important; }
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 20 !important;
+}
 
 
 .map-sleek-directory .leaflet-control-zoom {
@@ -215,8 +222,8 @@ watch(() => props.photographers, () => {
     border-radius: 20px !important;
     padding: 0 !important;
     color: #334155 !important;
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15), 0 0 20px rgba(0,0,0,0.05) !important;
-    border: 1px solid rgba(0,0,0,0.05) !important;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .leaflet-popup-content {
@@ -231,7 +238,7 @@ watch(() => props.photographers, () => {
 
 .leaflet-popup-tip {
     background-color: #ffffff !important;
-    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15) !important;
 }
 
 
@@ -254,9 +261,9 @@ watch(() => props.photographers, () => {
     transform: scale(1);
 }
 
-.custom-photographer-marker:hover .marker-dot { 
-    transform: scale(1.4) !important; 
-    background-color: #E30613 !important; 
+.custom-photographer-marker:hover .marker-dot {
+    transform: scale(1.4) !important;
+    background-color: #E30613 !important;
     border-color: #ffffff !important;
     box-shadow: 0 6px 15px rgba(227, 6, 19, 0.5) !important;
 }
