@@ -16,6 +16,12 @@ import { useToast } from '@/Composables/useToast';
 import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
+import * as nsfwjs from 'nsfwjs';
+
+
+const nsfwModel = ref(null);
+const isScanningNSFW = ref(false);
+
 
 const props = defineProps({
     events: Array,
@@ -71,23 +77,54 @@ onMounted(async () => {
         await faceapi.tf.ready();
 
         const MODEL_URL = '/models';
-        await Promise.all([
+        
+
+        const [loadedNsfwModel] = await Promise.all([
+            nsfwjs.load(),  
             faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
             faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
             faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         ]);
 
+        nsfwModel.value = loadedNsfwModel;
         modelsLoaded.value = true;
     } catch (err) {
         console.error('Error cargando modelos:', err);
         try {
             await faceapi.tf.setBackend('cpu');
             await faceapi.tf.ready();
+            nsfwModel.value = await nsfwjs.load();
             modelsLoaded.value = true;
         } catch (e) { console.error('Error fatal IA:', e); }
     }
 });
 
+
+const isImageSafe = async (file) => {
+    if (!nsfwModel.value) return true; 
+
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        
+        img.onload = async () => {
+
+            const predictions = await nsfwModel.value.classify(img);
+            URL.revokeObjectURL(img.src);
+            
+            const isUnsafe = predictions.some(p => 
+                (p.className === 'Porn' || p.className === 'Hentai') && p.probability > 0.65
+            );
+            
+            resolve(!isUnsafe);  
+        };
+        
+        img.onerror = () => {
+            URL.revokeObjectURL(img.src);
+            resolve(true);  
+        };
+    });
+};
 
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
@@ -144,6 +181,7 @@ const compressImage = async (file) => {
 };
 
 const addFiles = async (files) => {
+
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         const maxSize = 50 * 1024 * 1024;
@@ -158,16 +196,45 @@ const addFiles = async (files) => {
         return true;
     });
 
+
     const remainingSlots = 50 - selectedFiles.value.length;
-    const filesToAdd = validFiles.slice(0, remainingSlots);
+    const filesToProcess = validFiles.slice(0, remainingSlots);
 
     if (validFiles.length > remainingSlots) {
-        error(`Límite de 50 fotos. Se agregaron ${remainingSlots}.`);
+        error(`Límite de 50 fotos. Se procesarán ${remainingSlots}.`);
     }
 
-    const compressingPromises = filesToAdd.map(file => compressImage(file));
+    if (filesToProcess.length === 0) return;
+
+
+    isScanningNSFW.value = true;
+    const safeFiles = [];
+    let blockedCount = 0;
+
+    for (const file of filesToProcess) {
+        const isSafe = await isImageSafe(file);
+        if (isSafe) {
+            safeFiles.push(file);
+        } else {
+            blockedCount++;
+        }
+    }
+    
+    isScanningNSFW.value = false;
+
+
+    if (blockedCount > 0) {
+        error(`Se bloquearon ${blockedCount} fotografía(s) por detectar contenido explícito o inapropiado.`);
+    }
+
+
+    if (safeFiles.length === 0) return;
+
+
+    const compressingPromises = safeFiles.map(file => compressImage(file));
     const newFileObjects = await Promise.all(compressingPromises);
     selectedFiles.value.push(...newFileObjects);
+
 
     if (modelsLoaded.value) {
         runAIDetection();
@@ -471,7 +538,7 @@ const submitPhotos = () => {
                                             placeholder="0.00">
                                     </div>
                                     <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price
-                                        }}</p>
+                                    }}</p>
                                 </div>
 
 
@@ -488,7 +555,7 @@ const submitPhotos = () => {
                                         </option>
                                     </select>
 
-                                
+
                                 </div>
 
 
@@ -591,7 +658,8 @@ const submitPhotos = () => {
                                         Protección F33
                                     </h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan de forma segura hasta la confirmación de transacción.
+                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan de
+                                        forma segura hasta la confirmación de transacción.
                                     </p>
                                 </div>
                             </div>
