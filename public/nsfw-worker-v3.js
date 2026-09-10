@@ -3,7 +3,7 @@ importScripts('https://unpkg.com/nsfwjs');
 
 let model = null;
 
-nsfwjs.load().then(loadedModel => {
+nsfwjs.load('https://unpkg.com/nsfwjs@4.4.0/model/').then(loadedModel => {
     model = loadedModel;
     postMessage({ status: 'READY' });
 }).catch(err => {
