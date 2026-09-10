@@ -17,13 +17,6 @@ import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
 
-
-
-const nsfwWorker = new Worker('/nsfw-worker-v4.js');
-let isNsfwReady = false;
-const isScanningNSFW = ref(false);  
-
-
 const props = defineProps({
     events: Array,
     eventRoles: {
@@ -96,34 +89,6 @@ onMounted(async () => {
 });
 
 
-
-
-
-nsfwWorker.onmessage = (e) => {
-    if (e.data.status === 'READY') {
-        isNsfwReady = true;
-    }
-};
-
-
-const isImageSafe = (file) => {
-    if (!isNsfwReady) return Promise.resolve(true); 
-
-    return new Promise((resolve) => {
-        const fileId = Math.random().toString(36).substring(7); 
-        
-        const handleMessage = (e) => {
-            if (e.data.fileId === fileId) {
-                nsfwWorker.removeEventListener('message', handleMessage);
-                resolve(e.data.isSafe);
-            }
-        };
-        
-        nsfwWorker.addEventListener('message', handleMessage);
-        nsfwWorker.postMessage({ fileId, file });  
-    });
-};
-
 const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     addFiles(files);
@@ -179,7 +144,6 @@ const compressImage = async (file) => {
 };
 
 const addFiles = async (files) => {
-
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         const maxSize = 50 * 1024 * 1024;
@@ -194,45 +158,16 @@ const addFiles = async (files) => {
         return true;
     });
 
-
     const remainingSlots = 50 - selectedFiles.value.length;
-    const filesToProcess = validFiles.slice(0, remainingSlots);
+    const filesToAdd = validFiles.slice(0, remainingSlots);
 
     if (validFiles.length > remainingSlots) {
-        error(`Límite de 50 fotos. Se procesarán ${remainingSlots}.`);
+        error(`Límite de 50 fotos. Se agregaron ${remainingSlots}.`);
     }
 
-    if (filesToProcess.length === 0) return;
-
-
-    isScanningNSFW.value = true;
-    const safeFiles = [];
-    let blockedCount = 0;
-
-    for (const file of filesToProcess) {
-        const isSafe = await isImageSafe(file);
-        if (isSafe) {
-            safeFiles.push(file);
-        } else {
-            blockedCount++;
-        }
-    }
-    
-    isScanningNSFW.value = false;
-
-
-    if (blockedCount > 0) {
-        error(`Se bloquearon ${blockedCount} fotografía(s) por detectar contenido explícito o inapropiado.`);
-    }
-
-
-    if (safeFiles.length === 0) return;
-
-
-    const compressingPromises = safeFiles.map(file => compressImage(file));
+    const compressingPromises = filesToAdd.map(file => compressImage(file));
     const newFileObjects = await Promise.all(compressingPromises);
     selectedFiles.value.push(...newFileObjects);
-
 
     if (modelsLoaded.value) {
         runAIDetection();
@@ -536,7 +471,7 @@ const submitPhotos = () => {
                                             placeholder="0.00">
                                     </div>
                                     <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price
-                                    }}</p>
+                                        }}</p>
                                 </div>
 
 
@@ -553,7 +488,7 @@ const submitPhotos = () => {
                                         </option>
                                     </select>
 
-
+                                
                                 </div>
 
 
@@ -656,8 +591,7 @@ const submitPhotos = () => {
                                         Protección F33
                                     </h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan de
-                                        forma segura hasta la confirmación de transacción.
+                                        Se va a aplicar una marca de agua automáticamente. Los originales se guardan de forma segura hasta la confirmación de transacción.
                                     </p>
                                 </div>
                             </div>
