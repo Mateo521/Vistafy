@@ -1,6 +1,6 @@
 
-importScripts('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.21.0/dist/tf.min.js');
-importScripts('https://cdn.jsdelivr.net/npm/nsfwjs@2.9.0/dist/nsfwjs.min.js');
+importScripts('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.21.0/dist/tf.min.js');  
+importScripts('/models/nsfw/nsfwjs.min.js');
 
 let model = null;
 
