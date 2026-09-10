@@ -19,7 +19,7 @@ import Tesseract from 'tesseract.js';
 
 
 
-const nsfwWorker = new Worker('/nsfw-worker.js');
+const nsfwWorker = new Worker('/nsfw-worker-v2.js');
 let isNsfwReady = false;
 const isScanningNSFW = ref(false);  
 
