@@ -112,6 +112,9 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
         ->name('bib-search');
 
     Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
+
+
+    Route::post('/fotos/{photo}/reportar', [PublicGalleryController::class, 'report'])->name('report');
 });
 
 Route::prefix('eventos')->name('events.')->group(function () {
