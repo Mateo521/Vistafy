@@ -369,6 +369,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
             'total_photos' => \App\Models\Photo::count(),
             'total_users' => \App\Models\User::count(),
             'unread_messages' => ContactMessage::unread()->count(),
+            'pending_reports' => \App\Models\PhotoReport::where('status', 'pending')->count(),
         ];
 
         return Inertia::render('Admin/Dashboard', [
