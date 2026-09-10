@@ -377,6 +377,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         ]);
     })->name('dashboard');
 
+
+    Route::prefix('reportes')->name('reports.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\PhotoReportController::class, 'index'])->name('index');
+    Route::post('/{report}/aceptar', [\App\Http\Controllers\Admin\PhotoReportController::class, 'accept'])->name('accept');
+    Route::post('/{report}/descartar', [\App\Http\Controllers\Admin\PhotoReportController::class, 'reject'])->name('reject');
+});
+
     Route::get('/mensajes', [ContactMessageController::class, 'index'])->name('messages.index');
     Route::get('/mensajes/{message}', [ContactMessageController::class, 'show'])->name('messages.show');
     Route::patch('/mensajes/{message}/toggle-read', [ContactMessageController::class, 'toggleRead'])->name('messages.toggle-read');
