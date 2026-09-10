@@ -78,23 +78,18 @@ onMounted(async () => {
         await faceapi.tf.ready();
 
         const MODEL_URL = '/models';
-        
-
-        const [loadedNsfwModel] = await Promise.all([
-            nsfwjs.load(),  
+        await Promise.all([
             faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
             faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
             faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         ]);
 
-        nsfwModel.value = loadedNsfwModel;
         modelsLoaded.value = true;
     } catch (err) {
         console.error('Error cargando modelos:', err);
         try {
             await faceapi.tf.setBackend('cpu');
             await faceapi.tf.ready();
-            nsfwModel.value = await nsfwjs.load();
             modelsLoaded.value = true;
         } catch (e) { console.error('Error fatal IA:', e); }
     }
