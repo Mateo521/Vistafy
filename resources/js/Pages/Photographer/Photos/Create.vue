@@ -16,11 +16,12 @@ import { useToast } from '@/Composables/useToast';
 import * as faceapi from 'face-api.js';
 import '@tensorflow/tfjs-backend-webgl';
 import Tesseract from 'tesseract.js';
-import * as nsfwjs from 'nsfwjs';
 
 
-const nsfwModel = ref(null);
-const isScanningNSFW = ref(false);
+
+const nsfwWorker = new Worker('/nsfw-worker.js');
+let isNsfwReady = false;
+const isScanningNSFW = ref(false);  
 
 
 const props = defineProps({
@@ -100,29 +101,31 @@ onMounted(async () => {
 });
 
 
-const isImageSafe = async (file) => {
-    if (!nsfwModel.value) return true; 
+
+
+
+nsfwWorker.onmessage = (e) => {
+    if (e.data.status === 'READY') {
+        isNsfwReady = true;
+    }
+};
+
+
+const isImageSafe = (file) => {
+    if (!isNsfwReady) return Promise.resolve(true); 
 
     return new Promise((resolve) => {
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
+        const fileId = Math.random().toString(36).substring(7); 
         
-        img.onload = async () => {
-
-            const predictions = await nsfwModel.value.classify(img);
-            URL.revokeObjectURL(img.src);
-            
-            const isUnsafe = predictions.some(p => 
-                (p.className === 'Porn' || p.className === 'Hentai') && p.probability > 0.65
-            );
-            
-            resolve(!isUnsafe);  
+        const handleMessage = (e) => {
+            if (e.data.fileId === fileId) {
+                nsfwWorker.removeEventListener('message', handleMessage);
+                resolve(e.data.isSafe);
+            }
         };
         
-        img.onerror = () => {
-            URL.revokeObjectURL(img.src);
-            resolve(true);  
-        };
+        nsfwWorker.addEventListener('message', handleMessage);
+        nsfwWorker.postMessage({ fileId, file });  
     });
 };
 
