@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use App\Models\PhotoReport;
+use Illuminate\Support\Facades\Validator;
 class PublicGalleryController extends Controller
 {
    public function index()
@@ -119,6 +120,29 @@ class PublicGalleryController extends Controller
             'canRegister' => Route::has('register'),
         ]);
     }
+
+
+    public function report(Request $request, Photo $photo)
+{
+    $request->validate([
+        'email' => 'required|email|max:255',
+        'reason' => 'required|string|max:50',
+        'message' => 'nullable|string|max:1000',
+    ]);
+
+
+    PhotoReport::create([
+        'photo_id' => $photo->id,
+        'email' => $request->email,
+        'reason' => $request->reason,
+        'message' => $request->message,
+        'status' => 'pending',
+    ]);
+
+    //ENVIO DE CORREO A ADMINISTRADOR
+
+    return back()->with('success', 'Reporte enviado correctamente.');
+}
 
     public function gallery(Request $request)
 {

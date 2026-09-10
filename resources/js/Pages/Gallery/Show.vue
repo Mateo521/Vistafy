@@ -342,7 +342,7 @@ const handleImageError = (e) => {
                             (opcional)</label>
                         <textarea v-model="reportForm.message" rows="3"
                             class="w-full border-gray-200 rounded focus:ring-red-600 focus:border-red-600 text-sm shadow-sm resize-none"
-                            placeholder="Explica brevemente por qué reportas esta imagen..."></textarea>
+                            placeholder="Explicá brevemente por qué reportas esta imagen..."></textarea>
                     </div>
 
                     <div class="mt-8 flex justify-end gap-4">
