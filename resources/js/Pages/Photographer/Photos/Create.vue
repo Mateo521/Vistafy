@@ -180,6 +180,7 @@ const addFiles = async (files) => {
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         const maxSize = 50 * 1024 * 1024;
+        
         if (!validTypes.includes(file.type)) {
             error(`${file.name} no es un formato válido.`);
             return false;
@@ -188,6 +189,17 @@ const addFiles = async (files) => {
             error(`${file.name} excede el límite de 50MB.`);
             return false;
         }
+
+
+        const isDuplicate = selectedFiles.value.some(
+            existing => existing.name === file.name || (existing.file && existing.file.name === file.name)
+        );
+        
+        if (isDuplicate) {
+            error(`"${file.name}" ya está en la cola de subida.`);
+            return false;
+        }
+
         return true;
     });
 
@@ -199,7 +211,6 @@ const addFiles = async (files) => {
     }
 
     if (filesToProcess.length === 0) return;
-
 
     isScanningNSFW.value = true;
     const safeFiles = [];
@@ -224,6 +235,12 @@ const addFiles = async (files) => {
 
     const compressingPromises = safeFiles.map(file => compressImage(file));
     const newFileObjects = await Promise.all(compressingPromises);
+    
+
+    newFileObjects.forEach((obj, index) => {
+        obj.name = safeFiles[index].name; 
+    });
+
     selectedFiles.value.push(...newFileObjects);
 
     if (modelsLoaded.value) {
@@ -478,7 +495,7 @@ const submitPhotos = () => {
 </script>
 <template>
 
-    <Head title="Carga de Material" />
+    <Head title="Carga de material" />
 
     <AuthenticatedLayout>
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-28">

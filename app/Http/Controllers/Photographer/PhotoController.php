@@ -76,16 +76,14 @@ class PhotoController extends Controller
     {
         $photographer = auth()->user()->photographer;
 
-
         $events = \App\Models\Event::where('photographer_id', $photographer->id)
             ->orWhereHas('collaborators', function ($q) use ($photographer) {
                 $q->where('photographer_id', $photographer->id)
-                  ->where('event_photographer.status', 'approved');
+                    ->where('event_photographer.status', 'approved');
             })
             ->select('id', 'name', 'event_date')
             ->orderBy('event_date', 'desc')
             ->get();
-
 
         $eventRoles = \App\Models\Photo::whereIn('event_id', $events->pluck('id'))
             ->whereNotNull('location_role')
@@ -100,13 +98,12 @@ class PhotoController extends Controller
 
         return Inertia::render('Photographer/Photos/Create', [
             'events' => $events,
-            'eventRoles' => $eventRoles, 
+            'eventRoles' => $eventRoles,
         ]);
     }
 
     public function store(Request $request)
     {
-        
 
         if (! auth()->user()->photographer) {
             \Log::error(' Usuario no tiene perfil de fotógrafo');
@@ -126,20 +123,20 @@ class PhotoController extends Controller
 
         $photographer = auth()->user()->photographer;
 
-        
         if ($request->event_id) {
             $event = \App\Models\Event::find($request->event_id);
-            
+
             if ($event) {
                 $isOwner = $event->photographer_id === $photographer->id;
-                
+
                 $isApprovedCollaborator = $event->collaborators()
                     ->where('photographer_id', $photographer->id)
                     ->where('event_photographer.status', 'approved')
                     ->exists();
 
-                if (!$isOwner && !$isApprovedCollaborator) {
+                if (! $isOwner && ! $isApprovedCollaborator) {
                     \Log::error('Intento de subida denegado: Evento no pertenece al fotógrafo ni es colaborador.');
+
                     return response()->json(['error' => 'No tenés permiso para subir fotos a este evento'], 403);
                 }
             }
@@ -174,10 +171,28 @@ class PhotoController extends Controller
         try {
             foreach ($request->file('photos') as $index => $file) {
                 try {
+                    $originalName = $file->getClientOriginalName();
+                    $fileSize = $file->getSize();
+
                     \Log::info("Procesando foto {$index}", [
-                        'filename' => $file->getClientOriginalName(),
-                        'size' => $file->getSize(),
+                        'filename' => $originalName,
+                        'size' => $fileSize,
                     ]);
+
+                    
+                    $isDuplicate = \App\Models\Photo::where('photographer_id', $photographer->id)
+                        ->where('event_id', $request->event_id)
+                        ->where('original_name', $originalName)
+                        ->where('file_size', $fileSize)
+                        ->exists();
+
+                    if ($isDuplicate) {
+                        \Log::info("FOTO DUPLICADA OMITIDA: {$originalName}");
+                        $errors[] = "La foto {$originalName} ya fue subida anteriormente a este evento.";
+
+                        continue;  
+                    }
+                    // ==========================================
 
                     $processed = $this->imageService->processPhoto($file, $photographer->id);
 
@@ -243,8 +258,8 @@ class PhotoController extends Controller
                         'original_path' => $photo->original_path,
                         'has_faces' => $photo->has_faces,
                         'num_faces' => $photo->has_faces ? count($photo->face_encodings) : 0,
-                        'bib_numbers' => $photo->bib_numbers, //
-                        'bib_processed' => $photo->bib_processed, //
+                        'bib_numbers' => $photo->bib_numbers,
+                        'bib_processed' => $photo->bib_processed,
                     ]);
 
                     $uploadedPhotos[] = $photo;
