@@ -50,7 +50,7 @@
                                     <p style="color: #a1a1aa; font-size: 13px; margin: 0 0 10px 0;">Clave Temporal: <strong
                                             style="color: #ffffff;">{{ $temporaryPassword }}</strong></p>
                                     <p style="color: #52525b; font-size: 11px; margin: 0;">(Te recomendamos cambiar esta
-                                        clave al Ingresár a la plataforma).</p>
+                                        clave al Ingresar a la plataforma).</p>
                                 </div>
                             @endif
 
