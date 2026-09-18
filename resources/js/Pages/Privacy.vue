@@ -88,7 +88,7 @@ import { ArrowLeftIcon, LockClosedIcon, DocumentTextIcon } from '@heroicons/vue/
                             Tus derechos
                         </h2>
                         <p>
-                            Tenés el derecho de acceder, actualizar o solicitar la eliminación de tu información personal en cualquier momento. Si deseas purgar tu cuenta o revocar cualquier consentimiento, puedes hacerlo desde el panel de configuración o contactándonos directamente.
+                            Tenés el derecho de acceder, actualizar o solicitar la eliminación de tu información personal en cualquier momento. Si deseas purgar tu cuenta o revocar cualquier consentimiento, podés hacerlo desde el panel de configuración o contactándonos directamente.
                         </p>
                     </div>
 

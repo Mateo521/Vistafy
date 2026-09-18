@@ -197,7 +197,7 @@ const submit = () => {
                                     @update:location="updateLocation" />
                             </div>
 
-                            <input v-model="form.location" type="text" placeholder="Dirección auto-generada o ingresa manualmente"
+                            <input v-model="form.location" type="text" placeholder="Dirección auto-generada o Ingresá manualmente"
                                 class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded transition-all outline-none placeholder-gray-400 mt-2"
                                 required readonly />
 

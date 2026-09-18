@@ -158,7 +158,7 @@ class FutureEventController extends Controller
 
         $event->collaborators()->updateExistingPivot($photographerId, ['status' => 'approved']);
 
-        return redirect()->back()->with('success', '¡Invitación aceptada! Ya puedes subir fotos a este evento.');
+        return redirect()->back()->with('success', '¡Invitación aceptada! Ya podés subir fotos a este evento.');
     }
 
     public function rejectInvitation(\App\Models\Event $event)

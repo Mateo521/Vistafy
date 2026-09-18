@@ -10,6 +10,7 @@ use App\Http\Controllers\EventFaceSearchController;
 use App\Http\Controllers\FutureEventController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentSimulationController;
+use App\Http\Controllers\Photographer\EventChatController;
 use App\Http\Controllers\Photographer\EventController;
 use App\Http\Controllers\Photographer\FutureEventManagementController;
 use App\Http\Controllers\Photographer\MercadoPagoOAuthController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Photographer\PhotoController;
 use App\Http\Controllers\Photographer\ProfileController as PhotographerProfileController;
 use App\Http\Controllers\PhotographerController;
 use App\Http\Controllers\PhotoViewController;
-use App\Http\Controllers\Photographer\EventChatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicGalleryController;
 use App\Http\Controllers\PurchaseController;
@@ -113,7 +113,6 @@ Route::prefix('galeria')->name('gallery.')->group(function () {
 
     Route::get('/foto/{uniqueId}/disponibilidad', [PublicGalleryController::class, 'checkAvailability'])->name('check');
 
-
     Route::post('/fotos/{photo}/reportar', [PublicGalleryController::class, 'report'])->name('report');
 });
 
@@ -195,7 +194,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/2fa/enable', [App\Http\Controllers\Auth\TwoFactorController::class, 'enable'])->name('2fa.enable');
+    Route::post('/2fa/confirm', [App\Http\Controllers\Auth\TwoFactorController::class, 'confirm'])->name('2fa.confirm');
+    Route::post('/2fa/disable', [App\Http\Controllers\Auth\TwoFactorController::class, 'disable'])->name('2fa.disable');
 });
+
+
 
 Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
@@ -339,20 +344,20 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::post('/eventos/{event}/cover-image', [EventController::class, 'updateCoverImage'])->name('events.cover-image');
     Route::post('/eventos/{event}/invitar', [EventController::class, 'inviteColleague'])->name('events.invite');
 
-Route::get('/eventos/{event}/chat', [EventChatController::class, 'index'])->name('events.chat');
-Route::post('/eventos/{event}/chat', [EventChatController::class, 'store'])->name('events.chat.store');
+    Route::get('/eventos/{event}/chat', [EventChatController::class, 'index'])->name('events.chat');
+    Route::post('/eventos/{event}/chat', [EventChatController::class, 'store'])->name('events.chat.store');
 
     Route::post('/oportunidades/{event}/aceptar', [FutureEventManagementController::class, 'acceptInvitation'])->name('opportunities.accept');
     Route::post('/oportunidades/{event}/rechazar', [FutureEventManagementController::class, 'rejectInvitation'])->name('opportunities.reject');
     Route::post('/eventos-futuros/{event}/postular', [\App\Http\Controllers\FutureEventController::class, 'apply'])->name('future-events.apply');
 
-Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])
-    ->name('future-events.applications.accept')
-    ->withoutScopedBindings(); 
+    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/aceptar', [\App\Http\Controllers\FutureEventController::class, 'acceptApplication'])
+        ->name('future-events.applications.accept')
+        ->withoutScopedBindings();
 
-Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])
-    ->name('future-events.applications.reject')
-    ->withoutScopedBindings();  
+    Route::post('/eventos-futuros/{futureEvent}/postulantes/{photographer}/rechazar', [\App\Http\Controllers\FutureEventController::class, 'rejectApplication'])
+        ->name('future-events.applications.reject')
+        ->withoutScopedBindings();
 
 });
 
@@ -377,12 +382,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         ]);
     })->name('dashboard');
 
-
     Route::prefix('reportes')->name('reports.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Admin\PhotoReportController::class, 'index'])->name('index');
-    Route::post('/{report}/aceptar', [\App\Http\Controllers\Admin\PhotoReportController::class, 'accept'])->name('accept');
-    Route::post('/{report}/descartar', [\App\Http\Controllers\Admin\PhotoReportController::class, 'reject'])->name('reject');
-});
+        Route::get('/', [\App\Http\Controllers\Admin\PhotoReportController::class, 'index'])->name('index');
+        Route::post('/{report}/aceptar', [\App\Http\Controllers\Admin\PhotoReportController::class, 'accept'])->name('accept');
+        Route::post('/{report}/descartar', [\App\Http\Controllers\Admin\PhotoReportController::class, 'reject'])->name('reject');
+    });
 
     Route::get('/mensajes', [ContactMessageController::class, 'index'])->name('messages.index');
     Route::get('/mensajes/{message}', [ContactMessageController::class, 'show'])->name('messages.show');

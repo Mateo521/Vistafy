@@ -122,7 +122,7 @@ const { confirmState, handleConfirm, handleCancel } = useConfirm();
                         </Link>
                         <Link :href="route('login')"
                             class="text-[10px] sm:text-xs font-bold uppercase  text-white hover:text-slate-200 transition">
-                            Ingresar
+                            Ingresár
                         </Link>
                     </template>
                 </div>

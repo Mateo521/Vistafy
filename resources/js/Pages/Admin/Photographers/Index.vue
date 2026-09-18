@@ -346,7 +346,7 @@ const getStatusConfig = (status) => {
                                     <label class="block text-xs font-bold uppercase text-gray-500 mb-2 tracking-wider ml-1">Motivo del rechazo (Opcional)</label>
                                     <textarea v-model="rejectForm.reason" rows="3"
                                         class="w-full bg-white border border-gray-200 text-slate-800 text-sm p-4 rounded-xl focus:border-gray-300 focus:ring-4 focus:ring-gray-100 resize-none transition-all outline-none placeholder-gray-400"
-                                        placeholder="Ingresa la razón técnica o administrativa..."></textarea>
+                                        placeholder="Ingresá la razón técnica o administrativa..."></textarea>
                                     <p v-if="rejectForm.errors.reason" class="text-xs text-[#E30613] font-bold mt-2 ml-1">{{ rejectForm.errors.reason }}</p>
                                 </div>
                             </div>

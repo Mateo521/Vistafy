@@ -49,7 +49,7 @@ const submit = () => {
                         </h2>
 
                         <p class="text-sm font-medium text-gray-500 mb-8 leading-relaxed">
-                            ¿Olvidaste tu contraseña? No hay problema. Ingresa tu correo electrónico y te enviaremos un enlace para que puedas elegir una nueva.
+                            ¿Olvidaste tu contraseña? No hay problema. Ingresá tu correo electrónico y te enviaremos un enlace para que puedas elegir una nueva.
                         </p>
                     </div>
 

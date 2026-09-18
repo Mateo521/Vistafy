@@ -41,7 +41,7 @@
 
                             <div style="text-align: center; margin: 40px 0;">
                                 <a href="{{ route('home') }}" style="display: inline-block; background-color: #dc2626; color: #ffffff; text-decoration: none; padding: 16px 40px; font-weight: bold; font-size: 12px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.1em;">
-                                    [ INGRESAR ]
+                                    [ IngresáR ]
                                 </a>
                             </div>
                             

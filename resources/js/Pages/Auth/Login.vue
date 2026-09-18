@@ -109,7 +109,7 @@ const submit = () => {
                 <button type="submit" :disabled="form.processing"
                     class="w-full bg-black text-white font-bold text-xs uppercase tracking-wider py-4 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none">
                     <span v-if="form.processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    {{ form.processing ? 'Verificando...' : 'Ingresar' }}
+                    {{ form.processing ? 'Verificando...' : 'Ingresár' }}
                 </button>
             </div>
 

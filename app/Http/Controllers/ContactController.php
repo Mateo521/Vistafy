@@ -22,10 +22,10 @@ class ContactController extends Controller
             'subject' => 'required|string|max:255',
             'message' => 'required|string|min:10|max:2000',
         ], [
-            'name.required' => 'Por favor ingresa tu nombre',
-            'email.required' => 'Por favor ingresa tu correo',
-            'email.email' => 'Ingresa un correo válido',
-            'subject.required' => 'Por favor ingresa un asunto',
+            'name.required' => 'Por favor Ingresá tu nombre',
+            'email.required' => 'Por favor Ingresá tu correo',
+            'email.email' => 'Ingresá un correo válido',
+            'subject.required' => 'Por favor Ingresá un asunto',
             'message.required' => 'Por favor escribe tu mensaje',
             'message.min' => 'El mensaje debe tener al menos 10 caracteres',
         ]);

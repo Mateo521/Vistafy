@@ -108,7 +108,7 @@ const handleImageError = (e) => {
 
 <template>
 
-    <Head :title="`Foto ${photo.unique_id}.click`" />
+    <Head :title="`Foto id ${photo.unique_id}`" />
 
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-lato selection:bg-red-600 selection:text-white pb-20">

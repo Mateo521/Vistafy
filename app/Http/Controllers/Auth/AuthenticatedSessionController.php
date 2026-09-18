@@ -27,15 +27,24 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+public function store(LoginRequest $request): RedirectResponse
+{
+    $request->authenticate();
 
-        $request->session()->regenerate();
 
+    if (auth()->user()->two_factor_enabled) {
+        $userId = auth()->id();
+        \Illuminate\Support\Facades\Auth::logout(); 
         
-        return $this->redirectBasedOnRole();
+        $request->session()->put('2fa:user:id', $userId);
+        
+        return redirect()->route('2fa.challenge');
     }
+
+    $request->session()->regenerate();
+
+    return $this->redirectBasedOnRole();
+}
 
     /**
      * Destroy an authenticated session.
@@ -51,27 +60,23 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 
-    
-    protected function redirectBasedOnRole(): RedirectResponse
+    public function redirectBasedOnRole(): RedirectResponse
     {
         $user = auth()->user();
 
-       
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
 
-         
         if ($user->role === 'photographer') {
             $photographer = $user->photographer;
 
-            if (!$photographer) {
-                
+            if (! $photographer) {
+
                 return redirect()->route('home')
                     ->with('error', 'No se encontró tu perfil de fotógrafo. Contacta a soporte.');
             }
 
-           
             switch ($photographer->status) {
                 case 'pending':
                     return redirect()->route('photographer.pending')
@@ -93,12 +98,10 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        
         if ($user->role === 'client') {
             return redirect()->route('home');
         }
 
-        
         return redirect()->route('home');
     }
 }

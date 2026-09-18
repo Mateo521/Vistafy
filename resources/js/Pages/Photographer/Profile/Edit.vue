@@ -18,16 +18,16 @@ const props = defineProps({
 });
 
 const form = useForm({
-    _method: 'PATCH', // Truco para permitir archivos en modo Edición
+    _method: 'PATCH',
     business_name: props.photographer.business_name,
     bio: props.photographer.bio || '',
     phone: props.photographer.phone || '',
     region: props.photographer.region,
-    // --- S CAMPOS ---
+
     website: props.photographer.website || '',
     instagram: props.photographer.instagram || '',
     facebook: props.photographer.facebook || '',
-    // ---------------------
+
     profile_photo: null,
     banner_photo: null,
 });
@@ -72,14 +72,14 @@ const deleteBannerPhoto = () => {
 };
 
 const submit = () => {
-    // Usamos POST porque enviamos archivos, pero Laravel lo interpretará como PATCH gracias al campo _method
+
     form.post(route('photographer.profile.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            // Limpiamos los inputs de archivo para no re-enviarlos
+
             form.profile_photo = null;
             form.banner_photo = null;
-            // No reseteamos los previews para que el usuario vea lo que acaba de subir
+
         },
     });
 };
@@ -187,6 +187,50 @@ const submit = () => {
                                 </div>
                             </div>
                         </div>
+
+
+
+                        <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm mt-8">
+                            <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900">
+                                    Seguridad de la Cuenta
+                                </h2>
+                                <span v-if="photographer.two_factor_enabled"
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
+                                    <CheckCircleIcon class="w-3 h-3 mr-1" /> 2FA Activado
+                                </span>
+                                <span v-else
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800">
+                                    Inactivo
+                                </span>
+                            </div>
+
+                            <div class="space-y-6">
+                                <p class="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                                    Agregá una capa adicional de seguridad a tu cuenta usando la Autenticación de
+                                    Dos Factores (2FA). Al activarla, se te pedirá un código aleatorio seguro generado
+                                    por una aplicación como Google Authenticator cada vez que inicies sesión.
+                                </p>
+
+
+                                <div v-if="!photographer.two_factor_enabled" class="flex justify-start">
+                                    <button type="button" @click="enableTwoFactor"
+                                        class="bg-slate-900 text-white px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition shadow-sm">
+                                        Habilitar Autenticación de 2 Factores
+                                    </button>
+                                </div>
+
+
+                                <div v-else class="space-y-4">
+                                    <button type="button" @click="disableTwoFactor"
+                                        class="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-red-100 transition shadow-sm">
+                                        Deshabilitar 2FA
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
 
                     <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">

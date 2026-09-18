@@ -180,7 +180,7 @@ const navigationItems = [
                             <div class="w-px h-4 bg-gray-300 hidden lg:block"></div>
                             <Link :href="route('login')"
                                 class="text-xs font-bold uppercase tracking-wider text-black hover:text-[#E30613] transition-colors">
-                                Ingresar
+                                Ingresár
                             </Link>
                             <Link :href="route('register')"
                                 class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 rounded-full">
