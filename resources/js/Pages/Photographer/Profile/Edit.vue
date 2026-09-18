@@ -32,6 +32,20 @@ const form = useForm({
     banner_photo: null,
 });
 
+
+const enableTwoFactor = () => {
+    router.get(route('2fa.enable'));
+};
+
+
+const disableTwoFactor = () => {
+    if (confirm('¿Estás seguro de que querés deshabilitar la autenticación de dos factores? Tu cuenta estará menos protegida.')) {
+        router.post(route('2fa.disable'), {}, {
+            preserveScroll: true,
+        });
+    }
+};
+
 const profilePhotoPreview = ref(null);
 const bannerPhotoPreview = ref(null);
 const page = usePage();
@@ -190,47 +204,49 @@ const submit = () => {
 
 
 
-                        <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm mt-8">
-                            <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
-                                <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900">
-                                    Seguridad de la Cuenta
-                                </h2>
-                                <span v-if="photographer.two_factor_enabled"
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
-                                    <CheckCircleIcon class="w-3 h-3 mr-1" /> 2FA Activado
-                                </span>
-                                <span v-else
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800">
-                                    Inactivo
-                                </span>
-                            </div>
-
-                            <div class="space-y-6">
-                                <p class="text-xs text-slate-600 leading-relaxed max-w-2xl">
-                                    Agregá una capa adicional de seguridad a tu cuenta usando la Autenticación de
-                                    Dos Factores (2FA). Al activarla, se te pedirá un código aleatorio seguro generado
-                                    por una aplicación como Google Authenticator cada vez que inicies sesión.
-                                </p>
 
 
-                                <div v-if="!photographer.two_factor_enabled" class="flex justify-start">
-                                    <button type="button" @click="enableTwoFactor"
-                                        class="bg-slate-900 text-white px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition shadow-sm">
-                                        Habilitar Autenticación de 2 Factores
-                                    </button>
-                                </div>
 
+                    </div>
 
-                                <div v-else class="space-y-4">
-                                    <button type="button" @click="disableTwoFactor"
-                                        class="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-red-100 transition shadow-sm">
-                                        Deshabilitar 2FA
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm mt-8">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                            <h2 class="text-xs font-bold uppercase tracking-widest text-slate-900">
+                                Seguridad de la Cuenta
+                            </h2>
+                            <span v-if="$page.props.auth.user.two_factor_enabled"
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
+                                <CheckCircleIcon class="w-3 h-3 mr-1" /> 2FA Activado
+                            </span>
+                            <span v-else
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800">
+                                Inactivo
+                            </span>
                         </div>
 
+                        <div class="space-y-6">
+                            <p class="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                                Agregá una capa adicional de seguridad a tu cuenta usando la Autenticación de
+                                Dos Factores (2FA). Al activarla, se te pedirá un código aleatorio seguro generado
+                                por una aplicación como Google Authenticator cada vez que inicies sesión.
+                            </p>
 
+
+                            <div v-if="!$page.props.auth.user.two_factor_enabled" class="flex justify-start">
+                                <button type="button" @click="enableTwoFactor"
+                                    class="bg-slate-900 text-white px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition shadow-sm">
+                                    Habilitar Autenticación de 2 Factores
+                                </button>
+                            </div>
+
+
+                            <div v-else class="space-y-4">
+                                <button type="button" @click="disableTwoFactor"
+                                    class="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-widest hover:bg-red-100 transition shadow-sm">
+                                    Deshabilitar 2FA
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
@@ -305,7 +321,7 @@ const submit = () => {
                                     class="w-full border-gray-300 rounded-sm focus:border-slate-900 focus:ring-0 text-slate-900 placeholder-slate-300 text-sm"
                                     placeholder="https://www.miportfolio.com" />
                                 <p v-if="form.errors.website" class="text-red-600 text-xs mt-1">{{ form.errors.website
-                                    }}</p>
+                                }}</p>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
