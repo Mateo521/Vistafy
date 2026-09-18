@@ -111,7 +111,7 @@ onUnmounted(() => {
                     <h1 class="font-black text-5xl md:text-7xl uppercase tracking-tighter leading-none">
                         Pagos por<br><span class="text-red-600">fotógrafo.</span>
                     </h1>
-                    <p class="font-mono text-xs uppercase tracking-widest text-gray-400 mt-5 max-w-3xl">
+                    <p class="font-mono text-xs uppercase tracking-widest text-gray-400 mt-5 max-w-7xl">
                         Mercado Pago liquida cada pago a un fotógrafo. Para completar esta compra, aboná cada bloque pendiente.
                         La descarga se habilita cuando todos estén aprobados.
                     </p>

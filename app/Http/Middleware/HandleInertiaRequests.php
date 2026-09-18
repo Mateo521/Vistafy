@@ -27,7 +27,7 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-   public function share(Request $request): array
+    public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
             'auth' => [
@@ -37,22 +37,20 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'role' => $request->user()->role,
                     'is_admin' => $request->user()->is_admin,
-
+                    'two_factor_enabled' => $request->user()->two_factor_enabled,
                     'photographer' => $request->user()->role === 'photographer'
                         ? $request->user()->photographer
                         : null,
                 ] : null,
             ],
             'flash' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
-                'message' => fn() => $request->session()->get('message'),
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'message' => fn () => $request->session()->get('message'),
             ],
 
             'regions' => config('regions.list'),
-            
-          
-        
+
         ]);
     }
 }

@@ -38,7 +38,7 @@ import {
                         <span class="text-[#E30613]">la forma de venderla no.</span>
                     </h1>
 
-                    <p class="text-xl md:text-2xl text-gray-500 font-medium max-w-3xl mx-auto leading-relaxed">
+                    <p class="text-xl md:text-2xl text-gray-500 font-medium max-w-7xl mx-auto leading-relaxed">
                         Todos los momentos. Una sola plataforma.
                     </p>
                 </div>
