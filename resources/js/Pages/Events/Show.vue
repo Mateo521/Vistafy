@@ -113,17 +113,15 @@ const handleImageError = (e) => {
 <template>
 
     <Head>
-        <title>{{ event.name }} | f33 Fotografía</title>
+        <title>{{ event.name }} | F33 Fotografía</title>
         <meta name="description"
-            :content="event.description ? event.description.substring(0, 155) + '...' : `Galería de fotos del evento ${event.name} hechas por los fotógrafos de f33`" />
+            :content="event.description ? event.description.substring(0, 155) + '...' : `Galería de fotos del evento ${event.name}.`" />
 
-
-        <meta property="og:title" :content="`${event.name} | f33 Fotografía`" />
+        <meta property="og:title" :content="`${event.name} | F33 Fotografía`" />
         <meta property="og:description"
             :content="event.description ? event.description.substring(0, 155) + '...' : `Galería de fotos del evento ${event.name}.`" />
         <meta property="og:image" :content="event.cover_image_url" />
         <meta property="og:type" content="website" />
-
 
         <component :is="'script'" type="application/ld+json">
             {{
@@ -137,12 +135,11 @@ const handleImageError = (e) => {
                         "name": event.location || "San Luis, Argentina"
                     },
                     "image": [event.cover_image_url],
-                    "description": event.description || `Galería fotográfica oficial de ${event.name}`
+                    "description": event.description || `Galería fotográfica de ${event.name}`
                 })
             }}
         </component>
     </Head>
-
     <AppLayout>
         <div class="min-h-screen bg-[#F8F9FA] text-slate-800 font-sans antialiased py-12 pt-24 md:pt-28">
             <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -160,9 +157,8 @@ const handleImageError = (e) => {
                     class="bg-white rounded overflow-hidden shadow-sm border border-gray-100 relative mb-12 flex flex-col lg:flex-row">
 
                     <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 h-64 lg:h-full order-1 lg:order-2">
-                        <img v-if="gallery.photographer.profile_photo_url" :src="gallery.photographer.profile_photo_url"
-                            :alt="`Foto de perfil del fotógrafo ${gallery.photographer.business_name}`"
-                            class="w-full h-full object-cover">
+                        <img v-if="event.cover_image_url" :src="event.cover_image_url"
+                            :alt="`Portada oficial del evento ${event.name}`" class="w-full h-full object-cover">
                         <div
                             class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-white via-white/80 to-transparent">
                         </div>
