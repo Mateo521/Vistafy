@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Thumbs, Keyboard, FreeMode } from 'swiper/modules';
+import { Navigation, Thumbs, Keyboard, FreeMode, Virtual } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
@@ -320,8 +320,7 @@ const handleImageError = (e) => {
                                 class="group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300 bg-gray-100">
 
                                 <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
-                                    :alt="`foto con marca de agua ${photo.unique_id} de ${event.name}`"
-                                    loading="lazy"
+                                    :alt="`foto con marca de agua ${photo.unique_id} de ${event.name}`" loading="lazy"
                                     class="h-full max-w-full object-cover rounded shadow-2xl relative z-10"
                                     @error="handleImageError" />
 
@@ -402,7 +401,7 @@ const handleImageError = (e) => {
 
 
                 <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
-                    <swiper :modules="swiperModules" :initialSlide="activeIndex" :navigation="true"
+                    <swiper :modules="swiperModules" virtual :initialSlide="activeIndex" :navigation="true"
                         :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
                         class="h-full w-full">
 

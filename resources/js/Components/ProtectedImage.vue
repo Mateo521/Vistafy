@@ -32,11 +32,13 @@ const computedSrc = computed(() => {
     </div>
 
 
-    <img v-else :src="computedSrc" :alt="props.alt" :class="[
+    <img v-else :src="computedSrc" :alt="props.alt" loading="lazy" decoding="async" :class="[
         props.class,
-
         !isLoaded ? 'animate-pulse bg-gray-900 text-transparent' : 'bg-transparent transition-opacity duration-300'
     ]" v-bind="$attrs" @load="isLoaded = true" @error="hasError = true" @contextmenu.prevent draggable="false" />
+
+
+
 </template>
 
 <style scoped>
