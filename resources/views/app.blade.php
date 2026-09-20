@@ -12,7 +12,7 @@
     <meta property="og:description" content="{{ $meta_description ?? 'Plataforma para fotógrafos' }}">
     <meta property="og:image" content="{{ $meta_image ?? asset('images/logo.png') }}">
     <meta property="og:type" content="website">
-
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $meta_title ?? config('app.name', 'f33') }}">
     <meta name="twitter:description" content="{{ $meta_description ?? 'Plataforma para fotógrafos' }}">
