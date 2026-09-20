@@ -374,7 +374,7 @@ const handleImageError = (e) => {
 
 
         <Teleport to="body">
-            <div v-if="isLightboxOpen" class="fixed inset-0 z-[99999] bg-slate-900/95 flex flex-col backdrop-blur-xl">
+            <div v-if="isLightboxOpen" class="fixed inset-0 z-[99999] bg-black flex flex-col">
 
                 <div
                     class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
