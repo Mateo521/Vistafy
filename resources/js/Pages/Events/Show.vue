@@ -271,7 +271,7 @@ const handleImageError = (e) => {
                     <div v-for="gallery in galleries" :key="gallery.photographer.id" class="relative">
 
                         <div
-                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 py-1 sticky top-22 bg-[#F8F9FA]/90 backdrop-blur-md z-20 px-2 border-b border-gray-200">
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 py-3 sticky top-20 bg-[#F8F9FA]/90 backdrop-blur-md z-20 px-2 border-b border-gray-200">
 
                             <div class="flex items-center gap-4">
                                 <div
