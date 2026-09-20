@@ -191,7 +191,7 @@ public function gallery(Request $request)
     }
 
  
-    $photosPaginator = $query->paginate(24)->withQueryString();
+    $photosPaginator = $query->paginate(50)->withQueryString();
 
  
     $mappedPhotos = $photosPaginator->through(function ($photo) {
