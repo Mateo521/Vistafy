@@ -44,7 +44,7 @@ const props = defineProps({
                                 :autoplay="{ delay: 5000, disableOnInteraction: false }" :loop="true"
                                 class="w-full h-full">
                                 <SwiperSlide v-for="(bannerUrl, index) in banners" :key="index">
-                                    <img :src="bannerUrl" class="w-full h-full object-cover" alt="Banner f33" />
+                                    <img  fetchpriority="high" :src="bannerUrl" class="w-full h-full object-cover" alt="Banner f33" />
                                 </SwiperSlide>
                                 <SwiperSlide v-if="!banners || banners.length === 0">
                                     <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=2000&q=80"
@@ -54,23 +54,9 @@ const props = defineProps({
                         </div>
 
 
-                        <!--div
-                            class="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-transparent md:w-3/4 z-10 pointer-events-none">
-                        </div-->
-
 
                         <div class="relative z-20 p-8 md:p-16 max-w-2xl pointer-events-auto">
-                            <!--span class="font-bold tracking-widest uppercase text-red-600 mb-4 block text-sm">
-                                Fotografía deportiva
-                            </span-->
-                            <!--h1 class="font-flux text-2xl md:text-7xl lg:text-[6rem]  text-black mb-6">
-                                La fotografía cambió <br>
-                                <span class="text-gradient">la forma de venderla no.</span>
-                            </h1-->
-                            <!--p class="font-lato text-lg md:text-xl text-slate-700 leading-relaxed mb-10">
-                                Inmortalizamos el movimiento, la pasión y la adrenalina. Explorá nuestros eventos y
-                                reviví la acción con una calidad visual incomparable.
-                            </p-->
+                            
                             <div class="flex py-3 gap-4">
                                 <a href="/nosotros"
                                     class="bg-gradient-to-r from-red-600 to-black text-white font-bold uppercase tracking-wider px-8 py-4 rounded hover:shadow-lg hover:shadow-red-500/30 transition-all duration-300">
@@ -100,7 +86,7 @@ const props = defineProps({
                             class="group relative block w-full aspect-[4/5] overflow-hidden rounded shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(230,0,0,0.15)] transition-all duration-500 bg-black">
 
 
-                            <img :src="event.cover_image_url" :alt="event.name"
+                            <img  fetchpriority="high" :src="event.cover_image_url" :alt="event.name"
                                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out  opacity-100 group-hover:opacity-40">
 
 
