@@ -109,7 +109,7 @@ const navigationItems = [
             <div class="flex justify-between items-center w-full">
 
                 <Link href="/" class="group z-50 relative flex items-center shrink-0">
-                    <img src="/images/logo.png" alt="f33 Photography"
+                    <img src="/images/logo.png" width="100" height="40" alt="f33 Photography"
                         class="h-9 w-auto transition-transform duration-300 group-hover:scale-105" />
                 </Link>
 
@@ -318,7 +318,7 @@ const navigationItems = [
                     </div>
                 </div>
 
-                <div class="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center text-[11px] tracking-wider text-gray-400">
+                <div class="mt-16 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center text-[11px] tracking-wider text-gray-900">
                     <p>© {{ new Date().getFullYear() }} f33. Todos los derechos reservados.</p>
                     <div class="flex space-x-8 mt-6 md:mt-0 uppercase tracking-widest text-[10px]">
                         <Link :href="route('privacy')" class="hover:text-black transition-colors">Privacidad</Link>

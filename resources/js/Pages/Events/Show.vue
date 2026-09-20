@@ -158,7 +158,7 @@ const handleImageError = (e) => {
 
                     <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 h-64 lg:h-full order-1 lg:order-2">
                         <img v-if="event.cover_image_url" :src="event.cover_image_url"
-                            :alt="`Portada oficial del evento ${event.name}`" class="w-full h-full object-cover">
+                            :alt="`Portada del evento ${event.name}`" class="w-full h-full object-cover">
                         <div
                             class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-white via-white/80 to-transparent">
                         </div>
@@ -297,7 +297,7 @@ const handleImageError = (e) => {
                                     </div>
                                     <span v-else
                                         class="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Fotógrafo
-                                        Oficial</span>
+                                        oficial</span>
                                 </div>
                             </div>
 

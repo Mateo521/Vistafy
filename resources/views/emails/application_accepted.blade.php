@@ -11,7 +11,7 @@
     <div class="container">
         <h2>¡Buenas noticias, {{ $applicant->user->name }}!</h2>
         <p>El organizador del evento <strong>"{{ $event->title }}"</strong> aceptó <strong>tu postulación</strong>.</p>
-        <p>Ya figuras como colaborador oficial de este evento. Podés ver los detalles y comenzar a subir tus fotos cuando el evento inicie directamente desde tu panel de control.</p>
+        <p>Ya figuras como colaborador de este evento. Podés ver los detalles y comenzar a subir tus fotos cuando el evento inicie directamente desde tu panel de control.</p>
         
         <a href="{{ route('photographer.dashboard') }}" class="btn">Ir a mi panel de control</a>
     </div>

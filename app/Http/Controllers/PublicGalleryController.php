@@ -607,7 +607,7 @@ class PublicGalleryController extends Controller
             'meta_title' => "{$event->name} | F33 Fotografía",
             'meta_description' => $event->description 
                 ? substr($event->description, 0, 150) . '...' 
-                : "Galería oficial de fotos del evento {$event->name}.",
+                : "Galería de fotos del evento {$event->name}.",
             'meta_image' => $event->cover_image_url,
         ]);
     }

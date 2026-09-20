@@ -12,7 +12,7 @@ const props = defineProps({
     },
     subtitle: {
         type: String,
-        default: 'Nuevas imágenes añadidas al archivo oficial.'
+        default: 'Nuevas imágenes añadidas al archivo.'
     }
 });
 

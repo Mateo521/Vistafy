@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class MercadoPagoOAuthController extends Controller
 {
-    /**
-     * Paso 1: Redirigir al fotógrafo a la pantalla de login de Mercado Pago
-     */
+    
     public function redirectToProvider()
     {
         $clientId = config('services.mercadopago.client_id');
@@ -23,21 +21,19 @@ class MercadoPagoOAuthController extends Controller
         
         $redirectUri = route('photographer.mercadopago.callback');
         
-        // El state es una medida de seguridad extra recomendada
+        
         $state = csrf_token();
 
-        // Armamos la URL oficial de autorización de MP
+        
         $url = "https://auth.mercadopago.com/authorization?client_id={$clientId}&response_type=code&platform_id=mp&state={$state}&redirect_uri={$redirectUri}";
 
         return redirect($url);
     }
 
-    /**
-     * Paso 2: Recibir la respuesta de Mercado Pago e intercambiar el código por el Token Real
-     */
+
     public function handleProviderCallback(Request $request)
     {
-        // 1. Verificar si el usuario canceló o hubo un error
+        
         if ($request->has('error') || !$request->has('code')) {
             Log::warning('Vinculación MP cancelada o fallida', $request->all());
             return redirect()->route('photographer.profile.edit')
@@ -48,7 +44,7 @@ class MercadoPagoOAuthController extends Controller
         $redirectUri = route('photographer.mercadopago.callback');
 
         try {
-            // 2. Pedirle a la API de MP que nos cambie el "código" por los Tokens de acceso
+            
             $response = Http::post('https://api.mercadopago.com/oauth/token', [
                 'client_id' => config('services.mercadopago.client_id'),
                 'client_secret' => config('services.mercadopago.client_secret'),
@@ -60,7 +56,7 @@ class MercadoPagoOAuthController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
 
-                // 3. Guardar los datos en el perfil del fotógrafo
+                
                 $photographer = auth()->user()->photographer;
                 $photographer->update([
                     'mp_access_token' => $data['access_token'],
@@ -75,7 +71,7 @@ class MercadoPagoOAuthController extends Controller
                     ->with('success', '¡Excelente! Tu cuenta de Mercado Pago fue vinculada exitosamente. Ya podés recibir pagos.');
             }
 
-            // Si MP responde con error (ej: el código ya se usó o expiró)
+            
             Log::error('Error al intercambiar código OAuth de MP', [
                 'status' => $response->status(),
                 'body' => $response->json()
@@ -91,9 +87,7 @@ class MercadoPagoOAuthController extends Controller
         }
     }
 
-    /**
-     * Paso 3: Desvincular la cuenta
-     */
+    
     public function unlinkAccount()
     {
         $photographer = auth()->user()->photographer;
