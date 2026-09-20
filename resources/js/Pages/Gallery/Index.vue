@@ -600,88 +600,54 @@ const totalResults = () => {
 
 
 
-                <div v-if="groupedPhotos && groupedPhotos.length > 0" class="space-y-16 pb-12 w-full overflow-hidden">
+                <div v-if="photos.data && photos.data.length > 0" class="max-w-[90rem] mx-auto px-4 md:px-8 pb-12">
 
-                    <div v-for="(group, index) in groupedPhotos" :key="index" class="w-full">
-
-
-                        <div class="flex items-center justify-between mb-6 px-4 md:px-8 max-w-[90rem] mx-auto">
-                            <Link :href="route('photographers.show', group.photographer.slug)"
-                                class="flex items-center gap-4 group/author">
-                                <img :src="group.photographer.profile_photo_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'"
-                                    :alt="group.photographer.name"
-                                    class="w-12 h-12 rounded-full object-cover border-2 border-transparent group-hover/author:border-[#E30613] transition-colors shadow-sm">
-                                <div>
-                                    <h3
-                                        class="font-flux text-2xl text-black leading-none group-hover/author:text-[#E30613] transition-colors">
-                                        {{ group.photographer.name }}
-                                    </h3>
-                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">
-                                        {{ group.photos.length }} fotografías disponibles
-                                    </p>
-                                </div>
-                            </Link>
-                        </div>
+                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 w-full">
 
 
-                        <div class="px-4 md:px-8 relative group/swiper max-w-[90rem] mx-auto">
-                            <swiper :modules="modules" :slides-per-view="'auto'" :space-between="16" :free-mode="true"
-                                :navigation="{
-                                    nextEl: `.swiper-next-${index}`,
-                                    prevEl: `.swiper-prev-${index}`,
-                                }" class="!overflow-visible w-full">
+                        <div v-for="(photo, index) in photos.data" :key="photo.id"
+                            class="break-inside-avoid mb-4 group/card relative bg-gray-100 rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200"
+                            @click="openLightbox(index, photos.data)">
 
-                                <swiper-slide v-for="photo in group.photos" :key="photo.id"
-                                    class="!w-[240px] md:!w-[280px]">
-                                    <div @click="router.visit(route('gallery.show', { uniqueId: photo.unique_id || photo.id }))"
-                                        @contextmenu.prevent
-                                        class="break-inside-avoid block group/card relative bg-white rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200 aspect-[3/4]">
-
-                                        <ProtectedImage :src="fixImageCache(photo.thumbnail_url)" :alt="photo.unique_id"
-                                            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 pointer-events-none"
-                                            loading="lazy" @error="handleImageError" />
-
-                                        <div
-                                            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                        </div>
-
-                                        <div
-                                            class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold text-black shadow-sm pointer-events-none">
-                                            ${{ photo.price || '0.00' }}
-                                        </div>
-
-                                        <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
-                                            class="absolute top-3 right-3 bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center gap-0 group/cart hover:bg-black hover:text-white transition-all duration-300 pointer-events-auto z-20">
-                                            <ShoppingCartIcon
-                                                class="w-4 h-4 text-black group-hover/cart:text-white transition-colors shrink-0 m-0.5" />
-                                            <span
-                                                class="max-w-0 overflow-hidden whitespace-nowrap group-hover/cart:max-w-[100px] text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out group-hover/cart:px-1.5 group-hover/cart:mr-1">
-                                                Añadir
-                                            </span>
-                                        </button>
-                                    </div>
-                                </swiper-slide>
-                            </swiper>
+                            <ProtectedImage :src="fixImageCache(photo.thumbnail_url)" :alt="photo.unique_id"
+                                loading="lazy" decoding="async" class="w-full h-auto object-cover pointer-events-none"
+                                @error="handleImageError" />
 
 
-                            <button :class="`swiper-prev-${index}`"
-                                class="hidden md:flex absolute top-1/2 left-0 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-black hover:bg-[#E30613] hover:text-white transition-all z-10 opacity-0 group-hover/swiper:opacity-100 disabled:opacity-0 -ml-4">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                            </button>
-                            <button :class="`swiper-next-${index}`"
-                                class="hidden md:flex absolute top-1/2 right-0 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-black hover:bg-[#E30613] hover:text-white transition-all z-10 opacity-0 group-hover/swiper:opacity-100 disabled:opacity-0 -mr-4">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7"></path>
-                                </svg>
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none">
+                            </div>
+
+
+                            <div
+                                class="absolute bottom-3 left-3 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 z-10 flex items-center gap-2">
+                                <img :src="photo.photographer.profile_photo_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=50&q=80'"
+                                    class="w-6 h-6 rounded-full border border-white/50 object-cover">
+                                <span
+                                    class="text-white text-[10px] font-bold uppercase tracking-wider truncate max-w-[100px]">
+                                    {{ photo.photographer.name }}
+                                </span>
+                            </div>
+
+
+                            <div
+                                class="absolute top-3 left-3 bg-white/90 px-3 py-1.5 rounded-full text-xs font-bold text-black shadow-sm pointer-events-none">
+                                ${{ photo.price }}
+                            </div>
+
+
+                            <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
+                                class="absolute top-3 right-3 bg-white/90 p-1.5 rounded-full shadow-sm flex items-center justify-center gap-0 group/cart hover:bg-black hover:text-white transition-all duration-300 pointer-events-auto z-20">
+                                <ShoppingCartIcon
+                                    class="w-4 h-4 text-black group-hover/cart:text-white transition-colors shrink-0 m-0.5" />
+                                <span
+                                    class="max-w-0 overflow-hidden whitespace-nowrap group-hover/cart:max-w-[100px] text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ease-in-out group-hover/cart:px-1.5 group-hover/cart:mr-1">
+                                    Añadir
+                                </span>
                             </button>
                         </div>
                     </div>
                 </div>
-
 
 
 
