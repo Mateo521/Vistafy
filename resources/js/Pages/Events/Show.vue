@@ -44,7 +44,7 @@ const props = defineProps({
 const { success, error } = useToast();
 const page = usePage();
 
-const swiperModules = [Navigation, Thumbs, Keyboard, FreeMode];
+const swiperModules = [Navigation, Thumbs, Keyboard, FreeMode, Virtual];
 const lightboxPhotos = ref([]);
 
 const isLightboxOpen = ref(false);
@@ -373,95 +373,102 @@ const handleImageError = (e) => {
 
 
         <Teleport to="body">
-            <div v-if="isLightboxOpen" class="fixed inset-0 z-[99999] bg-black flex flex-col">
+            <Transition name="fade">
+                <div v-if="isLightboxOpen"
+                    class="fixed inset-0 z-[99999] bg-slate-900/95 backdrop-blur-sm flex flex-col">
 
-                <div
-                    class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
-                    <div class="text-white/50 text-xs font-bold uppercase px-4 pointer-events-auto">Vista Previa</div>
-                    <button @click="closeLightbox"
-                        class="w-10 h-10 bg-white/10 hover:bg-[#E30613] text-white rounded-full flex items-center justify-center transition-colors pointer-events-auto backdrop-blur-md">
-                        <XMarkIcon class="w-5 h-5" />
-                    </button>
-                </div>
-
-
-                <div
-                    class="relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
-                    <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10"
-                        :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true" :initialSlide="activeIndex"
-                        class="h-full thumbs-gallery">
-                        <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
-                            class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
-                            <img :src="photo.thumbnail_url"
-                                :alt="`Vista previa miniatura de la foto ${photo.unique_id} del evento ${event.name}`"
-                                class="w-full h-full object-cover" />
-                        </swiper-slide>
-                    </swiper>
-                </div>
+                    <div
+                        class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
+                        <div class="text-white/50 text-xs font-bold uppercase px-4 pointer-events-auto">Vista Previa
+                        </div>
+                        <button @click="closeLightbox"
+                            class="w-10 h-10 bg-white/10 hover:bg-[#E30613] text-white rounded-full flex items-center justify-center transition-colors pointer-events-auto backdrop-blur-md">
+                            <XMarkIcon class="w-5 h-5" />
+                        </button>
+                    </div>
 
 
-                <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
-                    <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex"
-                        :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }"
-                        :spaceBetween="30" class="h-full w-full">
-
-                        <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
-                            :virtualIndex="index" class="flex items-center justify-center p-4">
-
-                            <div class="relative h-full w-full max-w-full flex items-center justify-center">
-
-
-                                <div class="absolute inset-0 flex flex-col items-center justify-center z-0">
-                                    <svg class="animate-spin w-10 h-10 text-white/20 mb-2"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    <span class="text-white/40 text-xs font-bold uppercase tracking-widest">Cargando
-                                        alta calidad...</span>
-                                </div>
+                    <div
+                        class="relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
+                        <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10"
+                            :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true"
+                            :initialSlide="activeIndex" class="h-full thumbs-gallery">
+                            <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
+                                class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
+                                <img :src="photo.thumbnail_url"
+                                    :alt="`Vista previa miniatura de la foto ${photo.unique_id} del evento ${event.name}`"
+                                    class="w-full h-full object-cover" />
+                            </swiper-slide>
+                        </swiper>
+                    </div>
 
 
-                                <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
-                                    :alt="`Fotografía con marca de agua ${photo.unique_id} de ${event.name}`"
-                                    loading="lazy"
-                                    class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
-                                    @error="handleImageError" />
+                    <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
+                        <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex"
+                            :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }"
+                            :spaceBetween="30" class="h-full w-full">
+
+                            <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
+                                :virtualIndex="index" class="flex items-center justify-center p-4">
+
+                                <div class="relative h-full w-full max-w-full flex items-center justify-center">
 
 
-                                <div
-                                    class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex justify-between items-center border border-white z-20">
-                                    <div>
-                                        <p class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
-                                            Ref: {{ photo.unique_id }}</p>
-                                        <p class="text-[#E30613] font-flux text-3xl leading-none">${{ photo.price }}</p>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center z-0">
+                                        <svg class="animate-spin w-10 h-10 text-white/20 mb-2"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span class="text-white/40 text-xs font-bold uppercase tracking-widest">Cargando
+                                            alta calidad...</span>
                                     </div>
-                                    <button @click.prevent.stop="addToCart(photo)"
-                                        class="bg-black hover:bg-[#E30613] text-white px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-md">
-                                        <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
-                                        <span v-else class="flex items-center gap-2">
-                                            <ShoppingCartIcon class="w-4 h-4" /> Añadir al carrito
-                                        </span>
-                                    </button>
+
+
+                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                                        :alt="`Fotografía con marca de agua ${photo.unique_id} de ${event.name}`"
+                                        loading="lazy"
+                                        class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
+                                        @error="handleImageError" />
+
+
+                                    <div
+                                        class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex justify-between items-center border border-white z-20">
+                                        <div>
+                                            <p
+                                                class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
+                                                Ref: {{ photo.unique_id }}</p>
+                                            <p class="text-[#E30613] font-flux text-3xl leading-none">${{ photo.price }}
+                                            </p>
+                                        </div>
+                                        <button @click.prevent.stop="addToCart(photo)"
+                                            class="bg-black hover:bg-[#E30613] text-white px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-md">
+                                            <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
+                                            <span v-else class="flex items-center gap-2">
+                                                <ShoppingCartIcon class="w-4 h-4" /> Añadir al carrito
+                                            </span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </swiper-slide>
+                            </swiper-slide>
 
 
 
-                    </swiper>
+                        </swiper>
+                    </div>
+
+
+
+
+
+
                 </div>
-
-
-
-
-
-
-            </div>
+            </Transition>
         </Teleport>
+
     </AppLayout>
 </template>
 
@@ -487,6 +494,18 @@ const handleImageError = (e) => {
     margin: 0 10px;
     border-radius: 50%;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
 
 :deep(.swiper-button-next:after),
 :deep(.swiper-button-prev:after) {
