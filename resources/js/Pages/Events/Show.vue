@@ -271,7 +271,7 @@ const handleImageError = (e) => {
                     <div v-for="gallery in galleries" :key="gallery.photographer.id" class="relative">
 
                         <div
-                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 py-4 sticky top-24 bg-[#F8F9FA]/90 backdrop-blur-md z-20 px-2 border-b border-gray-200">
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 py-1 sticky top-22 bg-[#F8F9FA]/90 backdrop-blur-md z-20 px-2 border-b border-gray-200">
 
                             <div class="flex items-center gap-4">
                                 <div
@@ -301,16 +301,16 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-3">
+                            <!--div class="flex items-center gap-3">
                                 <span
                                     class="text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100 hidden sm:block">
                                     {{ gallery.photos_count }} fotos
                                 </span>
                                 <Link :href="route('events.show-photographer', [event.slug, gallery.photographer.slug])"
                                     class="bg-black text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-[#E30613] transition-colors shadow-sm">
-                                    Ver todas
+                                    Más fotos
                                 </Link>
-                            </div>
+                            </div-->
                         </div>
 
 
@@ -401,12 +401,13 @@ const handleImageError = (e) => {
 
 
                 <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
-                    <swiper :modules="swiperModules" virtual :initialSlide="activeIndex" :navigation="true"
-                        :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30"
-                        class="h-full w-full">
+                    <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex"
+                        :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }"
+                        :spaceBetween="30" class="h-full w-full">
 
-                        <swiper-slide v-for="photo in lightboxPhotos" :key="'main-' + photo.id"
-                            class="flex items-center justify-center p-4">
+                        <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
+                            :virtualIndex="index" class="flex items-center justify-center p-4">
+
                             <div class="relative h-full w-full max-w-full flex items-center justify-center">
 
 
@@ -430,8 +431,9 @@ const handleImageError = (e) => {
                                     class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
                                     @error="handleImageError" />
 
+
                                 <div
-                                    class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 backdrop-blur-md rounded shadow-lg flex justify-between items-center border border-white z-20">
+                                    class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex justify-between items-center border border-white z-20">
                                     <div>
                                         <p class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
                                             Ref: {{ photo.unique_id }}</p>
@@ -447,6 +449,9 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
                         </swiper-slide>
+
+
+
                     </swiper>
                 </div>
 
