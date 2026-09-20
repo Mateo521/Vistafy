@@ -603,6 +603,12 @@ class PublicGalleryController extends Controller
             'filters' => [
                 'photographer_id' => $request->photographer_id,
             ],
+        ])->withViewData([
+            'meta_title' => "{$event->name} | F33 Fotografía",
+            'meta_description' => $event->description 
+                ? substr($event->description, 0, 150) . '...' 
+                : "Galería oficial de fotos del evento {$event->name}.",
+            'meta_image' => $event->cover_image_url,
         ]);
     }
 

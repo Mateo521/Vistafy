@@ -4,7 +4,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title inertia>{{ config('app.name', 'f33') }}</title>
+    
+    <title inertia>{{ $meta_title ?? config('app.name', 'f33') }}</title>
+    <meta name="description" content="{{ $meta_description ?? 'Plataforma para fotógrafos' }}">
+
+    <meta property="og:title" content="{{ $meta_title ?? config('app.name', 'f33') }}">
+    <meta property="og:description" content="{{ $meta_description ?? 'Plataforma para fotógrafos' }}">
+    <meta property="og:image" content="{{ $meta_image ?? asset('images/logo.png') }}">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $meta_title ?? config('app.name', 'f33') }}">
+    <meta name="twitter:description" content="{{ $meta_description ?? 'Plataforma para fotógrafos' }}">
+    <meta name="twitter:image" content="{{ $meta_image ?? asset('images/logo.png') }}">
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +29,6 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#E30613">
     <link rel="apple-touch-icon" href="/pwa-icons/icon-192x192.png">
-
-    <meta property="og:image" content="{{ asset('images/logo.png') }}">
-    <meta property="og:title" content="{{ config('app.name') }}">
-    <meta property="og:description" content="Plataforma profesional para fotógrafos">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="{{ asset('images/logo.png') }}">
 
     @routes
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
