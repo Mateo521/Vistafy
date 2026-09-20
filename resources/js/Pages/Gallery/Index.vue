@@ -602,22 +602,19 @@ const totalResults = () => {
 
                 <div v-if="photos.data && photos.data.length > 0" class="max-w-[90rem] mx-auto px-4 md:px-8 pb-12">
 
-                    <div class="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 w-full">
-
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
 
                         <div v-for="(photo, index) in photos.data" :key="photo.id"
-                            class="break-inside-avoid mb-4 group/card relative bg-gray-100 rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200"
-                            @click="openLightbox(index, photos.data)">
+                            class="mb-4 group/card relative bg-gray-100 rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200 aspect-[4/5]"
+                            @click="router.visit(route('gallery.show', { uniqueId: photo.unique_id || photo.id }))">
 
                             <ProtectedImage :src="fixImageCache(photo.thumbnail_url)" :alt="photo.unique_id"
-                                loading="lazy" decoding="async" class="w-full h-auto object-cover pointer-events-none"
+                                loading="lazy" decoding="async" class="w-full h-full object-cover pointer-events-none"
                                 @error="handleImageError" />
-
 
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 pointer-events-none">
                             </div>
-
 
                             <div
                                 class="absolute bottom-3 left-3 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 z-10 flex items-center gap-2">
@@ -629,12 +626,10 @@ const totalResults = () => {
                                 </span>
                             </div>
 
-
                             <div
                                 class="absolute top-3 left-3 bg-white/90 px-3 py-1.5 rounded-full text-xs font-bold text-black shadow-sm pointer-events-none">
                                 ${{ photo.price }}
                             </div>
-
 
                             <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
                                 class="absolute top-3 right-3 bg-white/90 p-1.5 rounded-full shadow-sm flex items-center justify-center gap-0 group/cart hover:bg-black hover:text-white transition-all duration-300 pointer-events-auto z-20">
@@ -649,7 +644,12 @@ const totalResults = () => {
                     </div>
                 </div>
 
-
+                <div v-if="photos.data && photos.total > photos.data.length" class="mt-8 flex justify-center pb-12">
+                    <Link v-if="photos.next_page_url" :href="photos.next_page_url" preserve-scroll
+                        class="px-8 py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md hover:bg-[#E30613] transition-colors duration-300">
+                        Cargar más fotos
+                    </Link>
+                </div>
 
 
                 <div v-else
