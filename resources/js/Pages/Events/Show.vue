@@ -436,7 +436,7 @@ const handleImageError = (e) => {
 
 
                                     <div
-                                        class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex justify-between items-center border border-white z-20">
+                                        class="absolute bottom-4 left-4 right-4 p-2 md:p-6 bg-white/90 rounded flex justify-between gap-2 items-center border border-white z-20">
                                         <div>
                                             <p
                                                 class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
@@ -445,7 +445,7 @@ const handleImageError = (e) => {
                                             </p>
                                         </div>
                                         <button @click.prevent.stop="addToCart(photo)"
-                                            class="bg-black hover:bg-[#E30613] text-white px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-md">
+                                            class="bg-black hover:bg-[#E30613] text-white px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-md">
                                             <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
                                             <span v-else class="flex items-center gap-2">
                                                 <ShoppingCartIcon class="w-4 h-4" /> Añadir al carrito
