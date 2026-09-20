@@ -322,7 +322,7 @@ const handleImageError = (e) => {
                                 <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
                                     :alt="`foto con marca de agua ${photo.unique_id} de ${event.name}`"
                                     loading="lazy"
-                                    class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
+                                    class="h-full max-w-full object-cover rounded shadow-2xl relative z-10"
                                     @error="handleImageError" />
 
                                 <div
