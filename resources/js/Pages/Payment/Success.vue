@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 import {
     CheckBadgeIcon,
     ArrowDownTrayIcon,
@@ -17,10 +17,8 @@ const props = defineProps({
     }
 });
 
-const autoDownloading = ref(true);
-
-const photo = computed(() => {
-    return props.purchase.items?.[0]?.photo || null;
+const purchasedItems = computed(() => {
+    return props.purchase.items || [];
 });
 
 const formatPrice = (amount) => {
@@ -40,20 +38,10 @@ const formatDate = (date) => {
     }).replace(/\//g, '.');
 };
 
-onMounted(() => {
-    if (props.purchase?.order_token) {
-        setTimeout(() => {
-            const downloadUrl = route('payment.download', props.purchase.order_token);
-            window.location.href = downloadUrl;
 
-            setTimeout(() => {
-                autoDownloading.value = false;
-            }, 1000);
-        }, 2000);
-    } else {
-        autoDownloading.value = false;
-    }
-});
+const getDownloadUrl = (photoId) => {
+    return route('payment.download', { token: props.purchase.order_token, photo_id: photoId });
+};
 </script>
 
 <template>
@@ -68,7 +56,6 @@ onMounted(() => {
 
                     
                     <div class="bg-green-50/50 border-b border-green-100 px-8 py-10 md:py-14 text-center relative overflow-hidden">
-                        
                         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-green-200 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
                         
                         <div class="relative z-10">
@@ -79,7 +66,7 @@ onMounted(() => {
                                 Pago <span class="text-green-500">Exitoso</span>
                             </h2>
                             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">
-                                Tu compra fue procesado correctamente
+                                Tu compra fue procesada correctamente
                             </p>
                         </div>
                     </div>
@@ -91,38 +78,64 @@ onMounted(() => {
                             
                             <div class="space-y-6">
                                 <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3 flex items-center gap-2">
-                                    <span class="w-4 h-px bg-gray-200"></span> Resumen de compra
+                                    <span class="w-4 h-px bg-gray-200"></span> Tus fotografías
                                 </h3>
 
-                                <div class="flex flex-col sm:flex-row gap-5">
-                                    
-                                    <div class="w-32 h-32 bg-gray-50 rounded border border-gray-200 flex-shrink-0 relative overflow-hidden shadow-inner group">
-                                        <img v-if="photo?.thumbnail_url || photo?.watermarked_url"
-                                            :src="photo.thumbnail_url || photo.watermarked_url"
-                                            class="w-full h-full object-cover transition-transform duration-500" />
-                                        <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
-                                            <PhotoIcon class="w-8 h-8" />
+                                
+                                <div class="max-h-[400px] overflow-y-auto pr-2 space-y-4">
+                                    <div v-for="item in purchasedItems" :key="item.id" class="flex flex-col sm:flex-row gap-4 p-3 bg-gray-50 rounded border border-gray-100 items-center">
+                                        
+                                        
+                                        <div class="w-24 h-24 bg-white rounded border border-gray-200 flex-shrink-0 relative overflow-hidden shadow-inner">
+                                            <img v-if="item.photo?.thumbnail_url || item.photo?.watermarked_url"
+                                                :src="item.photo.thumbnail_url || item.photo.watermarked_url"
+                                                class="w-full h-full object-cover" />
+                                            <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+                                                <PhotoIcon class="w-6 h-6" />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    
-                                    <div class="flex-1 flex flex-col justify-center">
-                                        <p class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">
-                                            {{ photo?.title || `Fotografía #${photo?.unique_id || 'N/A'}` }}
-                                        </p>
-                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">
-                                            Licencia de uso personal
-                                        </p>
-                                        <div class="flex items-center text-lg font-flux text-[#E30613]">
-                                            {{ formatPrice(purchase.total_amount) }}
+                                        
+                                        <div class="flex-1 flex flex-col justify-center text-center sm:text-left w-full">
+                                            <p class="font-bold text-slate-800 text-sm mb-1 truncate">
+                                                {{ item.photo?.title || `Fotografía #${item.photo?.unique_id || 'N/A'}` }}
+                                            </p>
+                                            
+                                            <a :href="getDownloadUrl(item.photo_id)"
+                                               class="mt-3 w-full inline-flex items-center justify-center gap-2 bg-black text-white font-bold text-[10px] uppercase tracking-wider py-2.5 rounded hover:bg-[#E30613] transition-colors group">
+                                                <ArrowDownTrayIcon class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+                                                Descargar foto
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                
-                                <div class="bg-gray-50 rounded p-5 space-y-3 text-xs font-bold uppercase tracking-wider text-gray-500 border border-gray-100">
+                        
+                            <div class="flex flex-col h-full">
+                                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3 flex items-center gap-2 mb-6">
+                                    <span class="w-4 h-px bg-gray-200"></span> Información
+                                </h3>
+
+                                <div class="bg-blue-50/50 border border-blue-100 rounded p-6 mb-8 flex items-start gap-4">
+                                    <EnvelopeIcon class="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
+                                    <div>
+                                        <p class="font-bold text-slate-800 mb-1">Recibo y enlaces enviados</p>
+                                        <p class="text-xs font-medium text-blue-800/80 leading-relaxed">
+                                            Enviamos un comprobante y un enlace seguro a: 
+                                            <strong class="text-blue-600 block mt-1 truncate">{{ purchase.buyer_email }}</strong>
+                                            <span class="block mt-2 text-[10px] uppercase tracking-wider text-blue-400">Los enlaces son válidos por 7 días.</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gray-50 rounded p-5 space-y-3 text-xs font-bold uppercase tracking-wider text-gray-500 border border-gray-100 mt-auto">
                                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-                                        <span>ID de transacción</span>
+                                        <span>Total abonado</span>
+                                        <span class="text-[#E30613] font-flux text-xl">{{ formatPrice(purchase.total_amount) }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-gray-200 pb-2">
+                                        <span>ID Transacción</span>
                                         <span class="text-black">#{{ purchase.id }}</span>
                                     </div>
                                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
@@ -130,51 +143,16 @@ onMounted(() => {
                                         <span class="text-black">{{ formatDate(purchase.created_at) }}</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span>Método de pago</span>
-                                        <span class="text-black">{{ purchase.payment_details?.payment_method_id || 'Digital' }}</span>
+                                        <span>Método</span>
+                                        <span class="text-black">{{ purchase.payment_details?.payment_method_id || 'MercadoPago' }}</span>
                                     </div>
-                                </div>
-                            </div>
-
-                            
-                            <div class="flex flex-col h-full">
-                                <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3 flex items-center gap-2 mb-6">
-                                    <span class="w-4 h-px bg-gray-200"></span> Descarga de archivos
-                                </h3>
-
-                                <div class="bg-blue-50/50 border border-blue-100 rounded p-6 mb-8 flex items-start gap-4">
-                                    <EnvelopeIcon class="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
-                                    <div>
-                                        <p class="font-bold text-slate-800 mb-1">Recibo y enlace enviados</p>
-                                        <p class="text-xs font-medium text-blue-800/80 leading-relaxed">
-                                            Enviamos un comprobante y un enlace de recuperación seguro a la dirección 
-                                            <strong class="text-blue-600 block mt-1 truncate">{{ purchase.buyer_email }}</strong>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="mt-auto">
-                                    <p v-if="autoDownloading" class="text-xs font-bold text-gray-500 mb-4 text-center uppercase tracking-wider flex items-center justify-center gap-2">
-                                        <span class="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></span>
-                                        Iniciando descarga automática...
-                                    </p>
-                                    <p v-else class="text-xs font-bold text-gray-400 mb-4 text-center uppercase tracking-wider">
-                                        Enlace válido por 7 días
-                                    </p>
-
-                                    <a v-if="purchase.order_token"
-                                        :href="route('payment.download', purchase.order_token)"
-                                        class="w-full bg-black text-white font-bold text-sm uppercase tracking-wider py-4 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all flex items-center justify-center gap-3 group">
-                                        <ArrowDownTrayIcon class="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-                                        Descargar original (Alta Res)
-                                    </a>
                                 </div>
                             </div>
 
                         </div>
                     </div>
 
-
+                    
                     <div class="bg-gray-50 px-8 py-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <Link :href="route('home')"
                             class="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black flex items-center gap-2 transition-colors">
@@ -183,12 +161,10 @@ onMounted(() => {
 
                         <a href="mailto:contacto@f33.click"
                             class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#E30613] transition-colors">
-                            ¿Tenés problemas con la descarga? Contactar soporte
+                            ¿Problemas con la descarga? Contactar soporte
                         </a>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </AppLayout>

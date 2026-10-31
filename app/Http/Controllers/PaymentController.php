@@ -377,7 +377,7 @@ class PaymentController extends Controller
     
 
    
-    public function download($token)
+   public function download(Request $request, $token)
     {
         $purchase = Purchase::with('items.photo')->where('order_token', $token)->firstOrFail();
 
@@ -385,62 +385,32 @@ class PaymentController extends Controller
             abort(403, 'El pago de esta orden aún no está aprobado.');
         }
 
-        $items = $purchase->items;
-        if ($items->isEmpty()) {
-            abort(404, 'No hay fotos en esta orden.');
+        
+        $photoId = $request->query('photo_id');
+        
+        $item = $purchase->items->firstWhere('photo_id', $photoId);
+        
+        if (!$item) {
+            abort(404, 'La foto solicitada no pertenece a esta compra.');
         }
 
+        $photo = $item->photo;
+        $filePath = $photo->original_path;
+        
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
-        if ($items->count() === 1) {
-            $photo = $items->first()->photo;
-            $filePath = $photo->original_path;
-
-            if (!$disk->exists($filePath)) {
-                abort(404, 'El archivo original no se encuentra disponible en la nube.');
-            }
-
-            $fileName = $photo->original_name ?? ('foto_' . $photo->unique_id . '.jpg');
-
-            
-            $url = $disk->temporaryUrl($filePath, now()->addMinutes(60), [
-                'ResponseContentDisposition' => 'attachment; filename="' . $fileName . '"'
-            ]);
-            
-            return redirect()->away($url);
+        if (!$disk->exists($filePath)) {
+            abort(404, 'El archivo original no se encuentra disponible en la nube.');
         }
 
-        $zipFileName = 'F33_orden_' . $purchase->id . '.zip';
-        $tempDir = storage_path('app/public/temp');
+        $fileName = $photo->original_name ?? ('foto_' . $photo->unique_id . '.jpg');
+
         
-        if (!file_exists($tempDir)) {
-            mkdir($tempDir, 0755, true);
-        }
-
-        $zipPath = $tempDir . '/' . $zipFileName;
-        $zip = new \ZipArchive();
+        $url = $disk->temporaryUrl($filePath, now()->addMinutes(60), [
+            'ResponseContentDisposition' => 'attachment; filename="' . $fileName . '"'
+        ]);
         
-        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
-            foreach ($items as $item) {
-                $photo = $item->photo;
-                $cloudPath = $photo->original_path;
-                
-                if ($disk->exists($cloudPath)) {
-                   
-                    $fileContent = $disk->get($cloudPath);
-                    $fileName = $photo->original_name ?? ('foto_' . $photo->unique_id . '.jpg');
-                    
-                  
-                    $zip->addFromString($fileName, $fileContent);
-                }
-            }
-            $zip->close();
-        } else {
-            abort(500, 'No se pudo crear el archivo ZIP con tus fotos.');
-        }
-
-     
-        return response()->download($zipPath)->deleteFileAfterSend(true);
+        return redirect()->away($url);
     }
 }
