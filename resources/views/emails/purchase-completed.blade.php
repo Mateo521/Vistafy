@@ -104,9 +104,9 @@
                                                             </div>
                                                         @endif
                                                         
-                                                        <a href="{{ route('purchases.download', ['purchase' => $purchase->id, 'photo' => $item->photo_id]) }}" style="display: inline-block; background-color: #f8fafc; border: 1px solid #e2e8f0; color: #475569; text-decoration: none; padding: 8px 16px; border-radius: 50px; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                                            ↓ Descargar
-                                                        </a>
+                                                        <a href="{{ route('payment.download', ['token' => $purchase->order_token, 'photo_id' => $item->photo_id]) }}" style="display: inline-block; background-color: #f8fafc; border: 1px solid #e2e8f0; color: #475569; text-decoration: none; padding: 8px 16px; border-radius: 50px; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+    ↓ Descargar foto
+</a>
                                                     </td>
                                                 </tr>
                                             </table>

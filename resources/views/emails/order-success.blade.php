@@ -46,7 +46,8 @@
                                         [ Credenciales de acceso ]
                                     </h3>
                                     <p style="color: #a1a1aa; font-size: 13px; margin: 0 0 5px 0;">Usuario:
-                                        <strong>{{ $purchase->buyer_email }}</strong></p>
+                                        <strong>{{ $purchase->buyer_email }}</strong>
+                                    </p>
                                     <p style="color: #a1a1aa; font-size: 13px; margin: 0 0 10px 0;">Clave Temporal: <strong
                                             style="color: #ffffff;">{{ $temporaryPassword }}</strong></p>
                                     <p style="color: #52525b; font-size: 11px; margin: 0;">(Te recomendamos cambiar esta
@@ -64,10 +65,12 @@
                                     style="color: #a1a1aa; font-size: 13px;">
                                     <tr>
                                         <td style="padding: 8px 0; border-bottom: 1px solid #27272a;">
-                                            <strong>Fecha:</strong></td>
+                                            <strong>Fecha:</strong>
+                                        </td>
                                         <td
                                             style="padding: 8px 0; text-align: right; border-bottom: 1px solid #27272a;">
-                                            {{ $purchase->created_at->format('d/m/Y H:i') }}</td>
+                                            {{ $purchase->created_at->format('d/m/Y H:i') }}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 12px 0;"><strong>Inversión Total:</strong></td>
@@ -78,17 +81,34 @@
                                 </table>
                             </div>
 
-                            <div style="text-align: center; margin: 40px 0;">
-                                <a href="{{ route('payment.download', $purchase->order_token) }}"
-                                    style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 16px 40px; font-weight: bold; font-size: 12px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.1em;">
-                                    [ DESCARGAR ARCHIVOS ORIGINALES ]
-                                </a>
+                            <div style="margin: 40px 0;">
+                                <h3
+                                    style="margin: 0 0 15px 0; color: #ffffff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-family: Arial, sans-serif; text-align: center;">
+                                    [ ARCHIVOS DISPONIBLES ]
+                                </h3>
+
+                                <table width="100%" cellpadding="12" cellspacing="0"
+                                    style="background-color: #000000; border: 1px solid #27272a;">
+                                    @foreach($purchase->items as $item)
+                                        <tr>
+                                            <td
+                                                style="color: #e4e4e7; font-size: 12px; font-family: 'Courier New', Courier, monospace; border-bottom: 1px solid #18181b;">
+                                                > {{ $item->photo->title ?: "REF-{$item->photo->unique_id}" }}
+                                            </td>
+                                            <td align="right" style="border-bottom: 1px solid #18181b;">
+                                                <a href="{{ route('payment.download', ['token' => $purchase->order_token, 'photo_id' => $item->photo_id]) }}"
+                                                    style="display: inline-block; background-color: #ffffff; color: #000000; text-decoration: none; padding: 8px 16px; font-weight: bold; font-size: 10px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.1em;">
+                                                    DESCARGAR
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </table>
                             </div>
 
-                            <p style="text-align: center; color: #52525b; font-size: 10px; margin-top: 20px;">
-                                Si el botón falla, accedé manualmente:<br>
-                                <a href="{{ route('payment.download', $purchase->order_token) }}"
-                                    style="color: #dc2626;">{{ route('payment.download', $purchase->order_token) }}</a>
+                            <p
+                                style="text-align: center; color: #52525b; font-size: 10px; margin-top: 20px; text-transform: uppercase;">
+                                O accede a tu historial desde la plataforma web.
                             </p>
                         </td>
                     </tr>
