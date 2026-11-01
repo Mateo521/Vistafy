@@ -68,7 +68,7 @@
                                                 <td style="padding: 16px 0 0 0; color: #0f172a; font-weight: bold; border-top: 1px solid #e2e8f0; margin-top: 8px;">Total Abonado:</td>
                                                 <td style="padding: 16px 0 0 0; text-align: right; border-top: 1px solid #e2e8f0; margin-top: 8px;">
                                                     <strong style="font-size: 20px; color: #E30613;">
-                                                        ${{ number_format($purchase->total_amount, 2) }} {{ $purchase->currency }}
+                                                        ${{ number_format($amount, 2) }} {{ $purchase->currency }}
                                                     </strong>
                                                 </td>
                                             </tr>
@@ -83,7 +83,7 @@
                             </h3>
 
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 40px 0; border-collapse: collapse; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
-                                @foreach($purchase->items as $item)
+                                @foreach($items as $item)
                                     <tr>
                                         <td style="padding: 20px 0; border-bottom: 1px solid #f1f5f9;">
                                             <table width="100%" cellpadding="0" cellspacing="0">
@@ -147,7 +147,7 @@
                     <tr>
                         <td style="padding: 30px 20px; text-align: center;">
                             <p style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #94a3b8; font-size: 11px; margin: 0 0 10px 0; line-height: 1.5; font-weight: bold;">
-                                CORREO GENERADO AUTOMÁTICAMENTE. POR FAVOR NO RESPONDAS A ESTA DIRECCIÓN.
+                                CORREO GENERADO AUTOMÁTICAMENTE. POR FAVOR NO RESPONDAS A ESTE CORREO.
                             </p>
                             <p style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #cbd5e1; font-size: 11px; margin: 0;">
                                 © {{ date('Y') }} F33. Todos los derechos reservados.

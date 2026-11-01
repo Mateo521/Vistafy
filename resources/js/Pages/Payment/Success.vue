@@ -18,7 +18,14 @@ const props = defineProps({
 });
 
 const purchasedItems = computed(() => {
-    return props.purchase.items || [];
+    const items = props.purchase.items || [];
+    
+    return items.filter(item => {
+        const isOrderApproved = props.purchase.status === 'approved';
+        const isItemPaid = item.payment && item.payment.status === 'approved';
+        
+        return isOrderApproved || isItemPaid;
+    });
 });
 
 const formatPrice = (amount) => {

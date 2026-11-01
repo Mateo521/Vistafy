@@ -3,27 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
-use App\Models\User;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Models\PurchasePayment;
-use App\Services\MercadoPagoService;
+use App\Models\User;
 use App\Services\CartService;
-use App\Notifications\PurchaseCompleted;
+use App\Services\MercadoPagoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Schema;
 
 class PaymentController extends Controller
 {
     protected $mpService;
+
     protected $cartService;
 
     public function __construct(MercadoPagoService $mpService, CartService $cartService)
@@ -32,8 +30,7 @@ class PaymentController extends Controller
         $this->cartService = $cartService;
     }
 
-   
-  public function initiateCartPurchase(Request $request)
+    public function initiateCartPurchase(Request $request)
     {
         $request->validate([
             'photo_ids' => 'required|array|min:1',
@@ -56,7 +53,7 @@ class PaymentController extends Controller
 
             foreach ($photosByPhotographer as $groupPhotos) {
                 $photographer = $groupPhotos->first()->photographer;
-                if (!$photographer || !$photographer->has_mercadopago_account) {
+                if (! $photographer || ! $photographer->has_mercadopago_account) {
                     $unavailablePhotographers->push([
                         'id' => $photographer->id ?? null,
                         'name' => $photographer->business_name ?? 'Fotógrafo',
@@ -79,7 +76,7 @@ class PaymentController extends Controller
             }
 
             DB::beginTransaction();
-            
+
             $purchaseData = [
                 'user_id' => $user->id,
                 'buyer_email' => $user->email,
@@ -129,7 +126,7 @@ class PaymentController extends Controller
                     $isMultiPhotographer
                 );
 
-                if (!$preferenceResult['success']) {
+                if (! $preferenceResult['success']) {
                     throw new \Exception('Error al crear preferencia de Mercado Pago');
                 }
 
@@ -166,11 +163,11 @@ class PaymentController extends Controller
                 'user_id' => $user->id ?? null,
                 'photo_ids' => isset($photoIds) ? $photoIds->values()->all() : null,
             ]);
+
             return response()->json(['success' => false, 'message' => 'Error al procesar la compra.'], 500);
         }
     }
 
-    
     public function initiatePurchase(Request $request, Photo $photo)
     {
         $validated = $request->validate([
@@ -181,7 +178,7 @@ class PaymentController extends Controller
         $user = Auth::user();
         $guestEmail = $validated['email'] ?? null;
 
-        if (!$user && $guestEmail) {
+        if (! $user && $guestEmail) {
             if (User::where('email', $guestEmail)->exists()) {
                 return response()->json([
                     'success' => false,
@@ -217,20 +214,19 @@ class PaymentController extends Controller
                 'unit_price' => $photo->price,
             ]);
 
-            if (!$user && ($validated['create_account'] ?? false)) {
+            if (! $user && ($validated['create_account'] ?? false)) {
                 session([
                     'pending_account' => [
                         'email' => $guestEmail,
                         'purchase_id' => $purchase->id,
-                    ]
+                    ],
                 ]);
             }
 
-          
             $photo->load('photographer');
             $result = $this->mpService->createPhotoPreference($photo, $guestEmail ?: $user->email, $purchase);
 
-            if (!$result['success']) {
+            if (! $result['success']) {
                 throw new \Exception('Error al crear preferencia de pago');
             }
 
@@ -241,32 +237,31 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error(' Error en compra individual', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error al procesar la compra: ' . $e->getMessage()
+                'message' => 'Error al procesar la compra: '.$e->getMessage(),
             ], 500);
         }
     }
 
-  
-
-     public function success(Request $request)
+public function success(Request $request)
     {
         $purchaseId = $request->query('purchase_id');
 
         if (!$purchaseId) {
-            return redirect()->route('home')
-                ->with('error', 'ID de compra inválido');
+            return redirect()->route('home')->with('error', 'ID de compra inválido');
         }
 
-        $purchase = Purchase::with('items.photo.event', 'items.photo.photographer')
+
+        $purchase = Purchase::with(['items.photo.event', 'items.photo.photographer', 'items.payment'])
             ->findOrFail($purchaseId);
 
         return Inertia::render('Payment/Success', [
             'purchase' => $purchase,
         ]);
     }
- 
+
     public function failure(Request $request)
     {
         $purchaseId = $request->query('purchase_id');
@@ -279,7 +274,7 @@ class PaymentController extends Controller
             'message' => 'El pago fue rechazado o cancelado',
         ]);
     }
- 
+
     public function pending(Request $request)
     {
         $purchaseId = $request->query('purchase_id');
@@ -373,44 +368,45 @@ class PaymentController extends Controller
         ]);
     }
 
-
-    
-
-   
-   public function download(Request $request, $token)
+    public function download(Request $request, $token)
     {
-        $purchase = Purchase::with('items.photo')->where('order_token', $token)->firstOrFail();
 
-        if ($purchase->status !== 'approved') {
-            abort(403, 'El pago de esta orden aún no está aprobado.');
+        $purchase = Purchase::with(['items.photo', 'items.payment'])->where('order_token', $token)->firstOrFail();
+
+        $photoId = $request->query('photo_id');
+        $item = $purchase->items->firstWhere('photo_id', $photoId);
+
+        if (! $item) {
+            abort(404, 'La foto solicitada no pertenece a esta compra.');
         }
 
-        
-        $photoId = $request->query('photo_id');
-        
-        $item = $purchase->items->firstWhere('photo_id', $photoId);
-        
-        if (!$item) {
-            abort(404, 'La foto solicitada no pertenece a esta compra.');
+        $isApproved = $purchase->status === 'approved' ||
+                     ($item->payment && $item->payment->status === 'approved');
+
+        if (! $isApproved) {
+            abort(403, 'El pago de esta foto aún no está aprobado.');
         }
 
         $photo = $item->photo;
         $filePath = $photo->original_path;
-        
+
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('b2');
 
-        if (!$disk->exists($filePath)) {
+        if (! $disk->exists($filePath)) {
             abort(404, 'El archivo original no se encuentra disponible en la nube.');
         }
 
-        $fileName = $photo->original_name ?? ('foto_' . $photo->unique_id . '.jpg');
+        $fileName = $photo->original_name ?? ('foto_'.$photo->unique_id.'.jpg');
 
-        
         $url = $disk->temporaryUrl($filePath, now()->addMinutes(60), [
-            'ResponseContentDisposition' => 'attachment; filename="' . $fileName . '"'
+            'ResponseContentDisposition' => 'attachment; filename="'.$fileName.'"',
         ]);
-        
+
         return redirect()->away($url);
     }
+
+
+
+
 }

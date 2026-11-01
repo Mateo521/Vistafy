@@ -163,7 +163,7 @@ class MercadoPagoService
 
         $preferenceData = [
             'items' => $items,
-            'marketplace_fee' => $platformFee, // <--- ACÁ ESTÁ LA MAGIA DEL SPLIT
+            'marketplace_fee' => $platformFee,  
             'payer' => [
                 'email' => $email,
             ],

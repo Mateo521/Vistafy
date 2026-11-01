@@ -118,9 +118,11 @@ class WebhookController extends Controller
         return null;
     }
 
-    private function processPurchasePayment(PurchasePayment $purchasePayment, $paymentId, array $paymentInfo)
+  private function processPurchasePayment(PurchasePayment $purchasePayment, $paymentId, array $paymentInfo)
     {
+        $previousStatus = $purchasePayment->status;
         $newStatus = $this->mapMercadoPagoStatus($paymentInfo['status']);
+        $isApproved = ($newStatus === 'approved');
 
         $purchasePayment->update([
             'mp_payment_id' => $paymentId,
@@ -137,20 +139,60 @@ class WebhookController extends Controller
             return response()->json(['status' => 'purchase_not_found'], 404);
         }
 
+ 
+        if ($isApproved && $previousStatus !== 'approved') {
+            $this->completeApprovedPayment($purchasePayment, $purchase);
+        }
+
+
         $this->syncPurchaseStatusFromPayments($purchase);
 
         return response()->json(['status' => 'processed'], 200);
     }
 
+    private function completeApprovedPayment(PurchasePayment $payment, Purchase $purchase): void
+    {
+        $payment->loadMissing('items.photo');
+        $purchase->loadMissing('user');
+
+        $temporaryPassword = $this->handleAccountCreation($purchase);
+        $emailToSend = $purchase->buyer_email;
+
+        if ($emailToSend) {
+            try {
+ 
+                Notification::route('mail', $emailToSend)
+                    ->notify(new PurchaseCompleted($purchase, $temporaryPassword, $payment));
+                Log::info('Notificación de éxito de bloque enviada a: '.$emailToSend);
+            } catch (\Exception $e) {
+                Log::error('Error enviando notificación de bloque de compra', ['error' => $e->getMessage()]);
+            }
+        }
+
+ 
+        if ($payment->items && $payment->items->count() > 0) {
+            foreach ($payment->items as $item) {
+                if ($item->photo) {
+                    $item->photo->increment('downloads');
+                }
+            }
+        }
+
+ 
+        if ($purchase->user) {
+            $cart = \App\Models\Cart::where('user_id', $purchase->user->id)->first();
+            if ($cart) {
+                $cart->items()->delete();
+            }
+        }
+    }
+
     private function syncPurchaseStatusFromPayments(Purchase $purchase): void
     {
-        $purchase->load('payments', 'items.photo.photographer', 'user');
-
         if ($purchase->payments->isEmpty()) {
             return;
         }
 
-        $previousStatus = $purchase->status;
         $allApproved = $purchase->payments->every(fn ($payment) => $payment->status === 'approved');
         $hasFailed = $purchase->payments->contains(fn ($payment) => in_array($payment->status, ['rejected', 'cancelled', 'failed']));
 
@@ -162,11 +204,6 @@ class WebhookController extends Controller
                 'mp_payment_id' => $lastPayment?->mp_payment_id,
                 'mp_payment_status' => 'approved',
             ]);
-
-            if ($previousStatus !== 'approved') {
-                $this->completeApprovedPurchase($purchase);
-            }
-
             return;
         }
 
@@ -175,7 +212,6 @@ class WebhookController extends Controller
             'mp_payment_status' => $hasFailed ? 'partial_failed' : 'pending',
         ]);
     }
-
     private function mapMercadoPagoStatus(?string $status): string
     {
         return match ($status) {

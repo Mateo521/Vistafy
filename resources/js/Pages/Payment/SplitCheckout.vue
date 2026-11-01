@@ -10,7 +10,8 @@ import {
     ClockIcon,
     CreditCardIcon,
     ExclamationTriangleIcon,
-    HomeIcon
+    HomeIcon,
+    CameraIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -40,14 +41,11 @@ const paymentUrl = (payment) => payment.init_point || payment.sandbox_init_point
 
 const statusLabel = (status) => {
     switch (status) {
-        case 'approved':
-            return 'Aprobado';
+        case 'approved': return 'Aprobado';
         case 'rejected':
         case 'cancelled':
-        case 'failed':
-            return 'Revisar';
-        default:
-            return 'Pendiente';
+        case 'failed': return 'Revisar';
+        default: return 'Pendiente';
     }
 };
 
@@ -99,137 +97,142 @@ onUnmounted(() => {
 </script>
 
 <template>
+
     <Head title="Pagos por fotógrafo" />
 
     <AppLayout>
-        <div class="min-h-screen bg-black text-white px-4 py-24 font-sans">
-            <div class="max-w-7xl mx-auto">
-                <div class="border-b-[10px] border-white pb-8 mb-10">
-                    <p class="font-mono text-xs uppercase tracking-widest text-red-600 mb-3">
+        <div class="min-h-screen bg-[#F8F9FA] text-slate-800 px-4 py-24 font-sans relative overflow-hidden">
+
+            <div
+                class="absolute top-0 left-0 w-96 h-96 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob pointer-events-none">
+            </div>
+            <div
+                class="absolute top-0 right-0 w-96 h-96 bg-yellow-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 pointer-events-none">
+            </div>
+
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="pb-8 mb-10 border-b border-gray-200">
+                    <p class="font-bold text-xs uppercase tracking-widest text-[#E30613] mb-3">
                         // Orden #{{ purchaseState.id }}
                     </p>
-                    <h1 class="font-black text-5xl md:text-7xl uppercase tracking-tighter leading-none">
-                        Pagos por<br><span class="text-red-600">fotógrafo.</span>
+                    <h1 class="font-flux text-5xl md:text-7xl uppercase tracking-tighter leading-none text-black">
+                        Pagos por<br><span class="text-[#E30613]">fotógrafo.</span>
                     </h1>
-                    <p class="font-mono text-xs uppercase tracking-widest text-gray-400 mt-5 max-w-7xl">
-                        Mercado Pago liquida cada pago a un fotógrafo. Para completar esta compra, aboná cada bloque pendiente.
-                        La descarga se habilita cuando todos estén aprobados.
+                    <p class="text-sm font-medium text-gray-500 mt-5 max-w-3xl leading-relaxed">
+                        Tu carrito contiene fotos de distintos profesionales. Mercado Pago procesa cada pago por
+                        separado.
+                        <strong>A medida que abones cada bloque, podrás descargar sus fotos inmediatamente</strong>, sin
+                        esperar al resto.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 space-y-4">
-                        <div
-                            v-for="payment in payments"
-                            :key="payment.id"
-                            class="bg-zinc-950 border-2 border-white/10 p-5 flex flex-col md:flex-row md:items-center gap-5 justify-between"
-                        >
-                            <div>
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">
-                                    Fotógrafo
-                                </p>
-                                <h2 class="text-2xl font-black uppercase tracking-tight">
-                                    {{ payment.photographer?.business_name || payment.photographer_name || 'Fotógrafo' }}
-                                </h2>
-                                <p class="font-mono text-xs text-gray-400 mt-2">
-                                    Subtotal: <span class="text-white font-bold">{{ formatPrice(payment.amount) }}</span>
-                                </p>
+                    <!-- Lista de Pagos -->
+                    <div class="lg:col-span-2 space-y-5">
+                        <div v-for="payment in payments" :key="payment.id"
+                            class="bg-white/80 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded p-6 flex flex-col md:flex-row md:items-center gap-6 justify-between hover:shadow-lg transition-shadow duration-300">
+
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 shrink-0">
+                                    <CameraIcon class="w-6 h-6 text-gray-400" />
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[10px] uppercase tracking-widest text-gray-400 mb-1">
+                                        Fotógrafo
+                                    </p>
+                                    <h2 class="text-xl font-bold uppercase tracking-tight text-black line-clamp-1">
+                                        {{ payment.photographer?.business_name || payment.photographer_name ||
+                                        'Fotógrafo' }}
+                                    </h2>
+                                    <p class="text-sm font-medium text-gray-500 mt-1">
+                                        Subtotal: <span class="text-[#E30613] font-flux text-xl ml-1">{{
+                                            formatPrice(payment.amount) }}</span>
+                                    </p>
+                                </div>
                             </div>
 
-                            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3 md:min-w-[200px] justify-end">
                                 <span
-                                    class="font-mono text-[10px] uppercase tracking-widest border px-3 py-2"
+                                    class="font-bold text-[10px] uppercase tracking-widest px-4 py-2 rounded-full border text-center"
                                     :class="{
-                                        'border-green-500 text-green-400': payment.status === 'approved',
-                                        'border-red-600 text-red-500': ['rejected', 'cancelled', 'failed'].includes(payment.status),
-                                        'border-yellow-500 text-yellow-400': !['approved', 'rejected', 'cancelled', 'failed'].includes(payment.status),
-                                    }"
-                                >
+                                        'bg-green-50 border-green-200 text-green-600': payment.status === 'approved',
+                                        'bg-red-50 border-red-200 text-red-600': ['rejected', 'cancelled', 'failed'].includes(payment.status),
+                                        'bg-yellow-50 border-yellow-200 text-yellow-600': !['approved', 'rejected', 'cancelled', 'failed'].includes(payment.status),
+                                    }">
                                     {{ statusLabel(payment.status) }}
                                 </span>
 
-                                <button
-                                    v-if="payment.status !== 'approved'"
-                                    @click="goToPayment(payment)"
+                                <button v-if="payment.status !== 'approved'" @click="goToPayment(payment)"
                                     :disabled="!paymentUrl(payment)"
-                                    class="bg-white text-black font-black uppercase tracking-widest px-5 py-3 text-xs border-2 border-white hover:bg-black hover:text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                >
-                                    <CreditCardIcon class="w-4 h-4" />
-                                    Pagar
+                                    class="bg-black text-white font-bold uppercase tracking-widest px-6 py-2.5 text-xs rounded-full hover:bg-[#E30613] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-md">
+                                    <CreditCardIcon class="w-4 h-4" /> Pagar
                                 </button>
 
-                                <CheckCircleIcon v-else class="w-8 h-8 text-green-400" />
+
+                                <Link v-else :href="route('payment.success', { purchase_id: purchaseState.id })"
+                                    class="bg-green-600 text-white font-bold uppercase tracking-widest px-6 py-2.5 text-xs rounded-full hover:bg-green-700 flex items-center justify-center gap-2 transition-colors shadow-md shadow-green-500/30">
+                                    <ArrowDownTrayIcon class="w-4 h-4" /> Ver mis fotos
+                                </Link>
+
+
+
                             </div>
                         </div>
                     </div>
 
-                    <aside class="bg-zinc-950 border-[4px] border-white p-6 h-fit sticky top-24">
-                        <p class="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-4">
-                            Resumen
+
+                    <aside
+                        class="bg-white/90 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded p-8 h-fit sticky top-24">
+                        <p
+                            class="font-bold text-[10px] uppercase tracking-widest text-gray-400 mb-6 border-b border-gray-100 pb-3 flex items-center gap-2">
+                            <span class="w-4 h-px bg-gray-200"></span> Resumen Global
                         </p>
 
-                        <div class="space-y-3 font-mono text-xs uppercase tracking-widest mb-6">
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Total</span>
-                                <span class="font-bold">{{ formatPrice(purchaseState.total_amount) }}</span>
+                        <div class="space-y-4 font-bold text-xs uppercase tracking-widest mb-8 text-gray-500">
+                            <div class="flex justify-between items-end border-b border-gray-50 pb-3">
+                                <span>Total Orden</span>
+                                <span class="text-black font-flux text-2xl leading-none">{{
+                                    formatPrice(purchaseState.total_amount) }}</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-500">Aprobados</span>
-                                <span class="font-bold">{{ approvedCount }} / {{ payments.length }}</span>
-                            </div>
-                        </div>
-
-                        <div v-if="allApproved" class="border border-green-500 bg-green-500/10 p-4 mb-5">
-                            <div class="flex items-start gap-3">
-                                <CheckCircleIcon class="w-6 h-6 text-green-400 flex-shrink-0" />
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-green-300">
-                                    Todos los pagos fueron aprobados. Ya podés descargar la orden completa.
-                                </p>
+                            <div class="flex justify-between items-center pb-2">
+                                <span>Bloques Aprobados</span>
+                                <span class="bg-gray-100 text-black px-3 py-1 rounded-full">{{ approvedCount }} / {{
+                                    payments.length }}</span>
                             </div>
                         </div>
 
-                        <div v-else-if="hasFailed" class="border border-red-600 bg-red-600/10 p-4 mb-5">
-                            <div class="flex items-start gap-3">
-                                <ExclamationTriangleIcon class="w-6 h-6 text-red-500 flex-shrink-0" />
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-red-300">
-                                    Uno de los pagos falló o fue cancelado. Podés volver a intentar el bloque pendiente.
-                                </p>
-                            </div>
+                        <div v-if="allApproved"
+                            class="border border-green-100 bg-green-50 rounded p-5 mb-6 flex items-start gap-4">
+                            <CheckCircleIcon class="w-6 h-6 text-green-500 flex-shrink-0" />
+                            <p class="font-bold text-[10px] uppercase tracking-widest text-green-700 leading-relaxed">
+                                Todos los pagos fueron completados. Revisa tu correo o descarga desde cada bloque.
+                            </p>
+                        </div>
+                        <div v-else-if="hasFailed"
+                            class="border border-red-100 bg-red-50 rounded p-5 mb-6 flex items-start gap-4">
+                            <ExclamationTriangleIcon class="w-6 h-6 text-red-500 flex-shrink-0" />
+                            <p class="font-bold text-[10px] uppercase tracking-widest text-red-700 leading-relaxed">
+                                Uno de los pagos falló. Intenta nuevamente el bloque pendiente.
+                            </p>
+                        </div>
+                        <div v-else
+                            class="border border-yellow-100 bg-yellow-50 rounded p-5 mb-6 flex items-start gap-4">
+                            <ClockIcon class="w-6 h-6 text-yellow-600 flex-shrink-0" />
+                            <p class="font-bold text-[10px] uppercase tracking-widest text-yellow-700 leading-relaxed">
+                                Procesando pagos... La pantalla se actualizará automáticamente.
+                            </p>
                         </div>
 
-                        <div v-else class="border border-yellow-500 bg-yellow-500/10 p-4 mb-5">
-                            <div class="flex items-start gap-3">
-                                <ClockIcon class="w-6 h-6 text-yellow-400 flex-shrink-0" />
-                                <p class="font-mono text-[10px] uppercase tracking-widest text-yellow-200">
-                                    Todavía hay pagos pendientes de aprobación.
-                                </p>
-                            </div>
-                        </div>
-
-                        <a
-                            v-if="allApproved && purchaseState.order_token"
-                            :href="route('payment.download', purchaseState.order_token)"
-                            class="w-full bg-white text-black font-black uppercase tracking-widest py-4 text-xs border-2 border-white hover:bg-black hover:text-white flex items-center justify-center gap-2 mb-3"
-                        >
-                            <ArrowDownTrayIcon class="w-4 h-4" />
-                            Descargar
-                        </a>
-
-                        <button
-                            @click="refreshStatus"
-                            :disabled="refreshing"
-                            class="w-full border border-white/30 text-white font-bold uppercase tracking-widest py-3 text-[10px] hover:border-white disabled:opacity-50 flex items-center justify-center gap-2 mb-3"
-                        >
+                        <button @click="refreshStatus" :disabled="refreshing"
+                            class="w-full bg-gray-50 border border-gray-200 text-gray-700 font-bold uppercase tracking-widest py-3.5 text-[10px] rounded-full hover:bg-gray-100 disabled:opacity-50 flex items-center justify-center gap-2 mb-4 transition-colors">
                             <ArrowPathIcon class="w-4 h-4" :class="{ 'animate-spin': refreshing }" />
                             Actualizar estado
                         </button>
 
-                        <Link
-                            :href="route('home')"
-                            class="w-full text-gray-500 hover:text-white font-mono uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
-                        >
-                            <HomeIcon class="w-4 h-4" />
-                            Volver al inicio
+                        <Link :href="route('home')"
+                            class="w-full text-gray-400 hover:text-black font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-colors mt-2">
+                            <HomeIcon class="w-4 h-4" /> Volver al inicio
                         </Link>
                     </aside>
                 </div>
