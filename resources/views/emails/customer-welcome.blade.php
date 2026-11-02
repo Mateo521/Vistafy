@@ -25,7 +25,7 @@
                             </h1>
                             <div style="display: inline-block; background-color: #fef2f2; border: 1px solid #fee2e2; color: #E30613; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: bold; padding: 6px 16px; border-radius: 50px;">
                                 Acceso autorizado
-                            </div>
+                            </div> 
                         </td>
                     </tr>
 
