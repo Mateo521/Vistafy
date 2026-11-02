@@ -94,6 +94,10 @@ const uploadMode = ref('upload');
 const selectedExistingPhotos = ref([]);
 
 
+const isProcessing = ref(false);
+const processingStep = ref('');
+const processingProgress = ref(0);
+
 const readBibs = ref(true);
 
 const totalFacesDetected = computed(() => faceDetectionResults.value.reduce((sum, result) => sum + result.count, 0));
@@ -283,7 +287,7 @@ const compressImage = async (file) => {
 
 const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
-
+    if (files.length === 0) return;
 
     selectedFiles.value = [];
     previewUrls.value = [];
@@ -291,8 +295,26 @@ const handleFileSelect = async (e) => {
     bibDetectionResults.value = [];
 
 
-    const compressingPromises = files.map(file => compressImage(file));
-    const processedFiles = await Promise.all(compressingPromises);
+    isProcessing.value = true;
+    processingProgress.value = 0;
+    processingStep.value = 'Comprimiendo imágenes...';
+
+    const BATCH_SIZE = 5;
+    let processedFiles = [];
+
+
+    for (let i = 0; i < files.length; i += BATCH_SIZE) {
+        const batch = files.slice(i, i + BATCH_SIZE);
+        const compressingPromises = batch.map(file => compressImage(file));
+        const batchResults = await Promise.all(compressingPromises);
+        processedFiles = processedFiles.concat(batchResults);
+
+
+        processingProgress.value = Math.round(((i + batch.length) / files.length) * 100);
+
+
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
 
     selectedFiles.value = processedFiles.map(pf => pf.file);
     uploadForm.photos = selectedFiles.value;
@@ -300,14 +322,23 @@ const handleFileSelect = async (e) => {
 
     if (modelsLoaded.value) {
         try {
+
+            processingStep.value = 'Detectando rostros...';
+            processingProgress.value = 0;
             processingFaces.value = true;
+
             await detectFacesInImages();
+
             processingFaces.value = false;
 
 
             if (readBibs.value) {
+                processingStep.value = 'Leyendo dorsales (OCR)...';
+                processingProgress.value = 0;
                 processingBibs.value = true;
+
                 await detectBibNumbers(faceDetectionResults.value);
+
                 processingBibs.value = false;
             } else {
                 bibDetectionResults.value = selectedFiles.value.map((_, i) => ({ index: i, numbers: [], raw_text: '' }));
@@ -318,7 +349,18 @@ const handleFileSelect = async (e) => {
             processingBibs.value = false;
         }
     }
+
+
+    processingStep.value = 'Procesamiento completo';
+    processingProgress.value = 100;
+
+
+    setTimeout(() => {
+        isProcessing.value = false;
+    }, 1500);
 };
+
+
 
 const cropTorsoFromFace = async (imageUrl, faceBox) => {
     return new Promise((resolve) => {
@@ -424,6 +466,9 @@ const detectBibNumbers = async (facesData) => {
         } catch (error) {
             bibDetectionResults.value.push({ index: i, numbers: [], raw_text: '' });
         }
+
+        processingProgress.value = Math.round(((i + 1) / previewUrls.value.length) * 100);
+        await new Promise(resolve => setTimeout(resolve, 30));
     }
     await worker.terminate();
     processingBibs.value = false;
@@ -453,6 +498,9 @@ const detectFacesInImages = async () => {
         } catch (error) {
             faceDetectionResults.value.push({ index: i, count: 0, descriptors: [], boxes: [] });
         }
+
+        processingProgress.value = Math.round(((i + 1) / previewUrls.value.length) * 100);
+        await new Promise(resolve => setTimeout(resolve, 30));
     }
     processingFaces.value = false;
 };
@@ -583,7 +631,40 @@ const paginationPages = computed(() => {
 
 
                     </div>
+
+
                 </div>
+
+
+                <div class="w-full mt-6 space-y-3">
+
+                    <div v-if="isProcessing" class="p-4 bg-black/40 backdrop-blur-md rounded border border-white/20">
+                        <div
+                            class="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-2 text-white/80">
+                            <span>{{ processingStep }}</span>
+                            <span>{{ processingProgress }}%</span>
+                        </div>
+                        <div class="w-full bg-black/50 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-[#E30613] h-1.5 rounded-full transition-all duration-200 ease-out"
+                                :style="{ width: processingProgress + '%' }"></div>
+                        </div>
+                    </div>
+
+
+                    <div v-if="uploadForm.progress"
+                        class="p-4 bg-white/10 backdrop-blur-md rounded border border-white/30 shadow-lg">
+                        <div
+                            class="flex justify-between text-[10px] font-bold uppercase tracking-wider mb-2 text-white">
+                            <span>Subiendo archivos...</span>
+                            <span>{{ uploadForm.progress.percentage }}%</span>
+                        </div>
+                        <div class="w-full bg-black/50 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-green-500 h-1.5 rounded-full transition-all duration-200 ease-out shadow-[0_0_10px_rgba(34,197,94,0.5)]"
+                                :style="{ width: uploadForm.progress.percentage + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -1063,51 +1144,54 @@ const paginationPages = computed(() => {
 
 
 
-        <div v-if="showQrModal" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto">
-    
-    <button @click="showQrModal = false" class="absolute top-6 right-6 text-white hover:text-gray-300">
-        <XMarkIcon class="w-8 h-8" />
-    </button>
+        <div v-if="showQrModal"
+            class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm p-4 overflow-y-auto">
 
-    <div ref="qrCardRef" class="w-full max-w-[380px] bg-white rounded overflow-hidden shadow-2xl relative my-8 shrink-0">
-        
-        <div class="h-32 bg-black relative">
-            <img v-if="event.cover_image_url" :src="getCorsUrl(event.cover_image_url)" crossorigin="anonymous" 
-    class="w-full h-full object-cover opacity-50" />
-            <div v-else class="w-full h-full bg-gradient-to-tr from-gray-900 to-gray-800"></div>
-        </div>
+            <button @click="showQrModal = false" class="absolute top-6 right-6 text-white hover:text-gray-300">
+                <XMarkIcon class="w-8 h-8" />
+            </button>
 
-        <div class="absolute top-16 left-1/2 -translate-x-1/2">
-            <img :src="event.photographer.profile_photo_url ? getCorsUrl(event.photographer.profile_photo_url) : `https://ui-avatars.com/api/?name=${event.photographer.business_name}&background=random`" 
-    crossorigin="anonymous"
-    class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-md bg-white" />
-        </div>
+            <div ref="qrCardRef"
+                class="w-full max-w-[380px] bg-white rounded overflow-hidden shadow-2xl relative my-8 shrink-0">
 
-        <div class="pt-14 pb-8 px-8 text-center flex flex-col items-center">
-            
-            <h3 class="font-bold text-xl text-black leading-tight">{{ event.photographer.business_name }}</h3>
-            <p class="text-[10px] font-bold text-[#E30613] uppercase tracking-widest mt-1 mb-6">Fotografía</p>
-            
-            <h4 class="font-flux text-2xl text-black leading-none">{{ event.name }}</h4>
-            <p class="text-xs text-gray-500 mt-2 uppercase font-bold tracking-wider">{{ event.event_date }}</p>
+                <div class="h-32 bg-black relative">
+                    <img v-if="event.cover_image_url" :src="getCorsUrl(event.cover_image_url)" crossorigin="anonymous"
+                        class="w-full h-full object-cover opacity-50" />
+                    <div v-else class="w-full h-full bg-gradient-to-tr from-gray-900 to-gray-800"></div>
+                </div>
 
-            <div class="mt-8 p-3 bg-white border-2 border-gray-100 rounded shadow-sm inline-block">
-                <qrcode-vue :value="privateEventUrl" :size="180" level="H" foreground="#000000" />
+                <div class="absolute top-16 left-1/2 -translate-x-1/2">
+                    <img :src="event.photographer.profile_photo_url ? getCorsUrl(event.photographer.profile_photo_url) : `https://ui-avatars.com/api/?name=${event.photographer.business_name}&background=random`"
+                        crossorigin="anonymous"
+                        class="w-24 h-24 rounded-full border-4 border-white object-cover shadow-md bg-white" />
+                </div>
+
+                <div class="pt-14 pb-8 px-8 text-center flex flex-col items-center">
+
+                    <h3 class="font-bold text-xl text-black leading-tight">{{ event.photographer.business_name }}</h3>
+                    <p class="text-[10px] font-bold text-[#E30613] uppercase tracking-widest mt-1 mb-6">Fotografía</p>
+
+                    <h4 class="font-flux text-2xl text-black leading-none">{{ event.name }}</h4>
+                    <p class="text-xs text-gray-500 mt-2 uppercase font-bold tracking-wider">{{ event.event_date }}</p>
+
+                    <div class="mt-8 p-3 bg-white border-2 border-gray-100 rounded shadow-sm inline-block">
+                        <qrcode-vue :value="privateEventUrl" :size="180" level="H" foreground="#000000" />
+                    </div>
+
+                    <p class="text-xs font-bold text-gray-800 uppercase tracking-widest mt-6">Escaneá para ver tus fotos
+                    </p>
+                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Acceso privado</p>
+
+                </div>
             </div>
 
-            <p class="text-xs font-bold text-gray-800 uppercase tracking-widest mt-6">Escaneá para ver tus fotos</p>
-            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Acceso privado</p>
-            
+            <button @click="downloadQrCard"
+                class="bg-[#E30613] hover:bg-red-700 text-white font-bold uppercase tracking-wider text-sm px-8 py-4 rounded-full shadow-lg flex items-center gap-2 transition-transform transform hover:scale-105 shrink-0 mb-8">
+                <ArrowDownTrayIcon class="w-5 h-5" />
+                Descargar tarjeta (jpg)
+            </button>
+
         </div>
-    </div>
-
-    <button @click="downloadQrCard"
-        class="bg-[#E30613] hover:bg-red-700 text-white font-bold uppercase tracking-wider text-sm px-8 py-4 rounded-full shadow-lg flex items-center gap-2 transition-transform transform hover:scale-105 shrink-0 mb-8">
-        <ArrowDownTrayIcon class="w-5 h-5" />
-        Descargar tarjeta (jpg)
-    </button>
-
-</div>
     </AuthenticatedLayout>
 </template>
 

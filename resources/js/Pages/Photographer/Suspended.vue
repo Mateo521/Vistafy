@@ -39,7 +39,7 @@ import {
                 <div class="space-y-6">
 
                 
-                    <div class="bg-white rounded-3xl p-6 md:p-8 border border-red-100 shadow-sm relative overflow-hidden">
+                    <div class="bg-white rounded p-6 md:p-8 border border-red-100 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
                         
                         <h2 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4 relative z-10">
@@ -72,7 +72,7 @@ import {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
 
-                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                        <div class="bg-white rounded p-6 md:p-8 border border-gray-100 shadow-sm">
                             <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                                 <InformationCircleIcon class="w-4 h-4 text-gray-400" /> Posibles causas
                             </h3>
@@ -86,7 +86,7 @@ import {
                         </div>
 
                         
-                        <div class="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                        <div class="bg-white rounded p-6 md:p-8 border border-gray-100 shadow-sm">
                             <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                                 <span class="w-4 h-px bg-gray-200"></span> Proceso de recuperación
                             </h3>
@@ -124,7 +124,7 @@ import {
                     </div>
 
                 
-                    <div class="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                    <div class="bg-white border border-gray-100 rounded p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
                         <div class="text-center md:text-left">
                             <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Soporte</p>
                             <p class="text-sm font-bold text-slate-700 flex items-center justify-center md:justify-start gap-2">

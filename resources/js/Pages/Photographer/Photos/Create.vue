@@ -70,6 +70,12 @@ const uploading = ref(false);
 const uploadProgress = ref({ current: 0, total: 0, percentage: 0 });
 const fileInput = ref(null);
 
+const isProcessing = ref(false);
+const processingStep = ref('');
+const processingProgress = ref(0);
+
+
+
 
 const modelsLoaded = ref(false);
 const processingFaces = ref(false);
@@ -109,14 +115,14 @@ const isImageSafe = (file) => {
 
     return new Promise((resolve) => {
         const fileId = Math.random().toString(36).substring(7);
-        
+
         const handleMessage = (e) => {
             if (e.data.fileId === fileId) {
                 nsfwWorker.removeEventListener('message', handleMessage);
                 resolve(e.data.isSafe);
             }
         };
-        
+
         nsfwWorker.addEventListener('message', handleMessage);
         nsfwWorker.postMessage({ fileId, file });
     });
@@ -180,7 +186,7 @@ const addFiles = async (files) => {
     const validFiles = files.filter(file => {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         const maxSize = 50 * 1024 * 1024;
-        
+
         if (!validTypes.includes(file.type)) {
             error(`${file.name} no es un formato válido.`);
             return false;
@@ -190,11 +196,10 @@ const addFiles = async (files) => {
             return false;
         }
 
-
         const isDuplicate = selectedFiles.value.some(
             existing => existing.name === file.name || (existing.file && existing.file.name === file.name)
         );
-        
+
         if (isDuplicate) {
             error(`"${file.name}" ya está en la cola de subida.`);
             return false;
@@ -203,51 +208,86 @@ const addFiles = async (files) => {
         return true;
     });
 
-    const remainingSlots = 50 - selectedFiles.value.length;
+
+    const MAX_FILES = 150;
+    const remainingSlots = MAX_FILES - selectedFiles.value.length;
     const filesToProcess = validFiles.slice(0, remainingSlots);
 
     if (validFiles.length > remainingSlots) {
-        error(`Límite de 50 fotos. Se procesarán ${remainingSlots}.`);
+        error(`Límite de ${MAX_FILES} fotos. Se procesarán ${remainingSlots}.`);
     }
 
     if (filesToProcess.length === 0) return;
 
+
+    isProcessing.value = true;
+    processingProgress.value = 0;
+
+
     isScanningNSFW.value = true;
+    processingStep.value = 'Escaneando contenido seguro...';
+
     const safeFiles = [];
     let blockedCount = 0;
 
-    for (const file of filesToProcess) {
+    for (let i = 0; i < filesToProcess.length; i++) {
+        const file = filesToProcess[i];
         const isSafe = await isImageSafe(file);
         if (isSafe) {
             safeFiles.push(file);
         } else {
             blockedCount++;
         }
+
+
+        processingProgress.value = Math.round(((i + 1) / filesToProcess.length) * 100);
+        await new Promise(resolve => setTimeout(resolve, 20));
     }
-    
+
     isScanningNSFW.value = false;
 
     if (blockedCount > 0) {
         error(`Se bloquearon ${blockedCount} fotografía(s) por detectar contenido explícito o inapropiado.`);
     }
 
-    if (safeFiles.length === 0) return;
+    if (safeFiles.length === 0) {
+        isProcessing.value = false;
+        return;
+    }
 
-    const compressingPromises = safeFiles.map(file => compressImage(file));
-    const newFileObjects = await Promise.all(compressingPromises);
-    
+
+    processingStep.value = 'Comprimiendo imágenes...';
+    processingProgress.value = 0;
+
+    const BATCH_SIZE = 5;
+    let newFileObjects = [];
+
+    for (let i = 0; i < safeFiles.length; i += BATCH_SIZE) {
+        const batch = safeFiles.slice(i, i + BATCH_SIZE);
+        const compressingPromises = batch.map(file => compressImage(file));
+        const batchResults = await Promise.all(compressingPromises);
+        newFileObjects = newFileObjects.concat(batchResults);
+
+        processingProgress.value = Math.round(((i + batch.length) / safeFiles.length) * 100);
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
 
     newFileObjects.forEach((obj, index) => {
-        obj.name = safeFiles[index].name; 
+        obj.name = safeFiles[index].name;
     });
 
     selectedFiles.value.push(...newFileObjects);
 
-    if (modelsLoaded.value) {
-        runAIDetection();
-    }
-};
 
+    if (modelsLoaded.value) {
+        await runAIDetection();
+    }
+
+
+    processingStep.value = 'Procesamiento local completo';
+    processingProgress.value = 100;
+    setTimeout(() => { isProcessing.value = false; }, 1500);
+};
 
 
 watch(() => form.event_id, (newVal) => {
@@ -276,13 +316,22 @@ const clearFiles = () => {
 };
 
 const runAIDetection = async () => {
+
+    processingStep.value = 'Detectando rostros en las imágenes...';
+    processingProgress.value = 0;
     processingFaces.value = true;
+
     await detectFacesInImages();
+
     processingFaces.value = false;
 
     if (form.read_bibs) {
+        processingStep.value = 'Leyendo números de dorsal (OCR)...';
+        processingProgress.value = 0;
         processingBibs.value = true;
+
         await detectBibNumbers(faceDetectionResults.value);
+
         processingBibs.value = false;
     } else {
         bibDetectionResults.value = selectedFiles.value.map((_, i) => ({ index: i, numbers: [], raw_text: '' }));
@@ -291,6 +340,7 @@ const runAIDetection = async () => {
 
 const detectFacesInImages = async () => {
     faceDetectionResults.value = [];
+
     for (let i = 0; i < selectedFiles.value.length; i++) {
         try {
             const img = document.createElement('img');
@@ -315,6 +365,10 @@ const detectFacesInImages = async () => {
             console.error(`Error IA foto ${i}:`, error);
             faceDetectionResults.value.push({ index: i, count: 0, descriptors: [], boxes: [] });
         }
+
+
+        processingProgress.value = Math.round(((i + 1) / selectedFiles.value.length) * 100);
+        await new Promise(resolve => setTimeout(resolve, 30));
     }
 };
 
@@ -353,10 +407,14 @@ const detectBibNumbers = async (facesData) => {
             console.error(`Error OCR foto ${i}:`, error);
             bibDetectionResults.value.push({ index: i, numbers: [], raw_text: '' });
         }
+
+
+        processingProgress.value = Math.round(((i + 1) / selectedFiles.value.length) * 100);
+        await new Promise(resolve => setTimeout(resolve, 30));
     }
+
     await worker.terminate();
 };
-
 const cropTorsoFromFace = async (imageUrl, faceBox) => {
     return new Promise((resolve) => {
         const img = new Image();
@@ -801,10 +859,27 @@ const submitPhotos = () => {
                         </div>
 
 
+                        <div v-if="isProcessing" class="p-6 bg-white border border-gray-100 rounded shadow-sm mb-4">
+                            <div
+                                class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+                                <span>{{ processingStep }}</span>
+                                <span class="text-black">{{ processingProgress }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                                <div class="bg-black h-full transition-all duration-300 ease-out"
+                                    :style="{ width: processingProgress + '%' }">
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-3 text-center uppercase tracking-widest">
+                                Preparando los archivos en tu navegador
+                            </p>
+                        </div>
+
+
                         <div v-if="uploading" class="p-6 bg-white border border-gray-100 rounded shadow-sm">
                             <div
                                 class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
-                                <span>Subiendo archivos...</span>
+                                <span>Subiendo archivos a la nube...</span>
                                 <span class="text-[#E30613]">{{ uploadProgress.percentage }}%</span>
                             </div>
                             <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
