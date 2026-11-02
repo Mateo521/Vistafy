@@ -18,9 +18,7 @@ class PhotoManagementController extends Controller
         $this->imageService = $imageService;
     }
 
-    /**
-     * Dashboard del fotógrafo - lista de fotos
-     */
+    
     public function index()
     {
         $photographer = auth()->user()->photographer;
@@ -35,17 +33,13 @@ class PhotoManagementController extends Controller
         ]);
     }
 
-    /**
-     * Formulario para subir nueva foto
-     */
+    
     public function create()
     {
         return Inertia::render('Photographer/Photos/Create');
     }
 
-    /**
-     * Guardar nueva foto
-     */
+
     public function store(Request $request)
     {
         $request->validate([
@@ -57,7 +51,7 @@ class PhotoManagementController extends Controller
 
         $photographer = auth()->user()->photographer;
         
-        // Crear registro de foto primero para obtener ID
+        
         $photo = new Photo();
         $photo->photographer_id = $photographer->id;
         $photo->title = $request->title;
@@ -65,28 +59,26 @@ class PhotoManagementController extends Controller
         $photo->price = $request->price;
         $photo->is_active = true;
         
-        // Temporal, se actualizará después del procesamiento
+    
         $photo->original_path = 'temp';
         $photo->watermarked_path = 'temp';
         $photo->save();
 
-        // Procesar imagen (marca de agua, thumbnail, etc.)
+        
         $paths =$this->imageService->processPhoto(
             $request->file('photo'),
             $photo->unique_id,
             $photographer->business_name
         );
 
-        // Actualizar con los paths reales
+
         $photo->update($paths);
 
         return redirect()->route('photographer.photos.index')
             ->with('success', 'Foto subida exitosamente');
     }
 
-    /**
-     * Formulario para editar foto
-     */
+
     public function edit($id)
     {
         $photographer = auth()->user()->photographer;
@@ -99,9 +91,7 @@ class PhotoManagementController extends Controller
         ]);
     }
 
-    /**
-     * Actualizar foto (solo datos, no imagen)
-     */
+
     public function update(Request $request,$id)
     {
         $photographer = auth()->user()->photographer;
@@ -122,9 +112,7 @@ class PhotoManagementController extends Controller
             ->with('success', 'Foto actualizada exitosamente');
     }
 
-    /**
-     * Eliminar foto
-     */
+
     public function destroy($id)
     {
         $photographer = auth()->user()->photographer;
@@ -132,10 +120,10 @@ class PhotoManagementController extends Controller
         $photo = Photo::where('photographer_id', $photographer->id)
             ->findOrFail($id);
 
-        // Eliminar archivos físicos
+
         $this->imageService->deletePhotoFiles($photo);
 
-        // Soft delete
+
         $photo->delete();
 
         return redirect()->route('photographer.photos.index')

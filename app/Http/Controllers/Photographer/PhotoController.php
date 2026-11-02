@@ -112,7 +112,7 @@ class PhotoController extends Controller
         }
 
         $request->validate([
-            'photos' => 'required|array|min:1|max:50',
+            'photos' => 'required|array|min:1|max:150', 
             'photos.*' => 'required|image|mimes:jpeg,jpg,png|max:10240',
             'event_id' => 'nullable|exists:events,id',
             'price' => 'nullable|numeric|min:0.01|max:999999.99',

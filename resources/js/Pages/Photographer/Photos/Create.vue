@@ -759,7 +759,7 @@ const submitPhotos = () => {
                                     Seleccionar archivos
                                 </button>
                                 <p class="mt-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                                    JPG, PNG • Máx 50MB • Límite 50 archivos
+                                    JPG, PNG • Máx 150MB • Límite 150 archivos
                                 </p>
                             </div>
 

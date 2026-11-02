@@ -87,12 +87,23 @@ const isUrlActive = (path) => {
                             ]">
                                 Archivos
                             </Link>
+                            <Link :href="route('photographer.photos.create')" :class="[
+                                'relative text-xs font-bold uppercase tracking-wider transition-all duration-300 after:content-[\'\'] after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:bg-[#E30613] after:transition-all after:duration-300 hover:after:w-full',
+                                isUrlActive('/fotografo/fotos/crear') ? 'text-[#E30613] after:w-full' : 'text-gray-500 hover:text-black'
+                            ]">
+                                Subir imágenes
+                            </Link>
+
                             <Link :href="route('photographer.opportunities.index')" :class="[
                                 'relative text-xs font-bold uppercase tracking-wider transition-all duration-300 after:content-[\'\'] after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:bg-[#E30613] after:transition-all after:duration-300 hover:after:w-full',
                                 isUrlActive('/fotografo/oportunidades') ? 'text-[#E30613] after:w-full' : 'text-gray-500 hover:text-black'
                             ]">
                                 Ofertas
                             </Link>
+
+                            
+                            
+
                         </template>
 
                         <template v-if="user.role === 'admin'">
