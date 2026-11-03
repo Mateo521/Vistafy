@@ -108,15 +108,17 @@ const navigationItems = [
         <nav class="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] max-w-7xl z-50 bg-white/85 backdrop-blur-md rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/50 px-4 md:px-6 py-3 transition-all duration-300">
             <div class="flex justify-between items-center w-full">
 
+                
                 <Link href="/" class="group z-50 relative flex items-center shrink-0">
                     <img src="/images/logo.png" width="100" height="40" alt="f33 Photography"
-                        class="h-9 w-auto transition-transform duration-300 group-hover:scale-105" />
+                        class="h-8 md:h-9 w-auto transition-transform duration-300 group-hover:scale-105" />
                 </Link>
 
+                
                 <div class="hidden md:flex items-center justify-center flex-1 px-8">
                     <div class="flex space-x-8">
                         <template v-for="item in navigationItems" :key="item.label">
-
+                            
                             <div v-if="item.hasDropdown" class="relative group/nav">
                                 <button @click="eventsMenuOpen = !eventsMenuOpen" :class="[
                                     'flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-300',
@@ -128,25 +130,20 @@ const navigationItems = [
                                         eventsMenuOpen ? 'rotate-180 text-[#E30613]' : ''
                                     ]" />
                                 </button>
-
                                 <transition enter-active-class="transition duration-200 ease-out"
-                                    enter-from-class="opacity-0 translate-y-4 scale-95"
-                                    enter-to-class="opacity-100 translate-y-0 scale-100"
-                                    leave-active-class="transition duration-150 ease-in"
-                                    leave-from-class="opacity-100 translate-y-0 scale-100"
+                                    enter-from-class="opacity-0 translate-y-4 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
+                                    leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
                                     leave-to-class="opacity-0 translate-y-2 scale-95">
                                     <div v-show="eventsMenuOpen" @click.away="eventsMenuOpen = false"
                                         class="absolute left-1/2 -translate-x-1/2 mt-4 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2">
-                                        <Link v-for="subItem in item.items" :key="subItem.route"
-                                            :href="subItem.route" @click="eventsMenuOpen = false"
+                                        <Link v-for="subItem in item.items" :key="subItem.route" :href="subItem.route" @click="eventsMenuOpen = false"
                                             class="block px-5 py-3 text-xs font-bold tracking-widest uppercase text-gray-600 hover:bg-gray-50 hover:text-[#E30613] transition-colors">
                                             {{ subItem.label }}
                                         </Link>
                                     </div>
                                 </transition>
                             </div>
-
-
+                        
                             <Link v-else :href="item.route" :class="[
                                 'relative text-xs font-bold uppercase tracking-wider transition-all duration-300 after:content-[\'\'] after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-0 after:bg-[#E30613] after:transition-all after:duration-300 hover:after:w-full',
                                 item.active ? 'text-[#E30613] after:w-full' : 'text-gray-600 hover:text-black'
@@ -157,91 +154,80 @@ const navigationItems = [
                     </div>
                 </div>
 
-
-                <div class="hidden md:flex items-center justify-end space-x-6 shrink-0">
+                
+                <div class="flex items-center space-x-3 md:space-x-6 shrink-0 z-50">
                     
-
+                    
                     <Link v-if="user" :href="route('cart.index')"
-                        class="relative group flex items-center justify-center w-10 h-10 bg-gray-50 rounded-full hover:bg-red-50 transition-colors duration-300">
-                        <ShoppingCartIcon class="w-5 h-5 text-gray-700 group-hover:text-[#E30613] transition-colors duration-300" />
+                        class="relative group flex items-center justify-center w-9 h-9 md:w-10 md:h-10 bg-gray-50 rounded-full hover:bg-red-50 transition-colors duration-300">
+                        <ShoppingCartIcon class="w-4 h-4 md:w-5 md:h-5 text-gray-700 group-hover:text-[#E30613] transition-colors duration-300" />
                         <span v-if="cartCount > 0"
-                            class="absolute -top-1 -right-1 min-w-[20px] h-[20px] flex items-center justify-center px-1 rounded-full text-[10px] font-bold bg-[#E30613] text-white shadow-sm shadow-red-500/30">
+                            class="absolute -top-1 -right-1 min-w-[18px] h-[18px] md:min-w-[20px] md:h-[20px] flex items-center justify-center px-1 rounded-full text-[9px] md:text-[10px] font-bold bg-[#E30613] text-white shadow-sm shadow-red-500/30">
                             {{ cartCount > 99 ? '99+' : cartCount }}
                         </span>
                     </Link>
 
-
+                    
                     <template v-if="!user">
-                        <div class="flex items-center space-x-4">
-                            <Link :href="route('photographer.register')"
-                                class="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black transition-colors hidden lg:block">
-                                Soy fotógrafo
-                            </Link>
+                        
+                        <div class="hidden md:flex items-center space-x-4">
+                            <Link :href="route('photographer.register')" class="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black transition-colors hidden lg:block">Soy fotógrafo</Link>
                             <div class="w-px h-4 bg-gray-300 hidden lg:block"></div>
-                            <Link :href="route('login')"
-                                class="text-xs font-bold uppercase tracking-wider text-black hover:text-[#E30613] transition-colors">
-                                Ingresar
-                            </Link>
-                            <Link :href="route('register')"
-                                class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 rounded-full">
-                                Registrarse
-                            </Link>
+                            <Link :href="route('login')" class="text-xs font-bold uppercase tracking-wider text-black hover:text-[#E30613] transition-colors">Ingresar</Link>
+                            <Link :href="route('register')" class="px-5 py-2.5 text-xs font-bold uppercase tracking-wider bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 rounded-full">Registrarse</Link>
                         </div>
+                        
+                        <Link :href="route('login')" class="md:hidden flex items-center justify-center w-9 h-9 bg-gray-50 rounded-full text-black hover:text-[#E30613]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </Link>
                     </template>
-
 
                     <template v-else>
-                        <div class="flex items-center space-x-4">
-                            <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route"
-                                class="text-xs font-bold uppercase tracking-wider text-[#E30613] hover:text-black transition-colors">
-                                {{ dashboardInfo.text }}
-                            </Link>
+                        
+                        <div class="relative">
+                            <button @click="userMenuOpen = !userMenuOpen"
+                                class="flex items-center gap-1 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-gray-50 rounded-full text-[10px] md:text-xs font-bold uppercase text-black hover:bg-gray-100 transition-colors">
+                                
+                                <span class="hidden md:block">{{ user.name.split(' ')[0] }}</span>
+                                <span class="md:hidden">{{ user.name.charAt(0) }}</span>
+                                <ChevronDownIcon :class="['w-3 h-3 md:w-3.5 md:h-3.5 transition-transform duration-300', userMenuOpen ? 'rotate-180 text-[#E30613]' : '']" />
+                            </button>
 
-                            <div v-else class="relative">
-                                <button @click="userMenuOpen = !userMenuOpen"
-                                    class="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full text-xs font-bold uppercase text-black hover:bg-gray-100 transition-colors">
-                                    {{ user.name.split(' ')[0] }}
-                                    <ChevronDownIcon :class="['w-3.5 h-3.5 transition-transform duration-300', userMenuOpen ? 'rotate-180 text-[#E30613]' : '']" />
-                                </button>
-
-                                <transition enter-active-class="transition duration-200 ease-out"
-                                    enter-from-class="opacity-0 translate-y-4 scale-95"
-                                    enter-to-class="opacity-100 translate-y-0 scale-100"
-                                    leave-active-class="transition duration-150 ease-in"
-                                    leave-from-class="opacity-100 translate-y-0 scale-100"
-                                    leave-to-class="opacity-0 translate-y-2 scale-95">
-                                    <div v-show="userMenuOpen" @click.away="userMenuOpen = false"
-                                        class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2">
-
-                                        <div class="px-5 py-3 text-[10px] text-gray-400 border-b border-gray-50 truncate tracking-widest uppercase">
-                                            {{ user.email }}
-                                        </div>
-
-                                        <Link v-for="item in dashboardInfo.items" :key="item.route"
-                                            :href="item.route"
-                                            class="block px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-600 hover:bg-gray-50 hover:text-[#E30613] transition-colors">
+                            <transition enter-active-class="transition duration-200 ease-out"
+                                enter-from-class="opacity-0 translate-y-4 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100"
+                                leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0 scale-100"
+                                leave-to-class="opacity-0 translate-y-2 scale-95">
+                                <div v-show="userMenuOpen" @click.away="userMenuOpen = false"
+                                    class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2">
+                                    <div class="px-5 py-3 text-[10px] text-gray-400 border-b border-gray-50 truncate tracking-widest uppercase">{{ user.email }}</div>
+                                    
+                                    <Link v-if="dashboardInfo?.single" :href="dashboardInfo.route" class="block px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#E30613] hover:bg-gray-50 transition-colors">
+                                        {{ dashboardInfo.text }}
+                                    </Link>
+                                    <template v-else>
+                                        <Link v-for="item in dashboardInfo.items" :key="item.route" :href="item.route" class="block px-5 py-3 text-xs font-bold uppercase tracking-widest text-gray-600 hover:bg-gray-50 hover:text-[#E30613] transition-colors">
                                             {{ item.text }}
                                         </Link>
-
-                                        <Link :href="route('logout')" method="post" as="button"
-                                            class="w-full text-left px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#E30613] hover:bg-red-50 transition-colors">
-                                            Cerrar Sesión
-                                        </Link>
-                                    </div>
-                                </transition>
-                            </div>
+                                    </template>
+                                    
+                                    <Link :href="route('logout')" method="post" as="button" class="w-full text-left px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#E30613] hover:bg-red-50 transition-colors">
+                                        Cerrar Sesión
+                                    </Link>
+                                </div>
+                            </transition>
                         </div>
                     </template>
+
+                    
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden focus:outline-none p-2 bg-gray-50 rounded-full w-9 h-9 flex items-center justify-center">
+                        <div class="relative w-4 h-3.5">
+                            <span :class="['absolute left-0 w-4 h-[2px] bg-black rounded-full transition-all duration-300', mobileMenuOpen ? 'rotate-45 top-1.5' : 'top-0']"></span>
+                            <span :class="['absolute left-0 w-4 h-[2px] bg-black rounded-full transition-all duration-300', mobileMenuOpen ? 'opacity-0 top-1.5' : 'top-[6px]']"></span>
+                            <span :class="['absolute left-0 w-4 h-[2px] bg-black rounded-full transition-all duration-300', mobileMenuOpen ? '-rotate-45 top-1.5' : 'top-[12px]']"></span>
+                        </div>
+                    </button>
+                    
                 </div>
-
-
-                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden z-50 focus:outline-none p-2 bg-gray-50 rounded-full w-10 h-10 flex items-center justify-center">
-                    <div class="relative w-5 h-4">
-                        <span :class="['absolute left-0 w-5 h-[2px] bg-black rounded-full transition-all duration-300', mobileMenuOpen ? 'rotate-45 top-2' : 'top-0']"></span>
-                        <span :class="['absolute left-0 w-5 h-[2px] bg-black rounded-full transition-all duration-300', mobileMenuOpen ? 'opacity-0 top-2' : 'top-[7px]']"></span>
-                        <span :class="['absolute left-0 w-5 h-[2px] bg-black rounded-full transition-all duration-300', mobileMenuOpen ? '-rotate-45 top-2' : 'top-[14px]']"></span>
-                    </div>
-                </button>
             </div>
         </nav>
 
