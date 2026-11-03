@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Photo;
 use App\Models\Photographer;
+use App\Models\PhotoReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Models\PhotoReport;
-use Illuminate\Support\Facades\Validator;
+
 class PublicGalleryController extends Controller
 {
-   public function index()
+    public function index()
     {
         $recentEvents = Event::with(['photographer.user'])
             ->where('is_active', true)
@@ -41,7 +41,6 @@ class PublicGalleryController extends Controller
                 ];
             });
 
-        
         $recentPhotos = Photo::with(['event', 'photographer.user'])
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
@@ -60,7 +59,7 @@ class PublicGalleryController extends Controller
             ->map(function ($photo) {
                 return [
                     'id' => $photo->id,
-                    'unique_id' => $photo->unique_id, 
+                    'unique_id' => $photo->unique_id,
                     'event_id' => $photo->event_id,
                     'original_url' => $photo->original_url,
                     'thumbnail_url' => $photo->thumbnail_url,
@@ -94,8 +93,12 @@ class PublicGalleryController extends Controller
             ->values();
 
         $stats = [
-            'total_photos' => Photo::where('is_active', true)->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count(),
-            'total_events' => Event::where('is_active', true)->whereHas('photographer', function ($q) { $q->where('status', 'approved'); })->count(),
+            'total_photos' => Photo::where('is_active', true)->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');
+            })->count(),
+            'total_events' => Event::where('is_active', true)->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');
+            })->count(),
             'total_photographers' => Photographer::where('status', 'approved')->count(),
         ];
 
@@ -111,7 +114,7 @@ class PublicGalleryController extends Controller
 
         return Inertia::render('Home', [
             'recentEvents' => $recentEvents,
-            'recentPhotos' => $recentPhotos,  
+            'recentPhotos' => $recentPhotos,
             'futureEvents' => $futureEvents,
             'stats' => $stats,
             'videoList' => $videoFiles,
@@ -121,125 +124,124 @@ class PublicGalleryController extends Controller
         ]);
     }
 
-
     public function report(Request $request, Photo $photo)
-{
-    $request->validate([
-        'email' => 'required|email|max:255',
-        'reason' => 'required|string|max:50',
-        'message' => 'nullable|string|max:1000',
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email|max:255',
+            'reason' => 'required|string|max:50',
+            'message' => 'nullable|string|max:1000',
+        ]);
 
+        PhotoReport::create([
+            'photo_id' => $photo->id,
+            'email' => $request->email,
+            'reason' => $request->reason,
+            'message' => $request->message,
+            'status' => 'pending',
+        ]);
 
-    PhotoReport::create([
-        'photo_id' => $photo->id,
-        'email' => $request->email,
-        'reason' => $request->reason,
-        'message' => $request->message,
-        'status' => 'pending',
-    ]);
+        return back()->with('success', 'Reporte enviado correctamente.');
+    }
 
-    //ENVIO DE CORREO A ADMINISTRADOR
+    public function gallery(Request $request)
+    {
+        $query = \App\Models\Photo::with(['photographer.user'])
+            ->where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');
+            })
 
-    return back()->with('success', 'Reporte enviado correctamente.');
-}
+            ->where(function ($q) {
+                $q->whereNull('event_id')
+                    ->orWhereHas('event', function ($eq) {
+                        $eq->where('is_private', false)
+                            ->where('is_active', true);
+                    });
+            });
 
-public function gallery(Request $request)
-{
-    $query = \App\Models\Photo::with(['photographer.user'])
-        ->where('is_active', true)
-        ->whereHas('photographer', function ($q) {
-            $q->where('status', 'approved');
+        if ($request->filled('event')) {
+            $query->where('event_id', $request->event);
+        }
+
+        if ($request->filled('region') && $request->region !== 'all') {
+            $query->whereHas('photographer', function ($q) use ($request) {
+                $q->where('region', $request->region);
+            });
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function ($sub) use ($request) {
+                $sub->where('unique_id', 'like', '%'.$request->search.'%')
+                    ->orWhere('title', 'like', '%'.$request->search.'%')
+                    ->orWhereHas('photographer', function ($q) use ($request) {
+                        $q->where('business_name', 'like', '%'.$request->search.'%');
+                    });
+            });
+        }
+
+        switch ($request->get('sort', 'recent')) {
+            case 'popular':
+                $query->orderByDesc('downloads');
+                break;
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            default:
+                $query->latest();
+        }
+
+        $photosPaginator = $query->paginate(50)->withQueryString();
+
+        $mappedPhotos = $photosPaginator->through(function ($photo) {
+            return [
+                'id' => $photo->id,
+                'unique_id' => $photo->unique_id,
+                'title' => $photo->title,
+                'price' => number_format($photo->price, 2),
+                'thumbnail_url' => $photo->thumbnail_url,
+                'watermarked_url' => $photo->watermarked_url,
+                'has_faces' => $photo->has_faces,
+                'photographer' => [
+                    'name' => $photo->photographer->business_name ?? 'Fotógrafo',
+                    'slug' => $photo->photographer->slug ?? $photo->photographer->id,
+                    'profile_photo_url' => $photo->photographer->profile_photo_url,
+                ],
+            ];
         });
 
- 
-    if ($request->filled('event')) {
-        $query->where('event_id', $request->event);
+        $regions = \App\Models\Photographer::where('status', 'approved')
+            ->whereNotNull('region')
+            ->distinct()
+            ->pluck('region')
+            ->sort()
+            ->values()
+            ->toArray();
+
+        $events = \App\Models\Event::where('is_active', true)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');
+            })
+            ->where('is_private', false)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Gallery/Index', [
+            'photos' => $mappedPhotos,
+            'events' => $events,
+            'regions' => $regions,
+            'filters' => [
+                'search' => $request->search,
+                'region' => $request->region ?? 'all',
+                'event' => $request->event,
+                'sort' => $request->sort ?? 'recent',
+            ],
+        ]);
     }
 
- 
-    if ($request->filled('region') && $request->region !== 'all') {
-        $query->whereHas('photographer', function ($q) use ($request) {
-            $q->where('region', $request->region);
-        });
-    }
-
- 
-    if ($request->filled('search')) {
-        $query->where(function ($sub) use ($request) {
-            $sub->where('unique_id', 'like', '%' . $request->search . '%')
-                ->orWhere('title', 'like', '%' . $request->search . '%')
-                ->orWhereHas('photographer', function ($q) use ($request) {
-                    $q->where('business_name', 'like', '%' . $request->search . '%');
-                });
-        });
-    }
-
- 
-    switch ($request->get('sort', 'recent')) {
-        case 'popular':
-            $query->orderByDesc('downloads');
-            break;
-        case 'price_low':
-            $query->orderBy('price', 'asc');
-            break;
-        case 'price_high':
-            $query->orderBy('price', 'desc');
-            break;
-        default:
-            $query->latest();
-    }
-
- 
-    $photosPaginator = $query->paginate(50)->withQueryString();
-
- 
-    $mappedPhotos = $photosPaginator->through(function ($photo) {
-        return [
-            'id' => $photo->id,
-            'unique_id' => $photo->unique_id,
-            'title' => $photo->title,
-            'price' => number_format($photo->price, 2),
-            'thumbnail_url' => $photo->thumbnail_url,
-            'watermarked_url' => $photo->watermarked_url,
-            'has_faces' => $photo->has_faces,
-            'photographer' => [
-                'name' => $photo->photographer->business_name ?? 'Fotógrafo',
-                'slug' => $photo->photographer->slug ?? $photo->photographer->id,
-                'profile_photo_url' => $photo->photographer->profile_photo_url,
-            ]
-        ];
-    });
-
-    $regions = \App\Models\Photographer::where('status', 'approved')
-        ->whereNotNull('region')
-        ->distinct()
-        ->pluck('region')
-        ->sort()
-        ->values()
-        ->toArray();
-
-    $events = \App\Models\Event::where('is_active', true)
-        ->whereHas('photographer', function ($q) {
-            $q->where('status', 'approved');
-        })
-        ->where('is_private', false)
-        ->select('id', 'name')
-        ->orderBy('name')
-        ->get();
-
-    return Inertia::render('Gallery/Index', [
-        'photos' => $mappedPhotos,  
-        'events' => $events,
-        'regions' => $regions,
-        'filters' => [
-            'search' => $request->search,
-            'region' => $request->region ?? 'all',
-            'event' => $request->event,
-            'sort' => $request->sort ?? 'recent',
-        ],
-    ]);
-}
     public function bibSearch(Request $request)
     {
         $request->validate([
@@ -252,12 +254,21 @@ public function gallery(Request $request)
             ->whereHas('photographer', function ($q) {
                 $q->where('status', 'approved');
             })
+
+            ->where(function ($q) {
+                $q->whereNull('event_id')
+                    ->orWhereHas('event', function ($eq) {
+                        $eq->where('is_private', false)
+                            ->where('is_active', true);
+                    });
+            })
             ->where('bib_processed', true)
             ->whereNotNull('bib_numbers')
             ->whereRaw('JSON_CONTAINS(bib_numbers, ?)', [json_encode($bibNumber)])
             ->with(['photographer.user', 'event'])
             ->get()
             ->map(function ($photo) {
+
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
@@ -306,6 +317,14 @@ public function gallery(Request $request)
             ->where('is_active', true)
             ->whereHas('photographer', function ($q) {
                 $q->where('status', 'approved');
+            })
+
+            ->where(function ($q) {
+                $q->whereNull('event_id')
+                    ->orWhereHas('event', function ($eq) {
+                        $eq->where('is_private', false)
+                            ->where('is_active', true);
+                    });
             })
             ->with(['photographer:id,slug,business_name', 'event:id,name,slug'])
             ->get();
@@ -597,8 +616,8 @@ public function gallery(Request $request)
             ],
         ])->withViewData([
             'meta_title' => "{$event->name} | F33 Fotografía",
-            'meta_description' => $event->description 
-                ? substr($event->description, 0, 150) . '...' 
+            'meta_description' => $event->description
+                ? substr($event->description, 0, 150).'...'
                 : "Galería de fotos del evento {$event->name}.",
             'meta_image' => $event->cover_image_url,
         ]);

@@ -777,7 +777,7 @@ const submitPhotos = () => {
                                         </button>
                                         <button type="button" @click="clearFiles"
                                             class="px-4 py-2 bg-red-50 text-[#E30613] rounded-full font-bold text-xs hover:bg-red-100 transition-colors">
-                                            Limpiar Todo
+                                            Limpiar todo
                                         </button>
                                     </div>
                                 </div>
