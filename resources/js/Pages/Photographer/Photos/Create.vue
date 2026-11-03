@@ -795,7 +795,7 @@ const submitPhotos = () => {
 
 
                                 <div
-                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar text-left content-start">
+                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4  overflow-y-auto pr-2 custom-scrollbar text-left content-start">
                                     <div v-for="(file, index) in selectedFiles" :key="index"
                                         class="relative group aspect-square bg-gray-100 rounded overflow-hidden border border-gray-200 hover:shadow-md transition-all">
 
