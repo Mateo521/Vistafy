@@ -321,11 +321,11 @@ const handleImageError = (e) => {
 
                                 <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
                                     :alt="`foto con marca de agua ${photo.unique_id} de ${event.name}`" loading="lazy"
-                                    class="h-full max-w-full object-cover rounded shadow-2xl relative z-10"
+                                    class="w-full h-full object-cover rounded shadow-2xl relative z-10"
                                     @error="handleImageError" />
 
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
+                                    class="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
 
                                     <div class="flex justify-between items-end w-full">
 
@@ -365,6 +365,8 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
                         </div>
+
+                        
                     </div>
                 </div>
 
