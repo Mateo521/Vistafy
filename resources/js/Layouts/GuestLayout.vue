@@ -18,9 +18,7 @@ import { Link } from '@inertiajs/vue3';
            
             <div class="flex justify-center mb-10">
                 <Link :href="route('home')" class="text-center group flex flex-col items-center gap-2">
-                    <div class="font-flux text-5xl md:text-6xl text-black flex items-center gap-1  transition-transform duration-300">
-                        f33<span class="w-3 h-3 rounded-full bg-[#E30613] block mb-2 shadow-sm shadow-red-500/30"></span>
-                    </div>
+                    <img src="/images/logo.png" alt="F33" class="h-16 md:h-20 w-auto object-contain transition-transform duration-300" />
                     <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-black transition-colors duration-300">
                         Acceso
                     </span>

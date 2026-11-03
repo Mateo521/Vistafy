@@ -36,7 +36,7 @@ const props = defineProps({
 
                 <section class="pb-16 px-4 md:px-8 max-w-[90rem] mx-auto">
                     <div
-                        class="relative w-full h-[75vh] rounded-3xl overflow-hidden shadow-2xl shadow-red-900/10 flex items-end bg-white">
+                        class="relative w-full h-[75vh] rounded overflow-hidden shadow-2xl shadow-red-900/10 flex items-end bg-white">
 
 
                         <div class="absolute inset-0 w-full h-full z-0">
@@ -119,7 +119,7 @@ const props = defineProps({
                     </div>
 
 
-                    <div v-else class="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
+                    <div v-else class="text-center py-20 bg-white rounded shadow-sm border border-slate-100">
                         <p class="font-lato font-bold text-slate-400 uppercase tracking-widest">Aún no hay eventos
                             registrados.</p>
                     </div>

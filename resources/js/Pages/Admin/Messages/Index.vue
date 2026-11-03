@@ -88,7 +88,7 @@ const formatDate = (date) => {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     
                     
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div class="bg-white rounded p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Total recepciones</p>
@@ -101,7 +101,7 @@ const formatDate = (date) => {
                     </div>
 
                     
-                    <div class="bg-red-50 rounded-3xl p-6 border border-red-100 shadow-sm relative overflow-hidden group">
+                    <div class="bg-red-50 rounded p-6 border border-red-100 shadow-sm relative overflow-hidden group">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-1">Requieren atención</p>
@@ -114,7 +114,7 @@ const formatDate = (date) => {
                     </div>
 
                     
-                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
+                    <div class="bg-white rounded p-6 border border-gray-100 shadow-sm relative overflow-hidden group">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Procesados</p>
@@ -128,7 +128,7 @@ const formatDate = (date) => {
                 </div>
 
             
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 mb-8">
+                <div class="bg-white rounded border border-gray-100 shadow-sm p-6 mb-8">
                     <form @submit.prevent="search" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             
@@ -177,7 +177,7 @@ const formatDate = (date) => {
                 </div>
 
              
-                <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-12">
+                <div class="bg-white rounded border border-gray-100 shadow-sm overflow-hidden mb-12">
                     
                     
                     <div v-if="messages.data.length === 0" class="py-24 text-center px-4">

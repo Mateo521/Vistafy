@@ -64,7 +64,7 @@ const handleImageError = (e) => {
                             <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Biblioteca</span>
                         </div>
                         <h1 class="text-5xl md:text-7xl font-flux text-black leading-none tracking-wide">
-                            Mis <span class="text-[#E30613]">Compras</span>
+                            Mis <span class="text-[#E30613]">compras</span>
                         </h1>
                         <p class="text-sm font-medium text-gray-500 mt-4 max-w-md">
                             Accedé a todos los activos digitales que compraste, listos para descargar en alta
@@ -75,7 +75,7 @@ const handleImageError = (e) => {
 
                     <div class="flex gap-4 self-start md:self-end">
                         <div
-                            class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm min-w-[130px] md:min-w-[160px]">
+                            class="bg-white rounded p-6 border border-gray-100 shadow-sm min-w-[130px] md:min-w-[160px]">
                             <div
                                 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1.5">
                                 <PhotoIcon class="w-4 h-4" /> Activos
@@ -84,7 +84,7 @@ const handleImageError = (e) => {
                         </div>
 
                         <div
-                            class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm min-w-[130px] md:min-w-[160px]">
+                            class="bg-white rounded p-6 border border-gray-100 shadow-sm min-w-[130px] md:min-w-[160px]">
                             <div
                                 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1.5">
                                 <ShoppingBagIcon class="w-4 h-4" /> Inversión
@@ -100,7 +100,7 @@ const handleImageError = (e) => {
 
 
                 <div v-if="purchases.length === 0"
-                    class="text-center py-24 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center">
+                    class="text-center py-24 bg-white rounded shadow-sm border border-gray-100 flex flex-col items-center">
                     <div
                         class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-gray-100 shadow-inner">
                         <ShoppingBagIcon class="w-10 h-10 text-gray-300" />
@@ -121,7 +121,7 @@ const handleImageError = (e) => {
 
                 <div v-else class="space-y-10">
                     <div v-for="purchase in purchases" :key="purchase.id"
-                        class="bg-white border border-gray-200 shadow-sm rounded-3xl overflow-hidden hover:shadow-md transition-shadow duration-300">
+                        class="bg-white border border-gray-200 shadow-sm rounded overflow-hidden hover:shadow-md transition-shadow duration-300">
 
 
                         <div class="bg-gray-50/80 px-6 md:px-8 py-5 border-b border-gray-200">
