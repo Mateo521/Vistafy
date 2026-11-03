@@ -7,9 +7,10 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import axios from 'axios';
 import { useToast } from '@/Composables/useToast';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, FreeMode } from 'swiper/modules';
+import { Navigation, Thumbs, Keyboard, FreeMode, Virtual } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
 import 'swiper/css/free-mode';
 
 
@@ -102,6 +103,28 @@ const selectedFile = ref(null);
 const previewUrl = ref(null);
 const errorMessage = ref('');
 const progressMessage = ref('CARGANDO MODELOS IA...');
+const swiperModules = [Navigation, Thumbs, Keyboard, FreeMode, Virtual];
+
+const isLightboxOpen = ref(false);
+const activeIndex = ref(0);
+const thumbsSwiper = ref(null);
+const lightboxPhotos = ref([]);
+
+const setThumbsSwiper = (swiper) => {
+    thumbsSwiper.value = swiper;
+};
+
+const openLightbox = (index, photosArray) => {
+    lightboxPhotos.value = photosArray;
+    activeIndex.value = index;
+    isLightboxOpen.value = true;
+};
+
+const closeLightbox = () => {
+    isLightboxOpen.value = false;
+    thumbsSwiper.value = null;
+};
+
 
 const showingBibResults = ref(false);
 const bibSearchResults = ref(null);
@@ -194,14 +217,23 @@ const performFaceSearch = async () => {
         const img = await faceapi.bufferToImage(selectedFile.value);
         progressMessage.value = 'EXTRAYENDO VECTORES...';
         const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-        if (!detection) { errorMessage.value = 'ROSTRO NO DETECTADO. ABORTANDO.'; isSearching.value = false; progressMessage.value = ''; return; }
+        
+        if (!detection) { 
+            errorMessage.value = 'ROSTRO NO DETECTADO. ABORTANDO.'; 
+            isSearching.value = false; 
+            progressMessage.value = ''; 
+            return; 
+        }
+        
         const descriptor = Array.from(detection.descriptor);
         progressMessage.value = 'BÚSQUEDA EN BASE DE DATOS...';
+        
         const response = await axios.post(route('gallery.face-search'), { face_descriptor: descriptor, threshold: 0.6 });
         if (response.data.success) {
-            clearFaceSearch();
-            bibSearchResults.value = response.data;
-            showingBibResults.value = true;
+            
+            clearBibSearch(); 
+            faceSearchResults.value = response.data;
+            showingFaceResults.value = true;
             allPhotos.value = [...response.data.results];
             gridKey.value = Date.now();
             nextUrl.value = null;
@@ -600,13 +632,13 @@ const totalResults = () => {
 
 
 
-                <div v-if="photos.data && photos.data.length > 0" class="max-w-[90rem] mx-auto px-4 md:px-8 pb-12">
+                <div v-if="allPhotos && allPhotos.length > 0" class="max-w-[90rem] mx-auto px-4 md:px-8 pb-12">
 
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
 
-                        <div v-for="(photo, index) in photos.data" :key="photo.id"
+                        <div v-for="(photo, index) in allPhotos" :key="photo.id"
                             class="mb-4 group/card relative bg-gray-100 rounded overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gray-200 aspect-[4/5]"
-                            @click="router.visit(route('gallery.show', { uniqueId: photo.unique_id || photo.id }))">
+                            @click="openLightbox(index, allPhotos)">
 
                             <ProtectedImage :src="fixImageCache(photo.thumbnail_url)" :alt="photo.unique_id"
                                 loading="lazy" decoding="async" class="w-full h-full object-cover pointer-events-none"
@@ -618,11 +650,11 @@ const totalResults = () => {
 
                             <div
                                 class="absolute bottom-3 left-3 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 z-10 flex items-center gap-2">
-                                <img :src="photo.photographer.profile_photo_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=50&q=80'"
+                                <img :src="photo.photographer?.profile_photo_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=50&q=80'"
                                     class="w-6 h-6 rounded-full border border-white/50 object-cover">
                                 <span
                                     class="text-white text-[10px] font-bold uppercase tracking-wider truncate max-w-[100px]">
-                                    {{ photo.photographer.name }}
+                                    {{ photo.photographer?.name || photo.photographer?.business_name || 'Fotógrafo' }}
                                 </span>
                             </div>
 
@@ -644,15 +676,14 @@ const totalResults = () => {
                     </div>
                 </div>
 
-                <div v-if="photos.data && photos.total > photos.data.length" class="mt-8 flex justify-center pb-12">
-                    <Link v-if="photos.next_page_url" :href="photos.next_page_url" preserve-scroll
-                        class="px-8 py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md hover:bg-[#E30613] transition-colors duration-300">
-                        Cargar más fotos
-                    </Link>
+                <div v-if="nextUrl" class="mt-8 flex justify-center pb-12">
+                    <button @click="loadMore" :disabled="loadingMore"
+                        class="px-8 py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md hover:bg-[#E30613] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {{ loadingMore ? 'Cargando...' : 'Cargar más fotos' }}
+                    </button>
                 </div>
 
-
-                <div v-else
+                <div v-else-if="!allPhotos || allPhotos.length === 0"
                     class="flex flex-col items-center justify-center py-24 px-4 text-center bg-white rounded shadow-sm border border-gray-100">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                         <MagnifyingGlassIcon class="w-8 h-8 text-gray-300" />
@@ -666,12 +697,116 @@ const totalResults = () => {
                     </button>
                 </div>
 
+
+
+
             </div>
         </div>
+        
+
+        <Teleport to="body">
+            <Transition name="fade">
+                <div v-if="isLightboxOpen" class="fixed inset-0 z-[99999] bg-slate-900/95 backdrop-blur-sm flex flex-col">
+                    
+                    
+                    <div class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
+                        <div class="text-white/50 text-xs font-bold uppercase px-4 pointer-events-auto">Vista previa</div>
+                        <button @click="closeLightbox" class="w-10 h-10 bg-white/10 hover:bg-[#E30613] text-white rounded-full flex items-center justify-center transition-colors pointer-events-auto backdrop-blur-md">
+                            <XMarkIcon class="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    
+                    <div class="relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
+                        <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true" :initialSlide="activeIndex" class="h-full thumbs-gallery">
+                            <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id" class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
+                                <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
+                            </swiper-slide>
+                        </swiper>
+                    </div>
+
+                    
+                    <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
+                        <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex" :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30" class="h-full w-full">
+                            <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id" :virtualIndex="index" class="flex items-center justify-center p-4">
+                                <div class="relative h-full w-full max-w-full flex items-center justify-center">
+                                    
+                                    
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center z-0">
+                                        <svg class="animate-spin w-10 h-10 text-white/20 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                        <span class="text-white/40 text-xs font-bold uppercase tracking-widest">Cargando alta calidad...</span>
+                                    </div>
+
+                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy" class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10" @error="handleImageError" />
+
+                                    
+                                    <div class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex flex-col md:flex-row justify-between gap-4 items-center border border-white z-20">
+                                        <div class="flex items-center gap-4 w-full md:w-auto justify-center md:justify-start">
+                                            <img :src="photo.photographer?.profile_photo_url || 'https://via.placeholder.com/50'" class="w-10 h-10 rounded-full object-cover">
+                                            <div>
+                                                <p class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
+                                                    Ref: {{ photo.unique_id }} 
+                                                    <span v-if="photo.event_name" class="ml-1 text-black font-normal">— {{ photo.event_name }}</span>
+                                                </p>
+                                                <p class="text-[#E30613] font-flux text-3xl leading-none">${{ photo.price }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 w-full md:w-auto">
+                                            <Link :href="route('gallery.show', { uniqueId: photo.unique_id || photo.id })" class="bg-gray-100 hover:bg-gray-200 text-black px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors flex-1 md:flex-none">
+                                                Ver Detalles
+                                            </Link>
+                                            <button @click.prevent.stop="addToCart(photo)" class="bg-black hover:bg-[#E30613] text-white px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-md flex-1 md:flex-none">
+                                                <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
+                                                <span v-else class="flex items-center gap-2"><ShoppingCartIcon class="w-4 h-4" /> Añadir</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </swiper-slide>
+                        </swiper>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
     </AppLayout>
 </template>
 
 <style scoped>
+
+.thumbs-gallery .swiper-slide-thumb-active {
+    opacity: 1 !important;
+    border: 2px solid white;
+}
+
+:deep(.swiper-button-next),
+:deep(.swiper-button-prev) {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 3rem;
+    padding: 10px;
+    height: 3rem;
+    margin: 0 10px;
+    border-radius: 50%;
+}
+
+:deep(.swiper-button-next:after),
+:deep(.swiper-button-prev:after) {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
 .masonry-grid {
     column-fill: balance;
 }
