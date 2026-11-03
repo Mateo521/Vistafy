@@ -118,7 +118,7 @@ class WebhookController extends Controller
         return null;
     }
 
-  private function processPurchasePayment(PurchasePayment $purchasePayment, $paymentId, array $paymentInfo)
+    private function processPurchasePayment(PurchasePayment $purchasePayment, $paymentId, array $paymentInfo)
     {
         $previousStatus = $purchasePayment->status;
         $newStatus = $this->mapMercadoPagoStatus($paymentInfo['status']);
@@ -139,11 +139,9 @@ class WebhookController extends Controller
             return response()->json(['status' => 'purchase_not_found'], 404);
         }
 
- 
         if ($isApproved && $previousStatus !== 'approved') {
             $this->completeApprovedPayment($purchasePayment, $purchase);
         }
-
 
         $this->syncPurchaseStatusFromPayments($purchase);
 
@@ -160,16 +158,26 @@ class WebhookController extends Controller
 
         if ($emailToSend) {
             try {
- 
+
+                $originalItems = $purchase->items;
+                $originalTotal = $purchase->total_amount;
+
+                $purchase->setRelation('items', $payment->items);
+                $purchase->total_amount = $payment->amount;
+
                 Notification::route('mail', $emailToSend)
                     ->notify(new PurchaseCompleted($purchase, $temporaryPassword, $payment));
+                
+
+                $purchase->setRelation('items', $originalItems);
+                $purchase->total_amount = $originalTotal;
+
                 Log::info('Notificación de éxito de bloque enviada a: '.$emailToSend);
             } catch (\Exception $e) {
                 Log::error('Error enviando notificación de bloque de compra', ['error' => $e->getMessage()]);
             }
         }
 
- 
         if ($payment->items && $payment->items->count() > 0) {
             foreach ($payment->items as $item) {
                 if ($item->photo) {
@@ -178,11 +186,15 @@ class WebhookController extends Controller
             }
         }
 
- 
+
         if ($purchase->user) {
             $cart = \App\Models\Cart::where('user_id', $purchase->user->id)->first();
             if ($cart) {
-                $cart->items()->delete();
+
+                $paidPhotoIds = $payment->items->pluck('photo_id')->toArray();
+                
+
+                $cart->items()->whereIn('photo_id', $paidPhotoIds)->delete();
             }
         }
     }
@@ -204,6 +216,7 @@ class WebhookController extends Controller
                 'mp_payment_id' => $lastPayment?->mp_payment_id,
                 'mp_payment_status' => 'approved',
             ]);
+
             return;
         }
 
@@ -212,6 +225,7 @@ class WebhookController extends Controller
             'mp_payment_status' => $hasFailed ? 'partial_failed' : 'pending',
         ]);
     }
+
     private function mapMercadoPagoStatus(?string $status): string
     {
         return match ($status) {
@@ -315,7 +329,7 @@ class WebhookController extends Controller
 
     private function sendSuccessEmail($purchase, $temporaryPassword = null)
     {
-        $email = $purchase->buyer_email; 
+        $email = $purchase->buyer_email;
 
         if ($email) {
             try {

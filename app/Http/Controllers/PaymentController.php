@@ -253,15 +253,17 @@ public function success(Request $request)
             return redirect()->route('home')->with('error', 'ID de compra inválido');
         }
 
-
-        $purchase = Purchase::with(['items.photo.event', 'items.photo.photographer', 'items.payment'])
+        $purchase = Purchase::with(['items.photo.event', 'items.photo.photographer', 'payments'])
             ->findOrFail($purchaseId);
+
+    
+        $hasPendingPayments = $purchase->payments->contains(fn($payment) => in_array($payment->status, ['pending', 'rejected', 'failed']));
 
         return Inertia::render('Payment/Success', [
             'purchase' => $purchase,
+            'has_pending_payments' => $hasPendingPayments,
         ]);
     }
-
     public function failure(Request $request)
     {
         $purchaseId = $request->query('purchase_id');
