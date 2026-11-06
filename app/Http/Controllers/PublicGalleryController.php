@@ -537,7 +537,7 @@ class PublicGalleryController extends Controller
         $activePhotographers = $photographersQuery->get();
 
         $galleries = $activePhotographers->map(function ($photographer) use ($event) {
-            
+
             $roles = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
@@ -547,18 +547,16 @@ class PublicGalleryController extends Controller
                 ->pluck('location_role')
                 ->toArray();
 
-            
             $totalPhotosCount = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
                 ->count();
 
-            
             $photos = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
                 ->latest()
-                ->take(50) 
+                ->take(50)
                 ->get()
                 ->map(function ($photo) {
                     return [
@@ -580,17 +578,10 @@ class PublicGalleryController extends Controller
                     'profile_photo_url' => $photographer->profile_photo_url,
                 ],
                 'roles' => $roles,
-                'photos_count' => $totalPhotosCount,  
-                'photos' => $photos,  
+                'photos_count' => $totalPhotosCount,
+                'photos' => $photos,
             ];
         });
-
-
-
-
-
-
-
 
         $filterPhotographers = Photographer::select('photographers.id', 'photographers.business_name')
             ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
@@ -600,6 +591,23 @@ class PublicGalleryController extends Controller
             ->selectRaw('COUNT(photos.id) as photos_count')
             ->groupBy('photographers.id', 'photographers.business_name')
             ->get();
+
+        $cartPhotoIds = [];
+        $purchasedPhotoIds = [];
+
+        if (auth()->check()) {
+            $userId = auth()->id();
+
+            $cart = \App\Models\Cart::where('user_id', $userId)->first();
+            if ($cart) {
+                $cartPhotoIds = $cart->items()->pluck('photo_id')->toArray();
+            }
+
+            $purchasedPhotoIds = \App\Models\PurchaseItem::whereHas('purchase', function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                    ->where('status', 'approved');
+            })->pluck('photo_id')->toArray();
+        }
 
         return Inertia::render('Events/Show', [
             'event' => [
@@ -628,6 +636,8 @@ class PublicGalleryController extends Controller
             'filters' => [
                 'photographer_id' => $request->photographer_id,
             ],
+            'cartPhotoIds' => $cartPhotoIds,
+            'purchasedPhotoIds' => $purchasedPhotoIds,
         ])->withViewData([
             'meta_title' => "{$event->name} | F33 Fotografía",
             'meta_description' => $event->description
