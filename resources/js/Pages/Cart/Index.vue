@@ -65,16 +65,16 @@ const removeItem = async (photoId) => {
 };
 
 const clearCart = async () => {
-    if (!confirm('¿CONFIRMAR PURGA TOTAL DE MEMORIA?')) return;
+    if (!confirm('¿CONFIRMAR VACIADO DE CARRITO?')) return;
     processing.value = true;
 
     try {
         await axios.delete(route('cart.clear'));
-        success('MEMORIA TEMPORAL PURGADA');
+        success('CARRITO VACIADO');
         router.reload({ only: ['items', 'total'] });
     } catch (err) {
         console.error('Error vaciando carrito:', err);
-        error('ERROR AL VACIAR BUFFER');
+        error('ERROR AL VACIAR CARRITO');
     } finally {
         processing.value = false;
     }
@@ -200,10 +200,10 @@ const handleImageError = (e) => {
                                         <span class="inline-block bg-gray-50 text-gray-500 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mb-3 border border-gray-100">
                                             ID: #{{ item.photo.unique_id }}
                                         </span>
-                                        <Link :href="route('gallery.show', item.photo.unique_id)"
+                                        <!--Link :href="route('gallery.show', item.photo.unique_id)"
                                             class="block font-flux text-3xl text-black leading-none hover:text-[#E30613] transition-colors line-clamp-2">
                                             {{ item.photo.title || 'Captura Fotográfica' }}
-                                        </Link>
+                                        </Link-->
                                     </div>
                                     <button @click="removeItem(item.photo_id)"
                                         :disabled="removingItems.has(item.photo_id)"
