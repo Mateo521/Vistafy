@@ -262,7 +262,7 @@ const navigationItems = [
                     <template v-if="!user">
                         <Link :href="route('login')" class="text-sm font-bold tracking-widest uppercase text-gray-600 hover:text-[#E30613]">Iniciar sesión</Link>
                         <Link :href="route('register')" class="text-sm font-bold tracking-widest uppercase bg-black text-white px-8 py-3 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all">Crear cuenta</Link>
-                    <Link :href="route('registro-fotografo')" class="text-sm font-bold tracking-widest uppercase bg-black text-white px-8 py-3 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all">Soy fotógrafo</Link>
+                    <Link href="/registro-fotografo" class="text-sm font-bold tracking-widest uppercase bg-black text-white px-8 py-3 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 transition-all">Soy fotógrafo</Link>
                     
                     </template>
 
