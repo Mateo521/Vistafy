@@ -19,9 +19,8 @@
                 
                     <tr>
                         <td style="padding: 40px 30px; text-align: center; border-bottom: 1px solid #f1f5f9; background-color: #ffffff;">
-                            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #E30613; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
-                                F33
-                            </div>
+                            <img src="{{ asset('images/logo.png') }}" alt="F33" style="height: 40px; width: auto; display: block; margin: 0 auto;">
+
                             <h1 style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0 0 15px 0; font-size: 32px; letter-spacing: -0.5px; font-weight: 800;">
                                 Compra completada
                             </h1>
