@@ -82,10 +82,7 @@ const handleImageError = (e) => {
                 </div>
 
                 <div class="relative z-10">
-                    <span
-                        class="text-[#E30613] font-bold tracking-widest uppercase text-sm mb-3 block flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#E30613]"></span> Todos los fotógrafos F33
-                    </span>
+                    
                     <h1 class="font-flux text-6xl md:text-8xl text-white leading-none tracking-wide">
                         Nuestro <span class="text-[#E30613]">staff.</span>
                     </h1>

@@ -537,7 +537,7 @@ class PublicGalleryController extends Controller
         $activePhotographers = $photographersQuery->get();
 
         $galleries = $activePhotographers->map(function ($photographer) use ($event) {
-
+            
             $roles = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
@@ -547,10 +547,18 @@ class PublicGalleryController extends Controller
                 ->pluck('location_role')
                 ->toArray();
 
+            
+            $totalPhotosCount = \App\Models\Photo::where('event_id', $event->id)
+                ->where('photographer_id', $photographer->id)
+                ->where('is_active', true)
+                ->count();
+
+            
             $photos = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
                 ->latest()
+                ->take(50) 
                 ->get()
                 ->map(function ($photo) {
                     return [
@@ -559,7 +567,6 @@ class PublicGalleryController extends Controller
                         'title' => $photo->title,
                         'price' => $photo->price,
                         'location_role' => $photo->location_role,
-
                         'thumbnail_url' => $photo->thumbnail_url,
                         'watermarked_url' => $photo->watermarked_url,
                     ];
@@ -573,10 +580,17 @@ class PublicGalleryController extends Controller
                     'profile_photo_url' => $photographer->profile_photo_url,
                 ],
                 'roles' => $roles,
-                'photos_count' => $photos->count(),
-                'photos' => $photos,
+                'photos_count' => $totalPhotosCount,  
+                'photos' => $photos,  
             ];
         });
+
+
+
+
+
+
+
 
         $filterPhotographers = Photographer::select('photographers.id', 'photographers.business_name')
             ->join('photos', 'photographers.id', '=', 'photos.photographer_id')
