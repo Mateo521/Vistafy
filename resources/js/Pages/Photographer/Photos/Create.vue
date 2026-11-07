@@ -137,6 +137,7 @@ const addFiles = async (files) => {
     isProcessing.value = true;
     
 
+    /*
     isScanningNSFW.value = true;
     processingStep.value = 'Escaneando contenido seguro...';
     processingProgress.value = 0;
@@ -154,6 +155,11 @@ const addFiles = async (files) => {
     isScanningNSFW.value = false;
     if (blockedCount > 0) error(`Se bloquearon ${blockedCount} fotografía(s) inapropiadas.`);
     if (safeFiles.length === 0) { isProcessing.value = false; return; }
+    */
+
+
+    const safeFiles = filesToProcess;
+
 
 
     processingStep.value = 'Comprimiendo imágenes...';
@@ -177,7 +183,6 @@ const addFiles = async (files) => {
     processingProgress.value = 100;
     setTimeout(() => { isProcessing.value = false; }, 1000);
 };
-
 watch(() => form.event_id, () => { form.location_role = ''; isTypingCustomRole.value = false; });
 watch(() => form.location_role, (newValue) => { if (newValue === 'custom') { isTypingCustomRole.value = true; form.location_role = ''; } });
 
