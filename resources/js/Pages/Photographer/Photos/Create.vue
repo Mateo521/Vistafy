@@ -266,7 +266,7 @@ const submitPhotos = async () => {
                             Subida de <span class="text-[#E30613]">fotos</span>
                         </h1>
                         <p class="text-sm font-bold text-gray-500 mt-2 flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Sistema de subida ultrarrápido
+                            <span class="w-2 h-2 rounded-full bg-[#E30613] animate-pulse"></span> Sis. de subida
                         </p>
                     </div>
                 </div>
