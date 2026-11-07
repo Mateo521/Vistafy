@@ -104,15 +104,18 @@ class PhotoController extends Controller
 
     public function store(Request $request)
     {
-
         if (! auth()->user()->photographer) {
             \Log::error(' Usuario no tiene perfil de fotógrafo');
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'No tenés un perfil de fotógrafo activo'], 403);
+            }
 
             return redirect()->back()->with('error', 'No tenés un perfil de fotógrafo activo');
         }
 
         $request->validate([
-            'photos' => 'required|array|min:1|max:150', 
+            'photos' => 'required|array|min:1|max:150',
             'photos.*' => 'required|image|mimes:jpeg,jpg,png|max:10240',
             'event_id' => 'nullable|exists:events,id',
             'price' => 'nullable|numeric|min:0.01|max:999999.99',
@@ -136,6 +139,10 @@ class PhotoController extends Controller
 
                 if (! $isOwner && ! $isApprovedCollaborator) {
                     \Log::error('Intento de subida denegado: Evento no pertenece al fotógrafo ni es colaborador.');
+
+                    if ($request->wantsJson() || $request->ajax()) {
+                        return response()->json(['success' => false, 'message' => 'No tenés permiso para subir fotos a este evento'], 403);
+                    }
 
                     return response()->json(['error' => 'No tenés permiso para subir fotos a este evento'], 403);
                 }
@@ -179,7 +186,6 @@ class PhotoController extends Controller
                         'size' => $fileSize,
                     ]);
 
-                    
                     $isDuplicate = \App\Models\Photo::where('photographer_id', $photographer->id)
                         ->where('event_id', $request->event_id)
                         ->where('original_name', $originalName)
@@ -190,9 +196,8 @@ class PhotoController extends Controller
                         \Log::info("FOTO DUPLICADA OMITIDA: {$originalName}");
                         $errors[] = "La foto {$originalName} ya fue subida anteriormente a este evento.";
 
-                        continue;  
+                        continue;
                     }
-                    // ==========================================
 
                     $processed = $this->imageService->processPhoto($file, $photographer->id);
 
@@ -293,8 +298,8 @@ class PhotoController extends Controller
                 'event_id' => $request->event_id,
                 'photos_with_faces' => $photosWithFaces,
                 'total_faces' => $totalFaces,
-                'photos_with_bibs' => $photosWithBibs, //
-                'total_bibs' => $totalBibs, //
+                'photos_with_bibs' => $photosWithBibs,
+                'total_bibs' => $totalBibs,
             ]);
 
             $message = count($uploadedPhotos).' foto(s) subida(s) exitosamente';
@@ -313,6 +318,19 @@ class PhotoController extends Controller
 
             if (count($errors) > 0) {
                 $message .= '. '.count($errors).' foto(s) fallaron.';
+            }
+
+            if ($request->wantsJson() || $request->ajax()) {
+                if (count($errors) > 0 && count($uploadedPhotos) === 0) {
+                    return response()->json(['success' => false, 'message' => 'Fallo la subida', 'errors' => $errors], 422);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'uploaded_count' => count($uploadedPhotos),
+                    'errors' => $errors,
+                ]);
             }
 
             if ($request->event_id) {
@@ -334,7 +352,15 @@ class PhotoController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->back()->with('error', 'Error al subir fotos: '.$e->getMessage());
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error crítico en el servidor al subir la foto',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Error en el servidor al cargar las fotos.');
         }
     }
 

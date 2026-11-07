@@ -489,66 +489,86 @@ const handleBackspace = (index, event) => {
 };
 
 
-const submitPhotos = () => {
+
+const uploadStats = ref({
+    success: 0,
+    failed: 0,
+    total: 0
+});
+const isUploadingChunk = ref(false);
+
+const submitPhotos = async () => {
     if (selectedFiles.value.length === 0) return error('Seleccione al menos una foto.');
     if (!form.price || form.price <= 0) return error('Establezca un precio válido.');
 
     uploading.value = true;
+    uploadStats.value = { success: 0, failed: 0, total: selectedFiles.value.length };
+    
+
     uploadProgress.value = { current: 0, total: selectedFiles.value.length, percentage: 0 };
 
-    const facesData = selectedFiles.value.map((_, index) => {
-        const faceResult = faceDetectionResults.value[index];
-        return {
-            index: index,
-            count: faceResult ? faceResult.count : 0,
-            descriptors: faceResult ? faceResult.descriptors : [],
-            boxes: faceResult ? faceResult.boxes : [],
-        };
-    });
 
-    const bibsData = selectedFiles.value.map((_, index) => {
-        const bibResult = bibDetectionResults.value[index];
-        return {
-            index: index,
-            numbers: bibResult ? bibResult.numbers : [],
-            raw_text: bibResult ? bibResult.raw_text : '',
-        };
-    });
+    for (let i = 0; i < selectedFiles.value.length; i++) {
+        const item = selectedFiles.value[i];
+        isUploadingChunk.value = true;
+        
+        try {
+            const formData = new FormData();
+            formData.append('photos[0]', item.file); 
+            formData.append('price', form.price);
+            formData.append('is_active', form.is_active ? 1 : 0);
+            
+            if (form.event_id) formData.append('event_id', form.event_id);
+            if (form.location_role) formData.append('location_role', form.location_role);
 
-    const formData = new FormData();
 
-    selectedFiles.value.forEach((item, index) => {
-        formData.append(`photos[${index}]`, item.file);
-    });
+            const faceResult = faceDetectionResults.value[i];
+            const bibResult = bibDetectionResults.value[i];
+            
+            formData.append('face_data', JSON.stringify({
+                faces: [{
+                    index: 0,
+                    count: faceResult ? faceResult.count : 0,
+                    descriptors: faceResult ? faceResult.descriptors : [],
+                    boxes: faceResult ? faceResult.boxes : []
+                }],
+                bibs: [{
+                    index: 0,
+                    numbers: bibResult ? bibResult.numbers : [],
+                    raw_text: bibResult ? bibResult.raw_text : ''
+                }]
+            }));
 
-    formData.append('price', form.price);
-    formData.append('is_active', form.is_active ? 1 : 0);
-    if (form.event_id) formData.append('event_id', form.event_id);
 
-    if (form.location_role) formData.append('location_role', form.location_role);
+            await axios.post(route('photographer.photos.store'), formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
 
-    formData.append('face_data', JSON.stringify({
-        faces: facesData,
-        bibs: bibsData
-    }));
+            uploadStats.value.success++;
+        } catch (err) {
+            console.error(`Error subiendo foto ${i}:`, err);
+            uploadStats.value.failed++;
+        }
 
-    router.post(route('photographer.photos.store'), formData, {
-        forceFormData: true,
-        preserveScroll: true,
-        onProgress: (progress) => {
-            uploadProgress.value.percentage = Math.round(progress.percentage);
-        },
-        onSuccess: () => {
-            uploading.value = false;
-            clearFiles();
-            success('Material cargado exitosamente.');
-        },
-        onError: (err) => {
-            uploading.value = false;
-            console.error(' Error en carga:', err);
-            error('Hubo un error en la carga.');
-        },
-    });
+
+        uploadProgress.value.current = i + 1;
+        uploadProgress.value.percentage = Math.round(((i + 1) / selectedFiles.value.length) * 100);
+    }
+
+    uploading.value = false;
+    isUploadingChunk.value = false;
+    
+
+    if (uploadStats.value.failed === 0) {
+        success('Todas las fotos cargadas exitosamente.');
+        clearFiles();
+
+        router.visit(route('photographer.photos.index'));
+    } else {
+        error(`Se subieron ${uploadStats.value.success} fotos. Hubo ${uploadStats.value.failed} errores.`);
+
+        selectedFiles.value = selectedFiles.value.filter((_, idx) => idx >= uploadStats.value.success);
+    }
 };
 </script>
 <template>
