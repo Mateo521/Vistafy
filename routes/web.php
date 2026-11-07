@@ -347,6 +347,11 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::put('/fotos/{photo}', [PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/fotos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
 
+
+    Route::post('/fotos/bulk-destroy', [PhotoController::class, 'bulkDestroy'])->name('photos.bulk-destroy');
+Route::post('/fotos/bulk-price', [PhotoController::class, 'bulkUpdatePrice'])->name('photos.bulk-price');
+
+
     Route::get('/eventos', [EventController::class, 'index'])->name('events.index');
     Route::get('/eventos/crear', [EventController::class, 'create'])->name('events.create');
     Route::post('/eventos', [EventController::class, 'store'])->name('events.store');

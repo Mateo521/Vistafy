@@ -276,8 +276,7 @@ const paginationPages = computed(() => {
                             <button @click="copyEventUrl"
                                 class="mt-6 w-full border-2 transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
                                 :class="event.is_private ? 'bg-red-50 border-red-200 hover:border-[#E30613] text-[#E30613] hover:text-[#E30613]' : 'bg-white border-gray-200 hover:border-black text-gray-600 hover:text-black'">
-                                <LinkIcon class="w-4 h-4" /> {{ event.is_private ? 'Copiar enlace privado' : 'Copiar
-                                enlace público' }}
+                                <LinkIcon class="w-4 h-4" /> {{ event.is_private ? 'Copiar enlace privado' : 'Copiar enlace público' }}
                             </button>
                             <button v-if="event.is_private" @click="showQrModal = true"
                                 class="mt-3 w-full bg-black border border-black hover:bg-gray-800 text-white transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm">
