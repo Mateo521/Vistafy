@@ -47,7 +47,8 @@ const form = useForm({
     event_id: null,
     location_role: '',
     is_active: true,
-    read_bibs: true,
+    read_faces: false,
+    read_bibs: false,
     face_data: null,
 });
 const { success, error } = useToast();
@@ -317,13 +318,19 @@ const clearFiles = () => {
 
 const runAIDetection = async () => {
 
-    processingStep.value = 'Detectando rostros en las imágenes...';
-    processingProgress.value = 0;
-    processingFaces.value = true;
+    if (form.read_faces) {
+        processingStep.value = 'Detectando rostros en las imágenes...';
+        processingProgress.value = 0;
+        processingFaces.value = true;
 
-    await detectFacesInImages();
+        await detectFacesInImages();
 
-    processingFaces.value = false;
+        processingFaces.value = false;
+    } else {
+
+        faceDetectionResults.value = selectedFiles.value.map((_, i) => ({ index: i, count: 0, descriptors: [], boxes: [] }));
+    }
+
 
     if (form.read_bibs) {
         processingStep.value = 'Leyendo números de dorsal (OCR)...';
@@ -334,10 +341,10 @@ const runAIDetection = async () => {
 
         processingBibs.value = false;
     } else {
+
         bibDetectionResults.value = selectedFiles.value.map((_, i) => ({ index: i, numbers: [], raw_text: '' }));
     }
 };
-
 const detectFacesInImages = async () => {
     faceDetectionResults.value = [];
 
@@ -503,7 +510,7 @@ const submitPhotos = async () => {
 
     uploading.value = true;
     uploadStats.value = { success: 0, failed: 0, total: selectedFiles.value.length };
-    
+
 
     uploadProgress.value = { current: 0, total: selectedFiles.value.length, percentage: 0 };
 
@@ -511,20 +518,20 @@ const submitPhotos = async () => {
     for (let i = 0; i < selectedFiles.value.length; i++) {
         const item = selectedFiles.value[i];
         isUploadingChunk.value = true;
-        
+
         try {
             const formData = new FormData();
-            formData.append('photos[0]', item.file); 
+            formData.append('photos[0]', item.file);
             formData.append('price', form.price);
             formData.append('is_active', form.is_active ? 1 : 0);
-            
+
             if (form.event_id) formData.append('event_id', form.event_id);
             if (form.location_role) formData.append('location_role', form.location_role);
 
 
             const faceResult = faceDetectionResults.value[i];
             const bibResult = bibDetectionResults.value[i];
-            
+
             formData.append('face_data', JSON.stringify({
                 faces: [{
                     index: 0,
@@ -557,7 +564,7 @@ const submitPhotos = async () => {
 
     uploading.value = false;
     isUploadingChunk.value = false;
-    
+
 
     if (uploadStats.value.failed === 0) {
         success('Todas las fotos cargadas exitosamente.');
@@ -625,7 +632,7 @@ const submitPhotos = async () => {
                                             placeholder="0.00">
                                     </div>
                                     <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price
-                                    }}</p>
+                                        }}</p>
                                 </div>
 
 
@@ -691,7 +698,6 @@ const submitPhotos = async () => {
 
                                 <div class="space-y-6 pt-6 border-t border-gray-100">
 
-
                                     <label class="relative flex justify-between items-start cursor-pointer group">
                                         <div class="pr-4">
                                             <span
@@ -714,11 +720,33 @@ const submitPhotos = async () => {
                                     <label class="relative flex justify-between items-start cursor-pointer group">
                                         <div class="pr-4">
                                             <span
-                                                class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">
-                                                Leer dorsales (OCR)
+                                                class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors flex items-center gap-2">
+                                                Escanear rostros (IA)
+                                                <span
+                                                    class="bg-yellow-100 text-yellow-700 text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wider">Lento</span>
                                             </span>
                                             <span class="block text-xs text-gray-400 mt-1">
-                                                Identificación automática de números
+                                                Desactivar en celulares o tablets.
+                                            </span>
+                                        </div>
+                                        <div class="relative inline-flex items-center mt-1">
+                                            <input type="checkbox" v-model="form.read_faces" class="sr-only peer">
+                                            <div
+                                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black">
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <label class="relative flex justify-between items-start cursor-pointer group">
+                                        <div class="pr-4">
+                                            <span
+                                                class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors flex items-center gap-2">
+                                                Leer dorsales (OCR)
+                                                <span
+                                                    class="bg-yellow-100 text-yellow-700 text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wider">Lento</span>
+                                            </span>
+                                            <span class="block text-xs text-gray-400 mt-1">
+                                                Identificación automática de números.
                                             </span>
                                         </div>
                                         <div class="relative inline-flex items-center mt-1">
