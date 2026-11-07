@@ -248,24 +248,20 @@ class PhotoController extends Controller
                         'price' => $request->price ?? 5000,
                         'is_active' => $request->is_active ?? true,
 
-                        'face_encodings' => $faceEncodings,
-                        'has_faces' => $hasFaces,
-                        'faces_processed_at' => $hasFaces ? now() : null,
 
-                        'bib_numbers' => $bibNumbers,
-                        'bib_processed' => $hasBibs,
-                        'bib_processed_at' => $hasBibs ? now() : null,
+                        'face_encodings' => null,
+                        'has_faces' => false,
+                        'faces_processed_at' => null,
+                        'bib_numbers' => null,
+                        'bib_processed' => false,
+                        'bib_processed_at' => null,
                     ]);
 
-                    \Log::info(' Foto guardada en BD', [
-                        'photo_id' => $photo->id,
-                        'event_id' => $photo->event_id,
-                        'original_path' => $photo->original_path,
-                        'has_faces' => $photo->has_faces,
-                        'num_faces' => $photo->has_faces ? count($photo->face_encodings) : 0,
-                        'bib_numbers' => $photo->bib_numbers,
-                        'bib_processed' => $photo->bib_processed,
-                    ]);
+                    \Log::info("Foto guardada en BD. Enviando a cola de IA... ID: {$photo->id}");
+                    \App\Jobs\ProcessPhotoAI::dispatch($photo->id);
+
+
+                
 
                     $uploadedPhotos[] = $photo;
 
