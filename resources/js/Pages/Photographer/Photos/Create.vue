@@ -336,7 +336,7 @@ const submitPhotos = async () => {
                                 <div>
                                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">IA en Segundo Plano</h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        El reconocimiento facial y OCR ahora se ejecutan en nuestros servidores después de subir las fotos. Tu dispositivo no perderá rendimiento.
+                                        El reconocimiento facial y OCR se ejecutan en nuestros servidores después de subir las fotos.
                                     </p>
                                 </div>
                             </div>
