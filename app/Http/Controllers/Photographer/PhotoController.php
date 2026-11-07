@@ -248,7 +248,6 @@ class PhotoController extends Controller
                         'price' => $request->price ?? 5000,
                         'is_active' => $request->is_active ?? true,
 
-
                         'face_encodings' => null,
                         'has_faces' => false,
                         'faces_processed_at' => null,
@@ -259,9 +258,6 @@ class PhotoController extends Controller
 
                     \Log::info("Foto guardada en BD. Enviando a cola de IA... ID: {$photo->id}");
                     \App\Jobs\ProcessPhotoAI::dispatch($photo->id);
-
-
-                
 
                     $uploadedPhotos[] = $photo;
 
@@ -592,5 +588,40 @@ class PhotoController extends Controller
             'type' => 'success',
             'text' => count($request->photo_ids).' foto(s) asignada(s) al evento.',
         ]);
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+
+        $photos = Photo::whereIn('id', $request->ids)
+            ->where('photographer_id', auth()->id())
+            ->get();
+
+        foreach ($photos as $photo) {
+
+            \Storage::disk('b2')->delete([
+                $photo->original_path,
+                $photo->watermarked_path,
+                $photo->thumbnail_path,
+            ]);
+            $photo->delete();
+        }
+
+        return redirect()->back();
+    }
+
+    public function bulkUpdatePrice(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'price' => 'required|numeric|min:0.01',
+        ]);
+
+        Photo::whereIn('id', $request->ids)
+            ->where('photographer_id', auth()->id())
+            ->update(['price' => $request->price]);
+
+        return redirect()->back();
     }
 }
