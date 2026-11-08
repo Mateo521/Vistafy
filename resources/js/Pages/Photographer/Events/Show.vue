@@ -57,14 +57,17 @@ const selectAllOnPage = () => {
 };
 
 const bulkDelete = async () => {
-    const confirmed = await confirm({
-        title: 'Eliminar fotos seleccionadas',
-        message: `¿Estás seguro de eliminar ${selectedPhotos.value.length} fotografías permanentemente?`,
-        confirmText: 'Eliminar', cancelText: 'Cancelar', type: 'danger'
+    const confirmed = await confirm({ 
+        title: 'Eliminar fotos seleccionadas', 
+        message: `¿Estás seguro de eliminar ${selectedPhotos.value.length} fotografías permanentemente?`, 
+        confirmText: 'Eliminar', 
+        cancelText: 'Cancelar', 
+        type: 'danger' 
     });
-
+    
     if (confirmed) {
-        router.post(route('photos.bulk-destroy'), { ids: selectedPhotos.value }, {
+
+        router.post(route('photographer.photos.bulk-destroy'), { ids: selectedPhotos.value }, {
             preserveScroll: true,
             onSuccess: () => {
                 success(`${selectedPhotos.value.length} fotografías eliminadas`);
@@ -78,7 +81,8 @@ const bulkDelete = async () => {
 const submitBulkPrice = () => {
     if (!bulkPriceForm.price || bulkPriceForm.price <= 0) return error('Ingresá un precio válido');
     
-    router.post(route('photos.bulk-price'), {
+
+    router.post(route('photographer.photos.bulk-price'), {
         ids: selectedPhotos.value,
         price: bulkPriceForm.price
     }, {
@@ -92,7 +96,6 @@ const submitBulkPrice = () => {
         }
     });
 };
-
 const showInviteModal = ref(false);
 const inviteForm = useForm({ email: '' });
 const showQrModal = ref(false);
