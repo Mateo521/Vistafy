@@ -594,13 +594,15 @@ class PhotoController extends Controller
     {
         $request->validate(['ids' => 'required|array']);
 
+        $photographerId = auth()->user()->photographer->id ?? auth()->id();
+
         $photos = Photo::whereIn('id', $request->ids)
-            ->where('photographer_id', auth()->id())
+            ->where('photographer_id', $photographerId)
             ->get();
 
         foreach ($photos as $photo) {
 
-            \Storage::disk('b2')->delete([
+            \Illuminate\Support\Facades\Storage::disk('b2')->delete([
                 $photo->original_path,
                 $photo->watermarked_path,
                 $photo->thumbnail_path,
@@ -615,11 +617,13 @@ class PhotoController extends Controller
     {
         $request->validate([
             'ids' => 'required|array',
-            'price' => 'required|numeric|min:0.01',
+            'price' => 'required|numeric|min:0',
         ]);
 
+        $photographerId = auth()->user()->photographer->id ?? auth()->id();
+
         Photo::whereIn('id', $request->ids)
-            ->where('photographer_id', auth()->id())
+            ->where('photographer_id', $photographerId)
             ->update(['price' => $request->price]);
 
         return redirect()->back();

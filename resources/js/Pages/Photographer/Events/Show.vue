@@ -64,7 +64,7 @@ const bulkDelete = async () => {
     });
 
     if (confirmed) {
-        router.post(route('photographer.photos.bulk-destroy'), { ids: selectedPhotos.value }, {
+        router.post(route('photos.bulk-destroy'), { ids: selectedPhotos.value }, {
             preserveScroll: true,
             onSuccess: () => {
                 success(`${selectedPhotos.value.length} fotografías eliminadas`);
@@ -77,8 +77,10 @@ const bulkDelete = async () => {
 
 const submitBulkPrice = () => {
     if (!bulkPriceForm.price || bulkPriceForm.price <= 0) return error('Ingresá un precio válido');
-    router.post(route('photographer.photos.bulk-price'), {
-        ids: selectedPhotos.value, price: bulkPriceForm.price
+    
+    router.post(route('photos.bulk-price'), {
+        ids: selectedPhotos.value,
+        price: bulkPriceForm.price
     }, {
         preserveScroll: true,
         onSuccess: () => {
@@ -90,7 +92,6 @@ const submitBulkPrice = () => {
         }
     });
 };
-
 
 const showInviteModal = ref(false);
 const inviteForm = useForm({ email: '' });
@@ -270,7 +271,7 @@ const paginationPages = computed(() => {
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                             <button @click="copyEventUrl"
@@ -450,7 +451,7 @@ const paginationPages = computed(() => {
                                         <div class="flex flex-col items-end gap-1">
                                             <span
                                                 class="bg-white/90 backdrop-blur-sm text-black px-2 py-1 rounded text-[9px] font-bold tracking-wider">#{{
-                                                photo.unique_id }}</span>
+                                                    photo.unique_id }}</span>
 
                                             <span
                                                 class="bg-black/80 text-white px-1.5 py-0.5 rounded text-[8px] font-mono truncate max-w-[90%]"
@@ -505,7 +506,7 @@ const paginationPages = computed(() => {
                                     <template v-for="(page, index) in paginationPages" :key="index">
                                         <span v-if="page === photos.current_page"
                                             class="h-10 w-10 flex items-center justify-center text-xs font-bold bg-black text-white rounded-full shadow-md">{{
-                                            page }}</span>
+                                                page }}</span>
                                         <span v-else-if="page === '...'"
                                             class="h-10 w-10 flex items-center justify-center text-xs text-gray-400">...</span>
                                         <Link v-else :href="photos.path + '?page=' + page"
@@ -564,7 +565,7 @@ const paginationPages = computed(() => {
                 </div>
                 <div
                     class="relative bg-white rounded shadow-2xl max-w-sm w-full flex flex-col overflow-hidden z-10 p-6">
-                    <h3 class="font-bold text-xl text-black mb-2">Modificar Precio</h3>
+                    <h3 class="font-bold text-xl text-black mb-2">Modificar precio</h3>
                     <p class="text-xs text-gray-500 mb-6">Se actualizará el precio de las {{ selectedPhotos.length }}
                         fotografías seleccionadas.</p>
                     <div class="mb-6 relative">
@@ -619,7 +620,7 @@ const paginationPages = computed(() => {
                                     unassignedPhotos.length }})</span>
                                 <span v-if="selectedExistingPhotos.length > 0"
                                     class="text-xs font-bold text-[#E30613] bg-red-50 px-3 py-1 rounded-full">{{
-                                    selectedExistingPhotos.length }} seleccionadas</span>
+                                        selectedExistingPhotos.length }} seleccionadas</span>
                             </div>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                 <div v-for="photo in unassignedPhotos" :key="photo.id"
