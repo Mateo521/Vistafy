@@ -1,8 +1,10 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+
 import { ArrowRightIcon, PhotoIcon, CheckBadgeIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
 import Turnstile from '@/Components/Turnstile.vue';
+import { ref } from 'vue';
 const props = defineProps({
     regions: {
         type: Array,
