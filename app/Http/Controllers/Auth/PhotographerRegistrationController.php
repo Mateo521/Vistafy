@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Photographer;
+use App\Rules\Turnstile;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,9 +22,7 @@ use Inertia\Response;
 
 class PhotographerRegistrationController extends Controller
 {
-    /**
-     * Mostrar formulario de registro para fotógrafos
-     */
+    
     public function create(): Response
     {
         return Inertia::render('Auth/RegisterPhotographer', [
@@ -31,9 +30,7 @@ class PhotographerRegistrationController extends Controller
         ]);
     }
 
-    /**
-     * Procesar registro de fotógrafo
-     */
+   
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -45,9 +42,10 @@ class PhotographerRegistrationController extends Controller
             'phone' => 'required|string|max:20',
             'bio' => 'nullable|string|max:1000',
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
+            'turnstile_response' => ['required', new Turnstile()],
         ]);
 
-        // Crear usuario
+   
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -55,7 +53,7 @@ class PhotographerRegistrationController extends Controller
             'role' => 'photographer',
         ]);
 
-        // Subir foto de perfil si existe
+
         $profilePhotoPath = null;
         if ($request->hasFile('profile_photo')) {
             try {
@@ -81,7 +79,7 @@ class PhotographerRegistrationController extends Controller
             }
         }
 
-        // Crear perfil de fotógrafo (estado: pending)
+       
         Photographer::create([
             'user_id' => $user->id,
             'business_name' => $request->business_name,
@@ -90,12 +88,12 @@ class PhotographerRegistrationController extends Controller
             'phone' => $request->phone,
             'bio' => $request->bio,
             'profile_photo' => $profilePhotoPath,
-            'is_active' => false, //  Inactivo hasta aprobación
+            'is_active' => false, 
             'is_verified' => false,
-            'status' => 'pending', //  Pendiente de aprobación
+            'status' => 'pending', 
         ]);
 
-        // Enviar correo de "Cuenta en revisión"
+       
         Mail::to($user->email)->send(new \App\Mail\PhotographerRegisteredMail($user));
 
         event(new Registered($user));
@@ -106,9 +104,7 @@ class PhotographerRegistrationController extends Controller
         return redirect()->route('photographer.dashboard')->with('info', 'Tu cuenta está pendiente de aprobación por nuestro equipo.');
     }
 
-    /**
-     * Regiones disponibles
-     */
+   
     private function getRegions(): array
     {
         return [

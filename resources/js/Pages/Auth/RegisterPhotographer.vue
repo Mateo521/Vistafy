@@ -2,14 +2,14 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ArrowRightIcon, PhotoIcon, CheckBadgeIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
-
+import Turnstile from '@/Components/Turnstile.vue';
 const props = defineProps({
     regions: {
         type: Array,
         required: true,
     },
 });
-
+const turnstileToken = ref('');
 const form = useForm({
     name: '',
     email: '',
@@ -23,6 +23,7 @@ const form = useForm({
     instagram: '',
     facebook: '',
     profile_photo: null,
+    turnstile_response: '',
 });
 
 const handleFileUpload = (event) => {
@@ -30,6 +31,7 @@ const handleFileUpload = (event) => {
 };
 
 const submit = () => {
+    form.turnstile_response = turnstileToken.value;
     form.post(route('photographer.register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
         forceFormData: true,
@@ -317,8 +319,15 @@ const submit = () => {
                         </div>
 
 
+                        <div class="my-6">
+                            <Turnstile 
+                                site-key="0x4AAAAAAF4w8KPF8YCUPril" 
+                                v-model="turnstileToken" 
+                            />
+                        </div>
+
                         <div class="pt-4">
-                            <button type="submit" :disabled="form.processing"
+                            <button type="submit" :disabled="form.processing || !turnstileToken"
                                 class="w-full bg-black text-white font-bold text-sm uppercase tracking-widest py-5 rounded-full hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group">
                                 <span v-if="form.processing"
                                     class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
