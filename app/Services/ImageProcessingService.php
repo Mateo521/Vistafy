@@ -28,32 +28,30 @@ class ImageProcessingService
         $basePath = "photos/{$photographerId}/{$timestamp}";
 
         try {
-
             $image = $this->manager()->read($file);
             $width = $image->width();
             $height = $image->height();
 
+
             $originalFullPath = "{$basePath}/originals/{$uniqueId}_original.jpg";
             $encodedOriginal = $image->toJpeg(95);
 
-            if (! Storage::disk($this->disk)->put($originalFullPath, (string) $encodedOriginal)) {
-                throw new \Exception('Fallo al subir el archivo original');
+            if (! Storage::disk('b2_private')->put($originalFullPath, (string) $encodedOriginal)) {
+                throw new \Exception('Fallo al subir el archivo original al bucket privado');
             }
             unset($encodedOriginal);
 
+
             $watermarkedImage = clone $image;
-            
             $watermarkedImage->scaleDown(width: 1080, height: 1080);
-            
             $watermarkedImage = $this->addTiledWatermark($watermarkedImage, $photographerId);
-            
             $encodedWatermarked = $watermarkedImage->toJpeg(75);
 
             $watermarkedFullPath = "{$basePath}/watermarked/{$uniqueId}_watermarked.jpg";
             Storage::disk($this->disk)->put($watermarkedFullPath, (string) $encodedWatermarked);
-
             $watermarkedImage = null;
             unset($encodedWatermarked);
+
 
             $thumbnailImage = clone $image;
             $thumbnailImage->cover(400, 400);
@@ -62,7 +60,6 @@ class ImageProcessingService
 
             $thumbnailFullPath = "{$basePath}/thumbnails/{$uniqueId}_thumb.jpg";
             Storage::disk($this->disk)->put($thumbnailFullPath, (string) $encodedThumb);
-
             $image = null;
             $thumbnailImage = null;
             unset($encodedThumb);
@@ -187,16 +184,18 @@ class ImageProcessingService
         return $uniqueId;
     }
 
-    public function deletePhoto($photo)
+public function deletePhoto($photo)
     {
 
+        Storage::disk('b2_private')->delete($photo->original_path);
+
+
         Storage::disk($this->disk)->delete([
-            $photo->original_path,
             $photo->watermarked_path,
             $photo->thumbnail_path,
         ]);
 
-        \Log::info(' Archivos eliminados de Backblaze', ['id' => $photo->unique_id]);
+        \Log::info(' Archivos eliminados de Backblaze (Público y Privado)', ['id' => $photo->unique_id]);
     }
 
     public function updatePhoto($file, $photo)

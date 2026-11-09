@@ -64,10 +64,22 @@ return [
             'key' => env('BACKBLAZE_KEY_ID'),
             'secret' => env('BACKBLAZE_APPLICATION_KEY'),
             'region' => env('BACKBLAZE_REGION'),
-            'bucket' => env('BACKBLAZE_BUCKET'),
+            'bucket' => env('BACKBLAZE_BUCKET'), 
             'endpoint' => env('BACKBLAZE_ENDPOINT'),
             'use_path_style_endpoint' => true,
             'visibility' => 'public',  
+            'throw' => true,
+        ],
+
+        'b2_private' => [
+            'driver' => 's3',  
+            'key' => env('BACKBLAZE_KEY_ID'),
+            'secret' => env('BACKBLAZE_APPLICATION_KEY'),
+            'region' => env('BACKBLAZE_REGION'),
+            'bucket' => env('BACKBLAZE_PRIVATE_BUCKET'), // Apuntará al nuevo bucket privado
+            'endpoint' => env('BACKBLAZE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'private', // Bloquea el acceso público
             'throw' => true,
         ],
 

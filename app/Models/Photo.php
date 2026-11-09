@@ -51,7 +51,7 @@ class Photo extends Model
     }
 
     
-    public function getOriginalUrlAttribute()
+public function getOriginalUrlAttribute()
     {
         if (! $this->original_path) {
             return null;
@@ -62,9 +62,13 @@ class Photo extends Model
         }
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = \Illuminate\Support\Facades\Storage::disk('b2');
+        $disk = \Illuminate\Support\Facades\Storage::disk('b2_private');
 
-        return $disk->url($this->original_path);
+
+        return $disk->temporaryUrl(
+            $this->original_path, 
+            now()->addMinutes(60)
+        );
     }
 
     
