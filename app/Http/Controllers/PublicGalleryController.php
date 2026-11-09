@@ -299,7 +299,6 @@ class PublicGalleryController extends Controller
             'results' => $photos,
         ]);
     }
-
     public function faceSearch(Request $request)
     {
         
