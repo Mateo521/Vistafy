@@ -1,16 +1,12 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
 class Photo extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'photographer_id', 'event_id', 'unique_id', 'title', 'description',
         'location_role',
@@ -19,7 +15,6 @@ class Photo extends Model
         'downloads', 'views', 'face_encodings', 'has_faces', 'faces_processed_at',
         'bib_numbers', 'bib_processed', 'bib_processed_at',
     ];
-
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
@@ -30,7 +25,6 @@ class Photo extends Model
         'faces_processed_at' => 'datetime',
         'bib_processed_at' => 'datetime',
     ];
-
     protected $appends = [
         'thumbnail_url',
         'watermarked_url',
@@ -38,7 +32,6 @@ class Photo extends Model
         // 'view_url',
         // 'thumbnail_view_url',
     ];
-
     // Relaciones
     public function photographer()
     {
