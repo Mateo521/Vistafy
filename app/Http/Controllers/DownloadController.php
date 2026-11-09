@@ -22,7 +22,6 @@ class DownloadController extends Controller
         }
 
         if ($purchase->status !== 'approved') {
-
             return to_route('payment.pending', ['purchase_id' => $purchase->id]);
         }
 
@@ -33,27 +32,31 @@ class DownloadController extends Controller
         }
 
         $photo = $item->photo;
-
         $path = $photo->original_path;
 
         if (str_starts_with($path, 'http')) {
             Log::info(' Redirigiendo a imagen externa', ['url' => $path]);
-
             return redirect()->away($path);
         }
 
-        if (Storage::disk('public')->exists($path)) {
-            Log::info(' Iniciando descarga local', ['path' => $path]);
+       
+        if (Storage::disk('b2_private')->exists($path)) {
+            Log::info(' Iniciando descarga desde Backblaze privado', ['path' => $path]);
 
             $purchase->increment('download_count');
+            
+            $fileName = "f33_{$photo->unique_id}.jpg";
 
-            return Storage::disk('public')->download(
-                $path,
-                "f33_{$photo->unique_id}.jpg"
-            );
+        
+            return response()->streamDownload(function () use ($path) {
+                echo Storage::disk('b2_private')->get($path);
+            }, $fileName, [
+                'Content-Type' => 'image/jpeg',
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            ]);
         }
 
-        Log::error(' Archivo físico no encontrado en disco', ['path' => $path]);
+        Log::error(' Archivo físico no encontrado en B2 Privado', ['path' => $path]);
         abort(404, 'El archivo no existe en el servidor.');
     }
 

@@ -77,8 +77,9 @@ class PurchaseHistoryController extends Controller
 
         $photo = $item->photo;
 
-        if (! Storage::disk('b2')->exists($photo->original_path)) {
-            dd('ERROR 3: Todo en la base de datos está perfecto, pero el archivo de la foto original NO existe en el bucket de Backblaze B2. Ruta buscada: '.$photo->original_path);
+
+        if (! Storage::disk('b2_private')->exists($photo->original_path)) {
+            dd('ERROR 3: Todo en la base de datos está perfecto, pero el archivo de la foto original NO existe en el bucket privado de Backblaze B2. Ruta buscada: '.$photo->original_path);
         }
 
         $photo->increment('downloads');
@@ -86,8 +87,9 @@ class PurchaseHistoryController extends Controller
 
         $fileName = ($photo->title ?: 'foto-'.$photo->unique_id).'.jpg';
 
+
         return response()->streamDownload(function () use ($photo) {
-            echo Storage::disk('b2')->get($photo->original_path);
+            echo Storage::disk('b2_private')->get($photo->original_path);
         }, $fileName, [
             'Content-Type' => 'image/jpeg',
             'Content-Disposition' => 'attachment; filename="'.$fileName.'"',

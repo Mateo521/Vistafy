@@ -370,9 +370,8 @@ public function success(Request $request)
         ]);
     }
 
-    public function download(Request $request, $token)
+public function download(Request $request, $token)
     {
-
         $purchase = Purchase::with(['items.photo', 'items.payment'])->where('order_token', $token)->firstOrFail();
 
         $photoId = $request->query('photo_id');
@@ -383,7 +382,7 @@ public function success(Request $request)
         }
 
         $isApproved = $purchase->status === 'approved' ||
-                     ($item->payment && $item->payment->status === 'approved');
+                ($item->payment && $item->payment->status === 'approved');
 
         if (! $isApproved) {
             abort(403, 'El pago de esta foto aún no está aprobado.');
@@ -393,7 +392,8 @@ public function success(Request $request)
         $filePath = $photo->original_path;
 
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('b2');
+
+        $disk = Storage::disk('b2_private');
 
         if (! $disk->exists($filePath)) {
             abort(404, 'El archivo original no se encuentra disponible en la nube.');
@@ -407,7 +407,6 @@ public function success(Request $request)
 
         return redirect()->away($url);
     }
-
 
 
 
