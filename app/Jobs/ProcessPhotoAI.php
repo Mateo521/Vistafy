@@ -49,11 +49,11 @@ class ProcessPhotoAI implements ShouldQueue
 
             $photo->update([
                 'has_faces' => $hasFaces,
-                'face_encodings' => $hasFaces ? $result['faces']['descriptors'] : null,
+                'face_encodings' => $hasFaces ? json_encode($result['faces']['descriptors']) : null,
                 'faces_processed_at' => now(),
 
                 'bib_processed' => true,
-                'bib_numbers' => $hasBibs ? $result['bibs'] : null,
+                'bib_numbers' => $hasBibs ? json_encode($result['bibs']) : null,
                 'bib_processed_at' => now(),
             ]);
 
