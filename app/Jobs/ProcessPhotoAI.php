@@ -22,7 +22,6 @@ class ProcessPhotoAI implements ShouldQueue
     {
         $this->photoId = $photoId;
     }
-
     public function handle()
     {
         $photo = Photo::find($this->photoId);
@@ -50,14 +49,11 @@ class ProcessPhotoAI implements ShouldQueue
 
         if (! $result) {
             Log::error("Fallo crítico Python para foto {$this->photoId}. Detalle: ".$output);
-
             return;
         }
-
         if (isset($result['success']) && $result['success']) {
             $hasFaces = $result['faces']['count'] > 0;
             $hasBibs = count($result['bibs']) > 0;
-
             $photo->update([
             'has_faces' => $hasFaces,
             'face_encodings' => $hasFaces ? $result['faces']['descriptors'] : null,
