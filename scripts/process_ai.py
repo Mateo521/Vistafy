@@ -41,7 +41,7 @@ def process_image(image_url, do_faces, do_ocr):
             thresh = cv2.adaptiveThreshold(bfilter, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
 
-            text = pytesseract.image_to_string(thresh, config=r'--oem 3 --psm 11')
+            text = pytesseract.image_to_string(thresh, config=r'--oem 3 --psm 6')
 
 
             raw_matches = re.findall(r'\b\d{1,5}\b', text)
