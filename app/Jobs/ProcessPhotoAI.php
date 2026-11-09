@@ -59,14 +59,13 @@ class ProcessPhotoAI implements ShouldQueue
             $hasBibs = count($result['bibs']) > 0;
 
             $photo->update([
-                'has_faces' => $hasFaces,
-                'face_encodings' => $hasFaces ? json_encode($result['faces']['descriptors']) : null,
-                'faces_processed_at' => now(),
-
-                'bib_processed' => true,
-                'bib_numbers' => $hasBibs ? json_encode($result['bibs']) : null,
-                'bib_processed_at' => now(),
-            ]);
+            'has_faces' => $hasFaces,
+            'face_encodings' => $hasFaces ? $result['faces']['descriptors'] : null,
+            'faces_processed_at' => now(),
+            'bib_processed' => true,
+            'bib_numbers' => $hasBibs ? $result['bibs'] : null,
+            'bib_processed_at' => now(),
+        ]);
 
             Log::info("IA Ok para foto {$this->photoId}. Rostros: {$result['faces']['count']}");
         } else {
