@@ -41,6 +41,13 @@ def process_image(image_url, do_faces, do_ocr):
         if img_cv is None:
             return {"success": False, "error": "No se decodificó la imagen"}
 
+
+        max_width = 1200
+        h, w = img_cv.shape[:2]
+        if w > max_width:
+            factor = max_width / float(w)
+            img_cv = cv2.resize(img_cv, (max_width, int(h * factor)), interpolation=cv2.INTER_AREA)
+
         img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
 
         if do_faces:
