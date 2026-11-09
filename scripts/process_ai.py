@@ -30,25 +30,25 @@ def process_image(image_url, do_faces, do_ocr):
             result["faces"]["descriptors"] = [enc.tolist() for enc in encodings]
 
         if do_ocr:
-
+            # 1. Escala de grises y AUMENTO de tamaño
             gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
             gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
             
-
+            # 2. Suavizado
             blur = cv2.GaussianBlur(gray, (5, 5), 0)
             
-
+            # 3. Umbral de Otsu
             _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-
-            custom_config = r'--oem 3 --psm 11 -c tessedit_char_whitelist=0123456789'
+            # 4. CONFIGURACIÓN ESTRICTA: PSM 6 (Bloque uniforme) + Whitelist
+            custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789'
             text = pytesseract.image_to_string(thresh, config=custom_config)
 
-
-            raw_matches = re.findall(r'\b\d{2,5}\b', text)
+            # 5. Regex: Permitimos de 1 a 5 dígitos, pero PSM 6 evitará que se rompan los largos
+            raw_matches = re.findall(r'\b\d{1,5}\b', text)
             
-
-            ignore_list = ['2025', '2026', '2027', '00']
+            # Filtro de basura
+            ignore_list = ['0', '2025', '2026', '2027', '00']
             valid_numbers = [num for num in raw_matches if num not in ignore_list]
             
             result["bibs"] = list(set(valid_numbers))
