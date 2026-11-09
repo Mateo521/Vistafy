@@ -43,7 +43,12 @@ class EventFaceSearchController extends Controller
         $result = json_decode(trim($output), true);
 
         if (!$result || !isset($result['success']) || !$result['success']) {
-            return response()->json(['error' => 'No se detectó ningún rostro claro. Intentá con otra foto.'], 400);
+            return response()->json([
+                'error' => 'Falló la extracción del rostro.',
+                'debug_raw_output' => $output,  
+                'debug_command' => $command,   
+                'debug_json_error' => json_last_error_msg()  
+            ], 400);
         }
 
        
