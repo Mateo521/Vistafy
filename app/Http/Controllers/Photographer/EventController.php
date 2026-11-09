@@ -404,7 +404,7 @@ class EventController extends Controller
             ->where('bib_processed', true)
             ->whereNotNull('bib_numbers')
 
-            ->whereJsonContains('bib_numbers', $bibNumber) 
+            ->where('bib_numbers', 'LIKE', '%"' . $bibNumber . '"%')
             ->with(['photographer.user'])
             ->paginate(20)
             ->through(fn ($photo) => [
