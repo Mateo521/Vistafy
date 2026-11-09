@@ -9,9 +9,7 @@ use Inertia\Inertia;
 
 class EventFaceSearchController extends Controller
 {
-    /**
-     * Mostrar página de búsqueda facial
-     */
+    
     public function index(Event $event)  
     {
         return Inertia::render('Events/FaceSearch', [
@@ -19,21 +17,39 @@ class EventFaceSearchController extends Controller
         ]);
     }
 
-    /**
-     * Buscar fotos por descriptor facial
-     */
-    public function search(Request $request, Event $event)
+   
+   public function search(Request $request, Event $event)
     {
+        
         $request->validate([
-            'face_descriptor' => 'required|array|size:128',
-            'face_descriptor.*' => 'required|numeric',
-            'threshold' => 'nullable|numeric|min:0|max:1',
+            'selfie' => 'required|image|max:5120',
         ]);
 
-        $searchDescriptor = $request->face_descriptor;
         $threshold = $request->threshold ?? 0.6;
 
-        // Obtener fotos con rostros detectados
+        
+        $path = $request->file('selfie')->store('temp');
+        $fullPath = storage_path('app/' . $path);
+
+    
+        $scriptPath = base_path('scripts/extract_face.py');
+        $pythonBin = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
+        $command = escapeshellcmd("$pythonBin $scriptPath") . " " . escapeshellarg($fullPath);
+        $output = shell_exec($command);
+        
+    
+        \Illuminate\Support\Facades\Storage::delete($path);
+
+        $result = json_decode(trim($output), true);
+
+        if (!$result || !isset($result['success']) || !$result['success']) {
+            return response()->json(['error' => 'No se detectó ningún rostro claro. Intentá con otra foto.'], 400);
+        }
+
+       
+        $searchDescriptor = $result['descriptor'];
+
+       
         $photos = Photo::where('event_id', $event->id)
             ->where('has_faces', true)
             ->whereNotNull('face_encodings')
@@ -47,7 +63,7 @@ class EventFaceSearchController extends Controller
                 continue;
             }
 
-            // Comparar con cada rostro en la foto
+            
             foreach ($photo->face_encodings as $photoDescriptor) {
                 if (!is_array($photoDescriptor) || count($photoDescriptor) !== 128) {
                     continue;
@@ -70,7 +86,7 @@ class EventFaceSearchController extends Controller
             }
         }
 
-        // Ordenar por similitud
+      
         usort($results, fn($a, $b) => $a['distance'] <=> $b['distance']);
 
         return response()->json([
@@ -80,9 +96,7 @@ class EventFaceSearchController extends Controller
         ]);
     }
 
-    /**
-     * Calcular distancia euclidiana
-     */
+
     private function euclideanDistance(array $vec1, array $vec2): float
     {
         if (count($vec1) !== count($vec2)) {

@@ -303,14 +303,38 @@ class PublicGalleryController extends Controller
 
     public function faceSearch(Request $request)
     {
+        
         $request->validate([
-            'face_descriptor' => 'required|array|size:128',
-            'face_descriptor.*' => 'required|numeric',
+            'selfie' => 'required|image|max:5120',
             'threshold' => 'nullable|numeric|min:0|max:1',
         ]);
 
-        $searchDescriptor = $request->face_descriptor;
         $threshold = $request->threshold ?? 0.6;
+
+
+        $path = $request->file('selfie')->store('temp');
+        $fullPath = storage_path('app/' . $path);
+
+       
+        $scriptPath = base_path('scripts/extract_face.py');
+        $pythonBin = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
+        
+        $command = escapeshellcmd("$pythonBin $scriptPath") . " " . escapeshellarg($fullPath);
+        $output = shell_exec($command);
+        
+     
+        \Illuminate\Support\Facades\Storage::delete($path);
+
+        $result = json_decode(trim($output), true);
+
+        if (!$result || !isset($result['success']) || !$result['success']) {
+            return response()->json(['error' => 'No se detectó ningún rostro claro en la selfie. Intentá con otra foto.'], 400);
+        }
+
+       
+        $searchDescriptor = $result['descriptor'];
+
+     
 
         $photos = Photo::where('has_faces', true)
             ->whereNotNull('face_encodings')
@@ -318,7 +342,6 @@ class PublicGalleryController extends Controller
             ->whereHas('photographer', function ($q) {
                 $q->where('status', 'approved');
             })
-
             ->where(function ($q) {
                 $q->whereNull('event_id')
                     ->orWhereHas('event', function ($eq) {
