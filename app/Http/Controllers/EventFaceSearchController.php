@@ -9,52 +9,44 @@ use Inertia\Inertia;
 
 class EventFaceSearchController extends Controller
 {
-    
-    public function index(Event $event)  
+    public function index(Event $event)
     {
         return Inertia::render('Events/FaceSearch', [
             'event' => $event,
         ]);
     }
 
-   
-   public function search(Request $request, Event $event)
+    public function search(Request $request, Event $event)
     {
-        
+
         $request->validate([
             'selfie' => 'required|image|max:5120',
         ]);
 
         $threshold = $request->threshold ?? 0.6;
 
-        
         $path = $request->file('selfie')->store('temp');
-        $fullPath = storage_path('app/' . $path);
+        $fullPath = $request->file('selfie')->path();
 
-    
         $scriptPath = base_path('scripts/extract_face.py');
         $pythonBin = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
-        $command = escapeshellcmd("$pythonBin $scriptPath") . " " . escapeshellarg($fullPath);
+
+        $command = escapeshellcmd("$pythonBin $scriptPath").' '.escapeshellarg($fullPath);
         $output = shell_exec($command);
-        
-    
-        \Illuminate\Support\Facades\Storage::delete($path);
 
         $result = json_decode(trim($output), true);
 
-        if (!$result || !isset($result['success']) || !$result['success']) {
+        if (! $result || ! isset($result['success']) || ! $result['success']) {
             return response()->json([
                 'error' => 'Falló la extracción del rostro.',
-                'debug_raw_output' => $output,  
-                'debug_command' => $command,   
-                'debug_json_error' => json_last_error_msg()  
+                'debug_raw_output' => $output,
+                'debug_command' => $command,
+                'debug_json_error' => json_last_error_msg(),
             ], 400);
         }
 
-       
         $searchDescriptor = $result['descriptor'];
 
-       
         $photos = Photo::where('event_id', $event->id)
             ->where('has_faces', true)
             ->whereNotNull('face_encodings')
@@ -64,13 +56,12 @@ class EventFaceSearchController extends Controller
         $results = [];
 
         foreach ($photos as $photo) {
-            if (!$photo->face_encodings || !is_array($photo->face_encodings)) {
+            if (! $photo->face_encodings || ! is_array($photo->face_encodings)) {
                 continue;
             }
 
-            
             foreach ($photo->face_encodings as $photoDescriptor) {
-                if (!is_array($photoDescriptor) || count($photoDescriptor) !== 128) {
+                if (! is_array($photoDescriptor) || count($photoDescriptor) !== 128) {
                     continue;
                 }
 
@@ -91,8 +82,7 @@ class EventFaceSearchController extends Controller
             }
         }
 
-      
-        usort($results, fn($a, $b) => $a['distance'] <=> $b['distance']);
+        usort($results, fn ($a, $b) => $a['distance'] <=> $b['distance']);
 
         return response()->json([
             'success' => true,
@@ -100,7 +90,6 @@ class EventFaceSearchController extends Controller
             'results' => $results,
         ]);
     }
-
 
     private function euclideanDistance(array $vec1, array $vec2): float
     {
