@@ -20,7 +20,7 @@ def process_image(image_url, do_faces, do_ocr):
         img_cv = cv2.imdecode(arr, -1) 
         
         if img_cv is None:
-            return {"success": False, "error": "No se pudo decodificar la imagen"}
+            return {"success": False, "error": "No se decodificó la imagen"}
 
         img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
 
@@ -30,27 +30,33 @@ def process_image(image_url, do_faces, do_ocr):
             result["faces"]["descriptors"] = [enc.tolist() for enc in encodings]
 
         if do_ocr:
-            # 1. Escala de grises y AUMENTO de tamaño
-            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-            gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
             
-            # 2. Suavizado
-            blur = cv2.GaussianBlur(gray, (5, 5), 0)
+            b, g, r_channel = cv2.split(img_cv)
             
-            # 3. Umbral de Otsu
+        
+            enlarged = cv2.resize(r_channel, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+            
+     
+            blur = cv2.GaussianBlur(enlarged, (5, 5), 0)
             _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-            # 4. CONFIGURACIÓN ESTRICTA: PSM 6 (Bloque uniforme) + Whitelist
-            custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789'
-            text = pytesseract.image_to_string(thresh, config=custom_config)
 
-            # 5. Regex: Permitimos de 1 a 5 dígitos, pero PSM 6 evitará que se rompan los largos
-            raw_matches = re.findall(r'\b\d{1,5}\b', text)
+            custom_config = r'--oem 3 --psm 11 -c tessedit_char_whitelist=0123456789'
+            data = pytesseract.image_to_data(thresh, output_type=pytesseract.Output.DICT, config=custom_config)
+
+            valid_numbers = []
             
-            # Filtro de basura
-            ignore_list = ['0', '2025', '2026', '2027', '00']
-            valid_numbers = [num for num in raw_matches if num not in ignore_list]
-            
+
+            for i in range(len(data['text'])):
+                confianza = int(data['conf'][i])
+                texto = data['text'][i].strip()
+                
+
+                if confianza > 70 and re.fullmatch(r'\d{2,5}', texto):
+
+                    if texto not in ['2025', '2026', '2027', '00']:
+                        valid_numbers.append(texto)
+
             result["bibs"] = list(set(valid_numbers))
 
         return result
