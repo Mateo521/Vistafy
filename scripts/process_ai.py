@@ -15,39 +15,42 @@ def process_image(image_url, do_faces, do_ocr):
     }
 
     try:
-
         req = urllib.request.urlopen(image_url)
         arr = np.asarray(bytearray(req.read()), dtype=np.uint8)
-        img_cv = cv2.imdecode(arr, -1)  
+        img_cv = cv2.imdecode(arr, -1) 
         
         if img_cv is None:
-            return {"success": False, "error": "No se pudo decodificar la imagen de la URL"}
-
+            return {"success": False, "error": "No se pudo decodificar la imagen"}
 
         img_rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
-
 
         if do_faces:
             encodings = face_recognition.face_encodings(img_rgb)
             result["faces"]["count"] = len(encodings)
             result["faces"]["descriptors"] = [enc.tolist() for enc in encodings]
 
-
         if do_ocr:
 
             gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-            adjusted = cv2.convertScaleAbs(gray, alpha=1.5, beta=0)
-            bfilter = cv2.bilateralFilter(adjusted, 11, 17, 17)
-            thresh = cv2.adaptiveThreshold(bfilter, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-
-
-            text = pytesseract.image_to_string(thresh, config=r'--oem 3 --psm 6')
-
-
-            raw_matches = re.findall(r'\b\d{1,5}\b', text)
-            valid_numbers = [num for num in raw_matches if num not in ['0', '2025', '2026', '2027']]
+            gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
             
 
+            blur = cv2.GaussianBlur(gray, (5, 5), 0)
+            
+
+            _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+
+            custom_config = r'--oem 3 --psm 11 -c tessedit_char_whitelist=0123456789'
+            text = pytesseract.image_to_string(thresh, config=custom_config)
+
+
+            raw_matches = re.findall(r'\b\d{2,5}\b', text)
+            
+
+            ignore_list = ['2025', '2026', '2027', '00']
+            valid_numbers = [num for num in raw_matches if num not in ignore_list]
+            
             result["bibs"] = list(set(valid_numbers))
 
         return result
@@ -57,7 +60,7 @@ def process_image(image_url, do_faces, do_ocr):
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        print(json.dumps({"success": False, "error": "Faltan argumentos: URL, flag_faces, flag_ocr"}))
+        print(json.dumps({"success": False, "error": "Faltan argumentos"}))
         sys.exit(1)
         
     image_url = sys.argv[1]
