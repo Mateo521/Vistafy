@@ -268,7 +268,6 @@ class PublicGalleryController extends Controller
             ->with(['photographer.user', 'event'])
             ->get()
             ->map(function ($photo) {
-
                 return [
                     'id' => $photo->id,
                     'unique_id' => $photo->unique_id,
