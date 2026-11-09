@@ -4,8 +4,11 @@ import urllib.request
 import numpy as np
 import cv2
 import face_recognition
-import pytesseract
+import easyocr
 import re
+
+
+reader = easyocr.Reader(['en'], gpu=False, verbose=False)
 
 def process_image(image_url, do_faces, do_ocr):
     result = {
@@ -30,32 +33,19 @@ def process_image(image_url, do_faces, do_ocr):
             result["faces"]["descriptors"] = [enc.tolist() for enc in encodings]
 
         if do_ocr:
-            
-            b, g, r_channel = cv2.split(img_cv)
-            
-        
-            enlarged = cv2.resize(r_channel, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-            
-     
-            blur = cv2.GaussianBlur(enlarged, (5, 5), 0)
-            _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-
-            custom_config = r'--oem 3 --psm 11 -c tessedit_char_whitelist=0123456789'
-            data = pytesseract.image_to_data(thresh, output_type=pytesseract.Output.DICT, config=custom_config)
-
+            ocr_results = reader.readtext(img_rgb)
+            
             valid_numbers = []
             
+            for (bbox, text, prob) in ocr_results:
 
-            for i in range(len(data['text'])):
-                confianza = int(data['conf'][i])
-                texto = data['text'][i].strip()
+                cleaned_text = re.sub(r'\D', '', text)
                 
 
-                if confianza > 70 and re.fullmatch(r'\d{2,5}', texto):
-
-                    if texto not in ['2025', '2026', '2027', '00']:
-                        valid_numbers.append(texto)
+                if prob > 0.45 and 2 <= len(cleaned_text) <= 5:
+                    if cleaned_text not in ['2025', '2026', '2027', '00', '50']:
+                        valid_numbers.append(cleaned_text)
 
             result["bibs"] = list(set(valid_numbers))
 
