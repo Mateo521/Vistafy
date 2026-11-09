@@ -264,7 +264,7 @@ class PublicGalleryController extends Controller
             })
             ->where('bib_processed', true)
             ->whereNotNull('bib_numbers')
-            ->whereRaw('JSON_CONTAINS(bib_numbers, ?)', [json_encode($bibNumber)])
+            ->whereJsonContains('bib_numbers', $bibNumber)
             ->with(['photographer.user', 'event'])
             ->get()
             ->map(function ($photo) {
