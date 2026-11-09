@@ -15,52 +15,49 @@ use Inertia\Inertia;
 
 class EventController extends Controller
 {
+    public function inviteColleague(Request $request, Event $event)
+    {
+        if ($event->photographer_id !== auth()->user()->photographer->id) {
+            return redirect()->back()->withErrors(['email' => 'Solo el creador puede invitar colaboradores.']);
+        }
 
-public function inviteColleague(Request $request, Event $event)
-{
-    if ($event->photographer_id !== auth()->user()->photographer->id) {
-        return redirect()->back()->withErrors(['email' => 'Solo el creador puede invitar colaboradores.']);
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $invitedUser = User::where('email', $request->email)
+            ->whereHas('photographer', function ($q) {
+                $q->where('status', 'approved');
+            })->first();
+
+        if (! $invitedUser) {
+            return redirect()->back()->withErrors(['email' => 'No se encontró un fotógrafo aprobado con este correo en f33.']);
+        }
+
+        $invitedPhotographer = $invitedUser->photographer;
+
+        if ($invitedPhotographer->id === $event->photographer_id) {
+            return redirect()->back()->withErrors(['email' => 'Ya sos el creador de este evento.']);
+        }
+
+        if ($event->collaborators()->where('photographer_id', $invitedPhotographer->id)->exists()) {
+            return redirect()->back()->withErrors(['email' => 'Este fotógrafo ya forma parte del evento o fue invitado.']);
+        }
+
+        $event->collaborators()->attach($invitedPhotographer->id, ['status' => 'invited']);
+
+        $inviter = auth()->user()->photographer;
+
+        try {
+            Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $inviter));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando invitación por Brevo: '.$e->getMessage());
+
+            return redirect()->back()->with('success', 'El fotógrafo fue invitado, pero el correo de aviso no se pudo enviar.');
+        }
+
+        return redirect()->back()->with('success', 'Invitación enviada por correo.');
     }
-
-    $request->validate([
-        'email' => 'required|email'
-    ]);
-
-    $invitedUser = User::where('email', $request->email)
-        ->whereHas('photographer', function($q) {
-            $q->where('status', 'approved');
-        })->first();
-
-    if (!$invitedUser) {
-        return redirect()->back()->withErrors(['email' => 'No se encontró un fotógrafo aprobado con este correo en f33.']);
-    }
-
-    $invitedPhotographer = $invitedUser->photographer;
-
-    if ($invitedPhotographer->id === $event->photographer_id) {
-        return redirect()->back()->withErrors(['email' => 'Ya sos el creador de este evento.']);
-    }
-
-    if ($event->collaborators()->where('photographer_id', $invitedPhotographer->id)->exists()) {
-        return redirect()->back()->withErrors(['email' => 'Este fotógrafo ya forma parte del evento o fue invitado.']);
-    }
-
-
-    $event->collaborators()->attach($invitedPhotographer->id, ['status' => 'invited']);
-
-    $inviter = auth()->user()->photographer;
-
-
-    try {
-        Mail::to($invitedUser->email)->send(new \App\Mail\EventInvitationMail($event, $inviter));
-    } catch (\Exception $e) {
-        \Illuminate\Support\Facades\Log::error('Error enviando invitación por Brevo: ' . $e->getMessage());
-        return redirect()->back()->with('success', 'El fotógrafo fue invitado, pero el correo de aviso no se pudo enviar.');
-    }
-
-    return redirect()->back()->with('success', 'Invitación enviada por correo.');
-}
-
 
     public function index(Request $request)
     {
@@ -163,7 +160,7 @@ public function inviteColleague(Request $request, Event $event)
             ->with('success', 'Evento creado exitosamente');
     }
 
-   public function show($id)
+    public function show($id)
     {
         $photographer = auth()->user()->photographer;
 
@@ -171,20 +168,18 @@ public function inviteColleague(Request $request, Event $event)
             ->findOrFail($id);
 
         $isOwner = $event->photographer_id === $photographer->id;
-        
-    
+
         $collaboratorRecord = $event->collaborators->firstWhere('id', $photographer->id);
         $isCollaborator = $collaboratorRecord && $collaboratorRecord->pivot->status === 'approved';
 
-    
         if (! $isOwner && ! $isCollaborator) {
             abort(403, 'No tenés permiso para gestionar este evento.');
         }
 
         $photos = $event->photos()
-            ->with('photographer:id,business_name')  
+            ->with('photographer:id,business_name')
             ->latest()
-            ->paginate(100) 
+            ->paginate(100)
             ->withQueryString();
 
         $stats = [
@@ -193,7 +188,6 @@ public function inviteColleague(Request $request, Event $event)
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 
-    
         $unassignedPhotos = Photo::where('photographer_id', $photographer->id)
             ->whereNull('event_id')
             ->latest()
@@ -204,9 +198,10 @@ public function inviteColleague(Request $request, Event $event)
                     'unique_id' => $photo->unique_id,
                     'thumbnail_url' => $photo->thumbnail_url,
                     'original_name' => $photo->original_name,
-                    'is_active' => $photo->is_active, 
+                    'is_active' => $photo->is_active,
                 ];
             });
+
         return Inertia::render('Photographer/Events/Show', [
             'event' => [
                 'id' => $event->id,
@@ -239,20 +234,19 @@ public function inviteColleague(Request $request, Event $event)
                     ];
                 }),
             ],
-        
+
             'permissions' => [
                 'is_creator' => $isOwner,
                 'can_edit_event' => $isOwner,
                 'can_delete_event' => $isOwner,
             ],
-            'current_photographer_id' => $photographer->id,  
+            'current_photographer_id' => $photographer->id,
             'photos' => $photos,
             'stats' => $stats,
-            'unassignedPhotos' => $unassignedPhotos,  
+            'unassignedPhotos' => $unassignedPhotos,
         ]);
     }
 
-    
     public function edit(Event $event)
     {
         if ($event->photographer_id !== auth()->user()->photographer->id) {
@@ -269,7 +263,7 @@ public function inviteColleague(Request $request, Event $event)
             'is_private' => (bool) $event->is_private,
             'is_active' => (bool) $event->is_active,
             'cover_image' => $event->cover_image,
-            'cover_image_url' => $event->cover_image_url,   
+            'cover_image_url' => $event->cover_image_url,
         ];
 
         return Inertia::render('Photographer/Events/Edit', [
@@ -353,22 +347,18 @@ public function inviteColleague(Request $request, Event $event)
         }
     }
 
-    
-public function updateCoverImage(Request $request, Event $event)
+    public function updateCoverImage(Request $request, Event $event)
     {
 
         if ($event->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No tenés permiso para actualizar este evento');
         }
 
-
         $request->validate([
             'photo_id' => 'required|exists:photos,id',
         ]);
 
-
         $photo = \App\Models\Photo::findOrFail($request->photo_id);
-
 
         if ($photo->photographer_id !== auth()->user()->photographer->id) {
             abort(403, 'No autorizado para usar esta fotografía');
@@ -377,18 +367,17 @@ public function updateCoverImage(Request $request, Event $event)
         try {
 
             $event->update([
-                'cover_image' => $photo->thumbnail_path, 
+                'cover_image' => $photo->thumbnail_path,
             ]);
 
             return back()->with('success', 'Portada actualizada correctamente');
 
         } catch (\Exception $e) {
-            \Log::error('Error al actualizar portada: ' . $e->getMessage());
+            \Log::error('Error al actualizar portada: '.$e->getMessage());
+
             return back()->with('error', 'Error al establecer la portada.');
         }
     }
-
-
 
     public function bibSearch(Event $event)
     {
@@ -436,5 +425,68 @@ public function updateCoverImage(Request $request, Event $event)
             'photos' => $photos,
             'searchedBib' => $bibNumber,
         ]);
+    }
+
+    public function submitFaceSearch(\Illuminate\Http\Request $request, $slug)
+    {
+
+        $request->validate([
+            'selfie' => 'required|image|max:5120',
+        ]);
+
+        $event = \App\Models\Event::where('slug', $slug)->firstOrFail();
+
+        $path = $request->file('selfie')->store('temp');
+        $fullPath = storage_path('app/'.$path);
+
+        $scriptPath = base_path('scripts/extract_face.py');
+        $pythonBin = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
+
+        $command = escapeshellcmd("$pythonBin $scriptPath").' '.escapeshellarg($fullPath);
+        $output = shell_exec($command);
+
+        \Illuminate\Support\Facades\Storage::delete($path);
+
+        $result = json_decode(trim($output), true);
+
+        if (! $result || ! isset($result['success']) || ! $result['success']) {
+            return response()->json(['error' => 'No se detectó ningún rostro claro en la selfie. Intentá con otra foto de frente.'], 400);
+        }
+
+        $selfieDescriptor = $result['descriptor'];
+        $threshold = 0.55;
+        $matches = [];
+
+        $photos = $event->photos()->whereNotNull('face_descriptors')->get();
+
+        foreach ($photos as $photo) {
+            $photoDescriptors = json_decode($photo->face_descriptors, true);
+            if (! is_array($photoDescriptors)) {
+                continue;
+            }
+
+            foreach ($photoDescriptors as $faceDesc) {
+
+                $distance = 0;
+                for ($i = 0; $i < 128; $i++) {
+                    $distance += pow(($selfieDescriptor[$i] ?? 0) - ($faceDesc[$i] ?? 0), 2);
+                }
+                $distance = sqrt($distance);
+
+                if ($distance < $threshold) {
+                    $matches[] = [
+                        'id' => $photo->id,
+                        'unique_id' => $photo->unique_id,
+                        'thumbnail_url' => $photo->thumbnail_url,
+                        'similarity' => 1 - $distance,
+                    ];
+                    break;
+                }
+            }
+        }
+
+        usort($matches, fn ($a, $b) => $b['similarity'] <=> $a['similarity']);
+
+        return response()->json(['results' => $matches]);
     }
 }

@@ -628,4 +628,8 @@ class PhotoController extends Controller
 
         return redirect()->back();
     }
+
+
+    
+
 }

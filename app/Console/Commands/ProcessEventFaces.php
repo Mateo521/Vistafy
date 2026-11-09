@@ -20,7 +20,7 @@ class ProcessEventFaces extends Command
         $event = Event::findOrFail($eventId);
 
         $this->info(" Procesando evento: {$event->name}");
-        $this->info("📊 Total de fotos: " . $event->photos()->count());
+        $this->info(" Total de fotos: " . $event->photos()->count());
 
         $photos = $event->photos()->whereNull('face_descriptors')->get();
 
@@ -70,26 +70,24 @@ class ProcessEventFaces extends Command
         return 0;
     }
 
-    /**
-     * Extrae descriptores faciales de una foto usando Python
-     */
+   
     protected function extractFaceDescriptors(Photo $photo): array
     {
-        // Ruta de la foto original
+       
         $imagePath = storage_path('app/' . $photo->original_path);
 
         if (!file_exists($imagePath)) {
             throw new \Exception("Archivo no encontrado: {$imagePath}");
         }
 
-        // Ruta al script de Python
+      
         $pythonScript = base_path('scripts/extract_faces.py');
 
         if (!file_exists($pythonScript)) {
             throw new \Exception("Script de Python no encontrado. Ejecuta: php artisan faces:setup");
         }
 
-        // Ejecutar Python
+       
         $command = sprintf(
             'python "%s" "%s" 2>&1',
             $pythonScript,
@@ -102,7 +100,7 @@ class ProcessEventFaces extends Command
             throw new \Exception("Error ejecutando Python: " . implode("\n", $output));
         }
 
-        // Python devuelve JSON con los descriptores
+       
         $result = json_decode(implode('', $output), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
