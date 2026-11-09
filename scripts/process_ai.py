@@ -13,7 +13,18 @@ import os
 warnings.filterwarnings("ignore")
 os.environ["W_DISABLE_NNPACK"] = "1"
 
+
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+import torch
+torch.set_num_threads(1)
+
+
 reader = easyocr.Reader(['en'], gpu=False, verbose=False)
+
 
 def process_image(image_url, do_faces, do_ocr):
     result = {

@@ -29,21 +29,19 @@ class ProcessPhotoAI implements ShouldQueue
 
         $imageUrl = $photo->original_url;
 
-
         $scriptPath = base_path('scripts/process_ai.py');
         
-
         $pythonBin = PHP_OS_FAMILY === 'Windows' ? 'python' : 'python3';
-        $command = escapeshellcmd("$pythonBin $scriptPath") . " " . escapeshellarg($imageUrl) . " 1 1";
+        
+        $command = escapeshellcmd("$pythonBin $scriptPath") . " " . escapeshellarg($imageUrl) . " 1 1 2>&1";
         $output = shell_exec($command);
 
-        if (!$output) {
-            Log::error("Fallo al ejecutar Python para foto {$this->photoId}");
+        $result = json_decode(trim($output), true);
+
+        if (!$result) {
+            Log::error("Fallo crítico Python para foto {$this->photoId}. Detalle: " . $output);
             return;
         }
-
-
-        $result = json_decode(trim($output), true);
 
         if (isset($result['success']) && $result['success']) {
             $hasFaces = $result['faces']['count'] > 0;
