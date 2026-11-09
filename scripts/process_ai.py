@@ -6,7 +6,12 @@ import cv2
 import face_recognition
 import easyocr
 import re
+import warnings
+import os
 
+
+warnings.filterwarnings("ignore")
+os.environ["W_DISABLE_NNPACK"] = "1"
 
 reader = easyocr.Reader(['en'], gpu=False, verbose=False)
 
