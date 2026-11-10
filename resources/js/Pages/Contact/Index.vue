@@ -217,7 +217,9 @@ const submit = () => {
                                     </p>
                                 </div>
                                 <div class="mb-6">
-                                    <Turnstile @verify="(token) => turnstileToken = token" />
+
+                                    <Turnstile site-key="0x4AAAAAAF4w8KPF8YCUPril" v-model="turnstileToken" />
+
 
                                     <p v-if="form.errors.turnstile_response" class="mt-2 text-xs text-red-600">
                                         {{ form.errors.turnstile_response }}
