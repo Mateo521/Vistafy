@@ -1,12 +1,16 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { 
-    EnvelopeIcon, 
-    PhoneIcon, 
+import Turnstile from '@/Components/Turnstile.vue';
+import { ref } from 'vue';
+import {
+    EnvelopeIcon,
+    PhoneIcon,
     MapPinIcon,
-    CheckCircleIcon 
+    CheckCircleIcon
 } from '@heroicons/vue/24/outline';
+
+const turnstileToken = ref('');
 
 const form = useForm({
     name: '',
@@ -14,9 +18,13 @@ const form = useForm({
     phone: '',
     subject: '',
     message: '',
+    turnstile_response: '',
 });
 
 const submit = () => {
+
+    form.turnstile_response = turnstileToken.value;
+
     form.post(route('contact.store'), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
@@ -25,10 +33,11 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Contacto" />
 
     <AppLayout>
-        
+
         <div class="bg-white border-b border-gray-100 pt-24 pb-12 md:pt-32 md:pb-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-7xl">
@@ -47,9 +56,9 @@ const submit = () => {
 
         <div class="min-h-screen bg-gray-50 py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                
-                <div v-if="$page.props.flash.success" 
+
+
+                <div v-if="$page.props.flash.success"
                     class="mb-8 bg-emerald-50 border-2 border-emerald-200 rounded-sm p-6 flex items-start gap-4 animate-fade-in-down">
                     <CheckCircleIcon class="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <div>
@@ -59,22 +68,23 @@ const submit = () => {
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    
-                    
+
+
                     <div class="lg:col-span-1 space-y-8">
                         <div class="bg-white border border-gray-200 p-8 rounded-sm shadow-sm">
                             <h2 class="text-sm font-bold uppercase tracking-widest text-slate-900 mb-6">
                                 Información
                             </h2>
-                            
+
                             <div class="space-y-6">
                                 <div class="flex items-start gap-4">
                                     <div class="p-3 bg-slate-50 border border-gray-200 rounded-sm">
                                         <EnvelopeIcon class="w-5 h-5 text-slate-600" />
                                     </div>
                                     <div>
-                                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Email</p>
-                                        <a href="mailto:contacto@f33.click" 
+                                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Email
+                                        </p>
+                                        <a href="mailto:contacto@f33.click"
                                             class="text-slate-900 hover:text-blue-600 transition">
                                             contacto@f33.click
                                         </a>
@@ -86,8 +96,9 @@ const submit = () => {
                                         <PhoneIcon class="w-5 h-5 text-slate-600" />
                                     </div>
                                     <div>
-                                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Teléfono</p>
-                                        <a href="tel:+5492664567890" 
+                                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                                            Teléfono</p>
+                                        <a href="tel:+5492664567890"
                                             class="text-slate-900 hover:text-blue-600 transition">
                                             +54 9 (2664) 567-890
                                         </a>
@@ -99,7 +110,8 @@ const submit = () => {
                                         <MapPinIcon class="w-5 h-5 text-slate-600" />
                                     </div>
                                     <div>
-                                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">Ubicación</p>
+                                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                                            Ubicación</p>
                                         <p class="text-slate-900">
                                             San Luis<br>
                                             Argentina
@@ -124,7 +136,7 @@ const submit = () => {
                         </div>
                     </div>
 
-                
+
                     <div class="lg:col-span-2">
                         <div class="bg-white border border-gray-200 p-8 md:p-12 rounded-sm shadow-sm">
                             <h2 class="text-2xl font-sans font-bold text-slate-900 mb-8">
@@ -132,97 +144,96 @@ const submit = () => {
                             </h2>
 
                             <form @submit.prevent="submit" class="space-y-6">
-                                
-                            
+
+
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                         Nombre completo *
                                     </label>
-                                    <input 
-                                        v-model="form.name"
-                                        type="text" 
+                                    <input v-model="form.name" type="text"
                                         class="w-full px-4 py-3 border-2 border-gray-200 focus:border-slate-900 focus:ring-0 rounded-sm text-slate-900"
-                                        :class="{ 'border-red-500': form.errors.name }"
-                                        placeholder="Juan Pérez"
-                                    />
+                                        :class="{ 'border-red-500': form.errors.name }" placeholder="Juan Pérez" />
                                     <p v-if="form.errors.name" class="mt-2 text-xs text-red-600">
                                         {{ form.errors.name }}
                                     </p>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <!-- Email -->
+
                                     <div>
-                                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
+                                        <label
+                                            class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                             Correo *
                                         </label>
-                                        <input 
-                                            v-model="form.email"
-                                            type="email" 
+                                        <input v-model="form.email" type="email"
                                             class="w-full px-4 py-3 border-2 border-gray-200 focus:border-slate-900 focus:ring-0 rounded-sm"
                                             :class="{ 'border-red-500': form.errors.email }"
-                                            placeholder="juan@ejemplo.com"
-                                        />
+                                            placeholder="juan@ejemplo.com" />
                                         <p v-if="form.errors.email" class="mt-2 text-xs text-red-600">
                                             {{ form.errors.email }}
                                         </p>
                                     </div>
 
-                                   
+
                                     <div>
-                                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
+                                        <label
+                                            class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                             Teléfono (Opcional)
                                         </label>
-                                        <input 
-                                            v-model="form.phone"
-                                            type="tel" 
+                                        <input v-model="form.phone" type="tel"
                                             class="w-full px-4 py-3 border-2 border-gray-200 focus:border-slate-900 focus:ring-0 rounded-sm"
-                                            placeholder="+52 123 456 7890"
-                                        />
+                                            placeholder="+52 123 456 7890" />
                                     </div>
                                 </div>
 
-                             
+
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                         Asunto *
                                     </label>
-                                    <input 
-                                        v-model="form.subject"
-                                        type="text" 
+                                    <input v-model="form.subject" type="text"
                                         class="w-full px-4 py-3 border-2 border-gray-200 focus:border-slate-900 focus:ring-0 rounded-sm"
                                         :class="{ 'border-red-500': form.errors.subject }"
-                                        placeholder="¿En qué podemos ayudarte?"
-                                    />
+                                        placeholder="¿En qué podemos ayudarte?" />
                                     <p v-if="form.errors.subject" class="mt-2 text-xs text-red-600">
                                         {{ form.errors.subject }}
                                     </p>
                                 </div>
 
-                              
+
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
                                         Mensaje *
                                     </label>
-                                    <textarea 
-                                        v-model="form.message"
-                                        rows="6"
+                                    <textarea v-model="form.message" rows="6"
                                         class="w-full px-4 py-3 border-2 border-gray-200 focus:border-slate-900 focus:ring-0 rounded-sm resize-none"
                                         :class="{ 'border-red-500': form.errors.message }"
-                                        placeholder="Escribí tu mensaje acá..."
-                                    ></textarea>
+                                        placeholder="Escribí tu mensaje acá..."></textarea>
                                     <p v-if="form.errors.message" class="mt-2 text-xs text-red-600">
                                         {{ form.errors.message }}
                                     </p>
                                 </div>
+                                <div class="mb-6">
+                                    <Turnstile @verify="(token) => turnstileToken = token" />
 
-                                <button 
-                                    type="submit" 
-                                    :disabled="form.processing"
+                                    <p v-if="form.errors.turnstile_response" class="mt-2 text-xs text-red-600">
+                                        {{ form.errors.turnstile_response }}
+                                    </p>
+                                </div>
+
+
+                                <button type="submit" :disabled="form.processing"
                                     class="w-full bg-slate-900 text-white py-4 px-8 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
-                                    <svg v-if="form.processing" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <svg v-if="form.processing" class="animate-spin h-5 w-5"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
                                     <span>{{ form.processing ? 'Enviando...' : 'Enviar Mensaje' }}</span>
                                 </button>
@@ -243,6 +254,7 @@ const submit = () => {
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -253,5 +265,3 @@ const submit = () => {
     animation: fadeInDown 0.3s ease-out;
 }
 </style>
-
-

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
+use App\Rules\Turnstile; 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,20 +16,20 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validated =$request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|min:10|max:2000',
+
+            'turnstile_response' => ['required', new Turnstile()], 
         ], [
-            'name.required' => 'Por favor Ingresá tu nombre',
-            'email.required' => 'Por favor Ingresá tu correo',
-            'email.email' => 'Ingresá un correo válido',
-            'subject.required' => 'Por favor Ingresá un asunto',
-            'message.required' => 'Por favor escribe tu mensaje',
-            'message.min' => 'El mensaje debe tener al menos 10 caracteres',
+
+            'turnstile_response.required' => 'Por favor, completá la verificación de seguridad.',
         ]);
+
+        unset($validated['turnstile_response']);
 
         ContactMessage::create($validated);
 
