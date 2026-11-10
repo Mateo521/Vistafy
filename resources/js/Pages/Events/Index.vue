@@ -192,9 +192,9 @@ const handleImageError = (e) => {
 
 
                         <div
-                            class="relative w-full aspect-[4/3] rounded overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500 bg-slate-100 mt-1">
+                            class="relative w-full h-full rounded overflow-hidden shadow-sm group-hover:shadow-2xl transition-all duration-500 bg-slate-100 mt-1">
                             <img v-if="event.cover_image_url" :src="event.cover_image_url" :alt="event.name"
-                                class="w-full h-full object-cover transition-transform duration-700 ease-out "
+                                class="w-full h-full object-contain transition-transform duration-700 ease-out "
                                 @error="handleImageError" />
 
 
