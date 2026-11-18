@@ -1,9 +1,11 @@
 <script setup>
 import { Head, Link, usePage, router, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import PhotoPrice from '@/Components/PhotoPrice.vue';
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { useToast } from '@/Composables/useToast';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
+import PhotoPrice from '@/Components/PhotoPrice.vue';
 import {
     ArrowLeftIcon,
     ShoppingCartIcon,
@@ -191,8 +193,10 @@ const handleImageError = (e) => {
 
                             <div class="mb-8 flex items-end justify-between">
                                 <span class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Licencia
-                                    Digital</span>
-                                <span class="font-flux text-6xl text-black leading-none">${{ photo.price }}</span>
+                                    digital</span>
+                                <span class="font-flux text-6xl text-black leading-none">
+                                    <PhotoPrice :price="photo.price" :event-id="photo.event_id" variant="inline" />
+                                </span>
                             </div>
 
 

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Navigation, Thumbs, Keyboard, FreeMode, Virtual } from 'swiper/modules';
+import PhotoPrice from '@/Components/PhotoPrice.vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
@@ -292,9 +293,7 @@ const handleImageError = (e) => {
                                 </div>
 
                                 <div class="flex flex-col items-end gap-2">
-                                    <span
-                                        class="bg-[#E30613] text-white font-bold text-[10px] px-2 py-1 rounded-md shadow-sm">${{
-                                        photo.price }}</span>
+                                    <PhotoPrice :price="photo.price" :event-id="event.id" variant="badge" />
 
 
                                     <button v-if="purchasedIds.includes(photo.id)" title="Ya compraste esta foto"
@@ -410,8 +409,7 @@ const handleImageError = (e) => {
                                         </div>
 
                                         <div class="flex items-center gap-4 w-full md:w-auto justify-end">
-                                            <span class="text-[#E30613] font-flux text-4xl leading-none mr-2">${{
-                                                photo.price }}</span>
+                                            <PhotoPrice :price="photo.price" :event-id="event.id" variant="large" />
 
                                             <div v-if="purchasedIds.includes(photo.id)"
                                                 class="bg-blue-600 text-white px-5 py-3 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md cursor-default">

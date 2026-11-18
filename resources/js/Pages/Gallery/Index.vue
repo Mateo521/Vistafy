@@ -3,6 +3,7 @@
 import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed, nextTick } from 'vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
+import PhotoPrice from '@/Components/PhotoPrice.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import axios from 'axios';
 import { useToast } from '@/Composables/useToast';
@@ -217,21 +218,21 @@ const performFaceSearch = async () => {
         const img = await faceapi.bufferToImage(selectedFile.value);
         progressMessage.value = 'EXTRAYENDO VECTORES...';
         const detection = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-        
-        if (!detection) { 
-            errorMessage.value = 'ROSTRO NO DETECTADO. ABORTANDO.'; 
-            isSearching.value = false; 
-            progressMessage.value = ''; 
-            return; 
+
+        if (!detection) {
+            errorMessage.value = 'ROSTRO NO DETECTADO. ABORTANDO.';
+            isSearching.value = false;
+            progressMessage.value = '';
+            return;
         }
-        
+
         const descriptor = Array.from(detection.descriptor);
         progressMessage.value = 'BÚSQUEDA EN BASE DE DATOS...';
-        
+
         const response = await axios.post(route('gallery.face-search'), { face_descriptor: descriptor, threshold: 0.6 });
         if (response.data.success) {
-            
-            clearBibSearch(); 
+
+            clearBibSearch();
             faceSearchResults.value = response.data;
             showingFaceResults.value = true;
             allPhotos.value = [...response.data.results];
@@ -660,7 +661,7 @@ const totalResults = () => {
 
                             <div
                                 class="absolute top-3 left-3 bg-white/90 px-3 py-1.5 rounded-full text-xs font-bold text-black shadow-sm pointer-events-none">
-                                ${{ photo.price }}
+                                <PhotoPrice :price="photo.price" :event-id="photo.event_id" variant="inline" />
                             </div>
 
                             <button @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
@@ -702,62 +703,96 @@ const totalResults = () => {
 
             </div>
         </div>
-        
+
 
         <Teleport to="body">
             <Transition name="fade">
-                <div v-if="isLightboxOpen" class="fixed inset-0 z-[99999] bg-slate-900/95 backdrop-blur-sm flex flex-col">
-                    
-                    
-                    <div class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
-                        <div class="text-white/50 text-xs font-bold uppercase px-4 pointer-events-auto">Vista previa</div>
-                        <button @click="closeLightbox" class="w-10 h-10 bg-white/10 hover:bg-[#E30613] text-white rounded-full flex items-center justify-center transition-colors pointer-events-auto backdrop-blur-md">
+                <div v-if="isLightboxOpen"
+                    class="fixed inset-0 z-[99999] bg-slate-900/95 backdrop-blur-sm flex flex-col">
+
+
+                    <div
+                        class="absolute top-0 right-0 left-0 p-4 flex justify-between items-center z-50 pointer-events-none">
+                        <div class="text-white/50 text-xs font-bold uppercase px-4 pointer-events-auto">Vista previa
+                        </div>
+                        <button @click="closeLightbox"
+                            class="w-10 h-10 bg-white/10 hover:bg-[#E30613] text-white rounded-full flex items-center justify-center transition-colors pointer-events-auto backdrop-blur-md">
                             <XMarkIcon class="w-5 h-5" />
                         </button>
                     </div>
 
-                    
-                    <div class="relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
-                        <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10" :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true" :initialSlide="activeIndex" class="h-full thumbs-gallery">
-                            <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id" class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
+
+                    <div
+                        class="relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
+                        <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10"
+                            :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true"
+                            :initialSlide="activeIndex" class="h-full thumbs-gallery">
+                            <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
+                                class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
                                 <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
                             </swiper-slide>
                         </swiper>
                     </div>
 
-                    
+
                     <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
-                        <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex" :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }" :spaceBetween="30" class="h-full w-full">
-                            <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id" :virtualIndex="index" class="flex items-center justify-center p-4">
+                        <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex"
+                            :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }"
+                            :spaceBetween="30" class="h-full w-full">
+                            <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
+                                :virtualIndex="index" class="flex items-center justify-center p-4">
                                 <div class="relative h-full w-full max-w-full flex items-center justify-center">
-                                    
-                                    
+
+
                                     <div class="absolute inset-0 flex flex-col items-center justify-center z-0">
-                                        <svg class="animate-spin w-10 h-10 text-white/20 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                        <span class="text-white/40 text-xs font-bold uppercase tracking-widest">Cargando alta calidad...</span>
+                                        <svg class="animate-spin w-10 h-10 text-white/20 mb-2"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span class="text-white/40 text-xs font-bold uppercase tracking-widest">Cargando
+                                            alta calidad...</span>
                                     </div>
 
-                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy" class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10" @error="handleImageError" />
+                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy"
+                                        class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
+                                        @error="handleImageError" />
 
-                                    
-                                    <div class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex flex-col md:flex-row justify-between gap-4 items-center border border-white z-20">
-                                        <div class="flex items-center gap-4 w-full md:w-auto justify-center md:justify-start">
-                                            <img :src="photo.photographer?.profile_photo_url || 'https://via.placeholder.com/50'" class="w-10 h-10 rounded-full object-cover">
+
+                                    <div
+                                        class="absolute bottom-4 left-4 right-4 p-4 md:p-6 bg-white/90 rounded flex flex-col md:flex-row justify-between gap-4 items-center border border-white z-20">
+                                        <div
+                                            class="flex items-center gap-4 w-full md:w-auto justify-center md:justify-start">
+                                            <img :src="photo.photographer?.profile_photo_url || 'https://via.placeholder.com/50'"
+                                                class="w-10 h-10 rounded-full object-cover">
                                             <div>
-                                                <p class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
-                                                    Ref: {{ photo.unique_id }} 
-                                                    <span v-if="photo.event_name" class="ml-1 text-black font-normal">— {{ photo.event_name }}</span>
+                                                <p
+                                                    class="text-gray-500 font-bold text-[10px] uppercase tracking-wider mb-1">
+                                                    Ref: {{ photo.unique_id }}
+                                                    <span v-if="photo.event_name" class="ml-1 text-black font-normal">—
+                                                        {{ photo.event_name }}</span>
                                                 </p>
-                                                <p class="text-[#E30613] font-flux text-3xl leading-none">${{ photo.price }}</p>
+                                                <p class="text-[#E30613] font-flux text-3xl leading-none">
+                                                    <PhotoPrice :price="photo.price" :event-id="photo.event_id"
+                                                        variant="inline" />
+                                                </p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2 w-full md:w-auto">
-                                            <Link :href="route('gallery.show', { uniqueId: photo.unique_id || photo.id })" class="bg-gray-100 hover:bg-gray-200 text-black px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors flex-1 md:flex-none">
+                                            <Link
+                                                :href="route('gallery.show', { uniqueId: photo.unique_id || photo.id })"
+                                                class="bg-gray-100 hover:bg-gray-200 text-black px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors flex-1 md:flex-none">
                                                 Ver Detalles
                                             </Link>
-                                            <button @click.prevent.stop="addToCart(photo)" class="bg-black hover:bg-[#E30613] text-white px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-md flex-1 md:flex-none">
+                                            <button @click.prevent.stop="addToCart(photo)"
+                                                class="bg-black hover:bg-[#E30613] text-white px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-md flex-1 md:flex-none">
                                                 <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
-                                                <span v-else class="flex items-center gap-2"><ShoppingCartIcon class="w-4 h-4" /> Añadir</span>
+                                                <span v-else class="flex items-center gap-2">
+                                                    <ShoppingCartIcon class="w-4 h-4" /> Añadir
+                                                </span>
                                             </button>
                                         </div>
                                     </div>
@@ -773,7 +808,6 @@ const totalResults = () => {
 </template>
 
 <style scoped>
-
 .thumbs-gallery .swiper-slide-thumb-active {
     opacity: 1 !important;
     border: 2px solid white;

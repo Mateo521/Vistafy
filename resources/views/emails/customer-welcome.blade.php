@@ -26,7 +26,7 @@
                                 ¡Bienvenido a la plataforma!
                             </h1>
                             <div style="display: inline-block; background-color: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 2px;">
-                                Acceso Autorizado
+                                Acceso autorizado
                             </div> 
                         </td>
                     </tr>
