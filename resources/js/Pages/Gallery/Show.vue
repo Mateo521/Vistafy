@@ -5,7 +5,6 @@ import PhotoPrice from '@/Components/PhotoPrice.vue';
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { useToast } from '@/Composables/useToast';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
-import PhotoPrice from '@/Components/PhotoPrice.vue';
 import {
     ArrowLeftIcon,
     ShoppingCartIcon,
