@@ -32,12 +32,7 @@ const hasDiscount = computed(() => {
     );
 });
 
-console.log('PhotoPrice:', {
-    price: props.price,
-    numericPrice: numericPrice.value,
-    eventId: props.eventId,
-    hasDiscount: hasDiscount.value,
-});
+
 
 </script>
 
