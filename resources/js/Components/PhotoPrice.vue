@@ -17,7 +17,7 @@ const props = defineProps({
 });
 
 
-const PROMO_EVENT_ID = 18;
+const PROMO_EVENT_ID = 16;
 const ORIGINAL_PRICE = 5000;
 
 const numericPrice = computed(() => Number(props.price));
@@ -31,6 +31,14 @@ const hasDiscount = computed(() => {
         numericPrice.value < ORIGINAL_PRICE
     );
 });
+
+console.log('PhotoPrice:', {
+    price: props.price,
+    numericPrice: numericPrice.value,
+    eventId: props.eventId,
+    hasDiscount: hasDiscount.value,
+});
+
 </script>
 
 <template>
