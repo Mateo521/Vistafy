@@ -17,7 +17,7 @@ const props = defineProps({
 });
 
 
-const PROMO_EVENT_ID = 16;
+const PROMO_EVENT_ID = 18;
 const ORIGINAL_PRICE = 5000;
 
 const numericPrice = computed(() => Number(props.price));

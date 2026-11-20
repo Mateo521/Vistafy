@@ -48,10 +48,22 @@ const activePhotographer = ref(null);
 const activePhotographerTotal = ref(0);
 
 
-const mixedPhotos = computed(() => {
-    const interleaved = [];
+const selectedRole = ref('all');
 
-    const galleriesCopy = props.galleries.map(g => ({
+
+const shuffleArray = (arr) => {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+};
+
+
+const interleaveGalleries = (galleriesList) => {
+    const interleaved = [];
+    const galleriesCopy = galleriesList.map(g => ({
         photographer: g.photographer,
         photos: [...g.photos]
     }));
@@ -71,6 +83,68 @@ const mixedPhotos = computed(() => {
         }
     }
     return interleaved;
+};
+
+
+const shuffledRoles = (() => {
+    const rolesSet = new Set();
+    props.galleries.forEach(g => {
+        g.photos.forEach(p => {
+            if (p.location_role && p.location_role.trim() !== '') {
+                rolesSet.add(p.location_role.trim());
+            }
+        });
+    });
+    return shuffleArray(Array.from(rolesSet));
+})();
+
+const hasLocationRoles = computed(() => shuffledRoles.length > 0);
+
+
+const photoGroups = computed(() => {
+    if (!hasLocationRoles.value) {
+        const all = interleaveGalleries(props.galleries);
+        return all.length > 0 ? [{ role: null, photos: all }] : [];
+    }
+
+    const groups = [];
+
+    for (const role of shuffledRoles) {
+        const filteredGalleries = props.galleries
+            .map(g => ({
+                photographer: g.photographer,
+                photos: g.photos.filter(p => p.location_role?.trim() === role)
+            }))
+            .filter(g => g.photos.length > 0);
+
+        const interleaved = interleaveGalleries(filteredGalleries);
+        if (interleaved.length > 0) {
+            groups.push({ role, photos: interleaved });
+        }
+    }
+
+
+    const unassignedGalleries = props.galleries
+        .map(g => ({
+            photographer: g.photographer,
+            photos: g.photos.filter(p => !p.location_role || p.location_role.trim() === '')
+        }))
+        .filter(g => g.photos.length > 0);
+
+    const unassigned = interleaveGalleries(unassignedGalleries);
+    if (unassigned.length > 0) {
+        groups.push({ role: 'Otras ubicaciones', photos: unassigned });
+    }
+
+    return groups;
+});
+
+
+const visibleGroups = computed(() => {
+    if (selectedRole.value === 'all') {
+        return photoGroups.value;
+    }
+    return photoGroups.value.filter(g => g.role === selectedRole.value);
 });
 
 const setThumbsSwiper = (swiper) => { thumbsSwiper.value = swiper; };
@@ -195,7 +269,10 @@ const handleImageError = (e) => {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-12">
+                <div :class="[
+                    'grid gap-4 md:gap-6 mb-12',
+                    hasLocationRoles ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'
+                ]">
                     <Link :href="route('events.face-search', event.slug)"
                         class="group bg-white border border-gray-100 p-6 md:p-8 rounded shadow-sm hover:shadow-md hover:border-red-100 transition-all flex items-center justify-between">
                         <div class="flex items-center gap-5">
@@ -234,9 +311,31 @@ const handleImageError = (e) => {
                             <ArrowRightIcon class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
                         </div>
                     </Link>
+
+
+                    <div v-if="hasLocationRoles"
+                        class="bg-white border border-gray-100 p-6 md:p-8 rounded shadow-sm flex flex-col justify-center gap-3">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
+                                <MapPinIcon class="w-5 h-5 text-[#E30613]" />
+                            </div>
+                            <div>
+                                <h4 class="font-flux text-2xl text-black leading-none mb-1">Filtrar por punto</h4>
+                                <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Elegí una ubicación
+                                </p>
+                            </div>
+                        </div>
+                        <select v-model="selectedRole"
+                            class="w-full bg-gray-50 border border-gray-200 focus:border-black focus:ring-0 rounded text-xs font-bold uppercase tracking-wider text-slate-800 py-2.5 px-3 cursor-pointer">
+                            <option value="all">Todas las ubicaciones ({{ photoGroups.length }})</option>
+                            <option v-for="group in photoGroups" :key="group.role" :value="group.role">
+                                {{ group.role }} ({{ group.photos.length }})
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
-                <div v-if="mixedPhotos.length === 0"
+                <div v-if="visibleGroups.length === 0"
                     class="text-center py-24 bg-white rounded shadow-sm border border-gray-100 mt-8 flex flex-col items-center">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                         <CameraIcon class="w-10 h-10 text-gray-300" />
@@ -245,86 +344,103 @@ const handleImageError = (e) => {
                     <p class="text-sm font-medium text-gray-500">Aún no se cargaron fotografías para este evento.</p>
                 </div>
 
-                <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+                <div v-else class="space-y-12">
+                    <div v-for="(group, idx) in visibleGroups" :key="group.role || idx">
 
-                    <div v-for="photo in mixedPhotos" :key="photo.id" @click="openLightbox(photo)" :class="[
-                        'group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm transition-all duration-300 bg-gray-100',
-                        purchasedIds.includes(photo.id) ? 'ring-2 ring-blue-500 shadow-blue-200 opacity-90' :
-                            cartIds.includes(photo.id) ? 'ring-2 ring-green-500 shadow-green-200' :
-                                'border border-transparent hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
-                    ]">
-
-                        <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy"
-                            class="w-full h-full object-cover rounded shadow-2xl relative z-10"
-                            @error="handleImageError" />
-
-
-                        <div v-if="purchasedIds.includes(photo.id)"
-                            class="absolute top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max">
-                            <CheckBadgeIcon class="w-3.5 h-3.5" /> Adquirida
-                        </div>
-                        <div v-else-if="cartIds.includes(photo.id)"
-                            class="absolute top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max">
-                            <CheckCircleIcon class="w-3.5 h-3.5" /> En carrito
+                    
+                        <div v-if="group.role"
+                            class="flex items-center justify-between border-b border-gray-200 pb-3 mb-5">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#E30613]"></span>
+                                <h2 class="font-flux text-2xl md:text-3xl text-black tracking-wide leading-none">
+                                    {{ group.role }}
+                                </h2>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">
+                                {{ group.photos.length }} fotos
+                            </span>
                         </div>
 
-                        <div
-                            class="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
-                            <div class="flex justify-between items-end w-full">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
 
-                                <div class="flex flex-col gap-1.5">
-                                    <div class="flex flex-col gap-0.5">
-                                        <span v-if="photo.location_role"
-                                            class="block bg-white/90 backdrop-blur-sm text-black font-bold text-[9px] px-2 py-0.5 rounded uppercase tracking-wider w-max">
-                                            {{ photo.location_role }}
-                                        </span>
-                                        <span class="text-white/80 font-bold text-[9px] uppercase tracking-wider">
-                                            ID: {{ photo.unique_id.substring(0, 6) }}
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <img :src="photo.gallery_photographer?.profile_photo_url || 'https://via.placeholder.com/50'"
-                                            class="w-5 h-5 rounded-full object-cover border border-white/30">
-                                        <span
-                                            class="text-white font-bold text-[9px] uppercase tracking-wider truncate max-w-[100px]">
-                                            {{ photo.gallery_photographer?.business_name || 'Fotógrafo' }}
-                                        </span>
-                                    </div>
+                            <div v-for="photo in group.photos" :key="photo.id" @click="openLightbox(photo)" :class="[
+                                'group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm transition-all duration-300 bg-gray-100',
+                                purchasedIds.includes(photo.id) ? 'ring-2 ring-blue-500 shadow-blue-200 opacity-90' :
+                                    cartIds.includes(photo.id) ? 'ring-2 ring-green-500 shadow-green-200' :
+                                        'border border-transparent hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
+                            ]">
+
+                                <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy"
+                                    class="w-full h-full object-cover rounded shadow-2xl relative z-10"
+                                    @error="handleImageError" />
+
+                                <div v-if="purchasedIds.includes(photo.id)"
+                                    class="absolute top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max">
+                                    <CheckBadgeIcon class="w-3.5 h-3.5" /> Adquirida
+                                </div>
+                                <div v-else-if="cartIds.includes(photo.id)"
+                                    class="absolute top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max">
+                                    <CheckCircleIcon class="w-3.5 h-3.5" /> En carrito
                                 </div>
 
-                                <div class="flex flex-col items-end gap-2">
-                                    <PhotoPrice :price="photo.price" :event-id="event.id" variant="badge" />
+                                <div
+                                    class="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
+                                    <div class="flex justify-between items-end w-full">
 
+                                        <div class="flex flex-col gap-1.5">
+                                            <div class="flex flex-col gap-0.5">
+                                                <span v-if="photo.location_role"
+                                                    class="block bg-white/90 backdrop-blur-sm text-black font-bold text-[9px] px-2 py-0.5 rounded uppercase tracking-wider w-max">
+                                                    {{ photo.location_role }}
+                                                </span>
+                                                <span
+                                                    class="text-white/80 font-bold text-[9px] uppercase tracking-wider">
+                                                    ID: {{ photo.unique_id.substring(0, 6) }}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <img :src="photo.gallery_photographer?.profile_photo_url || 'https://via.placeholder.com/50'"
+                                                    class="w-5 h-5 rounded-full object-cover border border-white/30">
+                                                <span
+                                                    class="text-white font-bold text-[9px] uppercase tracking-wider truncate max-w-[100px]">
+                                                    {{ photo.gallery_photographer?.business_name || 'Fotógrafo' }}
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                    <button v-if="purchasedIds.includes(photo.id)" title="Ya compraste esta foto"
-                                        class="bg-blue-600 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white z-20 cursor-default pointer-events-auto">
-                                        <CheckBadgeIcon class="w-4 h-4 m-0.5" />
-                                    </button>
-                                    <button v-else-if="cartIds.includes(photo.id)" title="Ya está en tu carrito"
-                                        class="bg-green-500 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white z-20 cursor-default pointer-events-auto">
-                                        <CheckCircleIcon class="w-4 h-4 m-0.5" />
-                                    </button>
-                                    <button v-else @click.prevent.stop="addToCart(photo)" title="Añadir al carrito"
-                                        class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center text-black hover:bg-black hover:text-white transition-colors duration-300 pointer-events-auto z-20">
-                                        <svg v-if="addingToCartIds?.includes(photo.id)"
-                                            class="animate-spin w-4 h-4 m-0.5" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <ShoppingCartIcon v-else class="w-4 h-4 m-0.5" />
-                                    </button>
+                                        <div class="flex flex-col items-end gap-2">
+                                            <PhotoPrice :price="photo.price" :event-id="event.id" variant="badge" />
+
+                                            <button v-if="purchasedIds.includes(photo.id)"
+                                                title="Ya compraste esta foto"
+                                                class="bg-blue-600 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white z-20 cursor-default pointer-events-auto">
+                                                <CheckBadgeIcon class="w-4 h-4 m-0.5" />
+                                            </button>
+                                            <button v-else-if="cartIds.includes(photo.id)" title="Ya está en tu carrito"
+                                                class="bg-green-500 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white z-20 cursor-default pointer-events-auto">
+                                                <CheckCircleIcon class="w-4 h-4 m-0.5" />
+                                            </button>
+                                            <button v-else @click.prevent.stop="addToCart(photo)"
+                                                title="Añadir al carrito"
+                                                class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center text-black hover:bg-black hover:text-white transition-colors duration-300 pointer-events-auto z-20">
+                                                <svg v-if="addingToCartIds?.includes(photo.id)"
+                                                    class="animate-spin w-4 h-4 m-0.5"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                        stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                    </path>
+                                                </svg>
+                                                <ShoppingCartIcon v-else class="w-4 h-4 m-0.5" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
-
-
-
-
                 </div>
 
             </div>
