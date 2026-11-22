@@ -553,67 +553,28 @@ public function showEvent(Request $request, $slug)
 
         $galleries = $activePhotographers->map(function ($photographer) use ($event) {
 
-            $roles = \App\Models\Photo::where('event_id', $event->id)
+            $photos = \App\Models\Photo::where('event_id', $event->id)
                 ->where('photographer_id', $photographer->id)
                 ->where('is_active', true)
-                ->whereNotNull('location_role')
-                ->where('location_role', '!=', '')
-                ->distinct()
-                ->pluck('location_role')
+                ->latest()
+                ->get()
+                ->map(function ($photo) {
+                    return [
+                        'id' => $photo->id,
+                        'unique_id' => $photo->unique_id,
+                        'title' => $photo->title,
+                        'price' => $photo->price,
+                        'location_role' => $photo->location_role,
+                        'thumbnail_url' => $photo->thumbnail_url,
+                        'watermarked_url' => $photo->watermarked_url,
+                    ];
+                });
+
+            $roles = $photos->pluck('location_role')
+                ->filter(fn ($role) => ! empty($role))
+                ->unique()
+                ->values()
                 ->toArray();
-
-            $totalPhotosCount = \App\Models\Photo::where('event_id', $event->id)
-                ->where('photographer_id', $photographer->id)
-                ->where('is_active', true)
-                ->count();
-
-            if (! empty($roles)) {
-                $photosCollection = collect();
-
-                foreach ($roles as $role) {
-                    $rolePhotos = \App\Models\Photo::where('event_id', $event->id)
-                        ->where('photographer_id', $photographer->id)
-                        ->where('is_active', true)
-                        ->where('location_role', $role)
-                        ->latest()
-                        ->take(25)
-                        ->get();
-
-                    $photosCollection = $photosCollection->merge($rolePhotos);
-                }
-
-                
-                $unassignedPhotos = \App\Models\Photo::where('event_id', $event->id)
-                    ->where('photographer_id', $photographer->id)
-                    ->where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereNull('location_role')->orWhere('location_role', '');
-                    })
-                    ->latest()
-                    ->take(25)
-                    ->get();
-
-                $photosCollection = $photosCollection->merge($unassignedPhotos);
-            } else {
-                $photosCollection = \App\Models\Photo::where('event_id', $event->id)
-                    ->where('photographer_id', $photographer->id)
-                    ->where('is_active', true)
-                    ->latest()
-                    ->take(50)
-                    ->get();
-            }
-
-            $photos = $photosCollection->map(function ($photo) {
-                return [
-                    'id' => $photo->id,
-                    'unique_id' => $photo->unique_id,
-                    'title' => $photo->title,
-                    'price' => $photo->price,
-                    'location_role' => $photo->location_role,
-                    'thumbnail_url' => $photo->thumbnail_url,
-                    'watermarked_url' => $photo->watermarked_url,
-                ];
-            })->values();
 
             return [
                 'photographer' => [
@@ -623,8 +584,8 @@ public function showEvent(Request $request, $slug)
                     'profile_photo_url' => $photographer->profile_photo_url,
                 ],
                 'roles' => $roles,
-                'photos_count' => $totalPhotosCount,
-                'photos' => $photos,
+                'photos_count' => $photos->count(),
+                'photos' => $photos->values(),
             ];
         });
 
