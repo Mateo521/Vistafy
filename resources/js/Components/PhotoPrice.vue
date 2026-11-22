@@ -49,8 +49,8 @@ const hasDiscount = computed(() => {
     </span>
 
 
-    <span v-else-if="variant === 'large'" class="inline-flex items-baseline gap-2 mr-2">
-        <span v-if="hasDiscount" class="text-gray-400 line-through text-xl font-bold leading-none">
+    <span v-else-if="variant === 'large'" class="flex flex-col items-center gap-2 mr-2">
+        <span v-if="hasDiscount" class="text-gray-400 line-through text-2xl font-flux leading-none">
             ${{ ORIGINAL_PRICE }}
         </span>
         <span class="text-[#E30613] font-flux text-4xl leading-none">
