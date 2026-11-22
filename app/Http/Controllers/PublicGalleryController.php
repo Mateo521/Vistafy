@@ -512,9 +512,8 @@ class PublicGalleryController extends Controller
             ->with('info', "No se encontró la foto exacta '{$uniqueId}'. Mostrando resultados similares.");
     }
 
-    public function showEvent(Request $request, $slug)
+public function showEvent(Request $request, $slug)
     {
-
         $event = Event::where('slug', $slug)
             ->whereHas('photographer', function ($q) {
                 $q->where('status', 'approved');
@@ -568,23 +567,53 @@ class PublicGalleryController extends Controller
                 ->where('is_active', true)
                 ->count();
 
-            $photos = \App\Models\Photo::where('event_id', $event->id)
-                ->where('photographer_id', $photographer->id)
-                ->where('is_active', true)
-                ->latest()
-                ->take(50)
-                ->get()
-                ->map(function ($photo) {
-                    return [
-                        'id' => $photo->id,
-                        'unique_id' => $photo->unique_id,
-                        'title' => $photo->title,
-                        'price' => $photo->price,
-                        'location_role' => $photo->location_role,
-                        'thumbnail_url' => $photo->thumbnail_url,
-                        'watermarked_url' => $photo->watermarked_url,
-                    ];
-                });
+            if (! empty($roles)) {
+                $photosCollection = collect();
+
+                foreach ($roles as $role) {
+                    $rolePhotos = \App\Models\Photo::where('event_id', $event->id)
+                        ->where('photographer_id', $photographer->id)
+                        ->where('is_active', true)
+                        ->where('location_role', $role)
+                        ->latest()
+                        ->take(25)
+                        ->get();
+
+                    $photosCollection = $photosCollection->merge($rolePhotos);
+                }
+
+                
+                $unassignedPhotos = \App\Models\Photo::where('event_id', $event->id)
+                    ->where('photographer_id', $photographer->id)
+                    ->where('is_active', true)
+                    ->where(function ($q) {
+                        $q->whereNull('location_role')->orWhere('location_role', '');
+                    })
+                    ->latest()
+                    ->take(25)
+                    ->get();
+
+                $photosCollection = $photosCollection->merge($unassignedPhotos);
+            } else {
+                $photosCollection = \App\Models\Photo::where('event_id', $event->id)
+                    ->where('photographer_id', $photographer->id)
+                    ->where('is_active', true)
+                    ->latest()
+                    ->take(50)
+                    ->get();
+            }
+
+            $photos = $photosCollection->map(function ($photo) {
+                return [
+                    'id' => $photo->id,
+                    'unique_id' => $photo->unique_id,
+                    'title' => $photo->title,
+                    'price' => $photo->price,
+                    'location_role' => $photo->location_role,
+                    'thumbnail_url' => $photo->thumbnail_url,
+                    'watermarked_url' => $photo->watermarked_url,
+                ];
+            })->values();
 
             return [
                 'photographer' => [
