@@ -573,7 +573,7 @@ const handleImageError = (e) => {
 
                                     <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
                                         :width="photo.width || 1200" :height="photo.height || 1600" loading="eager"
-                                        class="max-h-full max-w-full object-cover h-full rounded shadow-2xl relative z-10"
+                                        class="max-h-full max-w-full object-contain h-auto rounded shadow-2xl relative z-10"
                                         @error="handleImageError" />
 
                                     <div
