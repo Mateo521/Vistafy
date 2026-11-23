@@ -1,13 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, markRaw, nextTick } from 'vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Thumbs, Keyboard, FreeMode, Virtual } from 'swiper/modules';
+import { Navigation, Keyboard } from 'swiper/modules';
 import PhotoPrice from '@/Components/PhotoPrice.vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/thumbs';
-import 'swiper/css/free-mode';
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProtectedImage from '@/Components/ProtectedImage.vue';
@@ -30,6 +28,7 @@ const props = defineProps({
     cartPhotoIds: { type: Array, default: () => [] },
     purchasedPhotoIds: { type: Array, default: () => [] },
 });
+
 const cartIds = ref([...props.cartPhotoIds]);
 const purchasedIds = ref([...props.purchasedPhotoIds]);
 const { success, error } = useToast();
@@ -37,19 +36,79 @@ const page = usePage();
 const isAuthenticated = computed(() => page.props.auth.user !== null);
 const addingToCartIds = ref([]);
 
-const swiperModules = [Navigation, Thumbs, Keyboard, FreeMode, Virtual];
+
+const swiperModules = [Navigation, Keyboard];
+const LIGHTBOX_BATCH_SIZE = 50;
 const lightboxPhotos = ref([]);
+const lightboxStart = ref(0);
+const lightboxEnd = ref(LIGHTBOX_BATCH_SIZE);
 const isLightboxOpen = ref(false);
 const activeIndex = ref(0);
-const thumbsSwiper = ref(null);
-
+const mainSwiper = ref(null);
 
 const activePhotographer = ref(null);
 const activePhotographerTotal = ref(0);
 
+const onMainSwiper = (swiper) => {
+    mainSwiper.value = markRaw(swiper);
+};
+
+const onSlideChange = (swiper) => {
+    activeIndex.value = swiper.activeIndex;
+};
+
+const visibleLightboxPhotos = computed(() => {
+    return lightboxPhotos.value.slice(lightboxStart.value, lightboxEnd.value);
+});
+
+const hasPrevLightboxBatch = computed(() => lightboxStart.value > 0);
+const hasNextLightboxBatch = computed(() => lightboxEnd.value < lightboxPhotos.value.length);
+const remainingNextPhotos = computed(() => lightboxPhotos.value.length - lightboxEnd.value);
+const slideOffset = computed(() => (hasPrevLightboxBatch.value ? 1 : 0));
+
+const loadMoreLightboxNext = () => {
+    lightboxEnd.value = Math.min(lightboxPhotos.value.length, lightboxEnd.value + LIGHTBOX_BATCH_SIZE);
+};
+
+const loadMoreLightboxPrev = () => {
+    const prevStart = lightboxStart.value;
+    const newStart = Math.max(0, prevStart - LIGHTBOX_BATCH_SIZE);
+    const added = prevStart - newStart;
+    lightboxStart.value = newStart;
+
+    nextTick(() => {
+        const targetSlide = Math.max(0, added + (hasPrevLightboxBatch.value ? 0 : -1));
+        mainSwiper.value?.slideTo(targetSlide, 0);
+        activeIndex.value = targetSlide;
+    });
+};
+
+const openLightbox = (clickedPhoto) => {
+    const gallery = props.galleries.find(g => g.photographer.id === clickedPhoto.gallery_photographer.id);
+
+    if (gallery) {
+        activePhotographer.value = gallery.photographer;
+        activePhotographerTotal.value = gallery.photos_count;
+        lightboxPhotos.value = gallery.photos;
+
+        const newIndex = gallery.photos.findIndex(p => p.id === clickedPhoto.id);
+        const safeIndex = newIndex !== -1 ? newIndex : 0;
+
+        lightboxStart.value = Math.max(0, safeIndex - 5);
+        lightboxEnd.value = Math.min(gallery.photos.length, lightboxStart.value + LIGHTBOX_BATCH_SIZE);
+        activeIndex.value = (safeIndex - lightboxStart.value) + (lightboxStart.value > 0 ? 1 : 0);
+
+        isLightboxOpen.value = true;
+    }
+};
+
+const closeLightbox = () => {
+    isLightboxOpen.value = false;
+    mainSwiper.value = null;
+};
+
 
 const selectedRole = ref('all');
-
 const INITIAL_LIMIT = 20;
 const LOAD_MORE_STEP = 24;
 const roleLimits = ref({});
@@ -68,7 +127,6 @@ const shuffleArray = (arr) => {
     }
     return copy;
 };
-
 
 const interleaveGalleries = (galleriesList) => {
     const interleaved = [];
@@ -94,7 +152,6 @@ const interleaveGalleries = (galleriesList) => {
     return interleaved;
 };
 
-
 const shuffledRoles = (() => {
     const rolesSet = new Set();
     props.galleries.forEach(g => {
@@ -108,7 +165,6 @@ const shuffledRoles = (() => {
 })();
 
 const hasLocationRoles = computed(() => shuffledRoles.length > 0);
-
 
 const photoGroups = computed(() => {
     if (!hasLocationRoles.value) {
@@ -132,7 +188,6 @@ const photoGroups = computed(() => {
         }
     }
 
-
     const unassignedGalleries = props.galleries
         .map(g => ({
             photographer: g.photographer,
@@ -148,43 +203,12 @@ const photoGroups = computed(() => {
     return groups;
 });
 
-
 const visibleGroups = computed(() => {
     if (selectedRole.value === 'all') {
         return photoGroups.value;
     }
     return photoGroups.value.filter(g => g.role === selectedRole.value);
 });
-
-const setThumbsSwiper = (swiper) => { thumbsSwiper.value = swiper; };
-
-const openLightbox = (clickedPhoto) => {
-
-    const gallery = props.galleries.find(g => g.photographer.id === clickedPhoto.gallery_photographer.id);
-
-    if (gallery) {
-        activePhotographer.value = gallery.photographer;
-        activePhotographerTotal.value = gallery.photos_count;
-        lightboxPhotos.value = gallery.photos;
-
-        const newIndex = gallery.photos.findIndex(p => p.id === clickedPhoto.id);
-        activeIndex.value = newIndex !== -1 ? newIndex : 0;
-        isLightboxOpen.value = true;
-    }
-};
-
-const loadedMainImages = ref({});
-
-const onSlideChange = (swiper) => {
-    activeIndex.value = swiper.activeIndex;
-};
-
-
-
-const closeLightbox = () => {
-    isLightboxOpen.value = false;
-    thumbsSwiper.value = null;
-};
 
 const addToCart = async (photo) => {
     if (!isAuthenticated.value) {
@@ -501,37 +525,56 @@ const handleImageError = (e) => {
                         </button>
                     </div>
 
+
+
+
+
                     <div
-                        class="hidden md:block relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
-                        <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10"
-                            :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true"
-                            :initialSlide="activeIndex" class="h-full thumbs-gallery">
-                            <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
-                                class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
-                                <img :src="photo.thumbnail_url" width="64" height="64" loading="lazy" decoding="async"
-                                    class="w-full h-full object-cover rounded pointer-events-none select-none" />
-                            </swiper-slide>
-                        </swiper>
+                        class="relative z-10 h-16 md:h-24 w-full bg-black/80 shrink-0 px-3 md:px-4 py-2 border-t border-white/10 order-last overflow-x-auto flex items-center gap-2">
+                        <button v-for="(photo, index) in visibleLightboxPhotos" :key="'thumb-' + photo.id" type="button"
+                            @click.stop="mainSwiper?.slideTo(index + slideOffset)" :class="[
+                                'w-12 md:w-16 h-full rounded overflow-hidden shrink-0 border-2 transition-opacity',
+                                activeIndex === (index + slideOffset)
+                                    ? 'border-[#E30613] opacity-100'
+                                    : 'border-transparent opacity-40 hover:opacity-100'
+                            ]">
+                            <img :src="photo.thumbnail_url" width="64" height="64" loading="lazy" decoding="async"
+                                class="w-full h-full object-cover rounded pointer-events-none select-none" />
+                        </button>
                     </div>
 
-                    <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
-
-
-                        <swiper :modules="swiperModules" :initialSlide="activeIndex" @slideChange="onSlideChange"
-                            :navigation="true" :keyboard="{ enabled: true }"
-                            :thumbs="{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }"
+                    
+                    <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1">
+                        <swiper :modules="swiperModules" :initialSlide="activeIndex" @swiper="onMainSwiper"
+                            @slideChange="onSlideChange" :navigation="true" :keyboard="{ enabled: true }"
                             :spaceBetween="30" class="h-full w-full">
 
-                            <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
+                            <swiper-slide v-if="hasPrevLightboxBatch" class="flex items-center justify-center p-6">
+                                <div
+                                    class="bg-zinc-900 border border-white/15 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+                                    <p class="text-white/60 text-xs font-bold uppercase tracking-widest mb-2">
+                                        Hay {{ lightboxStart }} fotos anteriores
+                                    </p>
+                                    <h4 class="text-white text-xl font-black mb-6">
+                                        ¿Querés ver las fotos previas?
+                                    </h4>
+                                    <button type="button" @click.stop="loadMoreLightboxPrev"
+                                        class="w-full bg-white hover:bg-[#E30613] text-black hover:text-white px-6 py-3.5 rounded-full text-xs font-black uppercase tracking-wider transition-colors shadow-lg">
+                                        Cargar {{ Math.min(LIGHTBOX_BATCH_SIZE, lightboxStart) }} anteriores
+                                    </button>
+                                </div>
+                            </swiper-slide>
+
+                            <swiper-slide v-for="(photo, index) in visibleLightboxPhotos" :key="'main-' + photo.id"
                                 class="flex items-center justify-center p-4">
 
-                                <div v-if="Math.abs(index - activeIndex) <= 1"
+                                <div v-if="Math.abs((index + slideOffset) - activeIndex) <= 1"
                                     class="relative h-full w-full max-w-full flex items-center justify-center">
 
                                     <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                                        :width="photo.width || 1200" :height="photo.height || 1600" loading="eager"
                                         class="max-h-full max-w-full object-cover h-full rounded shadow-2xl relative z-10"
                                         @error="handleImageError" />
-
 
                                     <div
                                         class="absolute top-3 left-3 md:top-5 md:left-5 z-20 max-w-[calc(100%-4.5rem)] bg-white/95 shadow-lg border border-black/10 rounded-full py-1.5 pl-1.5 pr-4 flex items-center gap-2.5">
@@ -554,7 +597,6 @@ const handleImageError = (e) => {
                                             </p>
                                         </div>
                                     </div>
-
 
                                     <div
                                         class="absolute bottom-3 right-3 md:bottom-5 md:right-5 z-20 bg-white/95 shadow-xl border border-black/10 rounded-full py-1.5 pl-4 pr-1.5 flex items-center gap-3">
@@ -579,11 +621,43 @@ const handleImageError = (e) => {
 
                                 </div>
                             </swiper-slide>
+
+                            <swiper-slide v-if="hasNextLightboxBatch" class="flex items-center justify-center p-6">
+                                <div
+                                    class="bg-zinc-900 border border-white/15 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+                                    <span
+                                        class="inline-block bg-[#E30613]/20 text-[#E30613] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+                                        Mostrando {{ lightboxEnd }} de {{ lightboxPhotos.length }}
+                                    </span>
+                                    <h4 class="text-white text-xl font-black mb-2">
+                                        ¿Seguís buscando tu foto?
+                                    </h4>
+                                    <p class="text-white/70 text-xs mb-6">
+                                        Todavía quedan <strong class="text-white">{{ remainingNextPhotos }}</strong>
+                                        fotos más de {{ activePhotographer?.business_name }} en este evento.
+                                    </p>
+
+                                    <div class="flex flex-col gap-3">
+                                        <button type="button" @click.stop="loadMoreLightboxNext"
+                                            class="w-full bg-[#E30613] hover:bg-red-700 text-white px-6 py-3.5 rounded-full text-xs font-black uppercase tracking-wider transition-colors shadow-lg">
+                                            Cargar {{ Math.min(LIGHTBOX_BATCH_SIZE, remainingNextPhotos) }} fotos más
+                                        </button>
+
+                                        <Link v-if="activePhotographer?.slug"
+                                            :href="route('events.show-photographer', [event.slug, activePhotographer.slug])"
+                                            class="w-full bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors">
+                                            Ir a galería del fotógrafo
+                                        </Link>
+                                    </div>
+                                </div>
+                            </swiper-slide>
+
                         </swiper>
-
-
-
                     </div>
+
+
+
+
                 </div>
             </Transition>
         </Teleport>
