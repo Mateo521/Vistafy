@@ -533,50 +533,53 @@ const handleImageError = (e) => {
                                         class="max-h-full max-w-full object-contain rounded absolute inset-0 m-auto z-10"
                                         @error="handleImageError" />
 
+
                                     <div
-                                        class="absolute bottom-4 left-4 right-4 p-3 md:p-5 bg-white/90 rounded flex flex-col md:flex-row justify-between gap-4 items-center border border-white z-20">
+                                        class="absolute top-3 left-3 md:top-5 md:left-5 z-20 max-w-[calc(100%-4.5rem)] bg-white/95 backdrop-blur-md shadow-lg border border-black/5 rounded-full py-1.5 pl-1.5 pr-4 flex items-center gap-2.5">
+                                        <img :src="activePhotographer?.profile_photo_url || 'https://via.placeholder.com/50'"
+                                            class="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-200 object-cover shrink-0">
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-xs md:text-sm text-black truncate leading-tight">
+                                                {{ activePhotographer?.business_name }}
+                                            </p>
 
-                                        <div class="flex items-center gap-4 w-full md:w-auto">
-                                            <img :src="activePhotographer?.profile_photo_url || 'https://via.placeholder.com/50'"
-                                                class="w-12 h-12 rounded-full border border-gray-200 object-cover">
-                                            <div>
-                                                <p class="font-bold text-sm text-black">{{
-                                                    activePhotographer?.business_name }}</p>
-
-                                                <Link v-if="activePhotographerTotal > lightboxPhotos.length"
-                                                    :href="route('events.show-photographer', [event.slug, activePhotographer?.slug])"
-                                                    class="text-[#E30613] text-[10px] font-bold uppercase tracking-wider hover:underline flex items-center gap-1 mt-1">
-                                                    Ver las {{ activePhotographerTotal }} fotos
-                                                    <ArrowRightIcon class="w-3 h-3" />
-                                                </Link>
-                                                <p v-else
-                                                    class="text-gray-400 font-bold text-[10px] uppercase tracking-wider mt-1">
-                                                    Ref: {{ photo.unique_id }}
-                                                </p>
-                                            </div>
+                                            <Link v-if="activePhotographerTotal > lightboxPhotos.length"
+                                                :href="route('events.show-photographer', [event.slug, activePhotographer?.slug])"
+                                                class="text-[#E30613] text-[10px] font-bold uppercase tracking-wider hover:underline flex items-center gap-1 mt-0.5 truncate">
+                                                Ver las {{ activePhotographerTotal }} fotos
+                                                <ArrowRightIcon class="w-3 h-3 shrink-0" />
+                                            </Link>
+                                            <p v-else
+                                                class="text-gray-400 font-bold text-[10px] uppercase tracking-wider mt-0.5 truncate">
+                                                Ref: {{ photo.unique_id }}
+                                            </p>
                                         </div>
-
-                                        <div class="flex items-center gap-4 w-full md:w-auto justify-end">
-                                            <PhotoPrice :price="photo.price" :event-id="event.id" variant="large" />
-
-                                            <div v-if="purchasedIds.includes(photo.id)"
-                                                class="bg-blue-600 text-white px-5 py-3 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md cursor-default">
-                                                <CheckBadgeIcon class="w-4 h-4" /> Tuya
-                                            </div>
-                                            <div v-else-if="cartIds.includes(photo.id)"
-                                                class="bg-green-500 text-white px-5 py-3 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md cursor-default">
-                                                <CheckCircleIcon class="w-4 h-4" /> En carrito
-                                            </div>
-                                            <button v-else @click.prevent.stop="addToCart(photo)"
-                                                class="bg-black hover:bg-[#E30613] text-white px-5 py-3 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors shadow-md">
-                                                <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
-                                                <span v-else class="flex items-center gap-2">
-                                                    <ShoppingCartIcon class="w-4 h-4" /> Añadir
-                                                </span>
-                                            </button>
-                                        </div>
-
                                     </div>
+
+
+                                    <div
+                                        class="absolute bottom-3 right-3 md:bottom-5 md:right-5 z-20 bg-white/95 backdrop-blur-md shadow-xl border border-black/5 rounded-full py-1.5 pl-4 pr-1.5 flex items-center gap-3">
+                                        <PhotoPrice :price="photo.price" :event-id="event.id" variant="large" />
+
+                                        <div v-if="purchasedIds.includes(photo.id)"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm cursor-default shrink-0">
+                                            <CheckBadgeIcon class="w-4 h-4" /> Tuya
+                                        </div>
+                                        <div v-else-if="cartIds.includes(photo.id)"
+                                            class="bg-green-500 text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm cursor-default shrink-0">
+                                            <CheckCircleIcon class="w-4 h-4" /> En carrito
+                                        </div>
+                                        <button v-else @click.prevent.stop="addToCart(photo)"
+                                            class="bg-black hover:bg-[#E30613] text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors shadow-sm shrink-0">
+                                            <span v-if="addingToCartIds?.includes(photo.id)">Añadiendo...</span>
+                                            <span v-else class="flex items-center gap-1.5">
+                                                <ShoppingCartIcon class="w-4 h-4" /> Añadir
+                                            </span>
+                                        </button>
+                                    </div>
+
+
+
                                 </div>
                             </swiper-slide>
                         </swiper>
