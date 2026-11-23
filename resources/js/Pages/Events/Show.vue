@@ -173,6 +173,10 @@ const openLightbox = (clickedPhoto) => {
     }
 };
 
+const onSlideChange = (swiper) => {
+    activeIndex.value = swiper.activeIndex;
+};
+
 const closeLightbox = () => {
     isLightboxOpen.value = false;
     thumbsSwiper.value = null;
@@ -396,7 +400,7 @@ const handleImageError = (e) => {
                                 <div
                                     class="absolute inset-0 z-20 bg-gradient-to-b from-black/65 via-transparent to-black/85 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2.5 sm:p-3 pointer-events-none">
 
-                                    
+
                                     <div class="flex justify-between items-start gap-2 w-full">
                                         <div class="flex flex-col gap-1 min-w-0">
                                             <span v-if="photo.location_role"
@@ -414,7 +418,7 @@ const handleImageError = (e) => {
                                         </div>
                                     </div>
 
-                                    
+
                                     <div class="flex justify-between items-center gap-2 w-full">
                                         <div class="flex items-center gap-2 min-w-0">
                                             <img :src="photo.gallery_photographer?.profile_photo_url || 'https://via.placeholder.com/50'"
@@ -506,34 +510,31 @@ const handleImageError = (e) => {
                     </div>
 
                     <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
+
+
                         <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex"
-                            :navigation="true" :keyboard="{ enabled: true }" :thumbs="{ swiper: thumbsSwiper }"
+                            @slideChange="onSlideChange" :navigation="true" :keyboard="{ enabled: true }"
+                            :thumbs="{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }"
                             :spaceBetween="30" class="h-full w-full">
+
                             <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
                                 :virtualIndex="index" class="flex items-center justify-center p-4">
-                                <div class="relative h-full w-full max-w-full flex items-center justify-center">
 
-                                    <div class="absolute inset-0 flex flex-col items-center justify-center z-0">
-                                        <svg class="animate-spin w-10 h-10 text-white/20 mb-2"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <span
-                                            class="text-white/40 text-xs font-bold uppercase tracking-widest">Cargando...</span>
-                                    </div>
 
-                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy"
-                                        class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
+                                <div v-if="Math.abs(index - activeIndex) <= 1"
+                                    class="relative h-full w-full max-w-full flex items-center justify-center">
+
+
+                                    <img :src="photo.thumbnail_url"
+                                        class="max-h-full max-w-full object-contain rounded shadow-2xl pointer-events-none select-none" />
+
+
+                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                                        class="max-h-full max-w-full object-contain rounded absolute inset-0 m-auto z-10"
                                         @error="handleImageError" />
-
 
                                     <div
                                         class="absolute bottom-4 left-4 right-4 p-3 md:p-5 bg-white/90 rounded flex flex-col md:flex-row justify-between gap-4 items-center border border-white z-20">
-
 
                                         <div class="flex items-center gap-4 w-full md:w-auto">
                                             <img :src="activePhotographer?.profile_photo_url || 'https://via.placeholder.com/50'"
@@ -575,12 +576,13 @@ const handleImageError = (e) => {
                                             </button>
                                         </div>
 
-
-
                                     </div>
                                 </div>
                             </swiper-slide>
                         </swiper>
+
+
+
                     </div>
                 </div>
             </Transition>
