@@ -385,54 +385,59 @@ const handleImageError = (e) => {
                                     @error="handleImageError" />
 
                                 <div v-if="purchasedIds.includes(photo.id)"
-                                    class="absolute top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max">
+                                    class="absolute top-2.5 left-2.5 bg-blue-600 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max group-hover:opacity-0 transition-opacity duration-200 pointer-events-none">
                                     <CheckBadgeIcon class="w-3.5 h-3.5" /> Adquirida
                                 </div>
                                 <div v-else-if="cartIds.includes(photo.id)"
-                                    class="absolute top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max">
+                                    class="absolute top-2.5 left-2.5 bg-green-500 text-white px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider z-20 shadow-md flex items-center gap-1 w-max group-hover:opacity-0 transition-opacity duration-200 pointer-events-none">
                                     <CheckCircleIcon class="w-3.5 h-3.5" /> En carrito
                                 </div>
 
                                 <div
-                                    class="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 pointer-events-none">
-                                    <div class="flex justify-between items-end w-full">
+                                    class="absolute inset-0 z-20 bg-gradient-to-b from-black/65 via-transparent to-black/85 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2.5 sm:p-3 pointer-events-none">
 
-                                        <div class="flex flex-col gap-1.5">
-                                            <div class="flex flex-col gap-0.5">
-                                                <span v-if="photo.location_role"
-                                                    class="block bg-white/90 backdrop-blur-sm text-black font-bold text-[9px] px-2 py-0.5 rounded uppercase tracking-wider w-max">
-                                                    {{ photo.location_role }}
-                                                </span>
-                                                <span
-                                                    class="text-white/80 font-bold text-[9px] uppercase tracking-wider">
-                                                    ID: {{ photo.unique_id.substring(0, 6) }}
-                                                </span>
-                                            </div>
-                                            <div class="flex items-center gap-2 mt-1">
-                                                <img :src="photo.gallery_photographer?.profile_photo_url || 'https://via.placeholder.com/50'"
-                                                    class="w-5 h-5 rounded-full object-cover border border-white/30">
-                                                <span
-                                                    class="text-white font-bold text-[9px] uppercase tracking-wider truncate max-w-[100px]">
-                                                    {{ photo.gallery_photographer?.business_name || 'Fotógrafo' }}
-                                                </span>
-                                            </div>
+                                    
+                                    <div class="flex justify-between items-start gap-2 w-full">
+                                        <div class="flex flex-col gap-1 min-w-0">
+                                            <span v-if="photo.location_role"
+                                                class="block bg-white/90 backdrop-blur-sm text-black font-bold text-[9px] px-2 py-0.5 rounded uppercase tracking-wider w-max max-w-full truncate">
+                                                {{ photo.location_role }}
+                                            </span>
+                                            <span
+                                                class="text-white/90 font-bold text-[9px] uppercase tracking-wider drop-shadow-sm">
+                                                ID: {{ photo.unique_id.substring(0, 6) }}
+                                            </span>
                                         </div>
 
-                                        <div class="flex flex-col items-end gap-2">
+                                        <div class="shrink-0">
                                             <PhotoPrice :price="photo.price" :event-id="event.id" variant="badge" />
+                                        </div>
+                                    </div>
 
+                                    
+                                    <div class="flex justify-between items-center gap-2 w-full">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <img :src="photo.gallery_photographer?.profile_photo_url || 'https://via.placeholder.com/50'"
+                                                class="w-5 h-5 rounded-full object-cover border border-white/30 shrink-0">
+                                            <span
+                                                class="text-white font-bold text-[9px] uppercase tracking-wider truncate">
+                                                {{ photo.gallery_photographer?.business_name || 'Fotógrafo' }}
+                                            </span>
+                                        </div>
+
+                                        <div class="shrink-0">
                                             <button v-if="purchasedIds.includes(photo.id)"
                                                 title="Ya compraste esta foto"
-                                                class="bg-blue-600 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white z-20 cursor-default pointer-events-auto">
+                                                class="bg-blue-600 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white cursor-default pointer-events-auto">
                                                 <CheckBadgeIcon class="w-4 h-4 m-0.5" />
                                             </button>
                                             <button v-else-if="cartIds.includes(photo.id)" title="Ya está en tu carrito"
-                                                class="bg-green-500 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white z-20 cursor-default pointer-events-auto">
+                                                class="bg-green-500 p-1.5 rounded-full shadow-sm flex items-center justify-center text-white cursor-default pointer-events-auto">
                                                 <CheckCircleIcon class="w-4 h-4 m-0.5" />
                                             </button>
                                             <button v-else @click.prevent.stop="addToCart(photo)"
                                                 title="Añadir al carrito"
-                                                class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center text-black hover:bg-black hover:text-white transition-colors duration-300 pointer-events-auto z-20">
+                                                class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm flex items-center justify-center text-black hover:bg-black hover:text-white transition-colors duration-300 pointer-events-auto">
                                                 <svg v-if="addingToCartIds?.includes(photo.id)"
                                                     class="animate-spin w-4 h-4 m-0.5"
                                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -446,7 +451,11 @@ const handleImageError = (e) => {
                                             </button>
                                         </div>
                                     </div>
+
                                 </div>
+
+
+
                             </div>
 
                             <div v-if="group.photos.length > getLimit(group.role || 'all')"
