@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Event;
 use App\Models\Photo;
+use App\Models\PurchaseItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,21 +13,38 @@ class EventFaceSearchController extends Controller
 {
     public function index(Event $event)
     {
+        $cartPhotoIds = [];
+        $purchasedPhotoIds = [];
+
+        if (auth()->check()) {
+            $userId = auth()->id();
+
+            $cart = Cart::where('user_id', $userId)->first();
+            if ($cart) {
+                $cartPhotoIds = $cart->items()->pluck('photo_id')->toArray();
+            }
+
+            $purchasedPhotoIds = PurchaseItem::whereHas('purchase', function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                    ->where('status', 'approved');
+            })->pluck('photo_id')->toArray();
+        }
+
         return Inertia::render('Events/FaceSearch', [
             'event' => $event,
+            'cartPhotoIds' => $cartPhotoIds,
+            'purchasedPhotoIds' => $purchasedPhotoIds,
         ]);
     }
 
     public function search(Request $request, Event $event)
     {
-
         $request->validate([
             'selfie' => 'required|image|max:5120',
         ]);
 
         $threshold = $request->threshold ?? 0.6;
 
-        $path = $request->file('selfie')->store('temp');
         $fullPath = $request->file('selfie')->path();
 
         $scriptPath = base_path('scripts/extract_face.py');
@@ -38,10 +57,7 @@ class EventFaceSearchController extends Controller
 
         if (! $result || ! isset($result['success']) || ! $result['success']) {
             return response()->json([
-                'error' => 'Falló la extracción del rostro.',
-                'debug_raw_output' => $output,
-                'debug_command' => $command,
-                'debug_json_error' => json_last_error_msg(),
+                'error' => 'No se detectó ningún rostro claro en la selfie. Intentá con otra foto.',
             ], 400);
         }
 
@@ -74,6 +90,7 @@ class EventFaceSearchController extends Controller
                         'original_name' => $photo->original_name,
                         'thumbnail_url' => $photo->thumbnail_url,
                         'watermarked_url' => $photo->watermarked_url,
+                        'price' => $photo->price,
                         'distance' => round($distance, 4),
                         'similarity' => round(max(0, 1 - $distance), 4),
                     ];
