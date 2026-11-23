@@ -178,13 +178,7 @@ class WebhookController extends Controller
             }
         }
 
-        if ($payment->items && $payment->items->count() > 0) {
-            foreach ($payment->items as $item) {
-                if ($item->photo) {
-                    $item->photo->increment('downloads');
-                }
-            }
-        }
+        
 
 
         if ($purchase->user) {
@@ -249,14 +243,7 @@ class WebhookController extends Controller
             Log::info(' Notificación de éxito enviada a: '.$emailToSend);
         }
 
-        if ($purchase->items && $purchase->items->count() > 0) {
-            foreach ($purchase->items as $item) {
-                if ($item->photo) {
-                    $item->photo->increment('downloads');
-                    Log::info(' Descarga sumada a la foto ID: '.$item->photo->id);
-                }
-            }
-        }
+    
 
         if ($purchase->user) {
             $cart = \App\Models\Cart::where('user_id', $purchase->user->id)->first();

@@ -160,7 +160,7 @@ class EventController extends Controller
             ->with('success', 'Evento creado exitosamente');
     }
 
-    public function show($id)
+public function show($id)
     {
         $photographer = auth()->user()->photographer;
 
@@ -182,9 +182,16 @@ class EventController extends Controller
             ->paginate(100)
             ->withQueryString();
 
+        $totalSold = \App\Models\PurchaseItem::whereHas('photo', function ($q) use ($event) {
+            $q->where('event_id', $event->id);
+        })->whereHas('purchase', function ($q) {
+            $q->where('status', 'approved');
+        })->count();
+
         $stats = [
             'total_photos' => $event->photos()->count(),
             'active_photos' => $event->photos()->where('is_active', true)->count(),
+            'total_sold' => $totalSold,
             'total_downloads' => $event->photos()->sum('downloads'),
         ];
 

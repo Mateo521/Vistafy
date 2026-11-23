@@ -57,14 +57,14 @@ const selectAllOnPage = () => {
 };
 
 const bulkDelete = async () => {
-    const confirmed = await confirm({ 
-        title: 'Eliminar fotos seleccionadas', 
-        message: `¿Estás seguro de eliminar ${selectedPhotos.value.length} fotografías permanentemente?`, 
-        confirmText: 'Eliminar', 
-        cancelText: 'Cancelar', 
-        type: 'danger' 
+    const confirmed = await confirm({
+        title: 'Eliminar fotos seleccionadas',
+        message: `¿Estás seguro de eliminar ${selectedPhotos.value.length} fotografías permanentemente?`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'danger'
     });
-    
+
     if (confirmed) {
 
         router.post(route('photographer.photos.bulk-destroy'), { ids: selectedPhotos.value }, {
@@ -80,7 +80,7 @@ const bulkDelete = async () => {
 
 const submitBulkPrice = () => {
     if (!bulkPriceForm.price || bulkPriceForm.price <= 0) return error('Ingresá un precio válido');
-    
+
 
     router.post(route('photographer.photos.bulk-price'), {
         ids: selectedPhotos.value,
@@ -272,10 +272,17 @@ const paginationPages = computed(() => {
                                     <span class="text-xl font-black text-black">{{ stats?.active_photos || 0 }}</span>
                                 </div>
                                 <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
+                                    <span class="text-sm font-medium text-gray-600">Fotos vendidas</span>
+                                    <span class="text-xl font-black text-green-600">{{ stats?.total_sold || 0 }}</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-gray-50 p-4 rounded">
                                     <span class="text-sm font-medium text-gray-600">Descargas totales</span>
                                     <span class="text-xl font-black text-[#E30613]">{{ stats?.total_downloads || 0
-                                    }}</span>
+                                        }}</span>
                                 </div>
+
+
+
                             </div>
                             <button @click="copyEventUrl"
                                 class="mt-6 w-full border-2 transition-colors px-4 py-3.5 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
