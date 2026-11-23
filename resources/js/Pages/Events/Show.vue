@@ -173,9 +173,13 @@ const openLightbox = (clickedPhoto) => {
     }
 };
 
+const loadedMainImages = ref({});
+
 const onSlideChange = (swiper) => {
     activeIndex.value = swiper.activeIndex;
 };
+
+
 
 const closeLightbox = () => {
     isLightboxOpen.value = false;
@@ -512,37 +516,39 @@ const handleImageError = (e) => {
                     <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1" v-if="thumbsSwiper">
 
 
-                        <swiper :modules="swiperModules" :virtual="{ enabled: true }" :initialSlide="activeIndex"
-                            @slideChange="onSlideChange" :navigation="true" :keyboard="{ enabled: true }"
+                        <swiper :modules="swiperModules" :initialSlide="activeIndex" @slideChange="onSlideChange"
+                            :navigation="true" :keyboard="{ enabled: true }"
                             :thumbs="{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }"
                             :spaceBetween="30" class="h-full w-full">
 
                             <swiper-slide v-for="(photo, index) in lightboxPhotos" :key="'main-' + photo.id"
-                                :virtualIndex="index" class="flex items-center justify-center p-4">
-
+                                class="flex items-center justify-center p-4">
 
                                 <div v-if="Math.abs(index - activeIndex) <= 1"
                                     class="relative h-full w-full max-w-full flex items-center justify-center">
 
 
-                                    <img :src="photo.thumbnail_url"
-                                        class="max-h-full max-w-full object-contain rounded shadow-2xl pointer-events-none select-none" />
+                                    <img v-if="!loadedMainImages[photo.id]" :src="photo.thumbnail_url"
+                                        class="max-h-full max-w-full object-contain rounded pointer-events-none select-none opacity-80" />
 
 
-                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
-                                        class="max-h-full max-w-full object-contain rounded absolute inset-0 m-auto z-10"
-                                        @error="handleImageError" />
+                                    <div @load.capture="loadedMainImages[photo.id] = true"
+                                        class="h-full w-full flex items-center justify-center"
+                                        :class="{ 'absolute inset-0 opacity-0': !loadedMainImages[photo.id] }">
+                                        <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                                            class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
+                                            @error="handleImageError" />
+                                    </div>
 
 
                                     <div
-                                        class="absolute top-3 left-3 md:top-5 md:left-5 z-20 max-w-[calc(100%-4.5rem)] bg-white/95 backdrop-blur-md shadow-lg border border-black/5 rounded-full py-1.5 pl-1.5 pr-4 flex items-center gap-2.5">
+                                        class="absolute top-3 left-3 md:top-5 md:left-5 z-20 max-w-[calc(100%-4.5rem)] bg-white/95 shadow-lg border border-black/10 rounded-full py-1.5 pl-1.5 pr-4 flex items-center gap-2.5">
                                         <img :src="activePhotographer?.profile_photo_url || 'https://via.placeholder.com/50'"
                                             class="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-200 object-cover shrink-0">
                                         <div class="min-w-0">
                                             <p class="font-bold text-xs md:text-sm text-black truncate leading-tight">
                                                 {{ activePhotographer?.business_name }}
                                             </p>
-
                                             <Link v-if="activePhotographerTotal > lightboxPhotos.length"
                                                 :href="route('events.show-photographer', [event.slug, activePhotographer?.slug])"
                                                 class="text-[#E30613] text-[10px] font-bold uppercase tracking-wider hover:underline flex items-center gap-1 mt-0.5 truncate">
@@ -558,7 +564,7 @@ const handleImageError = (e) => {
 
 
                                     <div
-                                        class="absolute bottom-3 right-3 md:bottom-5 md:right-5 z-20 bg-white/95 backdrop-blur-md shadow-xl border border-black/5 rounded-full py-1.5 pl-4 pr-1.5 flex items-center gap-3">
+                                        class="absolute bottom-3 right-3 md:bottom-5 md:right-5 z-20 bg-white/95 shadow-xl border border-black/10 rounded-full py-1.5 pl-4 pr-1.5 flex items-center gap-3">
                                         <PhotoPrice :price="photo.price" :event-id="event.id" variant="large" />
 
                                         <div v-if="purchasedIds.includes(photo.id)"
@@ -577,8 +583,6 @@ const handleImageError = (e) => {
                                             </span>
                                         </button>
                                     </div>
-
-
 
                                 </div>
                             </swiper-slide>
