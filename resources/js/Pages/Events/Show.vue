@@ -549,7 +549,7 @@ const handleImageError = (e) => {
                             @slideChange="onSlideChange" :navigation="true" :keyboard="{ enabled: true }"
                             :spaceBetween="30" class="h-full w-full">
 
-                            <swiper-slide v-if="hasPrevLightboxBatch" class="flex items-center justify-center p-6">
+                            <swiper-slide v-if="hasPrevLightboxBatch" class="!flex items-center justify-center p-6">
                                 <div
                                     class="bg-zinc-900 border border-white/15 rounded p-8 max-w-sm w-full text-center shadow-2xl">
                                     <p class="text-white/60 text-xs font-bold uppercase tracking-widest mb-2">
