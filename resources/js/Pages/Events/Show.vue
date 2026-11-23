@@ -551,7 +551,7 @@ const handleImageError = (e) => {
 
                             <swiper-slide v-if="hasPrevLightboxBatch" class="flex items-center justify-center p-6">
                                 <div
-                                    class="bg-zinc-900 border border-white/15 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+                                    class="bg-zinc-900 border border-white/15 rounded p-8 max-w-sm w-full text-center shadow-2xl">
                                     <p class="text-white/60 text-xs font-bold uppercase tracking-widest mb-2">
                                         Hay {{ lightboxStart }} fotos anteriores
                                     </p>
@@ -622,11 +622,11 @@ const handleImageError = (e) => {
                                 </div>
                             </swiper-slide>
 
-                            <swiper-slide v-if="hasNextLightboxBatch" class="flex items-center justify-center p-6">
+                            <swiper-slide v-if="hasNextLightboxBatch" class="!flex items-center justify-center p-6">
                                 <div
-                                    class="bg-zinc-900 border border-white/15 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl">
+                                    class="bg-zinc-900 border border-white/15 rounded p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl">
                                     <span
-                                        class="inline-block bg-[#E30613]/20 text-[#E30613] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+                                        class="inline-block bg-[#E30613]/20 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3">
                                         Mostrando {{ lightboxEnd }} de {{ lightboxPhotos.length }}
                                     </span>
                                     <h4 class="text-white text-xl font-black mb-2">
