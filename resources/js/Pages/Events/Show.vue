@@ -50,6 +50,15 @@ const activePhotographerTotal = ref(0);
 
 const selectedRole = ref('all');
 
+const INITIAL_LIMIT = 20;
+const LOAD_MORE_STEP = 24;
+const roleLimits = ref({});
+
+const getLimit = (roleKey) => roleLimits.value[roleKey] || INITIAL_LIMIT;
+
+const loadMore = (roleKey) => {
+    roleLimits.value[roleKey] = getLimit(roleKey) + LOAD_MORE_STEP;
+};
 
 const shuffleArray = (arr) => {
     const copy = [...arr];
@@ -347,7 +356,7 @@ const handleImageError = (e) => {
                 <div v-else class="space-y-12">
                     <div v-for="(group, idx) in visibleGroups" :key="group.role || idx">
 
-                    
+
                         <div v-if="group.role"
                             class="flex items-center justify-between border-b border-gray-200 pb-3 mb-5">
                             <div class="flex items-center gap-2.5">
@@ -363,14 +372,15 @@ const handleImageError = (e) => {
 
                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
 
-                            <div v-for="photo in group.photos" :key="photo.id" @click="openLightbox(photo)" :class="[
-                                'group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm transition-all duration-300 bg-gray-100',
-                                purchasedIds.includes(photo.id) ? 'ring-2 ring-blue-500 shadow-blue-200 opacity-90' :
-                                    cartIds.includes(photo.id) ? 'ring-2 ring-green-500 shadow-green-200' :
-                                        'border border-transparent hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
-                            ]">
+                            <div v-for="photo in group.photos.slice(0, getLimit(group.role || 'all'))" :key="photo.id"
+                                @click="openLightbox(photo)" :class="[
+                                    'group relative rounded overflow-hidden aspect-[4/5] cursor-pointer shadow-sm transition-all duration-300 bg-gray-100',
+                                    purchasedIds.includes(photo.id) ? 'ring-2 ring-blue-500 shadow-blue-200 opacity-90' :
+                                        cartIds.includes(photo.id) ? 'ring-2 ring-green-500 shadow-green-200' :
+                                            'border border-transparent hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
+                                ]">
 
-                                <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url" loading="lazy"
+                                <ProtectedImage :src="photo.thumbnail_url || photo.watermarked_url" loading="lazy"
                                     class="w-full h-full object-cover rounded shadow-2xl relative z-10"
                                     @error="handleImageError" />
 
@@ -439,7 +449,18 @@ const handleImageError = (e) => {
                                 </div>
                             </div>
 
+                            <div v-if="group.photos.length > getLimit(group.role || 'all')"
+                                class="mt-6 flex justify-center">
+                                <button @click="loadMore(group.role || 'all')"
+                                    class="bg-white hover:bg-black hover:text-white text-black border border-gray-300 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-colors shadow-sm">
+                                    Ver más fotos ({{ group.photos.length - getLimit(group.role || 'all') }} restantes)
+                                </button>
+                            </div>
+
                         </div>
+
+
+
                     </div>
                 </div>
 
@@ -463,13 +484,14 @@ const handleImageError = (e) => {
                     </div>
 
                     <div
-                        class="relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
+                        class="hidden md:block relative z-10 h-24 md:h-28 w-full bg-black/50 shrink-0 px-4 py-2 border-t border-white/10 order-last">
                         <swiper @swiper="setThumbsSwiper" :modules="swiperModules" :spaceBetween="10"
                             :slidesPerView="'auto'" :freeMode="true" :watchSlidesProgress="true"
                             :initialSlide="activeIndex" class="h-full thumbs-gallery">
                             <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
                                 class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
-                                <img :src="photo.thumbnail_url" class="w-full h-full object-cover" />
+                                <img :src="photo.thumbnail_url" loading="lazy" decoding="async"
+                                    class="w-full h-full object-cover" />
                             </swiper-slide>
                         </swiper>
                     </div>
