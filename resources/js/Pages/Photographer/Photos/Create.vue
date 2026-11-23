@@ -93,20 +93,20 @@ const compressImage = async (file) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                
+
                 canvas.toBlob((blob) => {
                     const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
                         type: 'image/jpeg',
                         lastModified: Date.now()
                     });
-                    
-                
+
+
                     const previewUrl = URL.createObjectURL(blob);
 
                     resolve({
                         file: compressedFile,
                         name: compressedFile.name,
-                        preview: previewUrl 
+                        preview: previewUrl
                     });
                 }, 'image/jpeg', 0.8);
             };
@@ -135,7 +135,7 @@ const addFiles = async (files) => {
     if (filesToProcess.length === 0) return;
 
     isProcessing.value = true;
-    
+
 
     /*
     isScanningNSFW.value = true;
@@ -187,13 +187,13 @@ watch(() => form.event_id, () => { form.location_role = ''; isTypingCustomRole.v
 watch(() => form.location_role, (newValue) => { if (newValue === 'custom') { isTypingCustomRole.value = true; form.location_role = ''; } });
 
 const removeFile = (index) => selectedFiles.value.splice(index, 1);
-const clearFiles = () => { 
+const clearFiles = () => {
 
     selectedFiles.value.forEach(item => {
         if (item.preview) URL.revokeObjectURL(item.preview);
     });
-    selectedFiles.value = []; 
-    if (fileInput.value) fileInput.value.value = ''; 
+    selectedFiles.value = [];
+    if (fileInput.value) fileInput.value.value = '';
 };
 
 
@@ -202,13 +202,33 @@ const isUploadingChunk = ref(false);
 const uploadProgress = ref({ current: 0, total: 0, percentage: 0 });
 const uploadStats = ref({ success: 0, failed: 0, total: 0 });
 
+const failedUploads = ref([]);
+const showErrorModal = ref(false);
+
+const extractErrorMessage = (err) => {
+    const data = err.response?.data;
+    if (data?.errors) {
+        const firstKey = Object.keys(data.errors)[0];
+        const firstError = data.errors[firstKey];
+        if (Array.isArray(firstError)) return firstError[0];
+        if (typeof firstError === 'string') return firstError;
+    }
+    if (data?.message) return data.message;
+    if (err.response?.status === 413) return 'El archivo es demasiado pesado para el servidor.';
+    return 'Error de conexión o del servidor al procesar la foto.';
+};
+
 const submitPhotos = async () => {
     if (selectedFiles.value.length === 0) return error('Seleccione al menos una foto.');
     if (!form.price || form.price <= 0) return error('Establezca un precio válido.');
 
     uploading.value = true;
+    failedUploads.value = [];
     uploadStats.value = { success: 0, failed: 0, total: selectedFiles.value.length };
     uploadProgress.value = { current: 0, total: selectedFiles.value.length, percentage: 0 };
+
+    const succeededPreviews = [];
+    const currentFailed = [];
 
     for (let i = 0; i < selectedFiles.value.length; i++) {
         const item = selectedFiles.value[i];
@@ -227,9 +247,14 @@ const submitPhotos = async () => {
             });
 
             uploadStats.value.success++;
+            succeededPreviews.push(item.preview);
         } catch (err) {
-            console.error(`Error subiendo foto ${i}:`, err);
+            console.error(`Error subiendo ${item.name}:`, err);
             uploadStats.value.failed++;
+            currentFailed.push({
+                ...item,
+                errorReason: extractErrorMessage(err),
+            });
         }
 
         uploadProgress.value.current = i + 1;
@@ -239,27 +264,51 @@ const submitPhotos = async () => {
     uploading.value = false;
     isUploadingChunk.value = false;
 
-    if (uploadStats.value.failed === 0) {
+
+    succeededPreviews.forEach(url => {
+        if (url) URL.revokeObjectURL(url);
+    });
+
+    if (currentFailed.length === 0) {
         success('Todas las fotos cargadas exitosamente.');
-        clearFiles();
+        selectedFiles.value = [];
+        if (fileInput.value) fileInput.value.value = '';
         router.visit(route('photographer.photos.index'));
     } else {
-        error(`Se subieron ${uploadStats.value.success} fotos. Hubo ${uploadStats.value.failed} errores.`);
-        selectedFiles.value = selectedFiles.value.filter((_, idx) => idx >= uploadStats.value.success);
+
+        selectedFiles.value = currentFailed;
+        failedUploads.value = currentFailed;
+        showErrorModal.value = true;
     }
 };
+
+const closeErrorModalAndKeep = () => {
+    showErrorModal.value = false;
+};
+
+const discardFailedAndFinish = () => {
+    clearFiles();
+    failedUploads.value = [];
+    showErrorModal.value = false;
+    router.visit(route('photographer.photos.index'));
+};
+
+
 </script>
 
 <template>
+
     <Head title="Carga de material" />
 
     <AuthenticatedLayout>
         <div class="py-12 bg-[#F8F9FA] min-h-screen text-slate-800 antialiased pt-28">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                
-                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
+
+                <div
+                    class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
                     <div>
-                        <Link :href="route('photographer.photos.index')" class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
+                        <Link :href="route('photographer.photos.index')"
+                            class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black hover:shadow-sm border border-gray-200 transition-all mb-6">
                             <ArrowLeftIcon class="w-4 h-4" /> Volver al Archivo
                         </Link>
                         <h1 class="font-flux text-5xl md:text-7xl text-black leading-none tracking-wide">
@@ -272,61 +321,88 @@ const submitPhotos = async () => {
                 </div>
 
                 <form @submit.prevent="submitPhotos" class="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12">
-                    
+
                     <div class="lg:col-span-1 space-y-6">
                         <div class="bg-white border border-gray-100 rounded shadow-sm overflow-hidden">
                             <div class="px-6 md:px-8 py-5 border-b border-gray-100 bg-gray-50/50">
-                                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                <h2
+                                    class="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                                     <span class="w-4 h-px bg-gray-300"></span> Parámetros de Venta
                                 </h2>
                             </div>
 
                             <div class="p-6 md:p-8 space-y-8">
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">Precio unitario (ARS)</label>
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">Precio
+                                        unitario (ARS)</label>
                                     <div class="relative">
-                                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">$</span>
-                                        <input v-model="form.price" type="number" step="0.01" min="0.01" required class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-2xl py-3 pl-10 pr-4 rounded-xl transition-all outline-none" placeholder="0.00">
+                                        <span
+                                            class="absolute left-5 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">$</span>
+                                        <input v-model="form.price" type="number" step="0.01" min="0.01" required
+                                            class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-800 font-bold text-2xl py-3 pl-10 pr-4 rounded-xl transition-all outline-none"
+                                            placeholder="0.00">
                                     </div>
-                                    <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price }}</p>
+                                    <p v-if="errors.price" class="text-[#E30613] text-xs font-bold mt-2">{{ errors.price
+                                        }}</p>
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">Asignar a evento</label>
-                                    <select v-model="form.event_id" class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">Asignar
+                                        a evento</label>
+                                    <select v-model="form.event_id"
+                                        class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
                                         <option :value="null">-- Guardar en mis archivos --</option>
-                                        <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name }}</option>
+                                        <option v-for="event in events" :key="event.id" :value="event.id">{{ event.name
+                                            }}</option>
                                     </select>
                                 </div>
 
                                 <div v-if="form.event_id" class="animate-fade-in transition-all duration-300">
-                                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">Rol / Lugar asignado (opcional)</label>
+                                    <label
+                                        class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 ml-1">Rol
+                                        / Lugar asignado (opcional)</label>
                                     <div class="relative">
-                                        <select v-if="!isTypingCustomRole && currentEventRoles.length > 0" v-model="form.location_role" class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
+                                        <select v-if="!isTypingCustomRole && currentEventRoles.length > 0"
+                                            v-model="form.location_role"
+                                            class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none appearance-none cursor-pointer">
                                             <option value="">-- Seleccionar lugar / rol --</option>
-                                            <option v-for="role in currentEventRoles" :key="role" :value="role">{{ role }}</option>
+                                            <option v-for="role in currentEventRoles" :key="role" :value="role">{{ role
+                                                }}</option>
                                             <option value="custom">+ Escribir uno nuevo...</option>
                                         </select>
 
-                                        <div v-if="isTypingCustomRole || currentEventRoles.length === 0" class="flex gap-2">
-                                            <input v-model="form.location_role" type="text" class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none" placeholder="Ej: Línea de meta..." maxlength="100">
-                                            <button v-if="currentEventRoles.length > 0" type="button" @click="isTypingCustomRole = false; form.location_role = ''" class="px-4 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors">
+                                        <div v-if="isTypingCustomRole || currentEventRoles.length === 0"
+                                            class="flex gap-2">
+                                            <input v-model="form.location_role" type="text"
+                                                class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-4 focus:ring-gray-100 text-slate-700 font-bold text-sm py-3.5 px-4 rounded-xl transition-all outline-none"
+                                                placeholder="Ej: Línea de meta..." maxlength="100">
+                                            <button v-if="currentEventRoles.length > 0" type="button"
+                                                @click="isTypingCustomRole = false; form.location_role = ''"
+                                                class="px-4 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 transition-colors">
                                                 <XMarkIcon class="w-5 h-5" />
                                             </button>
                                         </div>
                                     </div>
-                                    <p class="text-[10px] text-gray-400 mt-2 ml-1">Ayudá a las personas a encontrarte más fácil.</p>
+                                    <p class="text-[10px] text-gray-400 mt-2 ml-1">Ayudá a las personas a encontrarte
+                                        más fácil.</p>
                                 </div>
 
                                 <div class="space-y-6 pt-6 border-t border-gray-100">
                                     <label class="relative flex justify-between items-start cursor-pointer group">
                                         <div class="pr-4">
-                                            <span class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">Publicación inmediata</span>
-                                            <span class="block text-xs text-gray-400 mt-1">Las fotos van a ser visibles tras la carga.</span>
+                                            <span
+                                                class="block text-sm font-bold text-slate-700 group-hover:text-black transition-colors">Publicación
+                                                inmediata</span>
+                                            <span class="block text-xs text-gray-400 mt-1">Las fotos van a ser visibles
+                                                tras la carga.</span>
                                         </div>
                                         <div class="relative inline-flex items-center mt-1">
                                             <input type="checkbox" v-model="form.is_active" class="sr-only peer">
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E30613]"></div>
+                                            <div
+                                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E30613]">
+                                            </div>
                                         </div>
                                     </label>
                                 </div>
@@ -335,13 +411,16 @@ const submitPhotos = async () => {
 
                         <div class="bg-gray-50 border border-gray-200 p-6 rounded">
                             <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
                                     <InformationCircleIcon class="w-5 h-5 text-gray-500" stroke-width="2" />
                                 </div>
                                 <div>
-                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">IA en Segundo Plano</h4>
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">IA en
+                                        Segundo Plano</h4>
                                     <p class="text-xs text-gray-500 leading-relaxed">
-                                        El reconocimiento facial y OCR se ejecutan en nuestros servidores después de subir las fotos.
+                                        El reconocimiento facial y OCR se ejecutan en nuestros servidores después de
+                                        subir las fotos.
                                     </p>
                                 </div>
                             </div>
@@ -349,40 +428,55 @@ const submitPhotos = async () => {
                     </div>
 
                     <div class="lg:col-span-2 flex flex-col gap-6">
-                        <div @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false" @drop.prevent="handleDrop" :class="[
+                        <div @dragover.prevent="dragOver = true" @dragleave.prevent="dragOver = false"
+                            @drop.prevent="handleDrop" :class="[
                                 'border-2 border-dashed rounded p-8 md:p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden bg-white',
                                 dragOver ? 'border-[#E30613] bg-red-50' : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                             ]">
-                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*" class="hidden" id="file-upload">
+                            <input type="file" ref="fileInput" @change="handleFileSelect" multiple accept="image/*"
+                                class="hidden" id="file-upload">
 
                             <div v-if="selectedFiles.length === 0" class="flex flex-col items-center">
-                                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100">
+                                <div
+                                    class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-gray-100">
                                     <CloudArrowUpIcon class="w-10 h-10 text-gray-400 stroke-1" />
                                 </div>
                                 <h3 class="font-flux text-4xl text-black mb-2">Carga</h3>
                                 <p class="text-gray-500 mb-6">Arrastrá tus fotografías acá o explora tus archivos</p>
-                                <button type="button" @click="$refs.fileInput.click()" class="px-8 py-3.5 bg-black text-white rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors shadow-md">
+                                <button type="button" @click="$refs.fileInput.click()"
+                                    class="px-8 py-3.5 bg-black text-white rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors shadow-md">
                                     Seleccionar archivos
                                 </button>
-                                <p class="mt-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">JPG, PNG • Máx 150 archivos</p>
+                                <p class="mt-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">JPG, PNG •
+                                    Máx 150 archivos</p>
                             </div>
 
                             <div v-else class="w-full flex flex-col h-full">
                                 <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
                                     <span class="text-xl font-bold text-black flex items-center gap-2">
-                                        {{ selectedFiles.length }} <span class="text-sm font-medium text-gray-500">Archivos listos</span>
+                                        {{ selectedFiles.length }} <span
+                                            class="text-sm font-medium text-gray-500">Archivos listos</span>
                                     </span>
                                     <div class="flex gap-2">
-                                        <button type="button" @click="$refs.fileInput.click()" class="px-4 py-2 bg-gray-100 text-slate-700 rounded-full font-bold text-xs hover:bg-gray-200 transition-colors">+ Agregar</button>
-                                        <button type="button" @click="clearFiles" class="px-4 py-2 bg-red-50 text-[#E30613] rounded-full font-bold text-xs hover:bg-red-100 transition-colors">Limpiar todo</button>
+                                        <button type="button" @click="$refs.fileInput.click()"
+                                            class="px-4 py-2 bg-gray-100 text-slate-700 rounded-full font-bold text-xs hover:bg-gray-200 transition-colors">+
+                                            Agregar</button>
+                                        <button type="button" @click="clearFiles"
+                                            class="px-4 py-2 bg-red-50 text-[#E30613] rounded-full font-bold text-xs hover:bg-red-100 transition-colors">Limpiar
+                                            todo</button>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 overflow-y-auto pr-2 custom-scrollbar text-left content-start">
-                                    <div v-for="(file, index) in selectedFiles" :key="index" class="relative group aspect-square bg-gray-100 rounded overflow-hidden border border-gray-200 hover:shadow-md transition-all">
-                                        <img :src="file.preview" class="w-full h-full object-cover transition-transform duration-500">
-                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
-                                            <button type="button" @click="removeFile(index)" class="w-8 h-8 bg-white rounded-full text-[#E30613] shadow-lg flex items-center justify-center hover:bg-[#E30613] hover:text-white transition-colors pointer-events-auto">
+                                <div
+                                    class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 overflow-y-auto pr-2 custom-scrollbar text-left content-start">
+                                    <div v-for="(file, index) in selectedFiles" :key="index"
+                                        class="relative group aspect-square bg-gray-100 rounded overflow-hidden border border-gray-200 hover:shadow-md transition-all">
+                                        <img :src="file.preview"
+                                            class="w-full h-full object-cover transition-transform duration-500">
+                                        <div
+                                            class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-30">
+                                            <button type="button" @click="removeFile(index)"
+                                                class="w-8 h-8 bg-white rounded-full text-[#E30613] shadow-lg flex items-center justify-center hover:bg-[#E30613] hover:text-white transition-colors pointer-events-auto">
                                                 <XMarkIcon class="w-4 h-4" stroke-width="2" />
                                             </button>
                                         </div>
@@ -392,32 +486,40 @@ const submitPhotos = async () => {
                         </div>
 
                         <div v-if="isProcessing" class="p-6 bg-white border border-gray-100 rounded shadow-sm mb-4">
-                            <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+                            <div
+                                class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
                                 <span>{{ processingStep }}</span>
                                 <span class="text-black">{{ processingProgress }}%</span>
                             </div>
                             <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                                <div class="bg-black h-full transition-all duration-300 ease-out" :style="{ width: processingProgress + '%' }"></div>
+                                <div class="bg-black h-full transition-all duration-300 ease-out"
+                                    :style="{ width: processingProgress + '%' }"></div>
                             </div>
                         </div>
 
                         <div v-if="uploading" class="p-6 bg-white border border-gray-100 rounded shadow-sm">
-                            <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
-                                <span>Subiendo archivos a la nube... ({{ uploadProgress.current }} de {{ uploadProgress.total }})</span>
+                            <div
+                                class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+                                <span>Subiendo archivos a la nube... ({{ uploadProgress.current }} de {{
+                                    uploadProgress.total }})</span>
                                 <span class="text-[#E30613]">{{ uploadProgress.percentage }}%</span>
                             </div>
                             <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                                <div class="bg-gradient-to-r from-red-500 to-[#E30613] h-full transition-all duration-200 ease-out" :style="{ width: uploadProgress.percentage + '%' }"></div>
+                                <div class="bg-gradient-to-r from-red-500 to-[#E30613] h-full transition-all duration-200 ease-out"
+                                    :style="{ width: uploadProgress.percentage + '%' }"></div>
                             </div>
                         </div>
 
                         <div class="flex justify-end mt-2">
-                            <button type="button" @click="submitPhotos" :disabled="uploading || selectedFiles.length === 0" :class="[
+                            <button type="button" @click="submitPhotos"
+                                :disabled="uploading || selectedFiles.length === 0" :class="[
                                     'px-10 py-4 font-bold text-sm uppercase tracking-wider transition-all duration-200 rounded-full w-full md:w-auto flex justify-center items-center gap-2',
                                     uploading || selectedFiles.length === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-[#E30613] hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-1'
                                 ]">
                                 <span v-if="uploading" class="flex items-center gap-2">
-                                    <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    <div
+                                        class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
+                                    </div>
                                     Subiendo...
                                 </span>
                                 <span v-else>Subir fotos</span>
@@ -427,14 +529,101 @@ const submitPhotos = async () => {
                 </form>
             </div>
         </div>
+        <Teleport to="body">
+            <div v-if="showErrorModal"
+                class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+                <div
+                    class="bg-white rounded-lg max-w-2xl w-full shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[85vh]">
+
+
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-start gap-4">
+                        <div>
+                            <span
+                                class="inline-block bg-red-50 text-[#E30613] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-2">
+                                Atención requerida
+                            </span>
+                            <h3 class="text-xl font-black text-black">
+                                Resumen de carga
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Se subieron <strong class="text-green-600">{{ uploadStats.success }}</strong>
+                                fotografías correctamente,
+                                pero <strong class="text-[#E30613]">{{ failedUploads.length }}</strong> no pudieron
+                                procesarse:
+                            </p>
+                        </div>
+                        <button @click="closeErrorModalAndKeep" class="text-gray-400 hover:text-black p-1">
+                            <XMarkIcon class="w-5 h-5" />
+                        </button>
+                    </div>
+
+
+                    <div class="p-6 overflow-y-auto space-y-3 bg-gray-50 flex-1">
+                        <div v-for="(item, idx) in failedUploads" :key="idx"
+                            class="flex items-center gap-4 bg-white p-3 rounded border border-red-100 shadow-sm">
+                            <img :src="item.preview" :alt="item.name"
+                                class="w-14 h-14 rounded object-cover shrink-0 border border-gray-200 bg-gray-100" />
+
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold text-slate-800 truncate">
+                                    {{ item.name }}
+                                </p>
+                                <p class="text-xs font-medium text-[#E30613] mt-1">
+                                    {{ item.errorReason }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="p-5 border-t border-gray-100 bg-white flex flex-col sm:flex-row justify-end gap-3">
+                        <button type="button" @click="closeErrorModalAndKeep"
+                            class="px-5 py-2.5 rounded-full border border-gray-300 text-xs font-bold uppercase tracking-wider text-gray-700 hover:bg-gray-100 transition-colors">
+                            Mantener en cola para reintentar
+                        </button>
+                        <button type="button" @click="discardFailedAndFinish"
+                            class="px-5 py-2.5 rounded-full bg-black hover:bg-[#E30613] text-white text-xs font-bold uppercase tracking-wider transition-colors">
+                            Descartar y finalizar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </Teleport>
     </AuthenticatedLayout>
 </template>
 
 <style scoped>
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
 </style>
