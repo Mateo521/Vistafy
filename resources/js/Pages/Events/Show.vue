@@ -543,7 +543,7 @@ const handleImageError = (e) => {
                         </button>
                     </div>
 
-                    
+
                     <div class="relative z-10 flex-1 w-full min-h-0 mt-12 order-1">
                         <swiper :modules="swiperModules" :initialSlide="activeIndex" @swiper="onMainSwiper"
                             @slideChange="onSlideChange" :navigation="true" :keyboard="{ enabled: true }"
@@ -624,7 +624,7 @@ const handleImageError = (e) => {
 
                             <swiper-slide v-if="hasNextLightboxBatch" class="flex items-center justify-center p-6">
                                 <div
-                                    class="bg-zinc-900 border border-white/15 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+                                    class="bg-zinc-900 border border-white/15 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl">
                                     <span
                                         class="inline-block bg-[#E30613]/20 text-[#E30613] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3">
                                         Mostrando {{ lightboxEnd }} de {{ lightboxPhotos.length }}
@@ -637,7 +637,7 @@ const handleImageError = (e) => {
                                         fotos más de {{ activePhotographer?.business_name }} en este evento.
                                     </p>
 
-                                    <div class="flex flex-col gap-3">
+                                    <div class="flex flex-col gap-2.5">
                                         <button type="button" @click.stop="loadMoreLightboxNext"
                                             class="w-full bg-[#E30613] hover:bg-red-700 text-white px-6 py-3.5 rounded-full text-xs font-black uppercase tracking-wider transition-colors shadow-lg">
                                             Cargar {{ Math.min(LIGHTBOX_BATCH_SIZE, remainingNextPhotos) }} fotos más
@@ -647,6 +647,18 @@ const handleImageError = (e) => {
                                             :href="route('events.show-photographer', [event.slug, activePhotographer.slug])"
                                             class="w-full bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-wider transition-colors">
                                             Ir a galería del fotógrafo
+                                        </Link>
+                                    </div>
+
+
+                                    <div class="mt-6 pt-5 border-t border-white/10">
+                                        <p class="text-white/80 text-xs font-medium mb-3">
+                                            Encontrá dónde aparecés al instante subiendo una selfie
+                                        </p>
+                                        <Link :href="route('events.face-search', event.slug)" @click="closeLightbox"
+                                            class="w-full bg-white hover:bg-gray-200 text-black px-6 py-3 rounded-full text-xs font-black uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-md">
+                                            <CameraIcon class="w-4 h-4 shrink-0" />
+                                            Buscarme por rostro
                                         </Link>
                                     </div>
                                 </div>
