@@ -388,8 +388,9 @@ const handleImageError = (e) => {
                                             'border border-transparent hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
                                 ]">
 
-                                <ProtectedImage :src="photo.thumbnail_url || photo.watermarked_url" loading="lazy"
-                                    class="w-full h-full object-cover rounded shadow-2xl relative z-10"
+                                <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                                    :width="photo.width || 1200" :height="photo.height || 1600" loading="eager"
+                                    class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
                                     @error="handleImageError" />
 
                                 <div v-if="purchasedIds.includes(photo.id)"
@@ -507,8 +508,8 @@ const handleImageError = (e) => {
                             :initialSlide="activeIndex" class="h-full thumbs-gallery">
                             <swiper-slide v-for="photo in lightboxPhotos" :key="'thumb-' + photo.id"
                                 class="!w-16 md:!w-20 h-full rounded cursor-pointer overflow-hidden opacity-40 transition-opacity hover:opacity-100">
-                                <img :src="photo.thumbnail_url" loading="lazy" decoding="async"
-                                    class="w-full h-full object-cover" />
+                                <img :src="photo.thumbnail_url" width="64" height="64" loading="lazy" decoding="async"
+                                    class="w-full h-full object-cover rounded pointer-events-none select-none" />
                             </swiper-slide>
                         </swiper>
                     </div>
@@ -527,23 +528,15 @@ const handleImageError = (e) => {
                                 <div v-if="Math.abs(index - activeIndex) <= 1"
                                     class="relative h-full w-full max-w-full flex items-center justify-center">
 
-
-                                    <img v-if="!loadedMainImages[photo.id]" :src="photo.thumbnail_url"
-                                        class="max-h-full max-w-full object-contain rounded pointer-events-none select-none opacity-80" />
-
-
-                                    <div @load.capture="loadedMainImages[photo.id] = true"
-                                        class="h-full w-full flex items-center justify-center"
-                                        :class="{ 'absolute inset-0 opacity-0': !loadedMainImages[photo.id] }">
-                                        <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
-                                            class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
-                                            @error="handleImageError" />
-                                    </div>
+                                    <ProtectedImage :src="photo.watermarked_url || photo.thumbnail_url"
+                                        class="max-h-full max-w-full object-contain rounded shadow-2xl relative z-10"
+                                        @error="handleImageError" />
 
 
                                     <div
                                         class="absolute top-3 left-3 md:top-5 md:left-5 z-20 max-w-[calc(100%-4.5rem)] bg-white/95 shadow-lg border border-black/10 rounded-full py-1.5 pl-1.5 pr-4 flex items-center gap-2.5">
                                         <img :src="activePhotographer?.profile_photo_url || 'https://via.placeholder.com/50'"
+                                            width="36" height="36"
                                             class="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-200 object-cover shrink-0">
                                         <div class="min-w-0">
                                             <p class="font-bold text-xs md:text-sm text-black truncate leading-tight">
