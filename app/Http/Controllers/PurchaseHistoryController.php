@@ -11,29 +11,39 @@ class PurchaseHistoryController extends Controller
     /**
      *  Mostrar historial de compras
      */
-    public function index()
+public function index()
     {
         $purchases = Auth::user()->purchases()
-            ->with(['items.photo.event', 'items.photo.photographer'])
-            ->where('status', 'approved')
+            ->with(['items.photo.event', 'items.photo.photographer', 'items.payment'])
+            ->where(function ($query) {
+                $query->where('status', 'approved')
+                    ->orWhereHas('payments', fn ($q) => $q->where('status', 'approved'));
+            })
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($purchase) {
+                $paidItems = $purchase->items->filter(function ($item) use ($purchase) {
+                    return $purchase->status === 'approved'
+                        || ($item->payment && $item->payment->status === 'approved');
+                })->values();
+
                 return [
                     'id' => $purchase->id,
                     'order_token' => $purchase->order_token,
-                    'total_amount' => (float) $purchase->total_amount, //  Convertir a float
+                    'total_amount' => $purchase->status === 'approved'
+                        ? (float) $purchase->total_amount
+                        : (float) $paidItems->sum('unit_price'),
                     'currency' => $purchase->currency,
-                    'status' => $purchase->status,
+                    'status' => $paidItems->isNotEmpty() ? 'approved' : $purchase->status,
                     'created_at' => $purchase->created_at->format('d/m/Y H:i'),
                     'created_at_human' => $purchase->created_at->diffForHumans(),
-                    'item_count' => $purchase->items->count(), //  Contar items correctamente
-                    'items' => $purchase->items->map(function ($item) {
+                    'item_count' => $paidItems->count(),
+                    'items' => $paidItems->map(function ($item) {
                         return [
                             'id' => $item->id,
                             'photo_id' => $item->photo_id,
-                            'unit_price' => (float) $item->unit_price, //  Convertir a float
-                            'download_count' => (int) ($item->download_count ?? 0), //  Convertir a int
+                            'unit_price' => (float) $item->unit_price,
+                            'download_count' => (int) ($item->download_count ?? 0),
                             'photo' => [
                                 'id' => $item->photo->id,
                                 'unique_id' => $item->photo->unique_id,
@@ -51,7 +61,9 @@ class PurchaseHistoryController extends Controller
                         ];
                     }),
                 ];
-            });
+            })
+            ->filter(fn ($purchase) => $purchase['item_count'] > 0)
+            ->values();
 
         return Inertia::render('Purchases/Index', [
             'purchases' => $purchases,
@@ -62,31 +74,38 @@ class PurchaseHistoryController extends Controller
     {
         $purchase = Auth::user()->purchases()
             ->where('id', $purchaseId)
-            ->where('status', 'approved')
             ->first();
 
         if (! $purchase) {
-            dd('ERROR 1: La compra ID '.$purchaseId.' no le pertenece al usuario logueado ('.Auth::user()->email.') o no está aprobada.');
+            abort(404, 'La compra no existe o no pertenece a tu cuenta.');
         }
 
-        $item = $purchase->items()->where('photo_id', $photoId)->first();
+        $item = $purchase->items()
+            ->with(['photo', 'payment'])
+            ->where('photo_id', $photoId)
+            ->first();
 
         if (! $item) {
-            dd('ERROR 2: La compra es tuya, pero la foto ID '.$photoId.' no está registrada dentro de esta orden.');
+            abort(404, 'La fotografía no pertenece a esta orden.');
+        }
+
+        $isPaid = $purchase->status === 'approved'
+            || ($item->payment && $item->payment->status === 'approved');
+
+        if (! $isPaid) {
+            abort(403, 'El pago de esta fotografía aún no está aprobado.');
         }
 
         $photo = $item->photo;
 
-
         if (! Storage::disk('b2_private')->exists($photo->original_path)) {
-            dd('ERROR 3: Todo en la base de datos está perfecto, pero el archivo de la foto original NO existe en el bucket privado de Backblaze B2. Ruta buscada: '.$photo->original_path);
+            abort(404, 'El archivo original no se encuentra disponible.');
         }
 
         $photo->increment('downloads');
         $item->increment('download_count');
 
         $fileName = ($photo->title ?: 'foto-'.$photo->unique_id).'.jpg';
-
 
         return response()->streamDownload(function () use ($photo) {
             echo Storage::disk('b2_private')->get($photo->original_path);

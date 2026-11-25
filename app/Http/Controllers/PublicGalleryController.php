@@ -264,7 +264,7 @@ class PublicGalleryController extends Controller
             })
             ->where('bib_processed', true)
             ->whereNotNull('bib_numbers')
-            ->where('bib_numbers', 'LIKE', '%"' . $bibNumber . '"%')
+            ->where('bib_numbers', 'LIKE', '%"'.$bibNumber.'"%')
             ->with(['photographer.user', 'event'])
             ->get()
             ->map(function ($photo) {
@@ -299,9 +299,10 @@ class PublicGalleryController extends Controller
             'results' => $photos,
         ]);
     }
+
     public function faceSearch(Request $request)
     {
-        
+
         $request->validate([
             'selfie' => 'required|image|max:5120',
             'threshold' => 'nullable|numeric|min:0|max:1',
@@ -309,8 +310,6 @@ class PublicGalleryController extends Controller
 
         $threshold = $request->threshold ?? 0.6;
 
-
-    
         $fullPath = $request->file('selfie')->path();
 
         $scriptPath = base_path('scripts/extract_face.py');
@@ -320,14 +319,11 @@ class PublicGalleryController extends Controller
         $output = shell_exec($command);
 
         $result = json_decode(trim($output), true);
-        if (!$result || !isset($result['success']) || !$result['success']) {
+        if (! $result || ! isset($result['success']) || ! $result['success']) {
             return response()->json(['error' => 'No se detectó ningún rostro claro en la selfie. Intentá con otra foto.'], 400);
         }
 
-    
         $searchDescriptor = $result['descriptor'];
-
-    
 
         $photos = Photo::where('has_faces', true)
             ->whereNotNull('face_encodings')
@@ -512,7 +508,7 @@ class PublicGalleryController extends Controller
             ->with('info', "No se encontró la foto exacta '{$uniqueId}'. Mostrando resultados similares.");
     }
 
-public function showEvent(Request $request, $slug)
+    public function showEvent(Request $request, $slug)
     {
         $event = Event::where('slug', $slug)
             ->whereHas('photographer', function ($q) {
@@ -610,9 +606,16 @@ public function showEvent(Request $request, $slug)
             }
 
             $purchasedPhotoIds = \App\Models\PurchaseItem::whereHas('purchase', function ($q) use ($userId) {
-                $q->where('user_id', $userId)
-                    ->where('status', 'approved');
-            })->pluck('photo_id')->toArray();
+                $q->where('user_id', $userId);
+            })
+                ->where(function ($q) {
+                    $q->whereHas('payment', fn ($sub) => $sub->where('status', 'approved'))
+                        ->orWhereHas('purchase', fn ($sub) => $sub->where('status', 'approved'));
+                })
+                ->pluck('photo_id')
+                ->unique()
+                ->values()
+                ->toArray();
         }
 
         return Inertia::render('Events/Show', [

@@ -9,23 +9,28 @@ use Inertia\Inertia;
 
 class DownloadController extends Controller
 {
-    public function download(string $token)
+public function download(string $token)
     {
         Log::info(' Descarga solicitada', ['token' => substr($token, 0, 10).'...']);
 
         $purchase = Purchase::where('order_token', $token)
-            ->with('items.photo')
+            ->with(['items.photo', 'items.payment'])
             ->first();
 
         if (! $purchase) {
             abort(404, 'Enlace expirado o inválido.');
         }
 
-        if ($purchase->status !== 'approved') {
+        $paidItems = $purchase->items->filter(function ($item) use ($purchase) {
+            return in_array($purchase->status, ['completed', 'approved'])
+                || ($item->payment && $item->payment->status === 'approved');
+        })->values();
+
+        if ($paidItems->isEmpty()) {
             return to_route('payment.pending', ['purchase_id' => $purchase->id]);
         }
 
-        $item = $purchase->items->first();
+        $item = $paidItems->first();
 
         if (! $item || ! $item->photo) {
             abort(404, 'Foto no encontrada en la orden.');
@@ -39,15 +44,14 @@ class DownloadController extends Controller
             return redirect()->away($path);
         }
 
-       
         if (Storage::disk('b2_private')->exists($path)) {
             Log::info(' Iniciando descarga desde Backblaze privado', ['path' => $path]);
 
             $purchase->increment('download_count');
-            
+            $item->increment('download_count');
+
             $fileName = "f33_{$photo->unique_id}.jpg";
 
-        
             return response()->streamDownload(function () use ($path) {
                 echo Storage::disk('b2_private')->get($path);
             }, $fileName, [
@@ -65,18 +69,26 @@ class DownloadController extends Controller
         Log::info(' Página de descarga solicitada', ['token' => substr($token, 0, 20).'...']);
 
         $purchase = Purchase::where('order_token', $token)
-            ->with('items.photo.event')
+            ->with(['items.photo.event', 'items.payment'])
             ->first();
 
         if (! $purchase) {
             abort(404, 'Token de descarga inválido');
         }
 
-        if (! in_array($purchase->status, ['completed', 'approved'])) {
+        $paidItems = $purchase->items->filter(function ($item) use ($purchase) {
+            return in_array($purchase->status, ['completed', 'approved'])
+                || ($item->payment && $item->payment->status === 'approved');
+        })->values();
+
+        if ($paidItems->isEmpty()) {
             return Inertia::render('Download/Pending', [
                 'purchase' => $purchase,
             ]);
         }
+
+
+        $purchase->setRelation('items', $paidItems);
 
         return Inertia::render('Download/Show', [
             'purchase' => $purchase,
