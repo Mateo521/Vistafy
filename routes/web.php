@@ -46,32 +46,40 @@ Route::get('/sitemap.xml', function () {
         $sitemap->add(Url::create('/terminos-y-condiciones')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY));
         $sitemap->add(Url::create('/politica-de-privacidad')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY));
 
-        Event::where('is_active', true)
+        $events = Event::where('is_active', true)
             ->where('is_private', false)
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
-            ->get()
-            ->each(function (Event $event) use ($sitemap) {
-                $sitemap->add(
-                    Url::create("/eventos/{$event->slug}")
-                        ->setLastModificationDate($event->updated_at ?? now())
-                        ->setPriority(0.8)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                );
-            });
+            ->get();
 
-        Photographer::where('status', 'approved')
+        foreach ($events as $event) {
+            $url = Url::create("/eventos/{$event->slug}")
+                ->setPriority(0.8)
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY);
+
+            if ($event->updated_at) {
+                $url->setLastModificationDate(\Carbon\Carbon::parse($event->updated_at));
+            }
+
+            $sitemap->add($url);
+        }
+
+        $photographers = Photographer::where('status', 'approved')
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
-            ->get()
-            ->each(function (Photographer $photographer) use ($sitemap) {
-                $sitemap->add(
-                    Url::create("/fotografos/{$photographer->slug}")
-                        ->setLastModificationDate($photographer->updated_at ?? now())
-                        ->setPriority(0.8)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                );
-            });
+            ->get();
+
+        foreach ($photographers as $photographer) {
+            $url = Url::create("/fotografos/{$photographer->slug}")
+                ->setPriority(0.8)
+                ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY);
+
+            if ($photographer->updated_at) {
+                $url->setLastModificationDate(\Carbon\Carbon::parse($photographer->updated_at));
+            }
+
+            $sitemap->add($url);
+        }
 
         return $sitemap->render();
     });
@@ -80,11 +88,7 @@ Route::get('/sitemap.xml', function () {
         'Content-Type' => 'application/xml; charset=utf-8',
         'Cache-Control' => 'public, max-age=3600',
     ]);
-})->withoutMiddleware([
-    \Illuminate\Session\Middleware\StartSession::class,
-    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-    \App\Http\Middleware\HandleInertiaRequests::class,
-]);
+})->withoutMiddleware('web');
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
