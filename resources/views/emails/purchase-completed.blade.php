@@ -54,7 +54,7 @@
                                             <tr>
                                                 <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Fecha:</td>
                                                 <td style="padding: 8px 0; text-align: right; color: #0f172a; font-weight: bold;">
-                                                    {{ $purchase->created_at->format('d/m/Y H:i') }}
+                                                    {{ $purchase->created_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}
                                                 </td>
                                             </tr>
                                             <tr>

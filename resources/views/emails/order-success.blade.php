@@ -67,10 +67,9 @@
                                         <td style="padding: 8px 0; border-bottom: 1px solid #27272a;">
                                             <strong>Fecha:</strong>
                                         </td>
-                                        <td
-                                            style="padding: 8px 0; text-align: right; border-bottom: 1px solid #27272a;">
-                                            {{ $purchase->created_at->format('d/m/Y H:i') }}
-                                        </td>
+                                        <td style="padding: 8px 0; text-align: right; border-bottom: 1px solid #27272a;">
+    {{ $purchase->created_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}
+</td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 12px 0;"><strong>Inversión Total:</strong></td>

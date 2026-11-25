@@ -49,9 +49,9 @@
                                     ARS</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Fecha:</span>
-                                <span class="text-gray-800">{{ $purchase->created_at->format('d/m/Y H:i') }}</span>
-                            </div>
+    <span class="text-gray-600">Fecha:</span>
+    <span class="text-gray-800">{{ $purchase->created_at->timezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}</span>
+</div>
                             @if($purchase->download_count > 0)
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Descargas:</span>
