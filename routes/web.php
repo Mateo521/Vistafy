@@ -24,21 +24,18 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseHistoryController;
 use App\Http\Controllers\WebhookController;
 use App\Models\ContactMessage;
+use App\Models\Event;
+use App\Models\Photographer;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
-use Illuminate\Support\Facades\Cache;
-use App\Models\Event;
-use App\Models\Photographer;
-
 
 Route::get('/sitemap.xml', function () {
-
-    $sitemap = Cache::remember('sitemap_f33', 43200, function () {
+    $xml = Cache::remember('sitemap_f33_xml', 43200, function () {
         $sitemap = Sitemap::create();
 
-    
         $sitemap->add(Url::create('/')->setPriority(1.0)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
         $sitemap->add(Url::create('/galeria')->setPriority(0.9)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
         $sitemap->add(Url::create('/eventos')->setPriority(0.9)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
@@ -49,22 +46,45 @@ Route::get('/sitemap.xml', function () {
         $sitemap->add(Url::create('/terminos-y-condiciones')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY));
         $sitemap->add(Url::create('/politica-de-privacidad')->setPriority(0.5)->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY));
 
-    
-        Event::where('is_active', true)->where('is_private', false)->get()->each(function (Event $event) use ($sitemap) {
-            $sitemap->add(Url::create("/eventos/{$event->slug}")->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
-        });
+        Event::where('is_active', true)
+            ->where('is_private', false)
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
+            ->get()
+            ->each(function (Event $event) use ($sitemap) {
+                $sitemap->add(
+                    Url::create("/eventos/{$event->slug}")
+                        ->setLastModificationDate($event->updated_at ?? now())
+                        ->setPriority(0.8)
+                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                );
+            });
 
-    
-        Photographer::where('status', 'approved')->get()->each(function (Photographer $photographer) use ($sitemap) {
-            $sitemap->add(Url::create("/fotografos/{$photographer->slug}")->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY));
-        });
+        Photographer::where('status', 'approved')
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
+            ->get()
+            ->each(function (Photographer $photographer) use ($sitemap) {
+                $sitemap->add(
+                    Url::create("/fotografos/{$photographer->slug}")
+                        ->setLastModificationDate($photographer->updated_at ?? now())
+                        ->setPriority(0.8)
+                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+                );
+            });
 
-        return $sitemap;
+        return $sitemap->render();
     });
 
-
-    return $sitemap->toResponse(request());
-});
+    return response($xml, 200, [
+        'Content-Type' => 'application/xml; charset=utf-8',
+        'Cache-Control' => 'public, max-age=3600',
+    ]);
+})->withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \App\Http\Middleware\HandleInertiaRequests::class,
+]);
 
 Route::middleware('guest')->group(function () {
     Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
@@ -213,8 +233,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/2fa/disable', [App\Http\Controllers\Auth\TwoFactorController::class, 'disable'])->name('2fa.disable');
 });
 
-
-
 Route::middleware('auth')->prefix('carrito')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::post('/agregar/{photo}', [CartController::class, 'add'])->name('add');
@@ -347,10 +365,8 @@ Route::middleware(['auth', 'photographer.approved'])->prefix('fotografo')->name(
     Route::put('/fotos/{photo}', [PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/fotos/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
 
-
     Route::post('/fotos/bulk-destroy', [PhotoController::class, 'bulkDestroy'])->name('photos.bulk-destroy');
-Route::post('/fotos/bulk-price', [PhotoController::class, 'bulkUpdatePrice'])->name('photos.bulk-price');
-
+    Route::post('/fotos/bulk-price', [PhotoController::class, 'bulkUpdatePrice'])->name('photos.bulk-price');
 
     Route::get('/eventos', [EventController::class, 'index'])->name('events.index');
     Route::get('/eventos/crear', [EventController::class, 'create'])->name('events.create');
