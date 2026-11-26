@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-use App\Rules\Turnstile;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\Turnstile;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,20 +24,27 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if ($request->has('email')) {
+            $request->merge([
+                'email' => mb_strtolower(trim((string) $request->input('email'))),
+            ]);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'turnstile_response' => ['required', new Turnstile()],
+            'turnstile_response' => ['required', new Turnstile],
         ]);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'customer',
+            'role' => 'client',
         ]);
+
         try {
-            
             Mail::send('emails.customer-welcome', ['user' => $user], function ($msg) use ($user) {
                 $msg->to($user->email)->subject('[F33 STUDIO] Acceso');
             });

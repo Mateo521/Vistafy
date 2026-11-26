@@ -32,10 +32,15 @@ const handleFileUpload = (event) => {
     form.profile_photo = event.target.files[0];
 };
 
+
+
 const submit = () => {
     form.turnstile_response = turnstileToken.value;
     form.post(route('photographer.register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
+        onError: () => {
+            turnstileToken.value = '';
+        },
         forceFormData: true,
     });
 };
@@ -58,7 +63,7 @@ const submit = () => {
                                 class="h-14 md:h-16 w-auto group-hover:scale-105 transition-transform duration-300" />
                         </Link>
 
-                        
+
 
                         <h1 class="font-flux text-5xl md:text-7xl text-black leading-[0.9] tracking-wide mb-6">
                             Unite a <br><span class="text-[#E30613]">F33</span>
@@ -322,10 +327,10 @@ const submit = () => {
 
 
                         <div class="my-6">
-                            <Turnstile 
-                                site-key="0x4AAAAAAF4w8KPF8YCUPril" 
-                                v-model="turnstileToken" 
-                            />
+                            <Turnstile site-key="0x4AAAAAAF4w8KPF8YCUPril" v-model="turnstileToken" />
+                            <p v-if="form.errors.turnstile_response" class="text-[#E30613] text-xs font-bold mt-2 ml-1">
+                                {{ form.errors.turnstile_response }}
+                            </p>
                         </div>
 
                         <div class="pt-4">

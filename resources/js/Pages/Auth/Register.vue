@@ -2,6 +2,9 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import Turnstile from '@/Components/Turnstile.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+
+const turnstileToken = ref('');
 
 const form = useForm({
     name: '',
@@ -15,6 +18,9 @@ const submit = () => {
     form.turnstile_response = turnstileToken.value;
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
+        onError: () => {
+            turnstileToken.value = '';
+        },
     });
 };
 </script>
@@ -124,6 +130,9 @@ const submit = () => {
                     site-key="0x4AAAAAAF4w8KPF8YCUPril" 
                     v-model="turnstileToken" 
                 />
+                <p v-if="form.errors.turnstile_response" class="text-[#E30613] text-xs font-bold mt-2 ml-1">
+                    {{ form.errors.turnstile_response }}
+                </p>
             </div>
 
             <div class="pt-4">
